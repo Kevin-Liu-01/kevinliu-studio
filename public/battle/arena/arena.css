@@ -304,7 +304,7 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 
 /* ============================================================ narrower desktops: the rail keeps its keys */
 @media (max-width: 1180px) and (min-width: 720px) {
-  .mark { display: none; }
+  .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .rail { grid-template-columns: auto 1fr; }
   .team-rail { justify-self: start; }
   .team-lead span { display: none; }
@@ -313,7 +313,7 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 @media (max-width: 719px) {
   .rail { grid-template-columns: 1fr; grid-template-rows: var(--rail-h) var(--team-h); height: calc(var(--rail-h) + var(--team-h)); padding: 0 8px; align-items: center;
     background: linear-gradient(oklch(10% 0.008 70 / .9), oklch(10% 0.008 70 / .7) 75%, transparent); }
-  .mark { display: none; }
+  .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .rail-keys { grid-row: 1; width: 100%; justify-content: space-between; gap: 6px; }
   .seg .key { min-width: 64px; }
   #replay { display: none; }

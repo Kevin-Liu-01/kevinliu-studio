@@ -19,7 +19,11 @@ interface Props {
   main?: string; // the id the skip link lands on
 }
 const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main' } = Astro.props;
-const fontFace = `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2;base64,${cardFontB64}) format("woff2");font-weight:100 900;font-display:block}`;
+// a room inlines the cards' face so no card line wraps twice; a plain page points the same family at the site's
+// preloaded Latin file, which every page caches
+const fontFace = room
+  ? `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2;base64,${cardFontB64}) format("woff2");font-weight:100 900;font-display:block}`
+  : '@font-face{font-family:"Katagami Sans";src:url(/fonts/katagami-sans-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}';
 ---
 <!doctype html>
 <html lang="en" data-mode="human" {...html}>
@@ -38,7 +42,7 @@ const fontFace = `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2
 <link rel="preload" href="/fonts/katagami-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 <script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);try{if(localStorage.getItem('ill-mode')==='machine')d.dataset.mode='machine'}catch(e){}var t=q.get('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=t;try{if(localStorage.getItem('ill-pause')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)d.dataset.paused=''}catch(e){}})()</script>
 <style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
-<script is:inline>/* the cards' face, decoded before the first layout so no line wraps twice (r4/ex build.mjs) */try{var t=document.getElementById("kface").textContent,i=t.indexOf("base64,")+7,b=atob(t.slice(i,t.indexOf(")",i))),u=new Uint8Array(b.length);for(var k=0;k<b.length;k++)u[k]=b.charCodeAt(k);document.fonts.add(new FontFace("Katagami Sans",u,{weight:"100 900",display:"block"}))}catch(e){}</script>
+{room && <script is:inline>/* the cards' face, decoded before the first layout so no line wraps twice (r4/ex build.mjs) */try{var t=document.getElementById("kface").textContent,i=t.indexOf("base64,")+7,b=atob(t.slice(i,t.indexOf(")",i))),u=new Uint8Array(b.length);for(var k=0;k<b.length;k++)u[k]=b.charCodeAt(k);document.fonts.add(new FontFace("Katagami Sans",u,{weight:"100 900",display:"block"}))}catch(e){}</script>}
 <link rel="stylesheet" href="/ex/ui.css" />
 {room && <link rel="stylesheet" href="/ex/card.css" />}
 {room && <link rel="stylesheet" href="/ex/rituals.css" />}
@@ -47,7 +51,8 @@ const fontFace = `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2
 <Analytics />
 </head>
 <body>
-<a class="skip" href={`${seo.path}#${main}`}>Skip to content</a>
+<a class="skip" href={`${seo.path}#${main}`} data-to={main}>Skip to content</a>
+<script is:inline>/* the skip link keeps the address as typed (query, unknown paths), so it never reloads */(function(a){a.href=location.pathname+location.search+"#"+a.dataset.to})(document.currentScript.previousElementSibling)</script>
 <div class="human">
 <div id="behind">
 <Header path={seo.path} />
@@ -59,6 +64,6 @@ const fontFace = `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2
 <Machine path={twinPath} />
 <Fragment set:html={sprite} />
 <slot name="foot" />
-<script is:inline>/* Human and Machine on every page (gallery.js does the same on the home page; both write the same state) */document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mode-set]');if(!b)return;var m=b.dataset.modeSet,d=document.documentElement;d.dataset.mode=m;try{localStorage.setItem('ill-mode',m)}catch(_){}document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',m==='machine'?1:0)})});(function(){var m=document.documentElement.dataset.mode;if(m==='machine'){document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',1)})}})()</script>
+<script is:inline>/* Human and Machine on every page (gallery.js does the same on the home page; both write the same state) */document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mode-set]');if(!b)return;var m=b.dataset.modeSet,d=document.documentElement;d.dataset.mode=m;try{localStorage.setItem('ill-mode',m)}catch(_){}document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',m==='machine'?1:0)});var v=[].filter.call(document.querySelectorAll('[data-mode-set]'),function(x){return x.offsetParent!==null}),f=v.find(function(x){return x.dataset.modeSet===m})||v[0];if(f)f.focus()});(function(){var m=document.documentElement.dataset.mode;if(m==='machine'){document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',1)})}})()</script>
 </body>
 </html>

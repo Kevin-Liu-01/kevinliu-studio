@@ -3,9 +3,10 @@
 // not. Checks, per HTML page: a closed document, one h1, a title, a description, a canonical on the production host,
 // a share image and loop that exist, JSON-LD that parses, and a Markdown twin. Site-wide: every local address a page
 // references exists in dist (resolved against its <base>), the sitemap, robots.txt and llms files exist, no image
-// carries GPS metadata, and no banned name or route appears.
+// carries GPS metadata, no image, video or audio file carries location metadata, and no banned name or route appears.
 import fs from 'node:fs';
 import path from 'node:path';
+import { MEDIA, hasLocation } from './location.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
 const SITE = 'https://www.kevinliu.studio';
@@ -19,6 +20,9 @@ const exists = (p) => {
   const f = path.join(DIST, clean);
   return fs.existsSync(f) && fs.statSync(f).isFile() || fs.existsSync(f + '.html') || fs.existsSync(path.join(f, 'index.html'));
 };
+
+// Astro publishes any .md under src/pages; agent-docs scaffold writes a SKILL.md there (AGENTS.md)
+if (fs.existsSync(path.join(DIST, '..', 'src/pages/SKILL.md'))) fail('src/pages/SKILL.md', 'Astro publishes this as a page; the routes skill is src/SKILL.md');
 
 for (const need of ['/index.html', '/about.html', '/battle.html', '/battle/arena.html', '/404.html', '/robots.txt', '/llms.txt', '/llms-full.txt', '/index.md', '/sitemap-index.xml', '/favicon.ico', '/site.webmanifest']) {
   if (!exists(need)) fail(need, 'missing');
@@ -39,7 +43,8 @@ for (const f of htmls) {
   const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
   if (desc.length < 50 || desc.length > 170) fail(page, `description is ${desc.length} characters`);
   const canon = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
-  if (!canon?.startsWith(SITE)) fail(page, `canonical ${canon}`);
+  if (page === '/404.html') { if (canon || !/<meta name="robots" content="noindex/.test(html)) fail(page, 'the 404 page must be noindex without a canonical'); }
+  else if (!canon?.startsWith(SITE)) fail(page, `canonical ${canon}`);
   for (const k of ['og:image', 'og:video']) {
     const u = html.match(new RegExp(`<meta property="${k}" content="([^"]+)"`))?.[1];
     if (!u?.startsWith(SITE) || !exists(u.slice(SITE.length))) fail(page, `${k} ${u} does not exist in dist`);
@@ -50,6 +55,9 @@ for (const f of htmls) {
   const twin = html.match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
   if (page !== '/404.html' && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
   // every local reference, resolved the way the browser will
+  // a link to a bare fragment is safe only without <base>: with one, "#x" goes to the base folder, not this page
+  // (SVG <use href="#icon"> stays in the document, so only <a> is checked)
+  if (/<base href=/.test(html)) for (const m of html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)) fail(page, `link ${m[1]} resolves against <base>`);
   const base = html.match(/<base href="([^"]+)"/)?.[1] ?? page.replace(/[^/]*$/, '');
   for (const m of html.replace(/<base [^>]*>/, '').matchAll(/\s(?:src|href|poster)="([^"]+)"|url\(["']?([^"')]+)["']?\)/g)) {
     const u = m[1] ?? m[2];
@@ -72,10 +80,9 @@ for (const f of files) {
     const t = fs.readFileSync(f, 'utf8');
     for (const [re, why] of BANNED) if (re.test(t)) fail(p, why);
     if (GT.test(t) && !GT_PAGES.has(p) && !/\/atlas[./]/.test(p)) fail(p, 'General Translation outside the Atlas card');
-  } else if (/\.(jpe?g|webp|png|avif)$/i.test(f)) {
-    const b = fs.readFileSync(f);
-    const at = b.indexOf('Exif\0\0');
-    if (at >= 0) { const t = b.subarray(at + 6, at + 6 + 65536); if (t.includes(Buffer.from([0x88, 0x25])) || t.includes(Buffer.from([0x25, 0x88]))) fail(p, 'GPS in image metadata'); }
+  } else if (MEDIA.test(f)) {
+    const where = hasLocation(fs.readFileSync(f));
+    if (where) fail(p, where);
   }
 }
 

@@ -15,9 +15,19 @@ const what = whatOf(f);
 const hue = hueOf(f);
 const repo = f.repo?.replace(/ .*$/, '');
 const pinned = (f as any).pinned as { sha: string; date?: string } | undefined;
-const category = f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication';
+// schema.org type and category: named where a card's discipline tags would mistype it, guessed from the tags otherwise
+const TYPE: Record<string, string> = { katagami: 'CreativeWork', atlas: 'CreativeWork', ommc: 'WebSite', powerlifting: 'WebSite' };
+const CATEGORY: Record<string, string> = {
+  turboslide: 'BusinessApplication', jarhead: 'UtilitiesApplication', mailroom: 'CommunicationApplication', elo: 'BusinessApplication',
+  podium: 'BusinessApplication', sevenfold: 'ReferenceApplication', 'kevin-wiki': 'ReferenceApplication', ariadne: 'EntertainmentApplication',
+  cotfly: 'EntertainmentApplication', 'bday-land': 'EntertainmentApplication',
+};
+const category = CATEGORY[f.id] ?? (f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication');
+// sameAs claims identity, so only the card a repository is named for links it; a card built inside another's repo does not
+const sharers = fighters.filter((g) => g.repo?.replace(/ .*$/, '') === repo);
+const ownsRepo = !!repo && (sharers.length === 1 || repo.toLowerCase().endsWith('/' + f.id));
 const work: Record<string, unknown> = {
-  '@type': ['katagami', 'atlas'].includes(f.id) ? 'CreativeWork' : 'SoftwareApplication',
+  '@type': TYPE[f.id] ?? 'SoftwareApplication',
   '@id': `${SITE}${cardPath(f)}#work`,
   name: f.title,
   description: what,
@@ -27,11 +37,12 @@ const work: Record<string, unknown> = {
   author: { '@id': person['@id'] },
   creator: { '@id': person['@id'] },
   keywords: f.disciplines.join(', '),
-  ...(repo ? { sameAs: [repo] } : {}),
+  ...(ownsRepo ? { sameAs: [repo] } : {}),
 };
 if (work['@type'] === 'SoftwareApplication') Object.assign(work, { applicationCategory: category, operatingSystem: 'Web' });
 const jsonld = [
   work,
+  person,
   { '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: NAME, item: `${SITE}/` },
     { '@type': 'ListItem', position: 2, name: f.title, item: `${SITE}${cardPath(f)}` },

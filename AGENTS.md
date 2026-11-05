@@ -13,8 +13,9 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | `src/lib/site.ts` | name, bio, links, the previous site | yes |
 | `src/lib/battle.ts`, `src/components/BattlePage.astro` | the battle page split into head and body, with its paths pointed here | yes |
 | `src/layouts/Base.astro`, `src/components/` | the frame, SEO head, header, footer, Machine view, analytics | yes |
+| `vercel.json` | one `routes` list: redirects, headers, Markdown negotiation, files, clean URLs, 404 | yes |
 | `src/styles/site.css` | the site's layer over the card room's `ui.css` | yes |
-| `scripts/sync.mjs` | pulls round material by allow-list, patches, scans, writes `sync.lock.json` | yes, carefully |
+| `scripts/sync.mjs` | pulls round material by allow-list, patches, scans; writes only when every check passes | yes, carefully |
 | `scripts/verify-build.mjs` | the release guard after every build | yes |
 | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | synced round material | **never by hand**: `pnpm sync` |
 | `docs/` | architecture, sync, content, sound, battle, deploy | yes |
@@ -35,6 +36,9 @@ Read `memory.md` before acting and append to it after every meaningful change.
 - Ask Kevin before creating the GitHub repo, pushing, deploying, touching Vercel domains or DNS, adding a paid service
   or entering a credential. The swap runbook is `docs/deploy.md`.
 - Commit as `66856750+Kevin-Liu-01@users.noreply.github.com`, by explicit path, at each milestone.
+- No `.md` file under `src/pages/`: Astro publishes it as a page. The routes skill is `src/SKILL.md`. `agent-docs
+  scaffold` re-creates `src/pages/SKILL.md` because the kit does not know this; delete it, and `pnpm build` fails until
+  you do.
 
 ## Commands
 
@@ -67,7 +71,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 |---|---|---|
 | `scripts/` | [`scripts/SKILL.md`](scripts/SKILL.md) | Procedure for scripts/ in kevinliu-studio: the round sync, the release guard, the smoke check and the icon builder. Read before editing a script. |
 | `src/lib/` | [`src/lib/SKILL.md`](src/lib/SKILL.md) | Build-time data for kevinliu-studio. cards.ts loads the rounds' card code in CommonJS sandboxes, twins.ts writes every Markdown twin and llms file, site.ts holds Kevin's facts, battle.ts splits the battle page. Read before editing here. |
-| `src/pages/` | [`src/pages/SKILL.md`](src/pages/SKILL.md) | Routes of kevinliu-studio. Home prints the 26-card wall, cards/[id] one card page each, battle and battle/arena wrap the round battle page, plus about, 404, the .md twins, llms files and robots. Read before editing here. |
+| `src/pages/` | [`src/SKILL.md`](src/SKILL.md) | Routes of kevinliu-studio. Home prints the 26-card wall, cards/[id] one card page each, battle and battle/arena wrap the round battle page, plus about, 404, the .md twins, llms files and robots. Read before editing here. |
 <!-- agent-docs:auto:dirmap end -->
 
 <!-- agent-docs:auto:env start -->

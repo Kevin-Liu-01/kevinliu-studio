@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "7fbf4ef1 (with uncommitted changes)",
- "synced": "2026-11-05T21:50:40.665Z",
+ "synced": "2026-11-05T23:38:34.872Z",
  "stages": {
   "cards": {
    "files": 536,
-   "bytes": 64725639,
+   "bytes": 64725766,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -49,13 +49,13 @@
     },
     "public/ex/markup.js": {
      "src": "r4/ex/markup.js",
-     "sha256": "e491f0ed097e5aa0983dfc88c436a4c2bbd6ecd8ff1f05d69a6b849fbc9381b2",
-     "bytes": 52275
+     "sha256": "da73cb75913c55328a93803d8a667311e71ddc1765fb1d7e0ec8a4368e1b7f8b",
+     "bytes": 52266
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
-     "sha256": "5a8365dd13029f9e1dc316c3344ce2a7081ba7163b6f94ed260a65a16ab9b2b5",
-     "bytes": 69658
+     "sha256": "036d2cefc012c89b99bdb9036e8d4f5643cf43dc6277ceb0f013fa676acf94a2",
+     "bytes": 69794
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
@@ -2690,8 +2690,8 @@
    }
   },
   "sound": {
-   "files": 1102,
-   "bytes": 20382862,
+   "files": 1098,
+   "bytes": 17101483,
    "list": {
     "public/sound/sound.js": {
      "src": "r4/sound/sound.js",
@@ -2882,26 +2882,6 @@
      "src": "r4/sound/out/gallery/entry.rise-2.m4a",
      "sha256": "39575a27ca667009228dbc5518b89924033231fd7956a2ab919a8b6c046a8234",
      "bytes": 3791
-    },
-    "public/sound/out/music/mus.gallery-1.webm": {
-     "src": "r4/sound/out/music/mus.gallery-1.webm",
-     "sha256": "6a4c7e5b2432b46dc4f56d9bd72e549080c2960316f5cbcd44c3119712a61830",
-     "bytes": 983447
-    },
-    "public/sound/out/music/mus.gallery-1.m4a": {
-     "src": "r4/sound/out/music/mus.gallery-1.m4a",
-     "sha256": "2d58249a0290a635e75de3e25e74e9200dccd044bb3699971d403da8557ff972",
-     "bytes": 683769
-    },
-    "public/sound/out/music/mus.gallery-2.webm": {
-     "src": "r4/sound/out/music/mus.gallery-2.webm",
-     "sha256": "c81c1eeb2d314c3db153a1817a3a065b29840b7724a6f9282794643df9368ba1",
-     "bytes": 937474
-    },
-    "public/sound/out/music/mus.gallery-2.m4a": {
-     "src": "r4/sound/out/music/mus.gallery-2.m4a",
-     "sha256": "5f4b991de02e695e90e3f0cd262bdda434bf42395a14b728cade4479a2dc3032",
-     "bytes": 676689
     },
     "public/sound/out/music/mus.pack.1-1.webm": {
      "src": "r4/sound/out/music/mus.pack.1-1.webm",
@@ -8206,13 +8186,13 @@
    }
   },
   "battle": {
-   "files": 756,
-   "bytes": 136698926,
+   "files": 754,
+   "bytes": 136501737,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "4d338b3f49d0e280f5f19c769d74e2d36b078aee2e1faf491fb69468e7478827",
-     "bytes": 31596
+     "sha256": "36bb1ebfe7ccf989c4866d1d153a4e6b06cf09d9557fd679cc883f67d50acfe0",
+     "bytes": 31780
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
@@ -8236,8 +8216,8 @@
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "c588febec86bc44a6939091165da425324fe14c389fe82314a36da82733940ff",
-     "bytes": 28038
+     "sha256": "017eef523ae01bd97e23c046c59696182af76cae8d07eac59b38b745a9e97728",
+     "bytes": 28130
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
@@ -8251,8 +8231,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "f468e98c620db038286a11b052cabaf7e24c802932bfdd92e12f9e12e878cc3d",
-     "bytes": 46064
+     "sha256": "52e9891e63874c4af67a88b00186d8371651ddf7dc621ffbea21300ae8e7968c",
+     "bytes": 46094
     },
     "public/battle/shared/fx.js": {
      "src": "r4/play/shared/fx.js",
@@ -8286,8 +8266,8 @@
     },
     "public/battle/vendor/broadcast/media.js": {
      "src": "r4/play/vendor/broadcast/media.js",
-     "sha256": "6a8a6614e595c1a93c0aac2451fd4f2cde30096eebb893694c0a8d216de62027",
-     "bytes": 103053
+     "sha256": "2d2ab33600277cadaf75d1968cc2f304fcf8bc33d6c60e455144e6a1d8e61c83",
+     "bytes": 103057
     },
     "public/battle/vendor/broadcast/stage.css": {
      "src": "r4/play/vendor/broadcast/stage.css",
@@ -10089,15 +10069,10 @@
      "sha256": "8a55c2e479e1dc470a49b0e66f35847a1633c16e49fb1f286dfaf0240fd59a85",
      "bytes": 2789490
     },
-    "public/battle/r3/media/elo/card-elo-hub.png": {
-     "src": "r3/battle/media/elo/card-elo-hub.png",
-     "sha256": "277caab3daa84ecd99e150519328510519ea637eabad9ae174b455723f972dd9",
-     "bytes": 87425
-    },
     "public/battle/r3/media/elo/llms-txt.png": {
      "src": "r3/battle/media/elo/llms-txt.png",
-     "sha256": "464e19a35c3403d2a99737e71650fa08428dbd7994c4e21db51405866e5bf9b9",
-     "bytes": 222389
+     "sha256": "c9b5c4465024a63c7fa28fc1f6327f6bc014e42726a70b8d66625e0487429fae",
+     "bytes": 175875
     },
     "public/battle/r3/media/glyphfield/gf-system.mp4": {
      "src": "r3/battle/media/glyphfield/gf-system.mp4",
@@ -10188,11 +10163,6 @@
      "src": "r3/battle/media/relay/relay-social@2x.png",
      "sha256": "e2d76cf817db3ca4ada5d1500ebdfcb7c1ef2cb27302770c1fd8e24ff79c36e1",
      "bytes": 219387
-    },
-    "public/battle/r3/media/turboslide/ts-hero-agents-repo.webp": {
-     "src": "r3/battle/media/turboslide/ts-hero-agents-repo.webp",
-     "sha256": "7561ca0a30f7610a8d1ad86bf3620468ea1a5ef50b8765f131b21c26ce3c768f",
-     "bytes": 72496
     },
     "public/battle/r3/media/turboslide/ts-patterns.mp4": {
      "src": "r3/battle/media/turboslide/ts-patterns.mp4",
@@ -10541,8 +10511,8 @@
     },
     "public/battle/r3/media-moves/elo/mcp-server.webp": {
      "src": "r3/battle/media-moves/elo/mcp-server.webp",
-     "sha256": "1aabd488d422b8c184bf72aafbd9a5317a89a8cd9e651f0c34c721db71f097dd",
-     "bytes": 173020
+     "sha256": "547b70f9dbe30c01bb1c1fc88ee3b2a86f9d9a8addb9b60d9762be6da4c44bef",
+     "bytes": 181956
     },
     "public/battle/r3/media-moves/glyphfield/agent-api.webp": {
      "src": "r3/battle/media-moves/glyphfield/agent-api.webp",

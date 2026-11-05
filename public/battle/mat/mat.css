@@ -263,7 +263,7 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 /* ============================================================ phones: the rival above, you below, the console a 2x2 */
 @media (max-width: 719px) {
   .rail { padding: 0 8px 4px; }
-  .mark { display: none; }
+  .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .rail-keys { width: 100%; justify-content: space-between; gap: 6px; }
   .seg .key { min-width: 64px; }
   #replay { display: none; }

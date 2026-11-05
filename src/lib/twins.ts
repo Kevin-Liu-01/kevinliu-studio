@@ -1,7 +1,7 @@
 // The Markdown twin of every page. The .md endpoints, llms.txt, llms-full.txt and each page's Machine view print
 // from these functions, so what an agent reads is what a person sees, in the same order.
 import { fighters, rules, battleRoster, whatOf, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, DESCRIPTION, SOCIAL, EMAIL, PREVIOUS } from './site';
+import { SITE, NAME, BIO, ABOUT, DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
 
 const ring = rules.ring as string[];
 export const cardPath = (f: Fighter) => `/cards/${f.id}`;
@@ -75,12 +75,14 @@ Play: ${SITE}/battle (Mat) or ${SITE}/battle/arena (Arena). The address takes \`
 `;
 }
 
+const runMd = (r: Run) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
+
 export function aboutMd() {
   return `# About ${NAME}
 
-${BIO}
+${ABOUT.map((runs) => runs.map(runMd).join('')).join('\n\n')}
 
-This site shows ${fighters.length} of his projects as collectible cards. Every number on a card has a receipt from the project's repository.
+This site shows ${fighters.length} of the projects as collectible cards. Every number on a card has a receipt from the project's repository.
 
 ## Projects
 
@@ -104,7 +106,7 @@ Every page has a Markdown twin: add .md to its path, or send \`Accept: text/mark
 ## Pages
 
 - [Cards](${SITE}/index.md): all ${fighters.length} cards in one table
-- [About](${SITE}/about.md): who ${NAME} is and where to find him
+- [About](${SITE}/about.md): ${NAME}'s bio, projects and contact links
 - [Battle](${SITE}/battle.md): the rules of the card battle
 - [Every card in full](${SITE}/llms-full.txt)
 
@@ -126,6 +128,6 @@ export const TWINS: Record<string, () => string> = {
   '/': homeMd,
   '/about': aboutMd,
   '/battle': battleMd,
-  '/battle/arena': battleMd,
+  '/battle/arena': battleMd, // the same rules; the Arena only changes the floor
   ...Object.fromEntries(fighters.map((f) => [cardPath(f), () => cardMd(f)])),
 };

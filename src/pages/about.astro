@@ -2,10 +2,11 @@
 import Base from '../layouts/Base.astro';
 import { fighters, whatOf } from '../lib/cards';
 import { cardPath } from '../lib/twins';
-import { SITE, NAME, BIO, SOCIAL, EMAIL, PREVIOUS, person } from '../lib/site';
+import { SITE, NAME, BIO, ABOUT, SOCIAL, EMAIL, person } from '../lib/site';
+const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
 const jsonld = [
   { '@type': 'ProfilePage', '@id': `${SITE}/about#page`, url: `${SITE}/about`, name: `About ${NAME}`, mainEntity: { '@id': person['@id'] } },
-  person,
+  { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } },
   { '@type': 'BreadcrumbList', itemListElement: [
     { '@type': 'ListItem', position: 1, name: NAME, item: `${SITE}/` },
     { '@type': 'ListItem', position: 2, name: 'About', item: `${SITE}/about` },
@@ -15,15 +16,13 @@ const jsonld = [
 <Base seo={{ title: 'About', description: BIO, path: '/about', type: 'profile', jsonld }}>
   <main class="prose" id="main">
     <h1>About {NAME}</h1>
-    <p class="lede">{BIO}</p>
+    {ABOUT.map((runs, i) => (
+      <p class={i === 0 ? 'lede' : undefined}>{runs.map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</p>
+    ))}
+    <p>Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p>
     <h2>Projects</h2>
     <ul>
       {fighters.map((f) => <li><a href={cardPath(f)}>{f.title}</a>. {whatOf(f)}</li>)}
-    </ul>
-    <h2>Elsewhere</h2>
-    <ul>
-      {SOCIAL.map((s) => <li><a href={s.url} rel="me">{s.name}</a></li>)}
-      <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
     </ul>
   </main>
 </Base>

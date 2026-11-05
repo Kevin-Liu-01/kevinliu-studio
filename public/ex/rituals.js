@@ -323,7 +323,7 @@
         if (VT.test(html)) return true;
         for (const m of html.matchAll(/<link\b[^>]*rel=["']?stylesheet[^>]*>/gi)) {
           const href = (m[0].match(/href=["']?([^"' >]+)/i) || [])[1];
-          if (href && VT.test(await text(new URL(href, url)))) return true;
+          if (href && VT.test(await text(new URL(href, new URL((html.match(/<base\b[^>]*href=["']?([^"' >]+)/i) || [])[1] || '', url))))) return true;
         }
         return false;
       }).then((v) => { accepts = v; }, () => { accepts = null; });
@@ -818,7 +818,7 @@
       const dealt = Array.isArray(o.ids) && o.ids.length && o.ids.every((id) => G.cards[id]) ? o.ids.slice(0, G.SIZE) : null;
       if (RM()) {
         const ids = dealt || G.draw();
-        if (!ids) return;
+        if (!ids) return; snd('pack.reveal', { cost: Math.min(4, cost(ids.at(-1))) });
         ids.forEach((id) => G.add(id, { silent: true }));
         G.wells.you.forEach((w) => $('.hold', w).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 }));
         say(`Pack: ${and(ids.map(titleOf))}`);

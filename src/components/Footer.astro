@@ -6,5 +6,6 @@ import { SOCIAL, EMAIL, PREVIOUS } from '../lib/site';
     {SOCIAL.map((s) => <a href={s.url} rel="me">{s.name}</a>)}
     <a href={`mailto:${EMAIL}`}>Email</a>
     <a href="/llms.txt">llms.txt</a>
+    <button type="button" class="tomachine" data-mode-set="machine" aria-pressed="false">Machine</button>
   </nav>
 </footer>

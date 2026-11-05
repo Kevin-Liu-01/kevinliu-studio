@@ -18,17 +18,22 @@ To change a card's words or numbers, change the rounds (r4/ex `copy/overrides.js
 
 `src/lib/site.ts` holds the name, the bio, the social links, the email and the previous site's address.
 
-Open for Kevin:
-- The bio line. The site uses the line already public on the previous site's `llms.txt`. The Personal Website's owner
-  notes list two other candidates ("Design engineer, San Francisco" and "Princeton CS '28").
-- The email `hello@kevinliu.biz`. kevinliu.biz has auto-renew off (2026-10-08), so this address lapses with it.
+Decided by Kevin on 2026-11-05:
+- `/about` prints Kevin's own bio (`ABOUT`), first person, word for word. It names General Translation, so the employer
+  appears on `/about`, its twin and the llms files, and the Person JSON-LD carries `worksFor` only on `/about`.
+- `BIO` is one third-person line from the same facts with no employer. Metadata, JSON-LD and the other twins use it.
+- The email is `hello@kevinliu.studio`. kevinliu.studio has no MX record yet, so the address receives nothing until
+  Kevin sets up mail or forwarding for the domain.
+- Analytics stay Vercel Web Analytics and Speed Insights only. No PostHog.
 
 ## Rules the content keeps
 
 - Nothing from the franchise the cards are inspired by: no names, marks, fonts, energy icons or trainer sprites.
   The scan in `scripts/sync.mjs` and `scripts/verify-build.mjs` fails on the names.
-- No real people's names or photos. Agent Pets' figures carry no names in any text.
-- General Translation appears only on the Atlas card and its records.
+- No real people's names or photos. Agent Pets' figures carry no names in any text. The Turboslide hero capture with
+  a photographer's credit stays out (docs/sync.md).
+- General Translation appears only on the Atlas card and its records, and in Kevin's own bio on `/about`. Two round
+  captures that showed it are dropped or painted out by the sync (docs/sync.md).
 - OMMC participants are minors: nothing here requests or links the OMMC portal's participant routes.
 - The Personal Website's `public/media/art/`, `public/media/curation/` (GPS-tagged) and
   `public/media/portfoliomon/trainers/` never come here. The guard fails any image with GPS metadata.

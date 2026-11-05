@@ -611,7 +611,7 @@ ${pin ? `<p class="pin">${pin}</p>` : ''}${[f.credit, ((media || {})[f.id] || {}
 <aside class="sheet">
 <div class="sheet-head"><p class="disc"></p><button type="button" class="press icon close" aria-label="Close" aria-keyshortcuts="Escape">${icon('close')}</button></div>
 <div class="sheet-body"></div>
-<div class="acts">${addButton()}<a class="press visit" target="_blank" rel="noopener" href="#">${icon('visit')}<span>Visit</span></a></div>
+<div class="acts">${addButton()}<a class="press visit" target="_blank" rel="noopener">${icon('visit')}<span>Visit</span></a></div>
 </aside>
 </div>`;
   }

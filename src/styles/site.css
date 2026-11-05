@@ -40,8 +40,14 @@ header.top #sound[aria-pressed='true'] .off { display: none; }
 /* ---------- footer: one line of where else Kevin is ---------- */
 .foot { padding: 32px var(--g) calc(var(--dock) + 40px); }
 .foot nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; }
-.foot a { display: inline-grid; place-items: center; min-height: 44px; padding: 0 10px; font: 500 14px/20px var(--site); color: var(--ink-2); text-decoration: none; }
-@media (hover: hover) { .foot a:hover { color: var(--ink-1); } }
+.foot :is(a, button) { display: inline-grid; place-items: center; min-height: 44px; padding: 0 10px; font: 500 14px/20px var(--site); color: var(--ink-2); text-decoration: none; }
+@media (hover: hover) { .foot :is(a, button):hover { color: var(--ink-1); } }
+.foot button { border: 0; background: none; cursor: pointer; }
+/* the header's Human and Machine switch hides on phones; the footer keeps the way in */
+.foot .tomachine { display: none; }
+@media (max-width: 639px) { .foot .tomachine { display: inline-grid; } }
+/* focus scrolling keeps a focused control clear of the fixed Pick Three dock */
+html:has(.dock) { scroll-padding-bottom: calc(var(--dock) + 24px); }
 html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 
 /* ---------- a card's own page: the card at full size on its own colour, its sheet beside it ---------- */

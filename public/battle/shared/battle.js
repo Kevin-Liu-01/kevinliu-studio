@@ -19,7 +19,7 @@ function layoutOf(name) {
   })]).then(([Layout]) => Layout);
   return loaded[name];
 }
-const TITLES = { mat: 'Card Mat', arena: 'Arena' };
+const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };
 const K = window.bcKit;
 const sd = window.showdown;
 const { runtime, engine } = sd;

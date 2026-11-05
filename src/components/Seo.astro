@@ -12,8 +12,9 @@ interface Props {
   type?: 'website' | 'profile' | 'article';
   jsonld?: object[];
   twin?: string | null; // the Markdown twin's path
+  noindex?: boolean; // the 404 page: no canonical, kept out of the index
 }
-const { title, description, path, og = 'home', imageAlt, type = 'website', jsonld = [], twin = path === '/' ? '/index.md' : `${path}.md` } = Astro.props;
+const { title, description, path, og = 'home', imageAlt, type = 'website', jsonld = [], noindex = false, twin = path === '/' ? '/index.md' : `${path}.md` } = Astro.props;
 const url = abs(path);
 const image = `${SITE}/og/${og}.jpg`;
 const video = `${SITE}/og/${og}.mp4`;
@@ -22,8 +23,8 @@ const ld = jsonld.length ? JSON.stringify(jsonld.length === 1 ? { '@context': 'h
 ---
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={url} />
-<meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1" />
+{!noindex && <link rel="canonical" href={url} />}
+<meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-video-preview:-1'} />
 <meta name="author" content={NAME} />
 {twin && <link rel="alternate" type="text/markdown" href={twin} title="Markdown" />}
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
@@ -32,7 +33,7 @@ const ld = jsonld.length ? JSON.stringify(jsonld.length === 1 ? { '@context': 'h
 <meta property="og:locale" content="en_US" />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={url} />
+{!noindex && <meta property="og:url" content={url} />}
 <meta property="og:image" content={image} />
 <meta property="og:image:type" content="image/jpeg" />
 <meta property="og:image:width" content="1200" />

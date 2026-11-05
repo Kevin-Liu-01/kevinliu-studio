@@ -12,6 +12,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
+import { MEDIA, hasLocation } from './location.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS = process.env.ROUNDS ?? path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
@@ -28,7 +30,15 @@ const rel = (from, f) => path.relative(from, f).split(path.sep).join('/');
 const IMG = /\.(webp|avif|png|jpg|jpeg|svg|mp4|webm)$/i;
 const SKIP = /(^|\/)(src|\.work|tools|shots|study|before|harness)\//;
 const pick = (re) => (list) => list.filter((f) => re.test(f) && !SKIP.test(f));
-const only = (...names) => (list) => names.filter((n) => list.includes(n));
+// a named file the round no longer has stops the sync instead of quietly leaving the site
+const only = (...names) => (list) => {
+  const missing = names.filter((n) => !list.includes(n));
+  if (missing.length) throw new Error(`missing named files: ${missing.join(', ')}`);
+  return names;
+};
+// round captures that show text the site may not ship: the Elo sign-in placeholder names General Translation, and the
+// Turboslide hero prints a photographer's credit. The battle's media manifest points those cards elsewhere (TRANSFORMS).
+const DROP = new Set(['media/elo/card-elo-hub.png', 'media/turboslide/ts-hero-agents-repo.webp']);
 
 const EX = `${ROUNDS}/r4/ex`;
 const CARD_MEDIA = /^media\/[\w-]+\/(pop(@2x|@0\.5x|@0\.25x)?\.webp|cast\.webp|logo\.(svg|webp)|set@2x\.webp|glow(@2x)?\.webp|face@2x\.webp)$/;
@@ -55,7 +65,7 @@ const STAGES = {
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^media\//.test(f) && !/(proof\.png|@3x\.)/.test(f) && !SKIP.test(f) && /\.(webp|png|json)$/.test(f)) },
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^assets\/maps\/[\w.-]+\.webp$/.test(f)) },
     { from: `${ROUNDS}/r4/play`, to: 'vendor/battle', files: only('mat/index.html') },
-    { from: `${ROUNDS}/r3/battle`, to: 'public/battle/r3', files: (l) => l.filter((f) => /^(broadcast\/media|media|media-moves)\//.test(f) && !SKIP.test(f) && (IMG.test(f) || /^broadcast\/media\/.*\.json$/.test(f))) },
+    { from: `${ROUNDS}/r3/battle`, to: 'public/battle/r3', files: (l) => l.filter((f) => /^(broadcast\/media|media|media-moves)\//.test(f) && !SKIP.test(f) && !DROP.has(f) && (IMG.test(f) || /^broadcast\/media\/.*\.json$/.test(f))) },
     { from: `${ROUNDS}/r3/cards`, to: 'public/battle/gallery', files: (l) => l.filter((f) => /^(posters|grounds|media)\//.test(f) && !SKIP.test(f) && IMG.test(f)) },
   ],
 };
@@ -64,7 +74,8 @@ function soundFiles(list) {
   const out = ['sound.js', 'boot.gallery.js', 'manifest.gallery.json', 'manifest.battle.json'];
   for (const m of ['manifest.gallery.json', 'manifest.battle.json']) {
     const man = JSON.parse(fs.readFileSync(`${ROUNDS}/r4/sound/${m}`, 'utf8'));
-    for (const c of Object.values(man.cues)) for (const f of c.files) for (const ext of [man.formats.primary, man.formats.fallback]) out.push(`out/${f}.${ext}`);
+    // the gallery room theme never plays here (the boot transform removes its only call), so its files stay behind
+    for (const [id, c] of Object.entries(man.cues)) if (!id.startsWith('mus.gallery')) for (const f of c.files) for (const ext of [man.formats.primary, man.formats.fallback]) out.push(`out/${f}.${ext}`);
   }
   const set = [...new Set(out)];
   const missing = set.filter((f) => !list.includes(f));
@@ -83,6 +94,13 @@ function patch(file, text, pairs) {
   }
   return text;
 }
+// the same anchor in `n` places, each replaced
+function everyOf(file, text, find, replace, n) {
+  const got = text.split(find).length - 1;
+  if (got !== n) throw new Error(`${file}: anchor found ${got} times, expected ${n}:\n  ${find.slice(0, 120)}`);
+  return text.split(find).join(replace);
+}
+const HIDE = '  .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }';
 const after = (add) => (find) => find + add;
 const before = (add) => (find) => add + find;
 // r4/sound INTEGRATION.md section 2, the gallery's hooks, as written for the merge run. The player is reached only
@@ -94,11 +112,30 @@ const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.
 const TRANSFORMS = {
   // the battle page lives at /battle and /battle/arena here, and returns to the cards at /
   'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
+    // the layout switch renames the tab; it keeps this site's page titles instead
+    ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
     ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
   ]),
-  // the battle's media manifest carries the rounds' gate notes, which the page never shows; ship them empty
-  'public/battle/vendor/broadcast/media.js': (t) => t.replace(/"gates":\[(?:"(?:[^"\\]|\\.)*",?)*\]/g, '"gates":[]'),
+  // the battle's media manifest: the rounds' gate notes ship empty (the page never shows them), the two dropped
+  // captures give way to clean ones from the same project, and the Prototemplate loop points at the clip that exists
+  'public/battle/vendor/broadcast/media.js': (t) => {
+    const keys = t.split('"gates":').length - 1;
+    let n = 0;
+    t = t.replace(/"gates":\[(?:"(?:[^"\\]|\\.)*",?)*\]/g, () => (n++, '"gates":[]'));
+    if (!keys || n !== keys) throw new Error(`media.js: emptied ${n} of ${keys} gate lists`);
+    return patch('media.js', t, [
+      ['"card":{"src":"media/elo/card-elo-hub.png","kind":"image","w":2880,"h":1800}', '"card":{"src":"media-moves/elo/blind-pair.webp","kind":"image","w":1920,"h":1080}'],
+      ['"card":{"src":"media/turboslide/ts-hero-agents-repo.webp","kind":"image","w":2560,"h":1280}', '"card":{"src":"media/turboslide/ts-same-actions.webp","kind":"image","w":2564,"h":1178}'],
+      ['"src":"media/prototemplate/pt-every-sentence.mp4"', '"src":"media-moves/prototemplate/every-sentence.mp4"'],
+    ]);
+  },
+  // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
+  // accessibility tree
+  'public/battle/mat/mat.css': (t) => patch('mat.css', t, [['  .mark { display: none; }', HIDE]]),
+  'public/battle/arena/arena.css': (t) => everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2),
+  // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
+  'public/ex/markup.js': (t) => patch('markup.js', t, [['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">']]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
@@ -123,6 +160,10 @@ const TRANSFORMS = {
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
+    // the view-transition probe reads the battle page's stylesheets against that page's own <base>
+    ["if (href && VT.test(await text(new URL(href, url)))) return true;", "if (href && VT.test(await text(new URL(href, new URL((html.match(/<base\\b[^>]*href=[\"']?([^\"' >]+)/i) || [])[1] || '', url))))) return true;"],
+    // a reduced-motion pack adds its cards at once; it still answers with the reveal (INTEGRATION.md section 2)
+    ["const ids = dealt || G.draw();\n        if (!ids) return;", after(" snd('pack.reveal', { cost: Math.min(4, cost(ids.at(-1))) });")],
     ["T.kind = 'deal';", before("{ const sh = SND()?.schedule(SND().dealCues()); const fin = T.finish; T.finish = () => { sh?.cancel(40); fin.call(T); }; } ")],
     ["T.kind = 'entry';", before("SND()?.schedule(SND().entryCues()); SND()?.music(null, { fadeMs: 600 }); ")],
     ["st.P = ghostPack();", after(" snd('pack.grab', { pan: pan(packEl) });")],
@@ -134,6 +175,21 @@ const TRANSFORMS = {
     ["function step(id) {\n      while (I.jobs.length) I.jobs.shift()();", after(" snd('card.step');")],
     ["if (!I.shown) { finish(); return; }\n      I.jobs = [];", after(" snd('card.close');")],
   ]),
+};
+
+// Binary edits, the same contract for images: the Elo API captures end in a Lifecycle paragraph that names General
+// Translation's email domain. Its heading and two lines (rows 760 to 830 of 900, white ground) are painted out; the
+// battle's own crop of that capture (rows 463 to 747) is untouched.
+const paintOut = (top, bottom) => async (buf) => {
+  const img = sharp(buf), { width, height, format } = await img.metadata();
+  if (width !== 1440 || height !== 900) throw new Error(`Elo capture is ${width}x${height}, expected 1440x900; recheck the painted rows`);
+  const box = await sharp({ create: { width, height: bottom - top, channels: 3, background: '#ffffff' } }).png().toBuffer();
+  const out = img.composite([{ input: box, top, left: 0 }]);
+  return format === 'webp' ? out.webp({ lossless: true }).toBuffer() : out.png().toBuffer();
+};
+const BINARY = {
+  'public/battle/r3/media/elo/llms-txt.png': paintOut(760, 830),
+  'public/battle/r3/media-moves/elo/mcp-server.webp': paintOut(760, 830),
 };
 
 // ---------- the scan ----------
@@ -157,64 +213,59 @@ function scan(dest, buf) {
   } else {
     const t = buf.toString('latin1');
     if (/xi-api-key/i.test(t) || /sk_[a-f0-9]{40,}/.test(t)) hits.push('key shape in binary');
-    if (/\.(jpe?g|webp|png|avif)$/i.test(dest) && hasGps(buf)) hits.push('GPS in image metadata');
+    const where = MEDIA.test(dest) && hasLocation(buf);
+    if (where) hits.push(where);
   }
   return hits;
 }
-// EXIF GPS: the GPS IFD pointer tag 0x8825 inside an Exif block, in either byte order
-function hasGps(buf) {
-  const at = buf.indexOf('Exif\0\0');
-  if (at < 0) return false;
-  const tiff = buf.subarray(at + 6, at + 6 + 65536);
-  return tiff.includes(Buffer.from([0x88, 0x25])) || tiff.includes(Buffer.from([0x25, 0x88]));
-}
 
-// ---------- run ----------
-const lock = { rounds: ROUNDS, head: gitHead(ROUNDS), synced: new Date().toISOString(), stages: {} };
+// ---------- run: read, transform and scan everything first; write only when nothing failed ----------
+const LOCK = path.join(REPO, 'sync.lock.json');
+const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : { stages: {} };
+const lock = { rounds: ROUNDS, head: gitHead(ROUNDS), synced: null, stages: {} };
 const problems = [];
-let changed = 0, removed = 0;
+const writes = [], removes = [];
 for (const [stage, rules] of Object.entries(STAGES)) {
   const files = {};
-  const owned = new Set();
   for (const r of rules) {
-    if (!fs.existsSync(r.from)) { problems.push(`${stage}: missing source ${r.from}`); continue; }
-    const listing = walk(r.from).map((f) => rel(r.from, f));
-    for (const f of r.files(listing)) {
+    const where = `${stage}: ${rel(ROUNDS, r.from) || '.'} -> ${r.to}`;
+    if (!fs.existsSync(r.from)) { problems.push(`${where}: missing source`); continue; }
+    let picked;
+    try { picked = r.files(walk(r.from).map((f) => rel(r.from, f))); } catch (e) { problems.push(`${where}: ${e.message}`); continue; }
+    if (!picked.length) { problems.push(`${where}: matched no files`); continue; }
+    for (const f of picked) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
       let buf = fs.readFileSync(src);
-      if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));
+      try {
+        if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));
+        if (BINARY[dest]) buf = await BINARY[dest](buf);
+      } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
       for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);
-      const abs = path.join(REPO, dest);
-      owned.add(abs);
       files[dest] = { src: rel(ROUNDS, src), sha256: sha(buf), bytes: buf.length };
-      const same = fs.existsSync(abs) && sha(fs.readFileSync(abs)) === files[dest].sha256;
-      if (same) continue;
-      changed++;
-      if (!CHECK) { fs.mkdirSync(path.dirname(abs), { recursive: true }); fs.writeFileSync(`${abs}.tmp`, buf); fs.renameSync(`${abs}.tmp`, abs); }
+      const abs = path.join(REPO, dest);
+      if (!(fs.existsSync(abs) && sha(fs.readFileSync(abs)) === files[dest].sha256)) writes.push([abs, buf]);
     }
   }
-  // files a stage no longer ships leave the repo
-  for (const root of new Set(rules.map((r) => path.join(REPO, r.to)))) {
-    for (const abs of walk(root)) {
-      if (owned.has(abs) || abs.endsWith('.tmp')) continue;
-      removed++;
-      if (!CHECK) fs.rmSync(abs);
-    }
-  }
+  // a file this stage shipped last time and no longer ships leaves the repo; nothing the sync never wrote is touched
+  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB`);
 if (problems.length) {
-  console.error(`\n${problems.length} problem(s); nothing is committed until they are fixed at the source or by a transform:`);
+  console.error(`\n${problems.length} problem(s); nothing was written. Fix them at the source or by a transform:`);
   for (const p of problems.slice(0, 40)) console.error(`  ${p}`);
   process.exit(1);
 }
 if (CHECK) {
-  console.log(changed || removed ? `stale: ${changed} changed, ${removed} to remove (run pnpm sync)` : 'in sync');
-  process.exit(changed || removed ? 1 : 0);
+  console.log(writes.length || removes.length ? `stale: ${writes.length} changed, ${removes.length} to remove (run pnpm sync)` : 'in sync');
+  process.exit(writes.length || removes.length ? 1 : 0);
 }
-fs.writeFileSync(path.join(REPO, 'sync.lock.json'), JSON.stringify(lock, null, 1) + '\n');
-console.log(`synced from ${lock.head ?? 'a folder without git'}: ${changed} written, ${removed} removed`);
+for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: true }); fs.writeFileSync(`${abs}.tmp`, buf); fs.renameSync(`${abs}.tmp`, abs); }
+for (const abs of removes) fs.rmSync(abs);
+// the lock changes only when the shipped files or the rounds' commit do, so a no-op rerun leaves no diff
+const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head;
+if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
+console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
 function gitHead(dir) {
   try { return execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim() + (execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }).trim() ? ' (with uncommitted changes)' : ''); } catch { return null; }
