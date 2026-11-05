@@ -1,0 +1,65 @@
+{
+ "wide": "broadcast/media/podium/wide.webp",
+ "portrait": "broadcast/media/podium/portrait.webp",
+ "poster": "broadcast/media/podium/poster.webp",
+ "loop": "broadcast/media/podium/loop.mp4",
+ "hero": "broadcast/media/podium/wide.webp",
+ "object": "broadcast/media/podium/object.webp",
+ "objectSize": [
+  1400,
+  806
+ ],
+ "emblem": "broadcast/media/podium/emblem.webp",
+ "groundImage": "broadcast/media/podium/ground.webp",
+ "palette": [
+  "#09090b",
+  "#f4f4f5",
+  "#f97316"
+ ],
+ "source": "The home page's own sphere canvas (https://podium-ashy.vercel.app/, every other element hidden) stepped on a virtual clock, with the Team Status Matrix field (TeamStatusMatrixModal.tsx getStatusColor, 12 columns, zinc panel) laid over it, each dot's review count easing up and back on a four-second period; 150 frames at 1920 x 1200, looped over 120 with 30 dissolved (tools/loop.py). 24 GET requests, 0 /api/, 0 non-GET. Emblem: the gold trophy favicon (r4/ex media/podium/src/logo-favicon-cutout.png, Podium@1181bde41 public/favicon.ico keyed). Ground: r4/ex grounds/podium.webp.",
+ "files": [
+  {
+   "file": "broadcast/media/podium/wide.webp",
+   "sha256": "b83b6bd2ae3fb699f88a409939f2b851ca152d0385aa726bbff20fcc1edb21ba",
+   "w": 2400,
+   "h": 1500
+  },
+  {
+   "file": "broadcast/media/podium/portrait.webp",
+   "sha256": "aefdb8edd0ce6a1d663ca0f9b431d2ddca1e5fe3fbdc523932f4c7097f7c126d",
+   "w": 786,
+   "h": 1100
+  },
+  {
+   "file": "broadcast/media/podium/poster.webp",
+   "sha256": "c32287db08d03973205c10e356e73a26d4e23f172080848b98844224cee57344",
+   "w": 1920,
+   "h": 1200
+  },
+  {
+   "file": "broadcast/media/podium/loop.mp4",
+   "sha256": "cd0ef998da580b390c71f3bb6b9508c8e31512b098daa9eaf73d6861a811286a",
+   "w": 1536,
+   "h": 960,
+   "frames": 120
+  },
+  {
+   "file": "broadcast/media/podium/object.webp",
+   "sha256": "b06cb64b46109ab6899779b6912e500684932f9b9f7c292596e48130b11fe32e",
+   "w": 1400,
+   "h": 806,
+   "from": "r4/ex media/podium/pop@2x.webp (trimmed to alpha, 1400 px)"
+  },
+  {
+   "file": "broadcast/media/podium/emblem.webp",
+   "sha256": "9e249f49da2c737778b61045c008426241a890a37708edf9a405690c20e38233",
+   "from": "r4/ex/media/podium/src/logo-favicon-cutout.png"
+  },
+  {
+   "file": "broadcast/media/podium/ground.webp",
+   "sha256": "424736112767a6bc332dd57f0d69c33cfcfe83cdb709808ca86bcdbbc6baf101",
+   "from": "r4/ex grounds/podium.webp (1600 px)",
+   "tone": "mean relative luminance 0.622 -> 0.060 (linear light x 0.097, .work/battle-r4/next-b/tools/tone-ground.py; the original in retired/grounds/)"
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "wide": "broadcast/media/sigil-ui/wide.webp",
+ "hero": "broadcast/media/sigil-ui/wide.webp",
+ "portrait": "broadcast/media/sigil-ui/portrait.webp",
+ "object": "broadcast/media/sigil-ui/object.webp",
+ "objectSize": [
+  1344,
+  1116
+ ],
+ "loop": "broadcast/media/sigil-ui/loop.mp4",
+ "poster": "broadcast/media/sigil-ui/poster.webp",
+ "emblem": "broadcast/media/sigil-ui/emblem.svg",
+ "groundImage": "broadcast/media/sigil-ui/ground.webp",
+ "palette": [
+  "#07070a",
+  "#f4f4f8",
+  "#6366f1"
+ ]
+}

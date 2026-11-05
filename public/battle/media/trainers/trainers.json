@@ -1,0 +1,1327 @@
+{
+ "note": "Eight original leaders for the Arena and the Mat, cleaned from the Landing showdown sheets. Each atlas is a 4x4 grid of 96x128 native cells in pose order; cells[i] is pose i's opaque bounds [x, y, w, h] and anchors[i] its foot point [x, y] (the ground line under the feet), both in native atlas px; the grid cell itself is [i % 4 * 96, floor(i / 4) * 128, 96, 128]. Draw a pose so its anchor lands on the world foot point; the @3x atlas is the same pixels at 3x (multiply every number by 3). Both are indexed PNGs: index 0 is clear, every other pixel is opaque and one of the trainer's palette colours. sourceCrops[i] is the same pose in the Landing sheet in the Landing crop convention [x, y, w, h, footX, groundY] (1 px padding, groundY = lowest row + 1), with the true foot. Rear poses 12 to 15 face upper right; never mirror a front pose.",
+ "atlas": {
+  "grid": [4, 4],
+  "cell": [96, 128],
+  "size": [384, 512],
+  "x3": [1152, 1536],
+  "anchor": [48, 116],
+  "gutter": 1,
+  "scale": 0.3
+ },
+ "poses": [
+  "idle-front",
+  "breath",
+  "talk-closed",
+  "talk-open",
+  "command",
+  "windup",
+  "release",
+  "hit",
+  "victory",
+  "defeat",
+  "special",
+  "special-return",
+  "rear-idle",
+  "rear-command",
+  "rear-windup",
+  "rear-throw"
+ ],
+ "rear": [12, 13, 14, 15],
+ "method": {
+  "build": ".work/sprites/build.py, then .work/sprites/write-json.py; proof by .work/sprites/proof.py; grid search by .work/sprites/grid-receipt.py",
+  "grid": "No sheet carries a native pixel grid: the comb strength of edge energy peaks at 0.0132 to 0.0832 on the sheets (plus a 2.0 px resampling alias), against 0.5085 to 0.5564 for a real grid (the native atlas enlarged back to the sheet). The native size is therefore the contract: 96x128 cells, figures at scale 0.30 of the sheet (the Landing's measured scale; the largest uniform scale that fits every pose on the shared anchor with a 1 px gutter is 0.2435).",
+  "segment": "components of alpha >= 40, each assigned to the pose whose Landing crop holds most of it; specks under 12 source px dropped",
+  "clean": "at source resolution: alpha under 40 removed (haze); semi-transparent pixels (alpha under 224) that are not dark ink removed (the yellow and white matte); dark semi-transparent pixels kept as the outline; edge pixels farther than 0.08 OKLab from the trainer's 64-colour core palette eroded until none is left",
+  "resample": "4x4 samples per native px; alpha = coverage >= 0.5; colour line aware (ink where dark samples fill half the footprint, a quarter at a local maximum across the line, or an eighth on the silhouette edge, else the opaque material), then requantized to the palette",
+  "anchor": "foot = middle of the main figure's lowest 51 source rows, ground = its lowest row + 1; placed at (48, 116) unless a wide gesture would cross the gutter, then shifted the least whole px (listed in receipt.shifted)"
+ },
+ "grid": {
+  "noor": {
+   "sheetComb": [0.0132, 0.0328],
+   "sheetCombAt2828": [0.0045, 0.0032],
+   "nyquistAlias": [0.0253],
+   "realGridComb": [0.5208, 0.5564]
+  },
+  "bram": {
+   "sheetComb": [0.0166, 0.0261],
+   "sheetCombAt2828": [0.0065, 0.0078],
+   "nyquistAlias": [0.0648],
+   "realGridComb": [0.529, 0.5484]
+  },
+  "mae": {
+   "sheetComb": [0.0177, 0.0259],
+   "sheetCombAt2828": [0.0057, 0.0024],
+   "nyquistAlias": [0.0603, 0.0263],
+   "realGridComb": [0.5085, 0.5466]
+  },
+  "sol": {
+   "sheetComb": [0.0132, 0.0274],
+   "sheetCombAt2828": [0.0018, 0.0028],
+   "nyquistAlias": [],
+   "realGridComb": [0.5328, 0.5389]
+  },
+  "tavi": {
+   "sheetComb": [0.0178, 0.0382],
+   "sheetCombAt2828": [0.0059, 0.0043],
+   "nyquistAlias": [0.0498],
+   "realGridComb": [0.524, 0.5538]
+  },
+  "iona": {
+   "sheetComb": [0.0173, 0.0387],
+   "sheetCombAt2828": [0.005, 0.0097],
+   "nyquistAlias": [0.0399],
+   "realGridComb": [0.5365, 0.5483]
+  },
+  "oren": {
+   "sheetComb": [0.0141, 0.0217],
+   "sheetCombAt2828": [0.0053, 0.0092],
+   "nyquistAlias": [0.0226],
+   "realGridComb": [0.5117, 0.5454]
+  },
+  "coda": {
+   "sheetComb": [0.0257, 0.0832],
+   "sheetCombAt2828": [0.0018, 0.0277],
+   "nyquistAlias": [],
+   "realGridComb": [0.5099, 0.5501]
+  }
+ },
+ "receipt": {
+  "noor": {
+   "before": {
+    "haze_px": 186471,
+    "semi_px": 40325,
+    "semi_light_px": 12802,
+    "fringe_ring_px": 1439,
+    "off_palette_edge_px": 151
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 27523,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0109,
+    "quant_shift_p99": 0.0373,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 6541
+   },
+   "matteRemovedPx": 12802,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 0,
+    "px": 0
+   },
+   "orphans": [],
+   "shifted": {
+    "6": 6
+   },
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.9901, 0.9957],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "6": [28, 0]
+    }
+   }
+  },
+  "bram": {
+   "before": {
+    "haze_px": 120656,
+    "semi_px": 31880,
+    "semi_light_px": 4047,
+    "fringe_ring_px": 235,
+    "off_palette_edge_px": 25
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 27832,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0103,
+    "quant_shift_p99": 0.0319,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 5346
+   },
+   "matteRemovedPx": 4039,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 3,
+    "px": 9
+   },
+   "orphans": [],
+   "shifted": {
+    "15": -11
+   },
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.992, 1.0003],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "15": [-44, 0]
+    }
+   }
+  },
+  "mae": {
+   "before": {
+    "haze_px": 146371,
+    "semi_px": 33026,
+    "semi_light_px": 7885,
+    "fringe_ring_px": 346,
+    "off_palette_edge_px": 32
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 25141,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.009,
+    "quant_shift_p99": 0.0313,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 5364
+   },
+   "matteRemovedPx": 7885,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 0,
+    "px": 0
+   },
+   "orphans": [],
+   "shifted": {},
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.9934, 0.999],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {}
+   }
+  },
+  "sol": {
+   "before": {
+    "haze_px": 136180,
+    "semi_px": 34276,
+    "semi_light_px": 5940,
+    "fringe_ring_px": 404,
+    "off_palette_edge_px": 20
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 28335,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.01,
+    "quant_shift_p99": 0.0304,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 5751
+   },
+   "matteRemovedPx": 5940,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 1,
+    "px": 1
+   },
+   "orphans": [],
+   "shifted": {
+    "6": 7
+   },
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.9904, 0.9978],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "6": [31, 0],
+     "10": [3, 0]
+    }
+   }
+  },
+  "tavi": {
+   "before": {
+    "haze_px": 187508,
+    "semi_px": 41990,
+    "semi_light_px": 18186,
+    "fringe_ring_px": 800,
+    "off_palette_edge_px": 43
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 23802,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0152,
+    "quant_shift_p99": 0.0446,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 6256
+   },
+   "matteRemovedPx": 18179,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 3,
+    "px": 9
+   },
+   "orphans": [],
+   "shifted": {},
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 1, 2],
+   "areaKept": [0.9866, 0.9945],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "6": [7, -1]
+    }
+   }
+  },
+  "iona": {
+   "before": {
+    "haze_px": 184044,
+    "semi_px": 46782,
+    "semi_light_px": 4257,
+    "fringe_ring_px": 259,
+    "off_palette_edge_px": 25
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 42523,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0101,
+    "quant_shift_p99": 0.0404,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 7238
+   },
+   "matteRemovedPx": 4249,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 8,
+    "px": 10
+   },
+   "orphans": [],
+   "shifted": {},
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.9901, 1.0007],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "13": [-3, 0],
+     "15": [2, 0]
+    }
+   }
+  },
+  "oren": {
+   "before": {
+    "haze_px": 132099,
+    "semi_px": 31790,
+    "semi_light_px": 5670,
+    "fringe_ring_px": 759,
+    "off_palette_edge_px": 27
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 26119,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0104,
+    "quant_shift_p99": 0.0353,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 5299
+   },
+   "matteRemovedPx": 5669,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 2,
+    "px": 2
+   },
+   "orphans": [],
+   "shifted": {
+    "6": 2
+   },
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2],
+   "areaKept": [0.9909, 1.0012],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "6": [12, 0]
+    }
+   }
+  },
+  "coda": {
+   "before": {
+    "haze_px": 187154,
+    "semi_px": 37607,
+    "semi_light_px": 4654,
+    "fringe_ring_px": 84,
+    "off_palette_edge_px": 152
+   },
+   "afterSource": {
+    "haze_px": 0,
+    "semi_light_px": 0,
+    "semi_ink_px": 32930,
+    "fringe_ring_px": 0,
+    "off_palette_edge_px": 0
+   },
+   "native": {
+    "semi_px": 0,
+    "off_palette_px": 0,
+    "off_palette_edge_prequant_px": 0,
+    "filled_px": 0,
+    "quant_shift_p50": 0.0062,
+    "quant_shift_p99": 0.0263,
+    "fringe_ring_px_3x": 0,
+    "off_palette_edge_px": 0,
+    "edge_px": 6121
+   },
+   "matteRemovedPx": 4648,
+   "offPaletteErodedPx": 0,
+   "erosionPasses": 0,
+   "specks": {
+    "n": 5,
+    "px": 29
+   },
+   "orphans": [],
+   "shifted": {
+    "6": 11
+   },
+   "complete": true,
+   "parts": [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 2],
+   "areaKept": [0.991, 1.0012],
+   "landingCrops": {
+    "cutPx": {},
+    "foreignPx": {},
+    "anchorDelta": {
+     "6": [42, 0]
+    }
+   }
+  }
+ },
+ "trainers": [
+  {
+   "id": "noor",
+   "name": "Noor",
+   "title": "Interface Cartographer",
+   "accent": "#8195f1",
+   "bio": "Maps the space between an idea and the hand that will use it.",
+   "quotes": {
+    "enter": "Every path begins with a clear choice.",
+    "command": "There. Follow that opening.",
+    "hit": "A useful correction.",
+    "victory": "The path holds.",
+    "defeat": "A blind spot. I will redraw it.",
+    "special": "Bring the whole system into focus."
+   },
+   "breath": 2.8,
+   "atlas": {
+    "native": "media/trainers/noor.png",
+    "x3": "media/trainers/noor@3x.png",
+    "sha256": "3434a51fc2f7830b34d11c5b28fdbceef773e37b9bb4777bfaeb206622157e6d",
+    "sha256x3": "2d542f690619e39ecbbc98e168d87ac360935aae1cf5be9e53483665f2610f09",
+    "colors": 64
+   },
+   "cells": [
+    [22, 16, 46, 100],
+    [116, 17, 47, 99],
+    [207, 17, 63, 99],
+    [303, 17, 64, 99],
+    [19, 148, 64, 96],
+    [113, 149, 59, 95],
+    [193, 151, 82, 93],
+    [299, 157, 60, 87],
+    [19, 265, 55, 107],
+    [118, 304, 52, 68],
+    [209, 272, 65, 100],
+    [316, 272, 52, 100],
+    [27, 404, 54, 96],
+    [108, 404, 68, 96],
+    [203, 402, 66, 98],
+    [301, 407, 74, 93]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [246, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [53, 22, 157, 334, 141, 355],
+    [315, 22, 161, 333, 410, 354],
+    [575, 23, 213, 333, 686, 355],
+    [849, 23, 213, 333, 959, 355],
+    [39, 382, 217, 323, 138, 704],
+    [314, 384, 201, 320, 419, 703],
+    [514, 389, 274, 314, 692, 702],
+    [845, 409, 203, 292, 970, 700],
+    [61, 706, 184, 360, 157, 1065],
+    [329, 827, 174, 227, 416, 1053],
+    [582, 725, 217, 337, 684, 1061],
+    [870, 725, 177, 335, 938, 1059],
+    [53, 1090, 182, 321, 124, 1410],
+    [301, 1087, 230, 322, 422, 1408],
+    [556, 1080, 224, 330, 682, 1409],
+    [819, 1096, 249, 313, 938, 1408]
+   ],
+   "palette": ["#302e38", "#eedcc4", "#4e346a", "#bcada0", "#ad724e", "#0b070b", "#394371", "#dac9b5", "#271712", "#1e254d", "#272733", "#643f2a", "#3a4e99", "#354890", "#131126", "#000000", "#35221a", "#553973", "#695c5a", "#744931", "#b2a298", "#664459", "#1a1820", "#010004", "#443f42", "#7c6f68", "#2f3f81", "#d0c0af", "#452d5f", "#544c4b", "#d3a958", "#925b3d", "#a3948a", "#21202a", "#d2b791", "#050208", "#9d6443", "#faf0d5", "#2a2e4a", "#6c517b", "#c0954a", "#38363f", "#e7c26a", "#8f817a", "#e5d4bd", "#232e62", "#323756", "#301f42", "#563523", "#5e4177", "#1b1a36", "#8a6630", "#0b0a19", "#160f11", "#825336", "#293671", "#f7e09a", "#a56b48", "#3c2751", "#452b1f", "#ac803f", "#543651", "#7a6488", "#c7b7a9"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "8aea4924f320518e88afb4e114653ea0d354b1bac63117adcd800fef86737ff6",
+    "subject": "Noor, an original Interface Cartographer. Appearance: dark-skinned adult woman, blunt violet bob haircut, short cobalt wrap jacket with crisp ivory trim, ivory wide-leg trousers, dark ankle boots, folding brass caliper held in right hand. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/noor.png",
+    "sheetSha256": "8627a64450e25d252f119a8ac48baf361e51310da13b26bbff8e89a505bf4e96",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "bram",
+   "name": "Bram",
+   "title": "Runtime Mechanic",
+   "accent": "#55bbaa",
+   "bio": "Keeps difficult systems running with patient hands and well-worn tools.",
+   "quotes": {
+    "enter": "Right. Let us see what holds.",
+    "command": "Steady hands. Full power.",
+    "hit": "Still running.",
+    "victory": "Good work. Nothing came loose.",
+    "defeat": "We have a repair to make.",
+    "special": "All lines clear. Open the throttle."
+   },
+   "breath": 3.2,
+   "atlas": {
+    "native": "media/trainers/bram.png",
+    "x3": "media/trainers/bram@3x.png",
+    "sha256": "9f687ecc07e96640390c5c296947d3490e257dc8b3a7102b221515018163e93e",
+    "sha256x3": "903f561162b6596b44925b809416ad31af2a2727dc1f7b054778ac0117bb63c6",
+    "colors": 64
+   },
+   "cells": [
+    [24, 18, 52, 98],
+    [120, 20, 52, 96],
+    [206, 18, 65, 98],
+    [301, 18, 65, 98],
+    [11, 149, 71, 95],
+    [111, 151, 65, 93],
+    [198, 151, 71, 93],
+    [308, 157, 59, 87],
+    [21, 270, 59, 102],
+    [115, 304, 57, 68],
+    [208, 274, 57, 98],
+    [309, 272, 52, 100],
+    [20, 403, 53, 97],
+    [113, 407, 66, 93],
+    [210, 409, 60, 91],
+    [299, 408, 84, 92]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [240, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [325, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [58, 21, 177, 327, 140, 347],
+    [321, 23, 175, 324, 402, 346],
+    [561, 20, 220, 327, 678, 346],
+    [832, 20, 219, 328, 950, 347],
+    [20, 375, 238, 320, 145, 694],
+    [310, 381, 220, 314, 422, 694],
+    [553, 381, 240, 314, 696, 694],
+    [859, 402, 202, 293, 955, 694],
+    [53, 710, 199, 341, 145, 1050],
+    [332, 811, 192, 229, 428, 1039],
+    [590, 723, 191, 330, 698, 1052],
+    [862, 723, 177, 334, 954, 1056],
+    [51, 1070, 176, 324, 144, 1393],
+    [307, 1079, 220, 311, 411, 1389],
+    [562, 1081, 206, 305, 665, 1385],
+    [794, 1086, 281, 310, 881, 1395]
+   ],
+   "palette": ["#59514c", "#f1b48f", "#3c3837", "#363028", "#000001", "#4c5d56", "#4e6f6c", "#1f2a2e", "#b77353", "#876044", "#6a877d", "#8c4028", "#6f6f60", "#a3664a", "#110e10", "#d28e68", "#b5a388", "#49433c", "#443e3d", "#232020", "#6c3021", "#504948", "#f0ddc0", "#f5c19b", "#381a14", "#2e2c29", "#3a5556", "#456867", "#c7805c", "#1c1b1c", "#9b492c", "#4f493b", "#c4beaf", "#473328", "#de9c75", "#587f79", "#73533b", "#534d3e", "#645d56", "#040305", "#3a362e", "#bb5c30", "#947859", "#161516", "#2a2623", "#8c9286", "#5d291d", "#353231", "#4c2119", "#523b2c", "#423d32", "#e9aa84", "#537874", "#3e5f60", "#aa5230", "#344b4c", "#624632", "#2d4143", "#0a080b", "#372821", "#7c3925", "#25363a", "#271311", "#ae8b63"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "12207398a876412c101c88d630b42da0ee01b4f7d77a232e6eefcf6cf1f7642a",
+    "subject": "Bram, an original Runtime Mechanic. Appearance: broad older man with copper curls and short beard, teal work vest over charcoal shirt, orange tool roll on belt, dark work trousers, heavy boots, cable-spool wrist device. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/bram.png",
+    "sheetSha256": "8aae231afe6e67eeeab204e6aeaf3e8dbb257a2ae709e719e892b6c26a6977db",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "mae",
+   "name": "Mae",
+   "title": "Archive Keeper",
+   "accent": "#c49ad6",
+   "bio": "Remembers the overlooked detail that changes the next chapter.",
+   "quotes": {
+    "enter": "There is always something worth keeping.",
+    "command": "Turn to the next page.",
+    "hit": "I shall make a note of that.",
+    "victory": "A fine addition to the record.",
+    "defeat": "Keep this lesson, too.",
+    "special": "Let the whole archive answer."
+   },
+   "breath": 3.05,
+   "atlas": {
+    "native": "media/trainers/mae.png",
+    "x3": "media/trainers/mae@3x.png",
+    "sha256": "ece5622e8377dc3e7a764444a3254d699bb234ae30b7cfe822ddd341079d55ef",
+    "sha256x3": "22c8508871eec3539560b3e4f98adbb1b015b98b30575dc61264e36330d37dc4",
+    "colors": 64
+   },
+   "cells": [
+    [24, 16, 47, 100],
+    [118, 16, 48, 100],
+    [211, 16, 56, 100],
+    [307, 16, 56, 100],
+    [14, 143, 64, 101],
+    [116, 145, 57, 99],
+    [196, 145, 74, 99],
+    [307, 146, 53, 98],
+    [21, 268, 55, 104],
+    [116, 296, 56, 76],
+    [215, 273, 52, 99],
+    [311, 272, 49, 100],
+    [18, 404, 50, 96],
+    [116, 406, 58, 94],
+    [211, 403, 53, 97],
+    [305, 407, 70, 93]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [240, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [80, 15, 158, 337, 162, 351],
+    [329, 15, 162, 337, 416, 351],
+    [577, 15, 191, 337, 675, 351],
+    [844, 15, 190, 337, 942, 351],
+    [43, 370, 217, 339, 160, 708],
+    [326, 375, 194, 334, 420, 708],
+    [553, 379, 249, 331, 702, 709],
+    [861, 382, 178, 329, 958, 710],
+    [62, 722, 187, 349, 153, 1070],
+    [334, 807, 189, 256, 428, 1062],
+    [605, 737, 176, 333, 691, 1069],
+    [876, 737, 167, 335, 961, 1071],
+    [63, 1096, 169, 323, 164, 1418],
+    [321, 1100, 198, 317, 416, 1416],
+    [579, 1093, 180, 325, 676, 1417],
+    [839, 1104, 236, 312, 944, 1415]
+   ],
+   "palette": ["#160b10", "#a69084", "#4e312c", "#875852", "#d1c7c5", "#321f26", "#704837", "#573441", "#ae7659", "#cabcb4", "#88797f", "#ce9270", "#5f3846", "#3e262e", "#6c5f67", "#efc2a4", "#6f444a", "#712826", "#5f5259", "#38222a", "#000000", "#80543c", "#22151a", "#7b4e4d", "#c07b5c", "#7a6c72", "#442b28", "#988278", "#4f303b", "#28191f", "#c08967", "#f4ebe0", "#d89f7d", "#882f26", "#b3a7a8", "#622221", "#653c4a", "#59382e", "#3b231f", "#d7c6b6", "#0a0307", "#50434a", "#ded1c6", "#b59f91", "#4f1a19", "#c1b1aa", "#936150", "#432932", "#968a91", "#a5999e", "#040003", "#1d1015", "#643f34", "#37272c", "#ebb899", "#331616", "#2d1c23", "#e8dbcf", "#e2ac8a", "#0f070b", "#bf513c", "#9e6c54", "#492c37", "#a23829"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "b004066f74e6db92a939a32cf8a7a5c003d2f306de494ced32c308a426cc39bb",
+    "subject": "Mae, an original Archive Keeper. Appearance: older East Asian woman, silver braid, aubergine long cardigan, warm cream tunic, dark plum trousers and neat shoes, compact book satchel, vermilion-clasp ledger held in left hand. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/mae.png",
+    "sheetSha256": "35f12cd46a3bf15fc9f68b136d8e04f77c4bb21c00e898fc87c4eb1a1780345e",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "sol",
+   "name": "Sol",
+   "title": "World Surveyor",
+   "accent": "#a7c16b",
+   "bio": "Finds new routes through unfamiliar terrain, one careful step at a time.",
+   "quotes": {
+    "enter": "New ground. Good company.",
+    "command": "Take the high path.",
+    "hit": "Loose footing. Keep moving.",
+    "victory": "Another route home.",
+    "defeat": "We know the terrain better now.",
+    "special": "Beyond the edge of the map."
+   },
+   "breath": 2.95,
+   "atlas": {
+    "native": "media/trainers/sol.png",
+    "x3": "media/trainers/sol@3x.png",
+    "sha256": "a895550c17097b021f040ac1fc74793085109e5a2e43c7d1a357b28fae492392",
+    "sha256x3": "e40503ae5c3ba14f268fa777402a1e10eba556ef315ea49f8e6f1bb5b1e3f0e2",
+    "colors": 64
+   },
+   "cells": [
+    [23, 13, 46, 103],
+    [118, 13, 49, 103],
+    [213, 13, 63, 103],
+    [310, 13, 62, 103],
+    [8, 144, 68, 100],
+    [115, 145, 61, 99],
+    [193, 145, 86, 99],
+    [311, 152, 54, 92],
+    [17, 264, 59, 108],
+    [115, 310, 54, 62],
+    [195, 270, 83, 102],
+    [318, 270, 47, 102],
+    [22, 399, 47, 101],
+    [114, 401, 69, 99],
+    [209, 401, 59, 99],
+    [297, 401, 78, 99]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [247, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [72, 9, 157, 345, 158, 353],
+    [328, 9, 163, 345, 415, 353],
+    [590, 9, 211, 345, 679, 353],
+    [869, 9, 212, 345, 958, 353],
+    [18, 372, 228, 336, 152, 707],
+    [321, 375, 207, 334, 419, 708],
+    [534, 378, 289, 331, 715, 708],
+    [871, 398, 184, 309, 956, 706],
+    [59, 714, 199, 360, 164, 1073],
+    [332, 861, 183, 208, 430, 1068],
+    [535, 733, 279, 342, 688, 1074],
+    [886, 733, 158, 342, 946, 1074],
+    [59, 1086, 159, 337, 148, 1422],
+    [291, 1089, 236, 334, 394, 1422],
+    [577, 1090, 197, 332, 680, 1421],
+    [818, 1090, 263, 332, 948, 1421]
+   ],
+   "palette": ["#2e2826", "#eadfd0", "#99683b", "#564c3f", "#c98c60", "#3e393a", "#d4c098", "#382f2e", "#74734d", "#cfac7a", "#4a3e38", "#696b44", "#000000", "#0c0808", "#1c1614", "#b88059", "#be8943", "#7f5635", "#251f1e", "#030102", "#593e2c", "#b39e89", "#cbb7a3", "#484a35", "#645848", "#44352f", "#505238", "#333429", "#85745e", "#a8724f", "#bcac92", "#414333", "#a39079", "#e1d2b0", "#b88440", "#120d0c", "#646640", "#95816a", "#2d1b14", "#4f3524", "#3a3c2f", "#a79e70", "#a57338", "#d9c6b3", "#f6eeda", "#3b3435", "#57593a", "#e3d5c7", "#736550", "#171210", "#724e31", "#8c5f3a", "#332b2a", "#b07c3d", "#5e603d", "#d09668", "#66462e", "#070405", "#7d8155", "#422b1e", "#2a2422", "#908d60", "#36241a", "#201b19"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "9f681b1885e22ee3ea942fd5d6469b19bd94a4443153c90131d6070d665abf9b",
+    "subject": "Sol, an original World Surveyor. Appearance: tan androgynous adult explorer, cropped dark hair, moss-green asymmetric rain cape, ochre shorts over dark leggings, white high boots, folding tile-map in right hand. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/sol.png",
+    "sheetSha256": "75bb8c4b22af9a1fe199dc0671c77f342d557d7835c3d7b247770245e3d29ca9",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "tavi",
+   "name": "Tavi",
+   "title": "Shader Painter",
+   "accent": "#f4939f",
+   "bio": "Treats light as a material and every battle as an unfinished composition.",
+   "quotes": {
+    "enter": "Let us give this place some color.",
+    "command": "One bold stroke.",
+    "hit": "Interesting contrast.",
+    "victory": "That is the finishing touch.",
+    "defeat": "Not finished. Just a new layer.",
+    "special": "Catch every color in the light."
+   },
+   "breath": 2.65,
+   "atlas": {
+    "native": "media/trainers/tavi.png",
+    "x3": "media/trainers/tavi@3x.png",
+    "sha256": "16ad97201366dd48eb838d2c4d238fdb58df19ba20119464fadc88b46fa98ab7",
+    "sha256x3": "e21541e049e4210c31478b4e9b75ccadac9e548db07ce302261cd5ce14531b9f",
+    "colors": 64
+   },
+   "cells": [
+    [25, 15, 53, 101],
+    [121, 15, 52, 101],
+    [205, 15, 66, 101],
+    [301, 15, 65, 101],
+    [9, 145, 72, 99],
+    [114, 148, 62, 96],
+    [194, 152, 83, 92],
+    [309, 150, 60, 94],
+    [23, 274, 57, 98],
+    [118, 309, 52, 63],
+    [203, 275, 70, 97],
+    [307, 275, 58, 97],
+    [19, 399, 51, 101],
+    [110, 402, 74, 98],
+    [206, 404, 63, 96],
+    [303, 407, 75, 93]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [240, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [65, 13, 177, 339, 142, 351],
+    [337, 13, 176, 339, 414, 351],
+    [572, 15, 222, 338, 690, 352],
+    [843, 15, 221, 338, 961, 352],
+    [14, 375, 245, 331, 147, 705],
+    [323, 384, 208, 322, 423, 705],
+    [543, 395, 282, 310, 700, 704],
+    [866, 392, 201, 317, 956, 708],
+    [60, 726, 191, 330, 144, 1055],
+    [333, 826, 177, 212, 422, 1037],
+    [569, 729, 238, 326, 694, 1054],
+    [870, 729, 197, 326, 968, 1054],
+    [40, 1074, 173, 338, 138, 1411],
+    [284, 1076, 252, 330, 400, 1405],
+    [565, 1089, 212, 321, 678, 1409],
+    [821, 1100, 255, 313, 934, 1412]
+   ],
+   "palette": ["#99bfb8", "#3c4163", "#398591", "#49a0aa", "#a14d4b", "#eb7f6e", "#a69683", "#09060a", "#faf3e5", "#2d1a19", "#d1645b", "#e26b5f", "#2d2f46", "#dd9191", "#e1c9b0", "#613f33", "#e9ac95", "#313539", "#402623", "#a97151", "#754c3b", "#85a99d", "#010002", "#6b635d", "#e4b675", "#357582", "#55302b", "#f4e8d5", "#b2544f", "#8d4443", "#c35a53", "#1c1c26", "#b5675f", "#c3b09a", "#42949f", "#584f52", "#c28971", "#4daab5", "#857363", "#f0c86e", "#b0a596", "#5db5bb", "#aa8b9e", "#343853", "#c3d2c7", "#6c90ae", "#e9d9c3", "#252837", "#d3786e", "#81968e", "#98644c", "#355565", "#151014", "#ee9375", "#c89d7c", "#3b4244", "#707f7b", "#326672", "#cdbeaa", "#978574", "#e97467", "#753837", "#875844", "#b47a59"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "c4f24a426188580874ebe77f1110f5a1e0aee93e7cc91910f9483ceb86633ce9",
+    "subject": "Tavi, an original Shader Painter. Appearance: brown-skinned young adult man with high turquoise hair tuft, coral cropped artist smock, indigo loose trousers, cream sneakers, translucent fan-shaped paint palette. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/tavi.png",
+    "sheetSha256": "91c2640b86541eb814c773a12ecbc6cf0dfaa61158be5650e27d9dee73e3ed1b",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "iona",
+   "name": "Iona",
+   "title": "Signal Conductor",
+   "accent": "#d3df75",
+   "bio": "Hears a clean rhythm inside the noise and brings a team into time.",
+   "quotes": {
+    "enter": "I can hear the opening.",
+    "command": "On my signal. Now.",
+    "hit": "Keep the rhythm.",
+    "victory": "Every part in time.",
+    "defeat": "We lost the beat, not the music.",
+    "special": "Every channel. One clear signal."
+   },
+   "breath": 2.9,
+   "atlas": {
+    "native": "media/trainers/iona.png",
+    "x3": "media/trainers/iona@3x.png",
+    "sha256": "90f59089f3f45c36961bc26484d174239e7195f98761c70ffd584d8445b74202",
+    "sha256x3": "3cf0b1028ec780fa4f76e0f522531d223e409d2b87d3949dc8e75cfd6a96cdf8",
+    "colors": 64
+   },
+   "cells": [
+    [19, 17, 62, 99],
+    [115, 17, 58, 99],
+    [211, 17, 58, 99],
+    [306, 16, 60, 100],
+    [4, 147, 80, 97],
+    [113, 147, 65, 97],
+    [197, 147, 82, 97],
+    [308, 150, 56, 94],
+    [16, 267, 70, 105],
+    [110, 303, 68, 69],
+    [212, 272, 64, 100],
+    [311, 274, 55, 98],
+    [17, 402, 61, 98],
+    [113, 402, 77, 98],
+    [207, 402, 64, 98],
+    [291, 401, 84, 99]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [240, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [59, 20, 208, 332, 158, 351],
+    [311, 20, 196, 332, 408, 351],
+    [576, 20, 197, 334, 674, 353],
+    [845, 20, 201, 335, 946, 354],
+    [21, 377, 268, 325, 169, 701],
+    [314, 379, 220, 324, 420, 702],
+    [544, 377, 276, 327, 688, 703],
+    [866, 386, 187, 315, 960, 700],
+    [44, 717, 234, 353, 151, 1069],
+    [314, 804, 232, 233, 430, 1036],
+    [588, 734, 217, 334, 684, 1067],
+    [856, 738, 184, 330, 940, 1067],
+    [34, 1087, 207, 328, 140, 1414],
+    [296, 1087, 255, 331, 398, 1417],
+    [554, 1088, 216, 330, 666, 1417],
+    [784, 1088, 283, 330, 936, 1417]
+   ],
+   "palette": ["#637037", "#252228", "#9db350", "#fae2d3", "#d1e872", "#37323e", "#27281c", "#61507a", "#691721", "#49395e", "#350c11", "#7f5756", "#19151b", "#42452c", "#d44d4d", "#403d40", "#a72d39", "#897f8f", "#1f1c21", "#3c2f4d", "#29262e", "#b8d05b", "#526129", "#040206", "#504065", "#ebc0b1", "#2e2b32", "#6f4949", "#605c56", "#4e2a2b", "#7f953e", "#613a3c", "#6c627c", "#3a363d", "#801f2a", "#504b49", "#000001", "#443457", "#574570", "#d69285", "#271e31", "#878761", "#501018", "#a2706c", "#acc353", "#332840", "#757169", "#4a522b", "#a49c8f", "#c17f77", "#ba373f", "#8f6362", "#41394a", "#942631", "#70823b", "#574f62", "#f8d0c1", "#47424c", "#332f38", "#0a070c", "#363725", "#120e13", "#8ea346", "#daac9f"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "33b3d87e580d57fd0137e446c34c88987a12dfb438b93f3498dc7fb3ef6a99ea",
+    "subject": "Iona, an original Signal Conductor. Appearance: pale adult woman with vivid red undercut, black-violet fitted long coat, lime scarf, dark fitted trousers and boots, two slim antenna batons. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/iona.png",
+    "sheetSha256": "69e2b9abd46404041a0ea5270736447de9e551fb3eb1fe7580e9c9ac973f9649",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "oren",
+   "name": "Oren",
+   "title": "Field Researcher",
+   "accent": "#e9bd66",
+   "bio": "Collects evidence in the field and asks one more question before acting.",
+   "quotes": {
+    "enter": "Let us find out together.",
+    "command": "Try the angle we observed.",
+    "hit": "That tells us something.",
+    "victory": "The evidence is convincing.",
+    "defeat": "A result is still a result.",
+    "special": "Put the whole discovery to work."
+   },
+   "breath": 3.35,
+   "atlas": {
+    "native": "media/trainers/oren.png",
+    "x3": "media/trainers/oren@3x.png",
+    "sha256": "61474ea2df0bc869a05371ee2a09336c4521672ba2f1f7174e56f5dc9085521e",
+    "sha256x3": "e3832c05f48cd7f1e0d1a8ee7a847d4e2fbcb733f928f0922dab003c03f38f94",
+    "colors": 64
+   },
+   "cells": [
+    [29, 17, 45, 99],
+    [124, 18, 45, 98],
+    [208, 17, 59, 99],
+    [303, 17, 60, 99],
+    [10, 151, 65, 93],
+    [115, 149, 57, 95],
+    [194, 151, 78, 93],
+    [311, 156, 50, 88],
+    [24, 270, 48, 102],
+    [119, 306, 51, 66],
+    [209, 276, 52, 96],
+    [316, 276, 42, 96],
+    [20, 402, 48, 98],
+    [116, 403, 69, 97],
+    [211, 403, 58, 97],
+    [301, 404, 69, 96]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [242, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [73, 19, 151, 332, 136, 350],
+    [340, 22, 151, 329, 406, 350],
+    [571, 19, 199, 332, 679, 350],
+    [843, 19, 204, 332, 956, 350],
+    [21, 379, 222, 313, 150, 691],
+    [321, 374, 193, 319, 419, 692],
+    [546, 379, 265, 313, 708, 691],
+    [886, 396, 168, 296, 970, 691],
+    [68, 706, 162, 343, 148, 1048],
+    [341, 820, 173, 223, 428, 1042],
+    [593, 726, 176, 323, 698, 1048],
+    [885, 726, 141, 323, 952, 1048],
+    [62, 1068, 162, 329, 157, 1396],
+    [305, 1070, 233, 327, 399, 1396],
+    [581, 1068, 194, 326, 677, 1393],
+    [840, 1075, 231, 322, 956, 1396]
+   ],
+   "palette": ["#4d3224", "#d08b56", "#aa6b40", "#e0cdaf", "#0f0a0a", "#1f1c1b", "#6f4516", "#9e8a6f", "#8e5633", "#16100f", "#596261", "#000000", "#a2adb1", "#c5b39a", "#eee1c9", "#9e661b", "#1e1512", "#6b5744", "#362f2c", "#7a6755", "#030102", "#cc8f2a", "#434949", "#563217", "#b97c21", "#505858", "#b97748", "#3e3632", "#2f3535", "#8e5b1a", "#c6834f", "#483e39", "#814f30", "#d3bfa3", "#462c1d", "#7f5018", "#573928", "#b9a58b", "#262221", "#2c2a29", "#373c3d", "#bdced1", "#080506", "#ac721e", "#545e5d", "#69442d", "#2a1a12", "#8e7962", "#3c4343", "#9c6039", "#dbab64", "#aa9880", "#4a5050", "#f5f0de", "#613d26", "#8c8f91", "#e9d8bd", "#797676", "#d6945d", "#74492e", "#342117", "#3c271b", "#c48524", "#594739"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "527119cc706083d7090b5938bfb6eec0df99cfe8ec1c139299ebb695ad86f345",
+    "subject": "Oren, an original Field Researcher. Appearance: olive-skinned middle-aged man, curly salt-and-pepper hair, saffron utility vest, cream rolled sleeves, slate trousers, brown field boots, magnifier and specimen folio. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/oren.png",
+    "sheetSha256": "916b7b40056e8a03d2749f4a92a60ae2b52402963079b36954ca3511c79ec69d",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  },
+  {
+   "id": "coda",
+   "name": "Coda",
+   "title": "Machine Operator",
+   "accent": "#f07d78",
+   "bio": "Works at the red terminal where a small command can set a world in motion.",
+   "quotes": {
+    "enter": "Ready when you are.",
+    "command": "Commit the move.",
+    "hit": "Still here. Still responding.",
+    "victory": "Run complete. Save the good parts.",
+    "defeat": "Return to the prompt.",
+    "special": "One command. Everything in motion."
+   },
+   "breath": 3.15,
+   "atlas": {
+    "native": "media/trainers/coda.png",
+    "x3": "media/trainers/coda@3x.png",
+    "sha256": "de9e1530eccbe7e0c7e18f9fccb7adfca4177fd7a1ed3cda80de896f12f3caa8",
+    "sha256x3": "aa6c2b3daa2a5ffa78f1eabe3b5051cfc990748be3e4678d3bbf9ef33f2eba04",
+    "colors": 64
+   },
+   "cells": [
+    [27, 15, 42, 101],
+    [124, 15, 42, 101],
+    [209, 15, 53, 101],
+    [305, 15, 53, 101],
+    [8, 145, 65, 99],
+    [119, 145, 54, 99],
+    [194, 145, 83, 99],
+    [305, 148, 56, 96],
+    [21, 264, 51, 108],
+    [116, 301, 56, 71],
+    [214, 269, 54, 103],
+    [314, 268, 43, 104],
+    [25, 403, 43, 97],
+    [115, 402, 62, 98],
+    [212, 403, 50, 97],
+    [303, 402, 70, 98]
+   ],
+   "anchors": [
+    [48, 116],
+    [144, 116],
+    [240, 116],
+    [336, 116],
+    [48, 244],
+    [144, 244],
+    [251, 244],
+    [336, 244],
+    [48, 372],
+    [144, 372],
+    [240, 372],
+    [336, 372],
+    [48, 500],
+    [144, 500],
+    [240, 500],
+    [336, 500]
+   ],
+   "poses": [
+    "idle-front",
+    "breath",
+    "talk-closed",
+    "talk-open",
+    "command",
+    "windup",
+    "release",
+    "hit",
+    "victory",
+    "defeat",
+    "special",
+    "special-return",
+    "rear-idle",
+    "rear-command",
+    "rear-windup",
+    "rear-throw"
+   ],
+   "sourceCrops": [
+    [99, 16, 142, 338, 168, 353],
+    [355, 15, 141, 339, 423, 353],
+    [578, 15, 177, 339, 682, 353],
+    [855, 15, 177, 339, 959, 353],
+    [33, 370, 216, 331, 166, 700],
+    [327, 370, 182, 333, 411, 702],
+    [530, 370, 280, 331, 722, 700],
+    [868, 379, 189, 324, 974, 702],
+    [74, 712, 171, 361, 164, 1072],
+    [332, 825, 187, 238, 426, 1062],
+    [599, 723, 182, 348, 686, 1070],
+    [883, 723, 145, 350, 956, 1072],
+    [82, 1088, 145, 329, 158, 1416],
+    [320, 1087, 206, 330, 416, 1416],
+    [593, 1092, 168, 327, 688, 1418],
+    [832, 1093, 236, 330, 944, 1422]
+   ],
+   "palette": ["#45171b", "#37353a", "#f9f8f8", "#8c828c", "#8d262a", "#110e11", "#211f23", "#bab1b9", "#28272b", "#795144", "#000000", "#020102", "#a49ba4", "#762024", "#5b3831", "#651e22", "#100304", "#6b453a", "#8e6252", "#cdc5cb", "#290e10", "#c4bbc2", "#524e57", "#302e34", "#060305", "#1a171b", "#9d2a2d", "#ded7db", "#5d1c20", "#6e1f23", "#d6ced4", "#4c191d", "#7e757f", "#7e2227", "#020000", "#492c27", "#080608", "#afa7af", "#321013", "#988f98", "#252327", "#98282b", "#706972", "#200a0c", "#464047", "#ede9eb", "#151316", "#e5dfe2", "#323f51", "#39211f", "#862428", "#615c64", "#171d2f", "#531b1f", "#2c2b30", "#010002", "#170708", "#1e1c1f", "#080002", "#3c1417", "#0c0a0c", "#a52d30", "#94272b", "#855a4b"],
+   "provenance": {
+    "origin": "An original character made for the Landing showdown; its generation prompt forbids copying existing characters, logos or text.",
+    "method": "builtin image_gen",
+    "prompt": "explorations/worlds/landing/expansion-art-prompts.json",
+    "promptSha256": "468bcd0d26d4ad62f529e4a460d00687f5f90425dc20c6e743b593642465891d",
+    "subject": "Coda, an original Machine Operator. Appearance: dark-skinned androgynous adult with short white hair, red split-hem workcoat, black gloves and trousers, sturdy white-soled black boots, pale rectangular terminal cuff on left wrist. Keep the character striking and readable at small scale.",
+    "sheet": "explorations/worlds/landing/assets/trainers/coda.png",
+    "sheetSha256": "ddc0eb14678565e6f0e38e726dacc88dfb21d77e16c735753542721e280f900c",
+    "sheetSize": [1086, 1448],
+    "receipts": "explorations/worlds/landing/ART-RECEIPTS.json"
+   }
+  }
+ ]
+}

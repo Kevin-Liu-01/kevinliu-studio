@@ -1,0 +1,152 @@
+/* card.css, the ui lane's: the card itself, a print that casts shade and carries its world to the bleed.
+   Layers of a face, back to front: ground (poster, then live canvas) with its finish, subject, glare,
+   band tint, type, edge. Tiers by the card's own width (container queries), the back, the sleeve.
+   Loads after ui.css and before rituals.css. */
+
+/* ---------- the card ---------- */
+.card {
+  --r: max(3px, calc(var(--card) * 0.048));
+  position: relative; display: block; width: var(--card); aspect-ratio: 63 / 88; box-sizing: border-box;
+  container-type: inline-size; border-radius: var(--r); outline-offset: 3px;
+  cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: pan-y;
+  -webkit-touch-callout: none; /* a held card drags to the dock; it never opens the image menu */
+}
+.card:focus-visible, .card.is-focus { outline: 2px solid var(--ink-1); }
+.card:is(.mine, .theirs):is(:focus-visible, .is-focus) { outline-offset: round(calc(var(--slw) + 3px), 1px); }
+.body {
+  position: absolute; inset: 0; border-radius: inherit; transform-style: preserve-3d; will-change: transform;
+  box-shadow: var(--cast-rest);
+}
+.body::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--cast-lift);
+  opacity: 0; transition: opacity 150ms var(--ease); pointer-events: none;
+}
+.card.lift .body::before, .card.is-hover .body::before { opacity: 1; }
+.body { transition: scale 220ms var(--ease); }
+.card:active .body, .card.is-active .body { scale: 0.97; transition-duration: 90ms; }
+.face, .back {
+  position: absolute; inset: 0; border-radius: inherit; overflow: hidden;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.face { background: var(--paper); }
+.face::after { content: ''; position: absolute; inset: 0; z-index: 5; border-radius: inherit; box-shadow: var(--edge-print); pointer-events: none; }
+.poster, .ground { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ground { opacity: 0; }
+.art { position: absolute; z-index: 1; pointer-events: none; max-width: none; }
+.obj { left: var(--l); top: var(--t); width: var(--w); height: auto; }
+.win {
+  left: -1cqw; right: -1cqw; top: -1cqw; height: calc(70% + 1cqw); overflow: hidden; /* art.js PANEL: to the top bleed */
+  -webkit-mask: var(--mask-win) 0 0 / 100% 100% no-repeat; mask: var(--mask-win) 0 0 / 100% 100% no-repeat;
+}
+.win img { position: absolute; top: 0; left: var(--l); width: var(--w); height: 100%; max-width: none; }
+/* A picture made of cells (--cols x --rows, art.js FRAME cells) is drawn at a whole number of device px a cell, the
+   smallest that still covers the panel (98.78cqw tall: 70% of the face and the 1cqw bleed), on its x and its foot as
+   at rest (the sky gives way, never the ground the work stands on), so nearest sampling never drops or doubles a
+   cell: steps of 1 css px at 1x, half at 2x, a third at 3x. Under 120 px (T0, a well) a cell is under a device px,
+   so the picture keeps its rest fit and draws smooth. */
+@container (width >= 120px) {
+  .win img[data-pixel] { image-rendering: pixelated; }
+  .win img[data-pixel][style*="--rows"] {
+    --n: round(up, calc(98.78cqw / var(--rows)), 1px);
+    width: calc(var(--cols) * var(--n)); height: calc(var(--rows) * var(--n)); top: calc(100% - var(--rows) * var(--n));
+    left: clamp(calc(100% - var(--cols) * var(--n)), calc(50% - var(--x) * var(--cols) * var(--n)), 0px);
+  }
+}
+@media (resolution >= 2x) { .win img[data-pixel][style*="--rows"] { --n: round(up, calc(98.78cqw / var(--rows)), 0.5px); } }
+@media (resolution >= 3x) { .win img[data-pixel][style*="--rows"] { --n: round(up, calc(98.78cqw / var(--rows)), calc(1px / 3)); } }
+/* a printed window (data-print): the ground prints it through its own screen, so the image copy stays laid out
+   unseen (rituals.js reads its box). The canvas is the card's painted device size, one device px a cell, so nearest
+   sampling only absorbs the layer's sub-pixel offset; turned in 3D it is rastered at its own scale, where nearest
+   keeps every other cell, so a turned print draws smooth. The poster is only the no-script paint and the copies'
+   fallback, at one css px of its 252 a cell: it draws smooth at every scale. */
+.card[data-print] .face > .win { visibility: hidden; }
+@container (width >= 120px) { .card[data-print] .ground { image-rendering: pixelated; } }
+.card[data-print] .body[style*="transform"] .ground { image-rendering: auto; }
+.glarebox { position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: overlay; -webkit-mask: linear-gradient(#000 58%, transparent 70%); mask: linear-gradient(#000 58%, transparent 70%); }
+/* the sleeve's gloss: never under the band, so the type's contrast never moves. The masked box is the layer that
+   blends (overlay), inside the face's own group while the gloss shows (.lit, rituals.js gloss()), so the gloss
+   meets the print and black ink stays black; at rest the face is not isolated and draws as it first painted */
+.face.lit { isolation: isolate; }
+.glare {
+  position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; pointer-events: none;
+  background: radial-gradient(closest-side, oklch(100% 0 0 / 0.9), oklch(100% 0 0 / 0.35) 45%, oklch(100% 0 0 / 0) 100%);
+  opacity: 0; will-change: transform, opacity;
+}
+/* the band rises from the foot without a rule: the world's own paper, as opaque as contrast needs.
+   Its type sits on three rails 5cqw in (12 px on a 240 px card): the name's first letter and the stats'
+   first icon on the left one, the squares and the last numeral on the right one, and the name's
+   baseline and the squares' foot on the bottom one. Name and numerals are trimmed to cap height and
+   baseline, so the rails measure ink, not line boxes. */
+.band {
+  --fe: 15cqw;
+  position: absolute; z-index: 3; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; gap: 3cqw;
+  padding: var(--fe) 5cqw 5cqw;
+  background: linear-gradient(to bottom, rgb(var(--tint) / 0), rgb(var(--tint) / var(--ta)) var(--fe));
+  color: var(--ink);
+}
+.row { display: flex; align-items: last baseline; justify-content: space-between; gap: 3cqw; }
+.name { flex: 1 1 auto; min-width: 0; font: 700 16px/18px var(--sans); text-wrap: balance; overflow-wrap: break-word; text-box: trim-both cap alphabetic; }
+.cost { --sq: 8px; display: flex; gap: calc(var(--sq) * 0.45); flex: none; }
+.cost i { width: var(--sq); height: var(--sq); box-sizing: border-box; border-radius: calc(var(--sq) / 5); background: currentColor; border: 0 solid currentColor; }
+.card.nofit .cost i { background: transparent; border-width: max(1.5px, calc(var(--sq) * 0.18)); }
+.stats { display: none; grid-template-columns: repeat(4, auto); justify-content: space-between; }
+.stat { display: inline-flex; align-items: center; gap: 4px; }
+.stat .i { width: 16px; height: 16px; }
+.stat b { font: 700 15px/1 var(--sans); font-variant-numeric: tabular-nums; text-box: trim-both cap alphabetic; }
+/* T0: the work only, cropped toward its subject */
+@container (width < 120px) { .band { display: none; } .face > :not(.band) { scale: 1.3; transform-origin: 50% 40%; } }
+@container (width >= 300px) {
+  .name { font-size: 20px; line-height: 24px; }
+  .cost { --sq: 10px; }
+  .stats { display: grid; }
+}
+@container (width >= 480px) {
+  .name { font-size: 28px; line-height: 32px; }
+  .cost { --sq: 14px; }
+  .stat { gap: 6px; }
+  .stat .i { width: 20px; height: 20px; }
+  .stat b { font-size: 18px; }
+}
+/* the back, one for all 19: clay stock, the kl signature blind-embossed, a 6% Bayer tint */
+.back { transform: rotateY(180deg); background: var(--clay); box-shadow: inset 0 0 0 1px oklch(42% 0.035 70 / 0.14); }
+.back .tint {
+  position: absolute; inset: 5cqw; border-radius: 2cqw; background: var(--ink-1); opacity: 0.06;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h1v1H0zM2 0h1v1H2zM0 2h1v1H0zM2 2h1v1H2zM1 1h1v1H1zM3 1h1v1H3zM1 3h1v1H1zM3 3h1v1H3z'/%3E%3C/svg%3E") 0 0 / 2.4cqw 2.4cqw, radial-gradient(closest-side, #000 55%, transparent);
+  -webkit-mask-composite: source-in;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h1v1H0zM2 0h1v1H2zM0 2h1v1H0zM2 2h1v1H2zM1 1h1v1H1zM3 1h1v1H3zM1 3h1v1H1zM3 3h1v1H3z'/%3E%3C/svg%3E") 0 0 / 2.4cqw 2.4cqw, radial-gradient(closest-side, #000 55%, transparent);
+  mask-composite: intersect;
+}
+/* the kl is the icon set's glyph in the clay's own colour, lifted by the one light: the ink spans 0.486
+   of the card, as the mask it replaces did (20 of 24 units on 0.583) */
+.back .kl {
+  position: absolute; left: 20.85%; top: 50%; width: 58.3%; height: auto; aspect-ratio: 1; translate: 0 -50%;
+  color: var(--clay);
+  filter: drop-shadow(-0.4cqw -0.8cqw 0.5cqw var(--emb-hi)) drop-shadow(0.4cqw 0.8cqw 0.6cqw var(--emb-lo));
+}
+.card.flipped .body { transform: rotateY(180deg); }
+/* The sleeve: a rim of your ink round the trim (a rival wears theirs), parted from the print by a hairline of
+   the clay it sits on, so it reads on a dark card and a light one and never as the 2 px focus ring, which
+   stands 3 px off with clay between. Both are one spread, drawn as shadows of a layer on the trim, so
+   neither snaps to a device pixel apart from the other and no clay shows between rim and print. Both widths come
+   from the card's registered width, never cqw: written on .card, cqw resolves against the gallery, so the focus
+   ring and the lens band would stand off by the gallery's share. */
+.card { --slg: max(1px, calc(var(--card) * 0.005)); --slw: calc(var(--slg) + max(2px, calc(var(--card) * 0.016))); }
+.sleeve {
+  position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: 0 0 0 var(--slg) var(--clay), 0 0 0 var(--slw) var(--sleeve, var(--ink-1));
+  opacity: 0; transition: opacity 150ms var(--ease); pointer-events: none;
+  transform: translateZ(1px);
+}
+.card.mine .sleeve { opacity: 1; }
+.card.theirs .sleeve { opacity: 1; --sleeve: var(--rival); }
+
+/* forced colours: the squares keep their count and their fill (filled, or hollow when the card no longer
+   fits); your sleeve is Highlight and theirs the text colour */
+@media (forced-colors: active) {
+  .sleeve { inset: calc(-1 * var(--slw)); border: var(--slw) solid CanvasText; border-radius: calc(var(--r) + var(--slw)); }
+  .card.mine .sleeve { border-color: Highlight; }
+  .card.theirs .sleeve { border-color: CanvasText; }
+  .cost i { forced-color-adjust: none; background: CanvasText; }
+  .card.nofit .cost i { background: transparent; border: 1px solid CanvasText; }
+}

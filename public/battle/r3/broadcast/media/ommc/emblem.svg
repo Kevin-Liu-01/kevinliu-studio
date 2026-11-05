@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768" width="768" height="768">
+<title>OMMC cube, the faces of OMMC-Website public/favicon.png redrawn without the wordmark</title>
+<g stroke="#34070A" stroke-width="9" stroke-linejoin="round">
+<polygon fill="#AB3A42" points="70,210 384,35 697,210 384,381"/>
+<polygon fill="#761F25" points="70,210 384,381 384,734 70,558"/>
+<polygon fill="#4E0E13" points="384,381 697,210 697,558 384,734"/>
+</g>
+</svg>

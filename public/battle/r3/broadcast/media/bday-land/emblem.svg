@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- birthdayland mascot mark: the blob (DESIGN.md §9) wearing the Sticker Rule — white rim, ink outline, hard ink offset shadow. Simplified (no hat, no arms) so it still reads at 16px. -->
+  <defs>
+    <path id="body" d="M 32 11 C 48 11 54.8 25.4 55.4 37.4 C 55.9 45.8 52.5 52.4 44.5 53 L 19.5 53 C 11.5 52.4 8.1 45.8 8.6 37.4 C 9.2 25.4 16 11 32 11 Z"/>
+    <ellipse id="foot-l" cx="23" cy="52.5" rx="7" ry="3.5" transform="rotate(-8 23 52.5)"/>
+    <ellipse id="foot-r" cx="41" cy="52.5" rx="7" ry="3.5" transform="rotate(8 41 52.5)"/>
+  </defs>
+  <g transform="translate(-1.5 -2.5)" stroke-linejoin="round">
+    <!-- 1. hard ink offset shadow of the whole die-cut -->
+    <g transform="translate(3.5 3.5)" fill="#2B1D14" stroke="#2B1D14" stroke-width="10">
+      <use href="#foot-l"/><use href="#foot-r"/><use href="#body"/>
+    </g>
+    <!-- 2. sticker-white rim -->
+    <g fill="#FFFFFF" stroke="#FFFFFF" stroke-width="10">
+      <use href="#foot-l"/><use href="#foot-r"/><use href="#body"/>
+    </g>
+    <!-- 3. ink outline -->
+    <g fill="#2B1D14" stroke="#2B1D14" stroke-width="5">
+      <use href="#foot-l"/><use href="#foot-r"/><use href="#body"/>
+    </g>
+    <!-- 4. bubblegum fill; the body keeps its own ink line over the feet -->
+    <g fill="#FF5DA2">
+      <use href="#foot-l"/><use href="#foot-r"/>
+      <use href="#body" stroke="#2B1D14" stroke-width="5" paint-order="stroke"/>
+    </g>
+    <!-- face: eraser-pink cheeks, two dot eyes with a glint, marker smile -->
+    <g fill="#FFD6E0" opacity="0.55">
+      <circle cx="18" cy="37" r="3.4"/><circle cx="46" cy="37" r="3.4"/>
+    </g>
+    <g fill="#2B1D14">
+      <circle cx="23.5" cy="29.5" r="4.8"/><circle cx="40.5" cy="29.5" r="4.8"/>
+    </g>
+    <g fill="#FFFFFF">
+      <circle cx="21.8" cy="27.8" r="1.6"/><circle cx="38.8" cy="27.8" r="1.6"/>
+    </g>
+    <path d="M 25.5 39 Q 32 46 38.5 39" fill="none" stroke="#2B1D14" stroke-width="3.2" stroke-linecap="round"/>
+  </g>
+</svg>

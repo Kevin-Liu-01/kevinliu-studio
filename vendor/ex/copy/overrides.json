@@ -1,0 +1,1446 @@
+{
+  "about": "Card wording for the 26 cards, in the shape of r3/battle/data/text.overrides.json plus a \"what\" per card, so the battle can adopt the file as it is. tools/import-roster.py applies it on top of roster/battle-roster.json (the roster after roster/corrections.json) and writes fighters.js; every \"was\" is that roster's text and is checked at build time. Only words, names and receipts change here, never a number. Each card has its one-line what, its trait rule and all four move features; renamed moves keep their roster name as the key. Merged by the copy editor on 2026-11-01 from copy/drafts/<id>.json (five copy lanes), with one voice: a what is a noun phrase, a trait states the product's fact and then its rule, a move says what the feature does and why it matters.",
+  "fighters": {
+    "turboslide": {
+      "what": {
+        "to": "A browser slides editor where people and AI agents edit one deck.",
+        "why": "README.md:8 (a slides editor in the browser), README.md:11 (agents run the same 203 actions over the CLI, MCP and HTTP) and README.md:174 (a slide editor for a team that tailors an existing deck and presents it), all at Turboslide@3e22c8f54. Copy edit: One shape for every what (a noun phrase); 'people' matches Live Pointers. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A browser slides editor where teams and AI agents edit the same deck.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Turboslide loads each page before you click, so its first move after entering goes first.",
+          "was": "The first move it uses after it enters goes first, the way a route loads its code and data when the pointer reaches its link.",
+          "why": "Drops the simile and says the product behaviour in a visitor's words: defaultPreload 'intent' loads a route's code and data when the pointer reaches its link (router.tsx:84; README.md:69). The rule (priority on the first move after entering) is unchanged. Copy edit: Fact first, then the rule, as every trait reads; keeps the face within 52 words. Draft: \"Its first move after entering goes first: Turboslide loads pages before you click.\"."
+        }
+      },
+      "moves": {
+        "Live Pointers": {
+          "feature": {
+            "to": "People and AI agents edit one deck at once, each with a named pointer; changes appear within a second.",
+            "was": "Claude Code and Codex edit the open deck at once, each with a named pointer and chip",
+            "why": "Says what a visitor sees and why it matters. Editing together and the pointers are pages-copy.ts:254 and 704 (the product page's hero shows two agents' pointers on a slide); external writes reach an open editor within a second (AGENTS.md:104-107). The third-party names leave the face; the two hits stay one per agent."
+          },
+          "receipt": {
+            "to": "Turboslide@3e22c8f54:AGENTS.md:104-107; README.md:40; apps/studio/src/components/site/pages-copy.ts:254,704; apps/studio/home-deck/recorded-chips/chips.json:2",
+            "was": "Turboslide@3e22c8f54:AGENTS.md:104-107; README.md:40; apps/studio/home-deck/recorded-chips/chips.json:2",
+            "why": "Adds the product page's own sentences: pages-copy.ts:254 (several people edit one presentation at once, with live pointers) and :704 (the agents' pointers on the slide)."
+          }
+        },
+        "Perfect Export": {
+          "feature": {
+            "to": "PowerPoint pages export as screenshots, checked against the screen before saving, so the file matches the editor.",
+            "was": "PowerPoint, PDF and editable-text downloads checked against the screen before the file is written",
+            "why": "README.md:66: Perfect PowerPoint rasterises each page at twice the sheet size, decodes it again and compares it with the shot before the file is written; facts.json:45-48 holds the worst page, 0.003 percent. The old line said PDF and editable text are checked the same way, which README.md:66 does not claim, so the line now names only what is checked."
+          }
+        },
+        "Two Tone": {
+          "feature": {
+            "to": "Pictures print in two colors through an 8 by 8 dot pattern, and the editor and the export match pixel for pixel.",
+            "was": "The Bayer two-tone screen, computed identically in Rust, WebAssembly and TypeScript",
+            "why": "Explains the effect before the engineering: the two-tone screen is an 8 by 8 Bayer screen (docs/native.md:3-4), and the reason for the Rust, WebAssembly and TypeScript copies is that a dither approved in the browser and one made by the exporter must agree (docs/native.md:16-22); README.md:65 measures 0 disagreements. Copy edit: Gives the line a subject; 'match pixel for pixel' is README.md:65's 0 disagreements in plain words. Draft: \"Prints any picture in two colors through an 8 by 8 dot pattern; the browser and the exporter produce the same pixels.\"."
+          },
+          "receipt": {
+            "to": "Turboslide@3e22c8f54:README.md:65; docs/native.md:3-4, 16-22",
+            "was": "Turboslide@3e22c8f54:README.md:65; docs/native.md (cited at README.md:65)",
+            "why": "Cites docs/native.md by line instead of '(cited at README.md:65)'."
+          }
+        },
+        "Revision Check": {
+          "feature": {
+            "to": "Every edit names the deck version it read. An edit made on an old version is refused, so nobody overwrites newer work.",
+            "was": "One handler checks every write: a write that read an old revision is refused with 409 and the current document",
+            "why": "The generated manifest states the rule in one line: every mutating action takes baseRevision and a stale one is 409 with the current document (packages/agent/src/generate/manifest.ts:80). '409' and 'handler' mean nothing to a visitor; the effect (no overwritten work) is the point."
+          },
+          "receipt": {
+            "to": "Turboslide@3e22c8f54:packages/agent/src/generate/manifest.ts:80; README.md:117; AGENTS.md:68-78, 100-103",
+            "was": "Turboslide@3e22c8f54:README.md:117; AGENTS.md:68-78, 100-103",
+            "why": "manifest.ts:80 is the line that states the stale-revision 409; the old receipt only implied it."
+          }
+        }
+      }
+    },
+    "glyphfield": {
+      "what": {
+        "to": "A free studio that turns one brand into graphics, animation and templates.",
+        "why": "Glyphfield@0fb6cbd71:README.md:7 (a free, open-source brand design studio that runs in the browser; define a brand identity once and every tool uses it to make graphics, animations, templates, tokens and a brand book). 0fb6cbd71 is the pinned commit. Copy edit: One shape for every what; README.md:3 (free and open source) and the tools table. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A free, open-source browser studio that turns one brand identity into graphics, animation and templates.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "The same request always returns the same graphic, so its moves never miss.",
+          "was": "Its moves never miss.",
+          "why": "Adds the product behaviour the rule comes from (deterministic output) in plain words; the old line has 4 words, under EX.md 10's 12. Glyphfield@0fb6cbd71:README.md:93 (POST /api/generate makes deterministic output). The engine sets its accuracy to 1 (traits.ts Deterministic). Copy edit: Fact first, then the rule; README.md:93 ('deterministic output'). Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"Its moves never miss, because Glyphfield returns the same graphic for the same request every time.\"."
+        },
+        "receipt": {
+          "to": "Glyphfield@0fb6cbd71:README.md:93",
+          "was": "Glyphfield@3763d1b:README.md:78",
+          "why": "The pinned commit says it in one sentence; 3763d1b is an ancestor of the pin (gh compare: pin 245 ahead, 0 behind), so both are true."
+        }
+      },
+      "moves": {
+        "Material Lab": {
+          "feature": {
+            "to": "Design Lab sets a brand's logo over any of 197 live shaders, animated textures from the graphics card.",
+            "was": "A mark set in three dimensions over a shader",
+            "why": "Explains a shader in the same sentence and gives the library's size, which is the picture Kevin asked for on this card. Drops \"three dimensions\", which no line at either commit supports. README.md:41 (Design Lab composes marks and live shaders), README.md:55-57 (a shader is a live GPU-rendered material; the library listed 197 on 2026-10-14) and src/app/page.tsx:203-206 (Material lab: shader materials behind any mark). Copy edit: Names the tool (README.md:41) and puts the count where it reads; 'graphics card' is the set's one term for GPU. Draft: \"Glyphfield sets a brand's logo over live shaders, animated textures the graphics card draws, chosen from 197.\"."
+          },
+          "receipt": {
+            "to": "Glyphfield@0fb6cbd71:README.md:41, 55-57; src/app/page.tsx:203-206",
+            "was": "Glyphfield@3763d1b:README.md:30-37",
+            "why": "The pinned README names the 197 shaders and defines a shader; page.tsx is where the product calls this feature Material lab."
+          }
+        },
+        "Motion Study": {
+          "feature": {
+            "to": "The Animation tool turns the brand's text, logo and images into timed scenes, exported as GIF or MP4.",
+            "was": "Animation that exports to Lottie",
+            "why": "At the pin, Animation exports GIF, MP4, a poster frame and JSON, and Lottie is a separate tool (README.md:39-40), so \"exports to Lottie\" is no longer accurate. README.md:39: it sequences text, logo and image scenes with keyframes, transitions and shader backgrounds."
+          },
+          "receipt": {
+            "to": "Glyphfield@0fb6cbd71:README.md:39",
+            "was": "Glyphfield@3763d1b:README.md:34",
+            "why": "Line 39 at the pin is the Animation tool and its exports."
+          }
+        },
+        "Editable Layers": {
+          "feature": {
+            "to": "Every tool opens its state as editable code, and an edit there updates the same visual controls.",
+            "was": "Code edits round-trip into the visual controls",
+            "why": "Says what a visitor can do without \"round-trip\". README.md:51: File then Edit source code opens the tool's state as JSON, and an edit there updates the same state as the visual controls."
+          },
+          "name": {
+            "to": "Source View",
+            "was": "Editable Layers",
+            "why": "The feature is the source view every tool has (README.md:51, File then Edit source code); \"Editable Layers\" names Design Lab's layer rail, a different feature."
+          },
+          "receipt": {
+            "to": "Glyphfield@0fb6cbd71:README.md:51",
+            "was": "Glyphfield@3763d1b:README.md:72-75",
+            "why": "Line 51 at the pin states the feature for every tool."
+          }
+        },
+        "Agent API": {
+          "feature": {
+            "to": "AI agents make templates and backgrounds with one web request and get a vector graphic back, no browser needed.",
+            "was": "POST /api/generate returns deterministic SVG",
+            "why": "Says who uses it and what they get, without the endpoint path or \"SVG\". README.md:93: POST /api/generate makes deterministic output without a browser, in four kinds including background and template SVGs. Copy edit: The draft set four lines at 0.040W; this holds three. Draft: \"AI agents can make templates and backgrounds with one web request, getting back a vector graphic without opening a browser.\"."
+          },
+          "receipt": {
+            "to": "Glyphfield@0fb6cbd71:README.md:93",
+            "was": "Glyphfield@3763d1b:README.md:76-78",
+            "why": "Line 93 at the pin names the kinds the description lists."
+          }
+        }
+      }
+    },
+    "jarhead": {
+      "what": {
+        "to": "A voice assistant that clicks, types and reads the screen on your Mac.",
+        "why": "Jarhead@50d54e83c:README.md:14-15 ('A voice-first Mac assistant that uses the computer for you') and README.md:70 (computer tools for screen, mouse and keyboard)."
+      },
+      "trait": {
+        "rule": {
+          "to": "Jarhead relaunches after a crash, so the first hit that would end it leaves 1 Health.",
+          "was": "The first time a hit would knock it out, it relaunches with 1 HP. Once per battle.",
+          "why": "'knock it out' sits next to a banned phrase and the stat's two-letter label is banned (EX.md 20, 22.6); this supersedes the battle's own line in r3/battle/data/text.overrides.json, which still prints that label. It now names the product behaviour the rule comes from: after a crash the app relaunches (README.md:86, 396; DaemonProcess.swift:245). The game effect is unchanged. Copy edit: Fact first, then the rule; Health is the card's word for the stat (README.md:86; DaemonProcess.swift:245). Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"It survives its first finishing hit at 1 health: Jarhead relaunches after a crash.\"."
+        }
+      },
+      "moves": {
+        "Wake Word": {
+          "feature": {
+            "to": "Asleep, it listens on the Mac only for its name. Touch ID or a password must pass before it takes a command.",
+            "was": "The on-device wake word and the Touch ID gate",
+            "why": "README.md:67: asleep, Apple's on-device recogniser listens for 'jarhead' and what it hears never leaves the Mac; then Touch ID, Apple Watch, the Mac password or a passphrase. README.md:406: hearing the name alone opens nothing. The barrier is that gate."
+          },
+          "receipt": {
+            "to": "Jarhead@50d54e83c:README.md:67, 406",
+            "was": "Jarhead@50d54e83c:README.md:67",
+            "why": "README.md:406 is the presence gate the barrier stands for."
+          }
+        },
+        "Reflex": {
+          "feature": {
+            "to": "Clear commands such as \"scroll\" or \"click Save\" skip the AI model and run in about 8 ms.",
+            "was": "Unambiguous commands go straight to the hands without the model",
+            "why": "README.md:71 lists the commands that go straight to the hands without the model ('scroll', 'click Save'); README.md:365 measures ear final to hands dispatch at 8 ms median. Gives a visitor an example and the speed that earns the priority. Copy edit: 'dispatched' is engine wording; 'ms' after a number across the set. Draft: \"Clear commands such as \"scroll\" or \"click Save\" skip the AI model and are dispatched in about 8 milliseconds.\"."
+          }
+        },
+        "Threads": {
+          "feature": {
+            "to": "Up to three extra Jarheads split a request, each working at once with its own AI model.",
+            "was": "Up to three full Jarheads beside the main one, each with its own brain and blob",
+            "why": "README.md:72: a request can become named threads, each a full Jarhead with its own brain, conversation, budget and blob, up to three beside the main one (README.md:392: main + 3 live). 'brain' is the product's word for the model. Copy edit: Gives the line a subject; README.md:72, 392 (main plus three, each with its own brain); keeps the face within 52 words. Draft: \"Splits a request into up to three extra Jarheads working at once, each with its own AI model.\"."
+          }
+        },
+        "Swift Hands": {
+          "feature": {
+            "to": "It takes a screenshot, finds a button by its label and clicks it, using 71 tools for the Mac.",
+            "was": "71 tools in ten families; the hands find a control by label, click it and check a screenshot",
+            "why": "README.md:70: 71 tools in ten families; the hands find a control by label and click the element, a task usually arrives with a screenshot and a click by position aims at the latest one. README.md:397: 71 tools. Copy edit: The draft's line, kept: README.md:70, 397 (a task arrives with a screenshot; find a control by label, click it; 71 tools)."
+          },
+          "name": {
+            "to": "Computer Use",
+            "was": "Swift Hands",
+            "why": "The feature is computer use (README.md:70, 'Uses the Mac'); 'Swift Hands' names the helper's language, which a visitor cannot read as a feature. It is also the picture Kevin asked for on this card."
+          }
+        }
+      }
+    },
+    "katagami": {
+      "what": {
+        "to": "A free font family in five styles for interfaces, long reading and code.",
+        "why": "Katagami@3f3a0ea:README.md:9 (a free type family in five members that share one skeleton) and README.md:23 (Sans for interfaces, Round for softer interfaces, Text for long reading, Serif, Mono for code; free under the OFL). \"Font\" is the word a visitor knows; \"type family\" and \"member\" are not. Copy edit: One shape for every what; README.md:20 (free, five members for interfaces, long reading and code). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A free, open-source font family for interfaces, long reading and code, in five matching styles.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Its weights run 100 to 900, so you set Weight Axis: heavier hits harder, misses more.",
+          "was": "Its Weight Axis move uses the weight the visitor sets on the live font, from 100 to 900: heavier hits harder and less accurately.",
+          "why": "Same rule in 18 words (EX.md 10 caps a trait at 18; the old line has 24). The product behaviour is the font's own weight range, Thin 100 to Black 900 (README.md:36, 51); the game effect is the axis in the battle engine (engine.ts moveNumbers: power 75 + 0.1 x wght, accuracy 1.05 - wght / 2000, capped at 1, so heavier is stronger and less accurate). No number changes. Copy edit: Fact first, then the rule. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"You set Weight Axis's weight anywhere on the font's 100 to 900 range: heavier hits harder, misses more.\"."
+        }
+      },
+      "moves": {
+        "Bezier Points": {
+          "feature": {
+            "to": "The site draws the word Katagami as outlines; drag any curve point and the letter reshapes.",
+            "was": "Every point on the drawing can be dragged",
+            "why": "Says what a visitor does and sees, and explains a Bezier point as a curve point. README.md:20 (the word drawn as outlines with every Bezier point and handle) and README.md:25 (the first thing on the website; every point can be dragged)."
+          },
+          "receipt": {
+            "to": "Katagami@3f3a0ea:README.md:20, 25",
+            "was": "Katagami@3f3a0ea:README.md:25",
+            "why": "Line 20 is the drawing itself: the outlines with every point and handle."
+          }
+        },
+        "Weight Axis": {
+          "feature": {
+            "to": "Each Katagami style is a variable font: one file holding every weight, plus a matching Italic.",
+            "was": "Weights from 100 to 900",
+            "why": "Says what the weight axis is and why it matters (one file covers every weight), and leaves the 100 to 900 range to the trait so the face does not repeat it. README.md:23 (each member is a variable roman and a variable Italic with a weight axis), README.md:36-40 (one [wght] file per member and style) and README.md:51 (every weight a named instance)."
+          },
+          "receipt": {
+            "to": "Katagami@3f3a0ea:README.md:23, 36-40, 51",
+            "was": "Katagami@3f3a0ea:README.md:36, 44-48",
+            "why": "Lines 44 to 48 are the Weights heading and its picture; lines 23, 36 to 40 and 51 state the variable files and the weights in words."
+          }
+        },
+        "Shared Skeleton": {
+          "feature": {
+            "to": "Sans, Round, Text, Serif and Mono are built on one shared skeleton, so the site's slider morphs a word through all five.",
+            "was": "Five members share one skeleton",
+            "why": "Names the five and shows why the shared skeleton matters: one word morphs through all of them on the site. README.md:9 (five members that share one skeleton) and README.md:25 (a slider morphs the word through all five members)."
+          },
+          "receipt": {
+            "to": "Katagami@3f3a0ea:README.md:9, 25",
+            "was": "Katagami@3f3a0ea:README.md:9",
+            "why": "Line 25 is the slider the description now names."
+          }
+        },
+        "Confusables Apart": {
+          "feature": {
+            "to": "Katagami Mono, the coding style, gives 0, O, 1, l and I clearly different shapes, so code reads without mix-ups.",
+            "was": "Mono draws 0 O 1 l I apart",
+            "why": "Says which member, what it is for and why it matters. README.md:40 (Mono for code and terminals, every confusable character drawn apart) and README.md:57 (the detail picture names Mono's 0, O, 1, l and I)."
+          },
+          "receipt": {
+            "to": "Katagami@3f3a0ea:README.md:40, 57",
+            "was": "Katagami@3f3a0ea:README.md:40",
+            "why": "Line 57 names the five characters the description lists."
+          }
+        }
+      }
+    },
+    "claude-of-tanks": {
+      "what": {
+        "to": "A free browser tank game: 7 v 7 online, 33 destructible battlefields, 13 modes.",
+        "why": "Every count is true at the pin the card prints (ccb2041c4) and at main (bf44a5c07), so the face never contradicts its own provenance strip (accuracy and collector judges). claude-of-tanks@bf44a5c07:src/productStats.ts:28-29 (battlefields 33, battleModes 13; the same lines at ccb2041c4); docs/FEATURES.md:19,22 (33 authored and destructible maps, the 13 modes by name; the same lines at ccb2041c4); docs/MULTIPLAYER-V2.md:797-798 (7v7 is the default room size; ccb2041c4:788-789 says the same); README.md:68 (browser-hosted private rooms, LAN rooms; the same line at ccb2041c4); src/ui/i18nCatalog.en-US.json:1924 (the live hero line: free, no install). The tank count is left off on purpose: productStats.ts:22 says 276 at bf44a5c07 but 236 at the printed pin, so it goes on the card only with the repin (final/copy/claude-of-tanks.repin.json, Kevin's decision D1). Measured in frame B: 2 lines in the what box at 299, 300, 480 and 720 px, 14 words; the same facts ending in '7 v 7 online' run to 3."
+      },
+      "trait": {
+        "rule": {
+          "to": "The game's simulation is seeded, so this card's damage varies only on a critical hit.",
+          "was": "Its damage has no random spread, so the same attack on the same target lands the same number unless it is critical.",
+          "why": "The game fact and the card's rule are now two clauses that cannot be confused: the game's simulation is seeded (claude-of-tanks@bf44a5c07:AGENTS.md:127-129: SIM_DT = 1/60, randomness seeded or injected, never Math.random or wall-clock time; docs/HOW-IT-WORKS.md:5: a deterministic 60 Hz simulation), and this card's damage has no spread (r3/battle/engine/src/traits.ts:47, Seeded: { spread: () => 1 }). The game itself does roll its damage, seeded: src/sim/damage.ts:10 (plus or minus 25% penetration and damage rolls) and :14-15 (the RNG order is fixed for determinism), so the line no longer reads as a claim that the game's damage never varies (owner, collector and accuracy judges). '60 Hz' is dropped to hold 2 lines: every 60 Hz wording with 'this card's damage' measured 3 lines in frame B, and with both face moves at 3 the face would print 9. Measured: 2 lines at 225, 260, 299, 300, 480 and 720 px, 15 words."
+        },
+        "receipt": {
+          "to": "claude-of-tanks@ccb2041c4:AGENTS.md:122-124; docs/HOW-IT-WORKS.md:5; src/sim/damage.ts:10,14-15",
+          "was": "claude-of-tanks@24c5c5b03:AGENTS.md:105-106",
+          "why": "AGENTS.md:127-129 and HOW-IT-WORKS.md:5 carry 'seeded'; damage.ts:10,14-15 is cited so a reader sees the game's own seeded rolls and reads the no-spread rule as this card's (its battle rule is r3/battle/engine/src/traits.ts:47). Round ex.4 merge (art lane hero): cited at the card's printed pin ccb2041c4, where these lines read the same (checked by git show in roster/_git/claude-of-tanks.git), because tools/test-data.mjs requires every receipt at a commit reachable from the pin and the mirror holds no bf44a5c07; AGENTS.md's SIM_DT and seeded lines are 122-124 at the pin (127-129 at bf44a5c07)."
+        }
+      },
+      "moves": {
+        "Sabot Round": {
+          "feature": {
+            "to": "Fires an armor-piercing dart, one of five shell types, checked against the armor plate and angle it hits.",
+            "was": "APFSDS, one of five shell classes",
+            "why": "'APFSDS' is an initialism a visitor cannot read. claude-of-tanks@bf44a5c07:docs/HOW-IT-WORKS.md:257-262: the gun fires the selected AP, APCR, HEAT, HE or APFSDS shell, ballistics flies it with its own muzzle velocity, gravity and distance behavior, collision finds the struck plate, and armor resolves impact angle, normalization, ricochet, overmatch, spaced armor, composites and ERA; README.md:155-157 says the same as plate-level armor and five ammunition families. The plate and angle are what the move's piercing models (it ignores half of a raised defense), so the row now names them instead of speed and drop. Round ex.4 merge (art lane hero): 'exact' dropped so the face's trait and two moves hold 52 words, tools/etest.mjs E16's budget (53 with it); the sentence keeps its receipt, HOW-IT-WORKS.md:257-262 (collision finds the struck plate, armor resolves the impact angle)."
+          },
+          "receipt": {
+            "to": "claude-of-tanks@ccb2041c4:docs/HOW-IT-WORKS.md:257-262; README.md:155-157",
+            "was": "claude-of-tanks@24c5c5b03:docs/HOW-IT-WORKS.md:257",
+            "why": "Lines 257-262 are the whole combat path from the gun to the armor result; README.md:155-157 are the plate-level armor and five-shell lines. FEATURES.md:106-107, which the old draft cited, is now the shot-panel line, and the per-shell line moved to FEATURES.md:118-119. Round ex.4 merge (art lane hero): cited at the card's printed pin ccb2041c4, where these lines read the same (checked by git show in roster/_git/claude-of-tanks.git), because tools/test-data.mjs requires every receipt at a commit reachable from the pin and the mirror holds no bf44a5c07; only MULTIPLAYER-V2.md moves, 797-798 at bf44a5c07 being 788-789 at the pin."
+          }
+        },
+        "Killcam": {
+          "feature": {
+            "to": "An X-ray replay shows why a tank died: the shell's path through its armor and the parts it wrecked.",
+            "was": "The X-ray replay of a resolved kill",
+            "why": "Unchanged words: the game's killcam does what the draft said. claude-of-tanks@bf44a5c07:docs/FEATURES.md:426-427: the X-ray killcam reconstructs the resolved shot path, struck armor, effective protection, penetration result, damaged internals and destruction cause; docs/HOW-IT-WORKS.md:344-345: killcam and shot panels project resolved combat events, never a second damage calculation. The live site leads with it ('X-ray killcams', cot.kevinliu.studio/home, read 2026-11-01)."
+          },
+          "receipt": {
+            "to": "claude-of-tanks@ccb2041c4:docs/FEATURES.md:426-427; docs/HOW-IT-WORKS.md:344-345",
+            "was": "claude-of-tanks@24c5c5b03:docs/HOW-IT-WORKS.md:338-344",
+            "why": "The killcam line moved from FEATURES.md:414-415 to 426-427 and the projection line from HOW-IT-WORKS.md:343-344 to 344-345. Round ex.4 merge (art lane hero): cited at the card's printed pin ccb2041c4, where these lines read the same (checked by git show in roster/_git/claude-of-tanks.git), because tools/test-data.mjs requires every receipt at a commit reachable from the pin and the mirror holds no bf44a5c07; only MULTIPLAYER-V2.md moves, 797-798 at bf44a5c07 being 788-789 at the pin."
+          }
+        },
+        "One Spec": {
+          "feature": {
+            "to": "Each tank is one record of armor, gun, crew and look, so the garage, bots and battle always agree.",
+            "was": "One vehicle spec drives the garage card, armor logic, bots and the model",
+            "why": "claude-of-tanks@bf44a5c07:docs/HOW-IT-WORKS.md:176-181: each vehicle spec supplies dimensions, mass, mobility, gun limits, ammunition, armor plates, modules, crew, concealment and render metadata, and the same spec drives the garage card, icon set, loading roster, armor logic, bot selection and final visual. No fleet count: the card prints the ccb2041c4 pin, where src/productStats.ts:22 says 236, not 276; the count returns with the repin (Kevin's decision D1). Measured: 3 lines in a face row at 225 to 720 px, 19 words."
+          },
+          "receipt": {
+            "to": "claude-of-tanks@ccb2041c4:docs/HOW-IT-WORKS.md:176-181",
+            "was": "claude-of-tanks@24c5c5b03:docs/HOW-IT-WORKS.md:60-63 (garage uses the battle renderer)",
+            "why": "Lines 176-181 state the one-spec claim (175-180 at 24c5c5b03). productStats.ts:22 is no longer cited: the line names no count. Round ex.4 merge (art lane hero): cited at the card's printed pin ccb2041c4, where these lines read the same (checked by git show in roster/_git/claude-of-tanks.git), because tools/test-data.mjs requires every receipt at a commit reachable from the pin and the mirror holds no bf44a5c07; only MULTIPLAYER-V2.md moves, 797-798 at bf44a5c07 being 788-789 at the pin."
+          }
+        },
+        "Column Fire": {
+          "name": {
+            "to": "14 v 14",
+            "was": "Column Fire",
+            "why": "Kept from the draft: the feature is the battle size, and '14 v 14' is the game's own label for the preset (claude-of-tanks@bf44a5c07:src/sim/matchRuleset.ts:947; docs/GAME-MODES.md:422). The move id stays column-fire, and its rule (2 to 3 hits at 25 power) still reads as more tanks firing."
+          },
+          "feature": {
+            "to": "Battles run 7 against 7 and one switch makes them 14 against 14, with bots or with friends in multiplayer rooms.",
+            "was": "14 v 14 preset battles",
+            "why": "claude-of-tanks@bf44a5c07:src/sim/matchRuleset.ts:942-947: the default split is the player and six allied bots against seven, and the 14v14 preset is thirteen allied bots against fourteen; docs/GAME-MODES.md:418-423: the battle menu's switch, default 7 v 7; docs/MULTIPLAYER-V2.md:797-798: 7v7 is the default room size and 14v14 is allowed; README.md:68: solo bots, browser-hosted private rooms, LAN rooms, spectators and rematches. Multiplayer is the new fact the live site leads with ('7V7 MULTIPLAYER'), so the row names it; 'thirteen bots on your side' gives way to it."
+          },
+          "receipt": {
+            "to": "claude-of-tanks@ccb2041c4:src/sim/matchRuleset.ts:942-947; docs/GAME-MODES.md:418-423; docs/MULTIPLAYER-V2.md:788-789",
+            "was": "claude-of-tanks@24c5c5b03:src/sim/matchRuleset.ts:109-112",
+            "why": "matchRuleset.ts moved the sides block from 107-113 to 942-947 and GAME-MODES.md the switch from 146-151 to 418-423; MULTIPLAYER-V2.md:797-798 is the multiplayer room size the description now names. Round ex.4 merge (art lane hero): cited at the card's printed pin ccb2041c4, where these lines read the same (checked by git show in roster/_git/claude-of-tanks.git), because tools/test-data.mjs requires every receipt at a commit reachable from the pin and the mirror holds no bf44a5c07; only MULTIPLAYER-V2.md moves, 797-798 at bf44a5c07 being 788-789 at the pin."
+          }
+        }
+      }
+    },
+    "mailroom": {
+      "what": {
+        "to": "A Gmail sorter that uses readable rules and low-cost AI, all undoable.",
+        "why": "mailroom@bc389e255:README.md:9-13: deterministic rules sort the bulk of a Gmail mailbox for free, an AI model judges the rest for about $0.042 per million input tokens, and every run previews first, writes a receipt and can be undone. 13 words, two lines in the what box. Copy edit: One shape for every what; 'cheap' becomes 'low-cost' (README.md:5, 'for pennies'). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Sorts your Gmail with readable rules and cheap AI, all of it undoable.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Trash rules past their cap refuse to run, so no hit takes over half its Health.",
+          "was": "No single hit can take more than half its max HP. Past the cap, the rest of the hit is refused.",
+          "why": "The old line printed \"HP\", a banned label (EX.md 20, E14b), and named no product behaviour. A trash rule that matches more mail than policy.aging.maxTrashPerRule (8000 by default) is refused whole (src/lib/engine/run.ts:125-126; src/lib/policy/schema.ts:69; README.md:58), and the trait header already reads Per-Rule Cap. The hook is unchanged: damage per hit clamps to half its max Health (r3/battle/engine/src/traits.ts:49, engine.ts:228). 17 words, two lines. Copy edit: Fact first, then the rule; keeps the face within 52 words. Draft: \"No hit takes over half its Health, as a trash rule past its cap refuses to run.\"."
+        }
+      },
+      "moves": {
+        "Rules": {
+          "feature": {
+            "to": "Rules you can read in one screen become Gmail filters, so new mail is labeled the moment it lands, at no cost.",
+            "was": "Free Gmail searches and filters label mail on arrival",
+            "why": "README.md:9-10 (deterministic rules do the bulk for free), README.md:23 (a policy you can read in one screen) and README.md:26 (each route becomes a Gmail filter, so new mail is filed the moment it lands). \"The moment it lands\" is the move's priority."
+          },
+          "receipt": {
+            "to": "mailroom@bc389e255:README.md:9-10, 23, 26",
+            "was": "mailroom@bc389e255:README.md:9-10; README.md:26",
+            "why": "README.md:23 carries \"a policy you can read in one screen\"."
+          }
+        },
+        "Five Questions": {
+          "feature": {
+            "to": "An AI model answers five questions about each email the rules miss, like \"needs action\", as probabilities.",
+            "was": "Jev's five typed questions per email",
+            "why": "src/lib/ai/triage.ts:43-67 holds the five questions (category, automated, needs action, time-sensitive, disposable); README.md:9-12: whatever the rules cannot place goes to the model, which answers with probabilities instead of prose. The model's name (a third-party product a visitor cannot read) leaves the line; the five hits stay one per question."
+          },
+          "receipt": {
+            "to": "mailroom@bc389e255:src/lib/ai/triage.ts:43-67; README.md:9-12",
+            "was": "mailroom@bc389e255:src/lib/ai/triage.ts:43-67",
+            "why": "README.md:9-12 carries \"the email the rules miss\" and \"as probabilities\"."
+          }
+        },
+        "Ask In Plain Words": {
+          "feature": {
+            "to": "Ask in plain words, like \"who hasn't replied to me\", and get an editable Gmail search with ranked results.",
+            "was": "A plain-words question compiles to an editable Gmail query, then Jev reranks the results",
+            "why": "README.md:24: a question such as \"who hasn't replied to me\" becomes a Gmail query you can edit, and the conversations come back ranked by the signal asked for (src/lib/search/compile.ts, src/lib/search/rerank.ts). The example is the README's own; \"compiles\" and \"reranks\" were engineering words, and the model's name leaves the line."
+          }
+        },
+        "Undo": {
+          "feature": {
+            "to": "Every run previews first and writes a receipt, and Undo puts labels, filters and policy back, whole or per message.",
+            "was": "Every receipt has Undo, whole or per message",
+            "why": "README.md:56 (every run previews first, every apply writes a receipt, every receipt has Undo, whole or per message) and README.md:46 (Undo puts the filters, the labels and the policy back); the route is src/app/api/runs/[id]/undo/route.ts. Says what Undo restores, which is the move's heal."
+          }
+        }
+      }
+    },
+    "local-search": {
+      "what": {
+        "to": "A command-line tool for AI agents to search the web in your own browser.",
+        "why": "Local-Search@7047959:README.md:3-7 (give your agent the browser you already use; search the web, read pages and use signed-in sites through one small CLI). The browser's name is left out (third party). Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A command-line tool that lets AI agents search and read the web through your own browser.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Repeat searches return saved results in a median 6.5 ms, so a reused move goes first.",
+          "was": "The second time it uses a move, that move goes first.",
+          "why": "Adds the product behaviour the rule comes from: cache hits are fast (README.md:106-108, 6.5 ms cached against 384.5 ms cold). \"Median\" keeps the number honest. The engine gives a move it has used before priority +1 (traits.ts Cached). Copy edit: Fact first, then the rule; README.md:109-110 (6.5 ms cached median). Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"Saved results answer repeat searches in a median 6.5 ms, so a move used before goes first.\"."
+        }
+      },
+      "moves": {
+        "Browser Query": {
+          "feature": {
+            "to": "Your agent searches the web in the browser you already use, with no separate search service.",
+            "was": "A search through your own Chrome",
+            "why": "Says why it matters: no hosted service or search key. README.md:3-7 (the browser you already use; without a hosted browser service or a search API key). The browser's name is left out (third party)."
+          },
+          "receipt": {
+            "to": "Local-Search@7047959:README.md:3-7",
+            "was": "Local-Search@7047959:README.md:1-6",
+            "why": "Line 7 holds the \"no hosted service or key\" claim; lines 1 and 2 are the title."
+          }
+        },
+        "Stable JSON": {
+          "feature": {
+            "to": "Results arrive as JSON in one fixed shape, and failures carry an error code agents can act on.",
+            "was": "A contract an agent can parse",
+            "why": "Says what the contract is. README.md:99-100: piped output and --json are stable JSON; failures exit nonzero with a structured error code."
+          }
+        },
+        "148.7 ms": {
+          "feature": {
+            "to": "Its July 2026 benchmark measured a 148.7 ms median search, mixing fresh searches with answers from saved results.",
+            "was": "The published median latency",
+            "why": "Says what was measured and keeps the README's own caveat that the median mixes cold searches and cache hits (README.md:104-108; benchmarks/hosted-search-2026-07-21.md)."
+          },
+          "name": {
+            "to": "Fast Search",
+            "was": "148.7 ms",
+            "why": "The owner's ex.5 fix: '148.7 ms Median' is a measurement, not a feature. The feature is a fast search, and the description keeps the number with its caveat (README.md:104-108; benchmarks/hosted-search-2026-07-21.md); power, accuracy and uses are unchanged."
+          }
+        },
+        "53.4 Tokens": {
+          "feature": {
+            "to": "Each result is short, a median 53.4 tokens (the word pieces AI models read), so agents can take in more results.",
+            "was": "Compact results keep an agent's context short",
+            "why": "Explains tokens in the same sentence and gives the measured number. README.md:112-114: 53.4 median normalized tokens per result, July 21, 2026. No comparison with other providers is made (the README says the providers returned different amounts of text)."
+          },
+          "name": {
+            "to": "Compact Results",
+            "was": "53.4 Tokens",
+            "why": "A bare count does not say what the feature is; the description carries the number."
+          }
+        }
+      }
+    },
+    "agent-pets": {
+      "what": {
+        "to": "Pixel pets that sit beside your coding agent and show what it is doing.",
+        "why": "Agent-Pets@a3f9fdd85:README.md:5-10 (animated companions for your agent; an optional local bridge shows working, attention, done and error) and README.md:31-33 (hi-bit pixel sprites). No pet, character or franchise is named (Kevin, 11-01). Copy edit: Shorter, same claim. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Animated pixel pets that sit beside your coding agent and show what it is doing.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Pets play every action three times, so moves that hit more than once hit three times.",
+          "was": "Codex plays each action three times before the pet returns to idle, so its multi-hit moves always land three hits.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's agent-pets line deliberately: that line is 24 words, over EX.md 10's 18, and leads with a third-party name. Same behaviour and effect: actionRepeats 3 (codex-pet-runtime.mjs:8, 50-52) and the engine's Three Repeats (hits 3 for a move with hits). Copy edit: 'moves that hit more than once' is the set's one phrase for multi-hit moves. Draft: \"Pets play every action three times, so a move that hits more than once always hits three times.\". Closer ex.2: shortened to two face lines (owner ex.2: the face's trait rule in at most 2 lines; measured on the face at 225, 250, 300, 347 and 480 px); same claim, 'always' cut."
+        }
+      },
+      "moves": {
+        "Sixteen Looks": {
+          "feature": {
+            "to": "An idle pet looks toward your pointer, using 16 drawn poses, one per direction.",
+            "was": "The pet turns its head toward the pointer in 16 directions",
+            "why": "Adds when it happens and that each direction is its own drawn pose. codex-pet-runtime.mjs:70-78 (16 look cells in two extra atlas rows) and README.md:102-111 (gaze is idle-only; bounded eyes or visors on some pets, so \"head\" was not true of every pet). Copy edit: Opens apart from Needs Attention. Draft: \"When idle, the pet looks toward your pointer, using 16 drawn poses, one per direction.\"."
+          }
+        },
+        "Run Cycle": {
+          "feature": {
+            "to": "The run animation plays eight pixel-art frames at 120 ms each, then holds the last one for 220 ms.",
+            "was": "The 8-frame run row, 120 ms a frame with a 220 ms hold",
+            "why": "A plain sentence with the same numbers, without \"row\". codex-pet-runtime.mjs:26-27 (Run right and Run left: 8 frames, 120 ms, the last 220 ms)."
+          }
+        },
+        "Needs Attention": {
+          "feature": {
+            "to": "When your agent needs you, an optional local script makes the pet wait, and its badge stays until you read it.",
+            "was": "The bridge's attention event: the pet waits and the badge stays until it is read",
+            "why": "Says when it fires and what the bridge is. integrations/README.md:4 (an optional local status bridge), 12-14 (the pet waits and the badge stays until marked read) and companion-notifications.mjs:4-10 (attention plays Waiting, persistent)."
+          },
+          "receipt": {
+            "to": "Agent-Pets@a3f9fdd85:site/companion-notifications.mjs:4-10; integrations/README.md:4, 12-14, 17-22",
+            "was": "Agent-Pets@a3f9fdd85:site/companion-notifications.mjs:4-10; integrations/README.md:12-14,17-22",
+            "why": "Line 4 says the bridge is optional and local."
+          }
+        },
+        "Safety Border": {
+          "feature": {
+            "to": "Every frame keeps at least 16 clear pixels around the pet, and an audit rejects any frame that touches the edge.",
+            "was": "The 16-pixel clear border every frame must keep, enforced by the hi-bit audit",
+            "why": "Says what the border is for (no pet is cut off) without \"hi-bit\". AGENTS.md:15-17 (at least 16 transparent pixels; edge contact is a release blocker), README.md:127-131 and audit_hi_bit_pet_library.py:2 (the audit rejects occupied safety borders)."
+          }
+        }
+      }
+    },
+    "loop": {
+      "what": {
+        "to": "A service that updates AI agents' skill files from their sources every day.",
+        "why": "Loop@b81262add:README.md:18 (an operator desk for agent skills that tracks sources, refreshes changes and keeps every diff inspectable), README.md:33 and README.md:130 (the refresh cron runs daily). \"Skill files AI agents follow\" explains \"agent skills\" to a visitor. 12 words, two lines. Copy edit: One shape for every what (a noun phrase). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Refreshes the skill files AI agents follow from their sources, every day.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Skills improve with each refresh, so its Reach grows every third turn, up to 2 times.",
+          "was": "Every third turn it stays in, its Reach rises one step, up to two.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's loop line (\"After every third turn it stays in play, its Reach grows, to 1.5 times and then to 2 times.\") deliberately: it is 19 words, over EX.md 10's 18, and names no product behaviour; the new line keeps its numbers and adds the product behaviour, 100+ verified skills at v16 to v21 after weeks of daily autonomous refreshes (README.md:35). The hook is unchanged: Reach +1 at the end of every third turn in play, to +2, and +1 is x1.5, +2 is x2 (r3/battle/engine/src/traits.ts:55, rules.ts:30-33). The battle's own sentence for it is import-roster.py TRAITS[\"loop\"][0]. 16 words, two lines. Copy edit: Fact first, then the rule; the engine's two steps end at x2 (traits.ts:55, rules.ts:30-33). Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"Each third turn in play, its Reach grows to 1.5x, then 2x, as refreshes improve skills.\"."
+        }
+      },
+      "moves": {
+        "Source Scan": {
+          "feature": {
+            "to": "Each skill lists the sources it depends on, like feeds, docs, blogs and GitHub, and each refresh scans them first.",
+            "was": "Tracked sources",
+            "why": "README.md:70: a source is a URL the refresh pipeline scans, of kind rss, atom, docs, blog, github or watchlist; README.md:184: each refresh fetches signals from the skill's sources before it researches. \"Feeds\" stands for rss and atom. The old line, two words, said nothing a visitor could use."
+          },
+          "receipt": {
+            "to": "Loop@b81262add:README.md:70, 184",
+            "was": "Loop@b81262add:README.md:70",
+            "why": "README.md:184 is the step where a refresh scans the sources first."
+          }
+        },
+        "Refresh Run": {
+          "feature": {
+            "to": "An AI agent reads what changed, searches the web and rewrites the skill as a new version.",
+            "was": "A refresh run and the diff it landed",
+            "why": "README.md:33 (every refresh lands as a versioned diff with the run attached) and README.md:185-187 (a research-first agent analyzes the source signals, searches the web, revises the skill and saves a new version, never changing the old one). Copy edit: 'AI agent' across the set; keeps the face within 52 words. Draft: \"An agent reads source changes, searches the web and rewrites the skill, saving it as a new version.\"."
+          },
+          "receipt": {
+            "to": "Loop@b81262add:README.md:33, 185-187",
+            "was": "Loop@b81262add:README.md:33",
+            "why": "README.md:185-187 are the research, rewrite and save steps the line names."
+          }
+        },
+        "Full Diff": {
+          "feature": {
+            "to": "Every refresh shows the skill before and after, with each removed and added line marked for review.",
+            "was": "Every removed and added line stays on the page",
+            "why": "README.md:41 (every refresh should be inspectable; diffs and version history are product surfaces), README.md:159 (the latest update summary with a before and after diff) and lib/text-diff.ts:8-80 (a line diff that keeps context, removed and added lines). The old line did not say what the page shows or why."
+          },
+          "receipt": {
+            "to": "Loop@b81262add:README.md:41, 62, 159; lib/text-diff.ts:8-80",
+            "was": "Loop@b81262add:README.md:41, 60-73",
+            "why": "README.md:60-73 is the four jobs and the object model; lines 62 (the run with its diffs) and 159 (the before and after diff) and lib/text-diff.ts:8-80 (the diff itself, 102 lines at b81262add) carry the claim."
+          }
+        },
+        "Queue Fan-out": {
+          "feature": {
+            "to": "A daily job queues a refresh for each skill that is due, and cloud workers run them unattended.",
+            "was": "Cron decides what is due; workers refresh one skill at a time",
+            "why": "README.md:49 (the daily refresh cron fans out through @vercel/queue; cron decides what is due and workers refresh one skill at a time), README.md:130-132 (09:00 UTC daily; the worker runs in its own function invocation) and README.md:39 (automations run unattended, with no laptop). \"Cron\" becomes \"a daily job\"; the two to three hits stay one per queued skill. The name is the README's own (\"fan-out dispatcher\")."
+          },
+          "receipt": {
+            "to": "Loop@b81262add:README.md:39, 49, 130-132",
+            "was": "Loop@b81262add:README.md:49",
+            "why": "README.md:39 is \"unattended\" and README.md:130-132 is \"daily\" and the worker."
+          }
+        }
+      }
+    },
+    "agent-machines": {
+      "what": {
+        "to": "An open-source kit and dashboard to run AI agents on cloud machines.",
+        "why": "Agent-Machines@49447b5:README.md:3-11 (open-source building blocks for agent harnesses: runtimes, sandbox adapters, a real browser terminal and a dashboard for operating multiple agents); README.md is byte-identical at the pinned 24fe11ea3 (gh api contents at both refs). \"Agent harness\" is jargon, so the line says what the parts do. 12 words, two lines. Copy edit: One shape for every what (a noun phrase). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Open-source parts and a dashboard to run AI agents on cloud machines.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Stopped machines keep files. Out of play, it keeps stat changes but loses conditions.",
+          "was": "When it switches out it keeps its raised stats, but its condition clears, the way a machine keeps its filesystem and loses its RAM.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's agent-machines line deliberately: that line keeps \"every raised stat\", but the hook keeps lowered stats too (switchIn skips the stat reset for a Persistent card and clears its status, r3/battle/engine/src/engine.ts:436-446, traits.ts:57-65), and it runs 24 words, over EX.md 10's 18. Product: an explicit stop and start keeps the filesystem, and processes and RAM are not restored (README.md:238-241, 248-253). The battle's own sentence is import-roster.py TRAITS[\"agent-machines\"][0]. 18 words, three lines; the two face moves take the other five. Copy edit: Fact first, then the rule; 'memory' for RAM, which a visitor may not know. Draft: \"Leaving play, it keeps stat changes and clears conditions, as a stopped machine keeps files and loses RAM.\". Closer ex.2: shortened to two face lines (owner ex.2; measured on the face at 225 to 480 px). Same rule: switchIn keeps a Persistent card's stat changes and clears its status; same product fact: a stop keeps the filesystem (README.md:238-241). 14 words."
+        }
+      },
+      "moves": {
+        "Provision": {
+          "feature": {
+            "to": "It starts a cloud machine for an agent, runs its work, shows its files and logs, then tears it down.",
+            "was": "Provision, run, inspect and tear down a machine",
+            "why": "README.md:27 (provision, execute, inspect and tear down machines) and README.md:56-60 (launch, watch bootstrap, run a small task, inspect its files and logs). Turns four verbs into what a visitor sees. Copy edit: Gives the line a subject. Draft: \"Starts a cloud machine for an agent, runs its work, shows its files and logs, then tears the machine down.\"."
+          },
+          "receipt": {
+            "to": "Agent-Machines@49447b5:README.md:27, 56-60",
+            "was": "Agent-Machines@49447b5:README.md:27",
+            "why": "README.md:56-60 carries \"inspect its files and logs\"."
+          }
+        },
+        "Four Runtimes": {
+          "feature": {
+            "to": "One shared interface runs Claude Code, Codex, Hermes or OpenClaw, so switching agents takes one change.",
+            "was": "Claude Code, Codex, Hermes and OpenClaw",
+            "why": "README.md:26 (install and run Claude Code, Codex, Hermes or OpenClaw through a shared boundary) and README.md:90-95 (the agent is one field of mux.create). The four names stay as small factual text; the one to four hits stay one per runtime. Copy edit: The interface leads, so third-party names never open the line; 'one setting' stays with Compute Adapters. Draft: \"Runs Claude Code, Codex, Hermes or OpenClaw through one shared interface, so switching agents is one setting.\"."
+          },
+          "receipt": {
+            "to": "Agent-Machines@49447b5:README.md:26, 90-95",
+            "was": "Agent-Machines@49447b5:README.md:26",
+            "why": "README.md:90-95 is the mux.create call where the agent is one field."
+          }
+        },
+        "Provider Route": {
+          "feature": {
+            "to": "Its cloud is one setting, so an agent runs on Daytona, E2B, Sprites or Vercel Sandbox.",
+            "was": "The provider is a setting on the machine",
+            "why": "README.md:27 (provider adapters for Daytona, E2B, Sprites and Vercel Sandbox), README.md:90-95 (the sandbox is one field of mux.create) and README.md:245-246 (four adapters, which do not behave identically, so the line claims a setting and never sameness). Two lines, so the face fits eight beside the three-line trait; the move adapts (it hits with the better of its two disciplines), as the mux can place a machine on whichever provider suits it (README.md:128-129). Copy edit: Says why it matters; holds two lines, so the three-line trait leaves the face at 8. Draft: \"The cloud it runs on is a setting: Daytona, E2B, Sprites or Vercel Sandbox.\"."
+          },
+          "name": {
+            "to": "Compute Adapters",
+            "was": "Provider Route",
+            "why": "\"Provider Route\" reads as model routing, which README.md:28 names separately (\"a compatible model route\"); the feature is the row README.md:27 calls Compute adapters."
+          },
+          "receipt": {
+            "to": "Agent-Machines@49447b5:README.md:27, 90-95, 245-246",
+            "was": "Agent-Machines@49447b5:README.md:27, 245-246",
+            "why": "README.md:90-95 is the setting."
+          }
+        },
+        "Worker Library": {
+          "feature": {
+            "to": "Agents can load any of 161 skills and 39 tool servers, and the dashboard shows which are verified.",
+            "was": "161 skills and 39 MCP servers",
+            "why": "README.md:30 (select skills and tools for an agent) and README.md:34-37 (161 skills and 39 MCP servers in the bundled catalog; the dashboard separates discovery, installation attempts and verification, so a listed tool is never claimed installed). \"Tool servers\" explains MCP servers. Copy edit: README.md:34-37: the dashboard separates discovery, installation and verification; keeps the face within 52 words. Draft: \"Each agent can load any of 161 skills and 39 tool servers, and the dashboard tracks which are installed and verified.\"."
+          },
+          "receipt": {
+            "to": "Agent-Machines@49447b5:README.md:30, 34-37",
+            "was": "Agent-Machines@49447b5:README.md:34-37",
+            "why": "README.md:30 is where an agent selects skills and tools."
+          }
+        }
+      }
+    },
+    "prototemplate": {
+      "what": {
+        "to": "A design lab of 27 live website designs and its own graphics engines.",
+        "why": "Prototemplate@d8ebecaa1:README.md:15, 38 (every direction is a built page that runs live; the design lab holds the twenty-seven directions), ARCHITECTURE.md:203 (twenty-seven in src/lib/directions.ts) and ARCHITECTURE.md:250-273 (the signature engines live as libraries the pages mount). The organization it serves is never named (no General Translation surface or credit). 12 words, two lines. Copy edit: 'shader' is jargon a visitor may not know; 'its own' keeps true that not every design mounts an engine. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A design lab of 27 live website designs and their shader engines.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Its animations pause off screen, so out of play it regains 6% Health a turn.",
+          "was": "While it waits on the bench it recovers 6% of its HP at the end of each turn, the way its loops pause off screen and cost nothing.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's prototemplate line deliberately: it prints \"HP\", a banned label (EX.md 20, E14b), and runs 24 words, over EX.md 10's 18. The hook is unchanged: 6% of max Health at the end of each turn out of play (r3/battle/engine/src/traits.ts:67). Product: sections/visibility.ts pauses loops off screen (ARCHITECTURE.md:239-240). 15 words, two lines. Copy edit: Fact first, then the rule. Draft: \"Out of play it regains 6% Health a turn, since its animations pause off screen.\"."
+        }
+      },
+      "moves": {
+        "Horizon Field": {
+          "feature": {
+            "to": "A black hole drawn live bends the page's ruled lines into arcs, and your pointer can bend them too.",
+            "was": "A lensing black hole drawn analytically in one WebGL canvas; the pointer bends the light",
+            "why": "src/lib/horizon-field.ts:1-21 (one lensing shader bends the hero's own ruled hairlines into arcs against the rim) and :45-52 (the lens cursor mode: the pointer is a second body the light and rules swirl around). \"Lensing\" and \"analytically\" were jargon. Copy edit: 'GPU-drawn' is jargon; 'live' says the same to a visitor. Draft: \"A GPU-drawn black hole bends the page's ruled lines into arcs, and the pointer can bend them too.\"."
+          },
+          "receipt": {
+            "to": "Prototemplate@d8ebecaa1:src/lib/horizon-field.ts:1-21, 38-40, 45-52",
+            "was": "Prototemplate@d8ebecaa1:src/lib/horizon-field.ts:1-16, 38-40",
+            "why": "Lines 17-21 are the bent page rules and 45-52 the pointer, which the old range did not reach."
+          }
+        },
+        "Studio Field": {
+          "feature": {
+            "to": "Ten animated patterns of square dots share one graphics canvas, so a page can run many at once.",
+            "was": "Ten Bayer presets on one shared WebGL context",
+            "why": "src/lib/studio-field.ts:122-152 (BAYER_PRESETS, ten ordered dither presets) and :44-49 (one WebGL context shared by every field, because a context per field exhausted the browser's budget and went black); dither.mdx:100 (the ten presets). \"Bayer\" becomes \"dither patterns of square dots\", and the shared canvas says why it matters. Copy edit: 'dither' and 'GPU' explained away; studio-field.ts:44-49, 122-152 (one shared context). Draft: \"Ten animated dither patterns of square dots, drawn on one shared GPU canvas so many fit on a page.\"."
+          },
+          "receipt": {
+            "to": "Prototemplate@d8ebecaa1:src/lib/studio-field.ts:44-49, 122-152; content/docs/components/(fields)/dither.mdx:100",
+            "was": "Prototemplate@d8ebecaa1:src/lib/studio-field.ts:122-152; content/docs/components/(fields)/dither.mdx:100",
+            "why": "src/lib/studio-field.ts:44-49 is the one shared context."
+          }
+        },
+        "Type Field": {
+          "feature": {
+            "to": "Glyphs from eight writing systems rain down and gather into the word \"language\" in one script after another.",
+            "was": "Glyphs from eight scripts condense into one word that prints as real type, with its measured advance",
+            "why": "src/lib/glyph-field.ts:1-12: glyphs from eight scripts drift as ink and condense into the word \"language\" in one script after another, and the held word prints as real type. \"Measured advance\" was type jargon."
+          },
+          "name": {
+            "to": "Glyph Rain",
+            "was": "Type Field",
+            "why": "The module is src/lib/glyph-field.ts, which ARCHITECTURE.md:259 calls \"canvas glyph rain\"; \"Type Field\" reads as a form input. The new name says what moves."
+          },
+          "receipt": {
+            "to": "Prototemplate@d8ebecaa1:src/lib/glyph-field.ts:1-12; ARCHITECTURE.md:259",
+            "was": "Prototemplate@d8ebecaa1:src/lib/glyph-field.ts:1-12",
+            "why": "ARCHITECTURE.md:259 is the name."
+          }
+        },
+        "Every Sentence": {
+          "feature": {
+            "to": "A headline breaks into glyphs and regroups as the same sentence in the next language, right-to-left included.",
+            "was": "One sentence dissolves into glyph dust and reassembles in the next language, mirrored for right to left",
+            "why": "src/components/shared/EverySentence.tsx:13-21 (the headline dissolves into glyph dust and reassembles as the incoming sentence, mirrored for right-to-left text) and motion.mdx:59 (the same headline in seven languages). Says it in a visitor's words."
+          }
+        }
+      }
+    },
+    "bday-land": {
+      "what": {
+        "to": "A birthday site friends fill with cards, which turns into a 3D island.",
+        "why": "birthdayland@6ebac76e9:README.md:3-9 (a birthday website friends fill together; on the day it becomes a little 3D island where every friend is a blob and every card is something to read). 13 words, two lines. Copy edit: One shape for every what; README.md:7 (the site becomes a little 3D island). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Friends fill a birthday site with cards, and it becomes a 3D island.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "A friend's blob throws up to five doodles, so when +999 Love lands, all five hit.",
+          "was": "Its multi-hit moves always land their full hit count, because a friend's attack throws every doodle on the card, up to five, and each one flies, freezes and impacts.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's bday-land line deliberately: it runs 31 words, over EX.md 10's 18. Its one move that hits more than once is +999 Love (1 to 5 hits), and the hook sets the hits to the maximum (r3/battle/engine/src/traits.ts:35, 69); accuracy still applies, so the line says \"when it lands\". Product: the attack throws each doodle on the card, up to five (src/world/interaction/AttackSequence.tsx:74-75, 134). 17 words, two lines. Copy edit: Fact first, then the rule; names the move the rule acts on, as Katagami's trait does. Draft: \"When its doodle throw lands, it hits five times, as a friend's blob throws up to five.\"."
+        }
+      },
+      "moves": {
+        "+999 Love": {
+          "feature": {
+            "to": "On the island, a friend's blob pelts you with the doodles they drew on their card, then says their message.",
+            "was": "A friend's blob throws the doodles from their card",
+            "why": "README.md:29-32: walk up to a friend's blob and press E; they pelt you with their doodles (+999 LOVE is the first sticker on the hits, HitStickers.tsx:9), then say their piece in a dialogue box. The name stays the product's own stamp."
+          },
+          "name": {
+            "to": "Doodle Barrage",
+            "was": "+999 Love",
+            "why": "The owner's ex.5 fix: '+999 Love' is a sticker's number, not what the feature does. A friend's blob pelts you with the doodles from their card (README.md:29-32; HitStickers.tsx:9), so the name says that; power, accuracy and uses are unchanged."
+          }
+        },
+        "Whack-a-Gnome": {
+          "feature": {
+            "to": "The first of twelve festival games: bonk gnomes for 45 seconds, but never a llama.",
+            "was": "The arcade booth at the head of the festival",
+            "why": "src/games/booths.ts:18-31 (GAME_IDS: twelve booths, whack-a-gnome first) and src/games/games/whack-a-gnome/meta.ts:7-13 (gnomes pop out of the lawn, bonk them back, never bonk a llama, a 45 second round). The old line said where the booth stands and never what the game is. Copy edit: keeps the face within 52 words. Draft: \"The first of twelve festival games: bonk gnomes back into the lawn for 45 seconds, but never a llama.\"."
+          },
+          "receipt": {
+            "to": "birthdayland@6ebac76e9:src/games/booths.ts:18-31; src/games/games/whack-a-gnome/meta.ts:7-13",
+            "was": "birthdayland@6ebac76e9:src/games/booths.ts:18-31; src/games/games/whack-a-gnome/meta.ts:9",
+            "why": "meta.ts:7 is the blurb (gnomes, lawn, llamas) and :13 the 45 second round; :9 alone is the controls."
+          }
+        },
+        "Leave a Card": {
+          "feature": {
+            "to": "Friends open one link, with no account, and build a card in seven steps, from a message to a selfie.",
+            "was": "The seven-step card wizard friends open from one link",
+            "why": "src/features/contribute/types.ts:142-150 (seven steps: who, message, draw, photo, video, face, review), README.md:24-26 (a note, doodles, photos and a short video, with a selfie step so every friend has a face) and README.md:17-18, 88 (no accounts; friends need nothing but the URL). Copy edit: types.ts:142-150: seven steps from name and message to the face photo; keeps the face within 52 words. Draft: \"Friends open one link, no account needed, and build a card in seven steps, from a message to a selfie.\"."
+          },
+          "receipt": {
+            "to": "birthdayland@6ebac76e9:src/features/contribute/types.ts:142-150; README.md:17-18, 24-26, 88",
+            "was": "birthdayland@6ebac76e9:src/features/contribute/types.ts:142-150; README.md:24-26,88",
+            "why": "README.md:17-18 carries \"no accounts\"."
+          }
+        },
+        "Light a Candle": {
+          "feature": {
+            "to": "The cake has one candle per friend, and each lights when you hug that friend's blob, showing who you found.",
+            "was": "Each hug lights a candle on the cake",
+            "why": "src/world/scene/props/Candles.tsx:110-115 (one candle per friend, unlit until that friend is hugged, tracked in foundIds) and README.md:32 (each hug lights a candle on the cake)."
+          }
+        }
+      }
+    },
+    "powerlifting": {
+      "what": {
+        "to": "Princeton's powerlifting club website, its whole brand drawn in code.",
+        "why": "Princeton-Powerlifting@ca20b1059:README.md:9-10 (Princeton University's powerlifting club, open to every student) and README.md:19 (every logo, wordmark, colorway and icon is generated from code). Copy edit: 'drawn in code' is the card's one phrase for it; README.md:19. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"The Princeton powerlifting club's site, with its whole brand drawn by code.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Both kg and lb are on the page, so switching never flashes, and it cannot be stunned.",
+          "was": "Both units are already in the page and CSS shows one, so a switch never flashes, and a stun never lands on it.",
+          "why": "'units' and 'CSS' mean nothing to a visitor; the rule now leads with the game effect and names the units. README.md:26 and components/Units.tsx:3-5: both values are in the HTML and CSS shows one, so there is no flash. Copy edit: Fact first, then the rule; components/Units.tsx:3-5. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"It cannot be stunned: weights print in both kg and lb, so switching never flashes.\"."
+        }
+      },
+      "moves": {
+        "Primary Mark": {
+          "feature": {
+            "to": "The club's main logo, drawn in code: a tiger head over a loaded barbell above the club name.",
+            "was": "The tiger over a loaded bar above the chamfered wordmark",
+            "why": "marks.ts:235-245 composes the primary lockup from the emblem (the head-on tiger over the bar, emblemArt, marks.ts:165-171) and the stacked wordmark; tiger-front.ts:1-4 is the head. 'chamfered wordmark' becomes 'the club name' for a visitor. Copy edit: 'drawn in code' across the card. Draft: \"The club's main logo, drawn by code: a tiger head over a loaded barbell above the club name.\"."
+          }
+        },
+        "Chamfered Alphabet": {
+          "feature": {
+            "to": "A block alphabet with cut corners, drawn as shapes in code, so wordmarks need no font file.",
+            "was": "The club lettering, every glyph a list of closed polygons",
+            "why": "letters.ts:1-15: a chamfered block alphabet on a 100-unit cap height, every glyph a list of closed polygons; marks.ts:198-208: the wordmarks are set with textPath from it, so they carry no font. 'Chamfered' is kept in the name and explained as cut corners. Copy edit: Plainer: the wordmarks need no font file (marks.ts:198-208). Draft: \"A block alphabet with cut corners, drawn as shapes in code, so every club wordmark needs no font.\"."
+          },
+          "receipt": {
+            "to": "Princeton-Powerlifting@ca20b1059:lib/brand/letters.ts:1-15; lib/brand/marks.ts:198-208; README.md:42",
+            "was": "Princeton-Powerlifting@ca20b1059:lib/brand/letters.ts:1-15; README.md:42",
+            "why": "marks.ts:198-208 shows the wordmarks drawn from the alphabet, the claim the new line adds."
+          }
+        },
+        "84 Icons": {
+          "feature": {
+            "to": "84 icons for lifting, meets and the club, drawn on one grid with one line weight, plus solid squat, bench and deadlift.",
+            "was": "An 84-icon pack on a 24 grid, stroke 2, mitered, with solid front-on squat, bench and deadlift",
+            "why": "README.md:45 and lib/brand/icons/index.ts:1-23: 84 icons on a 24 grid, stroke 2, mitered, grouped lifts, meet, club and ui, with the solid front-on squat, bench and deadlift swapped in. '24 grid, stroke 2, mitered' becomes 'one grid with one line weight'."
+          },
+          "name": {
+            "to": "Icon Set",
+            "was": "84 Icons",
+            "why": "The owner's ex.5 fix: a count does not say what the feature is. The feature is the club's icon set, 84 icons on one grid and line weight (README.md:45; lib/brand/icons/index.ts:1-23), and the description keeps the count; power, accuracy and uses are unchanged."
+          }
+        },
+        "Six Colorways": {
+          "feature": {
+            "to": "Every logo comes in six color versions for dark and light backgrounds, drawn by the same code so they always match.",
+            "was": "Full color, On chalk, Iron, Chalk, Tiger and Red, each drawn by the same function",
+            "why": "marks.ts:22-29: six colorways, each on an iron (dark) or chalk (light) ground; marks.ts:43 paint() is the one function every asset calls; BrandKit.tsx:163-180 is the picker. Says why it matters instead of listing the six names."
+          }
+        }
+      }
+    },
+    "elo": {
+      "what": {
+        "to": "A blind voting tool that ranks a team's options with chess-style ratings.",
+        "why": "Elo@a6a460a61:README.md:3-5: a voter sees two options at a time and picks one, options are ranked by Elo, and a decision judges marks, images, words, websites or components. \"Unnamed\" is the alias of src/lib/identity.ts:138-145; \"chess-style\" tells a visitor what an Elo rating is. Copy edit: One shape for every what; README.md:3 (blind pairwise votes, Elo ratings). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Teams vote on two unnamed options at a time, and chess-style Elo ratings rank them all.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Elo rewards upsets, so it hits cards with higher stat totals harder, lower ones softer.",
+          "was": "Like an Elo update, a win over a stronger card is worth more: its hits scale with how unlikely the hit was, using stat totals as ratings.",
+          "why": "Supersedes the battle line deliberately: 16 words inside the 12 to 18 budget, and it states both sides of the hook (2 x (1 - E): more than x1 against a bigger stat total, less against a smaller one, x1 when equal). \"Rewards upsets\" is the product behaviour: an update moves 32 x (1 - expected), so an unlikely win moves more (src/lib/elo.ts:79-81,106). Copy edit: Same rule, shorter. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"Elo rewards upsets, so it hits cards with bigger stat totals harder and smaller ones softer.\"."
+        }
+      },
+      "moves": {
+        "Blind Pair": {
+          "feature": {
+            "to": "Each matchup shows two options under 12-character codes, so no name can sway the voter.",
+            "was": "Two options at a time under opaque aliases",
+            "why": "Says what blind means and why it matters: optionAlias is the first 12 characters of an HMAC per decision, because an option key could name it (src/lib/identity.ts:138-145). Face move: 15 words."
+          }
+        },
+        "Elo Replay": {
+          "feature": {
+            "to": "Ratings are rebuilt from the vote log: options start at 1000, and each counted vote moves up to 32 points.",
+            "was": "Ratings replayed over the counted votes, start 1000, K 32",
+            "why": "\"K 32\" becomes what it does: delta = 32 x (1 - expected), at most 32 (src/lib/elo.ts:106; src/lib/config.ts:6-7). \"Counted\" is the latest vote per voter per pair (src/lib/elo.ts:1-5). Face move: 20 words."
+          },
+          "receipt": {
+            "to": "Elo@a6a460a61:src/lib/elo.ts:1-5,79-81,83-116; src/lib/config.ts:6-7",
+            "was": "Elo@a6a460a61:src/lib/elo.ts:79-81,83-116; src/lib/config.ts:6-7",
+            "why": "Lines 1-5 say the ratings are replayed over the vote log in time order, which the description now claims."
+          }
+        },
+        "MCP Server": {
+          "feature": {
+            "to": "All 16 admin actions are also tools AI agents can call, so an agent can do anything the admin can.",
+            "was": "Every operation is also an MCP tool, so an agent does what the admin does",
+            "why": "Explains MCP by what it lets an agent do. 16 is the OPS list at the pin (src/lib/ops.ts:144-474, 16 entries); ops.ts:1-6 says a person and an agent can do exactly the same things, and the MCP route lists every operation as a tool (src/app/mcp/route.ts:1-5,20-21). Copy edit: 'MCP' stays in the move name only; the line says what it gives a visitor. Draft: \"All 16 admin actions are also MCP tools that AI agents can call, so an agent can do anything the admin can.\"."
+          },
+          "receipt": {
+            "to": "Elo@a6a460a61:src/app/mcp/route.ts:1-5,20-26,50; src/lib/ops.ts:1-6,144-474",
+            "was": "Elo@a6a460a61:src/app/mcp/route.ts:20-26,50; src/lib/ops.ts:1-6",
+            "why": "route.ts:1-5 states every operation is a tool, and ops.ts:144-474 is the list of 16 the description counts."
+          }
+        },
+        "Change Vote": {
+          "feature": {
+            "to": "A voter can go back to any matchup and change the pick; the latest vote counts, up to 10 per pair.",
+            "was": "A voter goes back through every matchup and changes it; the latest cast counts, up to 10 per pair",
+            "why": "Same claim in plain words: README.md:5 (go back through every matchup and change it), src/lib/change.ts:9-10 (MAX_CASTS 10), db/schema.sql:64 (seq between 1 and 10)."
+          }
+        }
+      }
+    },
+    "cotfly": {
+      "what": {
+        "to": "A 3D fruit fly in Claude of Tanks, its throttle set by 124 simulated neurons.",
+        "why": "CoTFly@72f5c8fab:README.md:7,38,40: a fruit fly in a tiny tank helmet plays Claude of Tanks, and a live simulation of 124 measured cells has a causal effect on its driving gain (src/fly/controller.ts:88-90). \"Simulated\" keeps it a model, as README.md:57 requires. Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A 3D fruit fly plays Claude of Tanks, its throttle tuned live by 124 simulated neurons.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Firing neurons scale its throttle, so after two turns in play, its Pace rises to 1.5 times.",
+          "was": "The P1 population firing rate scales its throttle, so its Pace rises one step at the end of every second turn it stays in, to a cap of +1.",
+          "why": "Supersedes the battle line deliberately: 16 words, and \"P1 population\" is a cell name a visitor does not know. The hook is spd +1 at the end of its second turn in play, cap +1, and +1 is x1.5 (r3/battle/engine/src/traits.ts:80, rules.ts:25-32); the product fact is throttle x (0.78 + 0.22 x P1 output) (src/fly/controller.ts:88-90). Copy edit: Fact first, then the rule; keeps the face within 52 words. Draft: \"Firing neurons scale its throttle: after two turns in play, its Pace rises to 1.5 times.\"."
+        }
+      },
+      "moves": {
+        "Integrate and Fire": {
+          "feature": {
+            "to": "Each of 124 neurons charges, leaks and fires past a voltage threshold, computed live every millisecond.",
+            "was": "Leaky integrate-and-fire neurons stepped in 1 ms substeps",
+            "why": "Unpacks \"leaky integrate-and-fire\" into what each cell does: voltage integrates and decays toward -65 mV, spikes at -50 mV, in a 1 ms loop (src/fly/connectome.ts:27-74), with no recorded spike playback (docs/FLY-OF-TANKS.md:19). Face move: 16 words."
+          },
+          "receipt": {
+            "to": "CoTFly@72f5c8fab:src/fly/connectome.ts:27-74; src/fly/connectome.selftest.mjs:8; docs/FLY-OF-TANKS.md:19",
+            "was": "CoTFly@72f5c8fab:src/fly/connectome.ts:27-74",
+            "why": "The description now counts 124 neurons (selftest.mjs:8 asserts it) and says computed live (FLY-OF-TANKS.md:19: no recorded spike playback)."
+          }
+        },
+        "Inhibition": {
+          "feature": {
+            "to": "75 inhibiting neurons quiet 49 driving neurons through 1,106 connections mapped in a real fly brain, slowing the throttle.",
+            "was": "mAL cells inhibit the P1 population through the measured edges",
+            "why": "Adds the counts and the consequence: every edge runs mAL to P1 (selftest.mjs:10-14), 1,106 measured edges (NOTICE.md:9), and P1 output scales throttle (controller.ts:88-90). The damping sign is the model's assumption (NOTICE.md:11), so only the connections are called mapped. Copy edit: 'mAL' and 'P1' are lab names a visitor cannot read; the receipt keeps them (selftest.mjs:8-14). Draft: \"75 mAL cells damp 49 P1 cells through 1,106 connections mapped in a real fly brain, slowing the pilot's throttle.\"."
+          },
+          "receipt": {
+            "to": "CoTFly@72f5c8fab:src/fly/connectome.ts:46-49,57-60; src/fly/connectome.selftest.mjs:8-14,23-26; src/fly/data/NOTICE.md:9,11; docs/FLY-OF-TANKS.md:19; src/fly/controller.ts:88-90",
+            "was": "CoTFly@72f5c8fab:src/fly/connectome.ts:46-49,57-60; src/fly/connectome.selftest.mjs:23-26; src/fly/data/NOTICE.md:11",
+            "why": "Each added line carries a new claim: the 75 and 49 (FLY-OF-TANKS.md:19), the 1,106 edges (NOTICE.md:9, selftest.mjs:9) and the throttle (controller.ts:88-90)."
+          }
+        },
+        "Sugar Boost": {
+          "feature": {
+            "to": "Pilot controls give the fly 15 seconds of sugar: its driving neurons fire faster and it drives closer to targets.",
+            "was": "A 15 second sugar boost",
+            "why": "Says what sugar does: P1 drive rises with reward (src/fly/connectome.ts:57-60), and the fly holds its firing position at 70 instead of 125 (src/fly/controller.ts:56), for 15 game seconds (src/fly/runtime.ts:374-375; docs/FLY-OF-TANKS.md:15). Copy edit: 'driving neurons' as in Inhibition; the receipt keeps P1. Draft: \"Pilot controls give the fly 15 seconds of sugar: its P1 neurons fire faster and it drives closer to targets.\"."
+          },
+          "receipt": {
+            "to": "CoTFly@72f5c8fab:README.md:32; src/fly/runtime.ts:374-375; src/fly/controller.ts:56; src/fly/connectome.ts:57-60; docs/FLY-OF-TANKS.md:15",
+            "was": "CoTFly@72f5c8fab:src/fly/runtime.ts:374-375; src/fly/controller.ts:56; src/fly/connectome.ts:57-60; docs/FLY-OF-TANKS.md:15",
+            "why": "README.md:32 is the Pilot controls row the description names."
+          }
+        },
+        "Fire Button": {
+          "feature": {
+            "to": "The tank fires only while one foreleg holds aim and the other holds fire, after 90 ms of travel.",
+            "was": "The fly reaches out and presses its fire button",
+            "why": "States the real rule: fire needs the right foreleg in contact with fire and the left in contact (src/fly/runtime.ts:252-256), the left on aim when a target is seen (runtime.ts:225-229), and contact comes after 0.09 s of travel (src/fly/actuators.ts:33-42). Face move: 20 words. Copy edit: 'ms' after a number across the set; keeps the face within 52 words. Draft: \"The tank fires only while one foreleg holds aim and the other holds fire, each after 90 milliseconds of travel.\"."
+          },
+          "receipt": {
+            "to": "CoTFly@72f5c8fab:src/fly/actuators.ts:1,33-42; src/fly/runtime.ts:225-229,252-256; docs/FLY-OF-TANKS.md:11",
+            "was": "CoTFly@72f5c8fab:src/fly/actuators.ts:33-42; src/fly/runtime.ts:252-256",
+            "why": "runtime.ts:225-229 puts the left foreleg on aim, and FLY-OF-TANKS.md:11 states the 90 ms contact delay."
+          }
+        }
+      }
+    },
+    "relay": {
+      "what": {
+        "to": "A mock team chat app for testing AI agents, with every run graded.",
+        "why": "Relay@f50e9e097:README.md:5 (\"a Slack-like playground for computer-use agents\"), 44 (every attempt has a key-free review page with its trace; zero-action runs have no playback, so the line says recorded) and 63-64 (the final state decides the grade). \"Team chat\" in place of the third-party name keeps Slack out of the face. Copy edit: Shorter; recording is Watch Replay's line. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A mock team chat app for testing AI agents, with every run graded and recorded.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "A hidden check reads only the final state, so its hits ignore barriers and raised Proof.",
+          "was": "Its hits are judged on the final state: the other card's barrier and raised Proof do not reduce them.",
+          "why": "Supersedes the battle line deliberately: 16 words, and it names the product behaviour first (README.md:63-64, 184, 220: a hidden state grader checks the final workspace). The hook is unchanged: grader hits skip the target's barrier and positive defense stages (r3/battle/engine/src/engine.ts:214-230). Copy edit: Same rule, shorter. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"A hidden check reads only the final workspace, so its hits ignore barriers and raised Proof.\"."
+        }
+      },
+      "moves": {
+        "Live Browser": {
+          "feature": {
+            "to": "Pick a model and a task, then watch every action it takes in a real browser.",
+            "was": "Choose a model and task, then watch its real browser",
+            "why": "Keeps README.md:70-72 (\"choose a model and task, then watch its real browser\") and says what you watch: its actions, with recorded cursor and click feedback (README.md:86). Face move: 16 words."
+          }
+        },
+        "1v1": {
+          "feature": {
+            "to": "Two models run the same task from the same starting data in fresh workspaces, side by side, each graded separately.",
+            "was": "Same task and seed, two fresh workspaces, side by side",
+            "why": "README.md:94-97: same task and seed, two fresh workspaces, side-by-side action feeds and independently checked outcomes. \"Seed\" becomes \"starting data\", since the seed sets the workspace facts (README.md:201-202). Face move: 20 words."
+          },
+          "name": {
+            "to": "Head To Head",
+            "was": "1v1",
+            "why": "The owner's ex.5 fix: a number does not say what the feature is. The move runs two models on the same task and starting data side by side, each graded on its own (Relay@f50e9e097:README.md:94-97), which is a head-to-head; power, accuracy and uses are unchanged."
+          }
+        },
+        "Jev Choice": {
+          "feature": {
+            "to": "An AI model picks one action from a menu of visible actions, and the panel shows the probability it gave each.",
+            "was": "Jev picks one action from a recorded menu of visible actions and returns the full probability distribution",
+            "why": "Says what happens and what you see: Relay builds a deterministic menu of enabled controls, the model picks one, and the side panel shows its returned probabilities (docs/system-one.md:14-17,26; README.md:165-169). The model's name stays in the receipt. Copy edit: 'AI model' is the set's one term (Mailroom, Jarhead, Sevenfold). Draft: \"A decision model picks one action from a menu of visible actions, and the panel shows the probability it gave each.\"."
+          },
+          "name": {
+            "to": "Action Menu",
+            "was": "Jev Choice",
+            "why": "Jev is TypeSafe's model, a third-party name that a bold move name makes focal, and \"Choice\" does not say what the feature is. The feature is a menu of visible actions the model picks from (docs/system-one.md:14-17). The battle keys its scene by the old slug (broadcast/scenes/relay.jev-choice.ts), so the merge maps it."
+          },
+          "receipt": {
+            "to": "Relay@f50e9e097:README.md:165-169; docs/system-one.md:13-17,26",
+            "was": "Relay@f50e9e097:README.md:165-169; docs/system-one.md:15-17",
+            "why": "system-one.md:13-14 builds the menu and line 26 is the panel of probabilities, both now in the description."
+          }
+        },
+        "Watch Replay": {
+          "feature": {
+            "to": "Any recorded run plays back in the real interface, step by step, with its dialogs, typed text and targets.",
+            "was": "Play a recorded run inside the actual interface, with the dialog, typed text and action target restored at each step",
+            "why": "Same claim as README.md:82-83, in plain order: what plays, where, and what is restored at each step. Copy edit: Shorter and plainer, same claim (README.md:165-169). Draft: \"Any recorded run plays back inside the real interface, restoring the open dialog, typed text and each action's target step by step.\"."
+          }
+        }
+      }
+    },
+    "princeton-td": {
+      "what": {
+        "to": "A browser tower defense game set at Princeton, with 26 levels.",
+        "why": "Explains tower defense for a visitor who does not know the genre. Princeton-Tower-Defense@e76bdf8:README.md:7 (a tower defense game built in the browser) and README.md:26 (waves of enemies across 26 levels; Princeton setting). Copy edit: One shape for every what; README.md:26 (26 levels). Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A Princeton-themed browser game where you place campus towers to stop enemy waves across 26 levels.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Enemy waves are fixed lists, so its moves that hit more than once land every hit.",
+          "was": "Its multi-hit moves land the scheduled number of hits every time.",
+          "why": "Supersedes r3/battle/data/text.overrides.json's princeton-td line deliberately: that line drops \"multi-hit\" but says nothing of the product. This one keeps its fix and adds the behaviour the rule comes from: every wave is authored data with final timings (waves.ts:7-16). The engine gives the move its full hit count (traits.ts Waves Are Data). Copy edit: 'moves that hit more than once' across the set. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"Its enemy waves are fixed lists, so a move hitting more than once lands every scheduled hit.\"."
+        }
+      },
+      "moves": {
+        "Missile Battery": {
+          "feature": {
+            "to": "The Palmer Mortar's final upgrade can be a six-pod guided launcher that fires barrages, aimed automatically or by hand.",
+            "was": "A campus tower upgrade",
+            "why": "Names the tower and says what the upgrade does. README.md:225 (Palmer Mortar, upgrade paths Missile Battery or Ember Foundry) and towers.ts:175, 180-185 (6-pod guided launcher rack; auto-aim or manual targeting for barrages). Copy edit: towers.ts:175, 180-185 (one of two choices at the last level); the draft set four lines at 0.040W, this holds three. Draft: \"One of the Palmer Mortar's two final upgrades: a six-pod guided launcher that fires missile barrages, aimed automatically or by hand.\"."
+          },
+          "receipt": {
+            "to": "Princeton-Tower-Defense@e76bdf8:README.md:225; src/app/constants/towers.ts:175, 180-185",
+            "was": "Princeton-Tower-Defense@e76bdf8:src/app/constants/towers.ts:183",
+            "why": "Line 183 is only the name; 175 and 180 to 185 hold the choice and the launcher, and README.md:225 names the tower."
+          }
+        },
+        "Wave Schedule": {
+          "feature": {
+            "to": "The first level, Poe Field, opens with three timed enemy groups, each with a set count and spacing.",
+            "was": "Poe Field, wave 1",
+            "why": "Says what a wave schedule is, using the move's own data (three groups, so three hits). waves.ts:21-27 (Poe Field wave 1: three groups with count, interval and delay) and maps.ts:972-979 (Poe Field, difficulty 1, the tutorial level). Copy edit: waves.ts:21-27: the first group has no delay, so 'each defined by a count, spacing and delay' overclaimed; every group has a count and an interval. Draft: \"Poe Field, the first level, opens with three enemy groups, each defined by a count, spacing and delay.\"."
+          },
+          "receipt": {
+            "to": "Princeton-Tower-Defense@e76bdf8:src/app/constants/waves.ts:21-27; src/app/constants/maps.ts:972-979",
+            "was": "Princeton-Tower-Defense@e76bdf8:src/app/constants/waves.ts:19-25",
+            "why": "Wave 1 sits on lines 21 to 27 (19 and 20 are the region comment); maps.ts names the level and its place as the first."
+          }
+        },
+        "Offscreen Layers": {
+          "feature": {
+            "to": "Terrain and paths are drawn once and kept until you zoom, so each frame redraws only towers, enemies and effects.",
+            "was": "The static map renders once to an offscreen canvas",
+            "why": "Says what is saved and why it matters, without \"offscreen canvas\". README.md:195-201 (the static map layer is rendered once and cached, redrawn only on zoom or resize; towers, enemies and particles are redrawn every frame)."
+          },
+          "name": {
+            "to": "Cached Map",
+            "was": "Offscreen Layers",
+            "why": "\"Offscreen Layers\" names the technique, which a visitor cannot read; \"Cached Map\" says what it is (README.md:197, the static map layer cached once)."
+          },
+          "receipt": {
+            "to": "Princeton-Tower-Defense@e76bdf8:README.md:28, 195-201",
+            "was": "Princeton-Tower-Defense@e76bdf8:README.md:28",
+            "why": "Lines 195 to 201 list the cached layers the description names."
+          }
+        },
+        "Boss Wave": {
+          "feature": {
+            "to": "Sandbox mode is an endless arena for testing tower builds, and every fifth round sends a boss.",
+            "was": "A boss every five sandbox rounds",
+            "why": "Says what sandbox mode is and why it exists. README.md:255: an endless wave arena for testing builds, with boss waves every 5 rounds."
+          }
+        }
+      }
+    },
+    "kevin-wiki": {
+      "what": {
+        "to": "A personal wiki that AI agents write and keep current from saved sources.",
+        "why": "Kevin-Wiki@c7f288149:README.md:9 (a knowledge base AI agents read from and write to), 35 (the agent writes it), 39 (cross-references kept current) and 45-46 (raw/ holds the curated sources; agents own wiki/). No person is named. Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A personal wiki that AI agents write, cross-link and keep current from saved sources.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Pages link earlier pages: each different move landed in play adds 10% damage, up to 30%.",
+          "was": "Each different move it lands adds 10% to its damage for the rest of the battle, up to 30%, the way each ingest adds to pages already cross-linked.",
+          "why": "Supersedes the battle line deliberately: 18 words. The hook is x(1 + 0.1 x distinct moves landed), cap 1.3, reset on switch-out (r3/battle/engine/src/traits.ts:86, engine.ts:445), so \"in play\" keeps the reset true. The product fact is README.md:37,39: each ingest writes backlinks into pages already there. Copy edit: One sentence, fact first, then the rule; 'in play' keeps the reset on switch-out (engine.ts:445). Draft: \"Each new source cross-links earlier pages. Each different move landed adds 10% damage in play, up to 30%.\". Closer ex.2: shortened to two face lines (owner ex.2; measured on the face at 225 to 480 px). Same rule (x(1 + 0.1 x distinct moves landed), cap 1.3, reset on switch-out) and the same product fact (README.md:37,39: each ingest writes backlinks into pages already there). 15 words."
+        }
+      },
+      "moves": {
+        "Knowledge Graph": {
+          "feature": {
+            "to": "A live 3D graph draws public pages as points and their links as lines.",
+            "was": "The live 3D graph of every public page and its backlinks",
+            "why": "Says what the graph shows: 3d-force-graph nodes and typed backlinks (ui/src/components/wiki-graph.tsx:289-293), turning at autoRotateSpeed 0.4 (410-411), with private pages filtered by isPageVisible (ui/src/lib/wiki-graph.ts:80-90). Face move: 14 words."
+          },
+          "receipt": {
+            "to": "Kevin-Wiki@c7f288149:ui/src/components/wiki-graph.tsx:289-293, 410-411; ui/src/lib/wiki-graph.ts:80-90",
+            "was": "Kevin-Wiki@c7f288149:ui/src/components/wiki-graph.tsx:289-293, 410-411",
+            "why": "wiki-graph.ts:80-90 is where private pages leave the graph, which \"public pages\" claims."
+          }
+        },
+        "Hybrid Search": {
+          "feature": {
+            "to": "Search runs on the machine with no cloud: it merges keyword and meaning matches, then a local AI model re-ranks them.",
+            "was": "qmd: BM25, vectors, query expansion and LLM re-ranking on-device",
+            "why": "Unpacks BM25 (keyword), vectors (meaning) and LLM re-ranking, all on-device with no API keys (README.md:15, 274-283)."
+          },
+          "receipt": {
+            "to": "Kevin-Wiki@c7f288149:README.md:15, 274-283",
+            "was": "Kevin-Wiki@c7f288149:README.md:274-283; ui/src/lib/search.ts:3-8 (the reader's search)",
+            "why": "ui/src/lib/search.ts:3-8 is the reader's weighted keyword search, which merges no vectors and re-ranks nothing, so it does not back the description; README.md:15 states qmd runs on-device with no API keys."
+          }
+        },
+        "Capture Ingest": {
+          "feature": {
+            "to": "Paste a link and say add it; an AI agent writes its page, related pages, backlinks, citations and index entry.",
+            "was": "Paste a source and say add it: the agent writes the primary page, entity pages, backlinks, citations, routing, index, search and log",
+            "why": "README.md:37: paste a URL, post or repo and say add it, and agents write the primary page, entity pages, backlinks, citations, routing, index, search and log. Face move: 19 words. Copy edit: 'AI agent' across the set. Draft: \"Paste a link and say add it; an agent writes its page, related pages, backlinks, citations and index entry.\"."
+          }
+        },
+        "Self Heal": {
+          "feature": {
+            "to": "Its doctor script scores the wiki's health from 0 to 100; self-heal applies the safe fixes and reruns it to verify.",
+            "was": "The doctor scores the wiki and self-heal applies the safe fixes, then re-runs the doctor",
+            "why": "README.md:363,366,371-372: doctor.ts gives a 0 to 100 score over five subsystems, and self-heal --apply applies provably safe fixes and re-runs the doctor to verify."
+          }
+        }
+      }
+    },
+    "sandbox-arena": {
+      "what": {
+        "to": "A benchmark that races two cloud code sandboxes on the same task.",
+        "was": "Sandbox Arena runs the same task on two cloud code sandboxes side by side and shows which one is faster, cheaper and more reliable. It is for developers choosing where their agents and builds should run.",
+        "why": "README.md:5-10 (two providers run the same task side by side, then the objective metrics pick a winner); app/page.tsx:85-87. 'Sandbox' is defined in the same sentence for a visitor; 11 words, 2 lines in the what box. Provider names stay off the face. Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Races two cloud sandboxes, machines that run code, on one task.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Each run gets a fresh sandbox, deleted after, so its conditions clear every turn.",
+          "was": "Its condition clears at the end of every turn, because each trial gets a new sandbox that is always torn down.",
+          "why": "lib/arena/orchestrator.ts:37-38, 78-80 (runSide creates a sandbox per side and destroys it in finally, even when a step throws); TrialStudio.tsx:266 ('Every line runs in order inside a fresh sandbox'). Product first, then the effect; 14 words, 2 lines."
+        }
+      },
+      "moves": {
+        "Side By Side": {
+          "feature": {
+            "to": "Two sandboxes start the same task at once and stream their logs side by side, so you watch the race live.",
+            "was": "Two sandboxes start the same workload at the same moment, and both logs stream into one feed so you watch them race.",
+            "why": "orchestrator.ts:91-93, 121-128 (Promise.all races both sides; every event is tagged by side); README.md:7-10 (side by side with live streaming logs). 'Workload' becomes 'task', the README's own word. 21 words."
+          }
+        },
+        "Verified Finish": {
+          "feature": {
+            "to": "Every task ends by checking its output against a known answer, so a fast but broken run scores zero.",
+            "was": "Every workload ends by checking its own result, and a run that fails the check scores zero however fast it finished.",
+            "why": "scoring.ts:100-101 (a run that did not succeed scores 0) and 117-121 (success decides before speed); workloads.ts:3-7 and each 'verifies' line (a reference digest, checksum, byte count or HEAD); methodology/page.tsx:88-89 ('so a fast-but-broken run cannot win'). Face move: 19 words, 3 lines. Copy edit: Opens apart from the trait. Draft: \"Each task ends by checking its output against a known answer, so a fast but broken run scores zero.\"."
+          }
+        },
+        "Tail Latency": {
+          "feature": {
+            "to": "Rankings can sort providers by the time that 1 run in 20 exceeds, because averages hide rare long stalls.",
+            "was": "Rankings show the slowest runs and the sample size beside every median, so rare long stalls stay visible instead of averaged away.",
+            "why": "BenchmarkExplorer.tsx:13 (the Tail ranking: lowest p95 first), 40-44 and 93-94 (p95 and p99 beside the median); app/benchmarks/page.tsx:46 ('p95 and p99 expose jitter, queueing and slow recovery paths that averages hide'). p95 is said in plain words: the time 1 run in 20 exceeds. Face move: 19 words, 3 lines."
+          },
+          "name": {
+            "to": "Slowest Runs",
+            "was": "Tail Latency",
+            "why": "'Tail latency' is an engineering term a visitor does not know, and the product never uses it: the benchmarks page labels the ranking 'Tail' and explains it as the slow runs that averages hide (BenchmarkExplorer.tsx:13; app/benchmarks/page.tsx:46). The name now says what the ranking shows. No battle scene is keyed to this move yet, so the merge carries only the id 'tail-latency'."
+          }
+        },
+        "Session Keys": {
+          "feature": {
+            "to": "Your own account keys run one real trial, are read once, expire in ten minutes and never reach logs or the sandbox.",
+            "was": "Your own provider keys run a real trial once, expire after ten minutes and never reach logs, exports or the sandbox.",
+            "why": "credentials.ts:6 (TTL 10 minutes), 63-70 (one-shot read, deleted before provisioning); security.ts:113-120 (the sandbox gets a minimal environment); README.md:36-38 (keys never enter exports, logs, Supabase or the sandbox). 'Provider keys' becomes 'account keys': app/page.tsx:130 says usage lands on your own account. 22 words."
+          }
+        }
+      }
+    },
+    "ariadne": {
+      "what": {
+        "to": "An AI host that guests text to check in, play quests and order drinks.",
+        "was": "Ariadne lets an AI agent host a live event by text and voice: guests check in, play color, word and riddle quests, order drinks and request songs from their phones while a big screen ranks the room. Built for event organizers, it ran a one-night Dedalus Labs event for 76 guests.",
+        "why": "README.md:3-8 (a phone-first event backbone: check guests in, issue missions, take drink orders, over SMS, iMessage and voice). The organiser's company stays out of the face (RIGHTS: third-party marks never focal); 14 words, 2 lines. Copy edit: The draft's line, kept: it fits the what box. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs)."
+      },
+      "trait": {
+        "rule": {
+          "to": "It ignores repeated messages, so a move that hits it more than once lands one hit.",
+          "was": "Moves that hit more than once land only one hit on it: Ariadne processes each delivery once and drops duplicates.",
+          "why": "src/app/api/webhooks/agentphone/route.ts:43-56 (each delivery is claimed once by its webhook id; a duplicate returns 'ok (duplicate)' and is dropped); README.md:148-151. 'Against it' says the trait guards Ariadne, since its own Color Quest hits three times. 14 words, 2 lines. Copy edit: 'hits more than once' across the set; keeps the face within 52 words. Draft: \"It drops repeated messages, so a multi-hit move against it lands only one hit.\"."
+        }
+      },
+      "moves": {
+        "Check In By Text": {
+          "feature": {
+            "to": "Guests check in by texting a first name, with no app, and get back a color gem, secret word and quest.",
+            "was": "Text a first name to check in, no app needed: the agent gives you a color gem, secret word and quest.",
+            "why": "src/server/agent/tools.ts:158-159 ('assigns their color gem, secret word, game id, and first quest. All it takes is their first name') and 208-209 (the phone is the identity, so no app, email or waitlist); README.md:31. The colon list becomes one plain sentence. 21 words."
+          }
+        },
+        "Color Quest": {
+          "feature": {
+            "to": "Find two guests whose gems form a color-wheel triangle with yours, then text their IDs for 100 points.",
+            "was": "Find two guests whose gems make a triangle with yours on the color wheel; code, not the model, checks the answer.",
+            "why": "src/domain/gem-wheel.ts:19-31 (three different hues, all primary or all secondary); src/constants/missions.ts:187-200 (text the two game IDs; 100 points at line 194). The old line's 'code, not the model' was an X-not-Y contrast; the fixed check stays in the receipt and the specials. Face move: 22 words, 3 lines. Copy edit: keeps the face within 52 words; gem-wheel.ts:19-31, missions.ts:187-200 unchanged. Draft: \"Find two guests whose gems make a triangle with yours on the color wheel, then text their game IDs for 100 points.\"."
+          }
+        },
+        "Drink Order": {
+          "feature": {
+            "to": "Text a drink in your own words; it is matched to the menu and queued, and you get a text when ready.",
+            "was": "Text any drink in your own words; code matches it to the menu and you get a text when it is ready.",
+            "why": "src/domain/drink-parse.ts:60-75 (free text mapped to a menu item); tools.ts:251-283 (order_drink queues it); README.md:128-130 (marking ready texts the guest). 22 words."
+          }
+        },
+        "Room Board": {
+          "feature": {
+            "to": "A big screen ranks every guest's tile by points, refreshing every 1.5 seconds and surviving a reload.",
+            "was": "The room's big screen ranks every guest by points, updates every 1.5 seconds and recovers its full state after a reload.",
+            "why": "src/app/projection/page.tsx:191-193 (polls every 1.5 s, re-fetches the snapshot every 15 s) and 205 (tiles sorted by score); README.md:134-138 (reload-safe). Face move: 21 words, 3 lines. Copy edit: keeps the face within 52 words; projection/page.tsx:191-193, 205 unchanged. Draft: \"The big screen shows each guest as a tile ranked by points, refreshes every 1.5 seconds and recovers after a reload.\"."
+          },
+          "receipt": {
+            "to": "Ariadne@9118fb0db:src/app/projection/page.tsx:191-193, 205; README.md:134-138",
+            "was": "Ariadne@9118fb0db:src/app/projection/page.tsx:191-193; README.md:134-138",
+            "why": "Line 205 sorts the tiles by score, the ranking the description now states."
+          }
+        }
+      }
+    },
+    "sigil-ui": {
+      "what": {
+        "to": "A library of 350+ components, all styled from one markdown file.",
+        "was": "Sigil UI is a React design system where one markdown file sets every color, font, spacing and motion value for over 350 components, and one command swaps in any of 44 complete looks. It is for developers, and the coding agents working with them, who want pages that stay on brand without styling each part by hand.",
+        "why": "README.md:6-9 ('One markdown file controls your entire design system', 350+ components); apps/web/lib/product-stats.ts:2. 'Design system' becomes 'library of components', which a visitor reads at once; 11 words, 2 lines. Copy edit: The draft's line, kept; README.md:8. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs)."
+      },
+      "trait": {
+        "rule": {
+          "to": "Presets are checked on load and unsafe values refused, so it cannot be poisoned.",
+          "was": "It cannot be poisoned: every preset is checked before it loads, and a broken or unsafe token value is refused.",
+          "why": "packages/presets/src/index.ts:55-64 (every lazily loaded preset is re-validated and throws on any issue); packages/tokens/src/validation.ts:26-28 (unsafe CSS values refused), 129-131, 411-436. Product first, then the effect; 14 words, 2 lines."
+        }
+      },
+      "moves": {
+        "Preset Swap": {
+          "feature": {
+            "to": "One command swaps in one of 44 complete looks, changing all 519 style values, and no component needs editing.",
+            "was": "One command swaps all 519 tokens to one of 44 presets, and every component takes the new look with no edits.",
+            "why": "packages/cli/src/commands/preset.ts:76-93 (sigil preset <name> rewrites the token file); packages/presets/src/catalog.ts:22-65 (44 named presets); apps/web/lib/product-stats.ts:24-25 ('Each preset populates all 519 tokens ... zero component edits'). 'Tokens' becomes 'style values', the word a visitor knows. 19 words."
+          }
+        },
+        "One Design File": {
+          "feature": {
+            "to": "All 519 style values, from colors to motion, live in one markdown file, and one compile restyles every component.",
+            "was": "One markdown file holds every color, font, size and motion setting, and compiles into the code every component reads.",
+            "why": "README.md:6-9, 21-29 (DESIGN.md holds 519 tokens and compiles to CSS, Tailwind and JSON that 350+ components read); packages/cli/src/commands/design.ts:103-141 (sigil design compile). Face move: 19 words, 3 lines."
+          }
+        },
+        "Agent Skills": {
+          "feature": {
+            "to": "Setup installs ten skills, guide files that teach AI coding agents Sigil's style values, layouts and polish rules.",
+            "was": "Setup writes agent instructions and installs ten skills that teach a coding agent the tokens, layouts and polish rules.",
+            "why": "packages/cli/src/utils/setup.ts:95-105 (writes .sigil/AGENTS.md and installs the skills); packages/cli/src/utils/skills.ts:13-84 (ten skills: tokens, preset, design, messaging, component, layout, playbook, migration, polish, audit). 'Skills' is explained in the same sentence. Face move: 18 words, 3 lines."
+          }
+        },
+        "Doctor": {
+          "feature": {
+            "to": "Doctor runs seven checks on a project's setup, from config to agent files, and marks each one pass, warn or fail.",
+            "was": "Seven checks test a project's config, token file, packages and agent files, and print a pass, warning or error for each.",
+            "why": "packages/cli/src/commands/doctor.ts:16-52 (seven checks: config, tokens file, components directory, component dependencies, CSS import, agent assets, preset; each printed as pass, warning or error). Doctor is the real command name. 21 words."
+          }
+        }
+      }
+    },
+    "dedalus-terminal": {
+      "what": {
+        "to": "A retro birthday terminal where typed passwords set off hidden effects.",
+        "was": "050525 is a one-page birthday surprise Kevin built for Dedalus Labs' first birthday: a CRT terminal on a dark desk beside a lit cake. Visitors type into a real terminal to hunt 143 passwords that light candles, throw confetti, change the screen and play music.",
+        "why": "components/bday/bday-shell.ts:1-20 (a real VT100 terminal whose shell checks every non-command against the password registry); passwords.ts (confetti, balloons, candles, music). The company it was made for stays off the face (RIGHTS: third-party marks never focal); 10 words, 2 lines. Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"A retro terminal where typed passwords set off birthday effects.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "Passwords match in any case or spacing, so its accuracy rises 5 points, up to 100.",
+          "was": "Its moves gain 5 points of accuracy, up to 100, because a password matches in any case, spacing or dash.",
+          "why": "components/bday/passwords.ts:8-10 and 1775-1777 (normalizePassword lowercases and strips spaces, dashes and underscores). '5 points of accuracy' keeps the number; 16 words, 2 lines."
+        }
+      },
+      "moves": {
+        "Password Hunt": {
+          "feature": {
+            "to": "Type any word: 143 passwords, most unlisted, set off confetti, music, candles or a new screen mode.",
+            "was": "Any word that is not a command is checked against 143 passwords, most of them hidden, and a match fires its effect.",
+            "why": "bday-shell.ts:17-20 (anything that is not a built-in goes to the password registry); passwords.ts:1747-1758. Recounted 2026-11-01 by importing PASSWORDS with node --experimental-strip-types: 143 passwords, 431 aliases, 95 in the merch, machines, lore and secret categories that ls does not list (bday-shell.ts:64-68). Effects named from passwords.ts:471, 504, 511, 544, 555 and the music tracks. Face move: 19 words, 3 lines. Copy edit: keeps the face within 52 words; 95 of the 143 sit in categories ls does not list, so 'unlisted' is the exact word. Draft: \"Type any word: 143 passwords, most of them unlisted, set off confetti, music, candles or a new screen mode.\"."
+          }
+        },
+        "Tab Complete": {
+          "feature": {
+            "to": "Tab completes any of 432 known words and commands, so a password takes only a few keys.",
+            "was": "Press Tab and the shell finishes any of 432 known words, so a visitor reaches a password in a few keys.",
+            "why": "BdayTerminal.tsx:181-206 (Tab completes a unique match or the common prefix); passwords.ts:1789-1798 (ALL_COMPLETIONS, recounted 432: every alias plus the commands). Face move: 21 words, 3 lines. Copy edit: keeps the face within 52 words. Draft: \"Press Tab and the shell completes any of 432 known words and commands, so a password takes only a few keys.\"."
+          }
+        },
+        "Four Candles": {
+          "feature": {
+            "to": "The cake starts with four lit candles; type or click to light or blow them out, and lit candles warm the screen.",
+            "was": "The cake's four candles light and blow out by command or by click, and their glow warms the screen and the room.",
+            "why": "reducer.ts:23-25 (four candles, lit, by default) and 117-126 (toggle_candle); CakeLayer.tsx:62-71 (a click on a flame toggles it); passwords.ts:500-525 (typed candle, candles, blow and blowall); ComputerLayer.tsx:15-22 (lit candles brighten and warm the screen). 'The cake starts with four' stays true, since a password can add candles (passwords.ts:497). 22 words."
+          },
+          "receipt": {
+            "to": "Dedalus-Terminal@2c6801ea8:components/bday/reducer.ts:23-25 (four lit candles); reducer.ts:117-126 (toggle_candle); components/bday/CakeLayer.tsx:62-71; components/bday/passwords.ts:500-525 (typed candle, candles, blow and blowall); components/bday/ComputerLayer.tsx:15-22 (lit candles brighten and warm the CRT)",
+            "was": "Dedalus-Terminal@2c6801ea8:components/bday/reducer.ts:23-25 (four lit candles); reducer.ts:117-126 (toggle_candle); components/bday/CakeLayer.tsx:62-71; components/bday/ComputerLayer.tsx:15-22 (lit candles brighten and warm the CRT)",
+            "why": "The description now says candles are lit and blown out by typing; passwords.ts:500-525 are those passwords."
+          }
+        },
+        "Achievement Inbox": {
+          "feature": {
+            "to": "44 achievements arrive as mail on the screen as you play, and the inbox and rewards are saved for your next visit.",
+            "was": "44 achievements arrive as mail in an inbox on the screen, and the inbox and rewards are saved for the next visit.",
+            "why": "notifications.ts:70-308 (44 triggers, recounted 2026-11-01, from discoveries and play such as songs); ComputerLayer.tsx:708, 722 (the mail button); the provider saves the inbox, codes and rewards under bday0505_state (receipt as the roster gives it). 'As you play' replaces 'finds', since some achievements come from playing songs. 22 words."
+          }
+        }
+      }
+    },
+    "sevenfold": {
+      "what": {
+        "to": "A workspace for researchers to find, read and write papers with an AI.",
+        "was": "Sevenfold is a research workspace that keeps a project's papers, search, PDFs, chat and drafts in one place. It is for researchers and labs who read and write academic papers.",
+        "why": "Sevenfold-Demo@3d5885442:app/layout.tsx:26-27 ('unifies discovery, reading, annotation and writing into one project-aware platform') and app/page.tsx:235-237; the chat is sevenfold-research-app@d4725a5:api/routes/chatbot_router.py:150-191. 13 words, 2 lines."
+      },
+      "trait": {
+        "rule": {
+          "to": "Three search lists only add to a paper's rank, so its hits are never resisted.",
+          "was": "Its attacks are never resisted, the way a search list that misses a paper adds zero to its rank and never subtracts.",
+          "why": "schema/funcs/hybrid_search.sql:66-69 at d4725a5: each list adds COALESCE(1.0 / (rrf_k + rank), 0.0) x weight, so a list that misses a paper adds zero and never subtracts. Product first, then the effect; 15 words, 2 lines. Copy edit: 'hits' is the set's word for what a move lands. Draft: \"Three search lists only add to a paper's rank, so its attacks are never resisted.\"."
+        }
+      },
+      "moves": {
+        "Hybrid Search": {
+          "feature": {
+            "to": "Search ranks papers by keywords, meaning and fit with your project at once, then merges the three lists.",
+            "was": "Finds papers three ways at once, by your words, by meaning and by fit with your project, and merges the rankings.",
+            "why": "hybrid_search.sql:17-53 (keyword, meaning and project-context lists) and 55-70 (reciprocal rank fusion merges them); search_router.py:37-87 (the context is the mean embedding of the project's papers). 'Your words' becomes 'keywords': the lexical list is full-text search, not exact match. Face move: 21 words, 3 lines. Copy edit: keeps the face within 52 words. Draft: \"Search ranks papers three ways at once, by keywords, by meaning and by fit with your project, then merges the lists.\"."
+          }
+        },
+        "Duplicate Check": {
+          "feature": {
+            "to": "An AI model reads an uploaded PDF's title, authors and year, and offers to link a matching paper already in the library.",
+            "was": "A model reads each uploaded PDF's title, authors and year, and a paper already in the library is linked, not copied.",
+            "why": "papers_router.py:53-56, 147-195 (process-pdf sends the pages to a model with the metadata prompt and keeps its title, authors and year) and 197-252 (an 80% fuzzy title match in the corpus is offered); UploadPaperModal.tsx:425-470 ('Yes, link this paper' or 'No, create a new paper'). The old 'linked, not copied' was an X-not-Y contrast. 22 words."
+          }
+        },
+        "Chat With Papers": {
+          "feature": {
+            "to": "Ask about attached papers: an AI model reads each PDF in full, compares them and typesets the math.",
+            "was": "Ask about attached papers: the model reads each PDF in full, compares them when there are several, and typesets the math.",
+            "why": "chatbot_router.py:286-328 (each attached PDF is sent whole as a document; with several, the prompt asks for their relationships); ChatViewer.tsx:14-16 (KaTeX renders the math). Face move: 21 words, 3 lines. Copy edit: 'AI model' across the set; keeps the face within 52 words. Draft: \"Attach papers and ask questions: the AI reads each PDF in full, compares them, and shows the math as typeset equations.\"."
+          }
+        },
+        "Saved Workbench": {
+          "feature": {
+            "to": "Search, chat, sources and drafts are views of one project, and each keeps its results when you switch views or reload.",
+            "was": "Search, chat, sources and drafts are views of one project, and each keeps its results when you switch or reload.",
+            "why": "usePersistentState.ts:7-31 (each view's state saved in the browser per user); WorkbenchContext.tsx:56-80, 172 (the views of one project); SearchViewer.tsx:181-182. 'Switch or reload' made explicit: 'switch views or reload'. 21 words."
+          }
+        }
+      }
+    },
+    "podium": {
+      "what": {
+        "to": "A hackathon judging tool that sends judges to teams in fair blocks of five.",
+        "was": "Podium sends hackathon judges to project tables in fair blocks of five and turns their top-three picks into a live leaderboard. It is for organizers judging hundreds of teams across several floors.",
+        "why": "README.md:1-3 ('a high-performance judging coordinator built for large-scale hackathons', assigning judges to projects); AssignmentDashboard.tsx:567-614 (blocks of five); ResultsView.tsx:199-207 (teams ranked by average score). 13 words, 2 lines. Copy edit: One shape for every what. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"Sends hackathon judges to teams in fair blocks of five and ranks them.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "A looser second pass always gives a judge work, so its misses still hit at half power.",
+          "was": "A move that misses still lands at half power, because a relaxed second pass always gives a waiting judge a block.",
+          "why": "AssignmentDashboard.tsx:616-640 (when the strict pass finds no block, a relaxed pass runs without the similarity rule 'so the judge gets something'); README.md:15, 63-65 (Zero Idle Time). Product first, then the effect; 17 words, 2 lines. Copy edit: AssignmentDashboard.tsx:616-640 (the relaxed pass); keeps the face within 52 words. Draft: \"A looser second pass always finds a judge work, so its misses still hit at half power.\"."
+        }
+      },
+      "moves": {
+        "Fewest Reviews First": {
+          "feature": {
+            "to": "The least-reviewed teams get judges first, so all projects reach enough reviews at once.",
+            "was": "Judges go to the teams with the fewest reviews so far, which brings every project to its review count together.",
+            "why": "AssignmentDashboard.tsx:512-514, 603-613 (a block's cost is its reviews x 1000 plus its spread, lowest wins); README.md:21 ('all projects reach the required review threshold simultaneously'). Face move: 21 words, 3 lines. Copy edit: README.md:21 ('reach the required review threshold simultaneously'); keeps the face within 52 words. Draft: \"Judges go first to the teams with the fewest reviews, so every project reaches enough reviews at about the same time.\"."
+          }
+        },
+        "Block of Five": {
+          "feature": {
+            "to": "A judge gets five neighboring teams on one floor, visited in a single trip, so walking stays short.",
+            "was": "Each judge gets five nearby teams to visit in one trip, so a round covers five projects with little walking.",
+            "why": "AssignmentDashboard.tsx:567-584 (five-team windows over the floor's teams), 607 (the spread of team numbers breaks ties); README.md:29, 33 (proximity minimises travel). 'Nearby' becomes 'neighboring': closeness only breaks ties after review balance. 19 words. Copy edit: Opens apart from Rank Top Three. Draft: \"Each judge gets five neighboring teams on one floor to visit in a single trip, which keeps walking short.\"."
+          }
+        },
+        "Rank Top Three": {
+          "feature": {
+            "to": "Each judge ranks a top three from five teams, for 3, 2 and 1 points, and teams are ordered by average.",
+            "was": "Judges rank their top three of five teams for 3, 2 and 1 points, and teams are ordered by average score.",
+            "why": "ScoreEntryForm.tsx:101-125 (one first, second and third among five) and 164-186 (3, 2 and 1 points; average = total / reviews); ResultsView.tsx:199-207 (sorted by average score). Face move: 22 words, 3 lines. Copy edit: ScoreEntryForm.tsx:164-169 (3, 2, 1); keeps the face within 52 words. Draft: \"Judges pick first, second and third of their five teams for 3, 2 and 1 points, and results rank teams by average.\"."
+          }
+        },
+        "Status Matrix": {
+          "feature": {
+            "to": "Every team is a dot that stays gray until judged and turns brighter orange with each review, so missed teams stand out.",
+            "was": "Every team is a dot that turns brighter orange with each review, so coordinators spot the teams nobody has seen yet.",
+            "why": "TeamStatusMatrixModal.tsx:11-28 (zinc grey at 0 reviews, then hsl(24, 95%) from 25% to 60% lightness as reviews grow); README.md:69-75, 129 (spot teams that need judges). 22 words."
+          }
+        }
+      }
+    },
+    "ommc": {
+      "what": {
+        "to": "A nonprofit online math contest for teams of students 18 and under.",
+        "was": "OMMC is a free online math competition, run by a nonprofit, for students 18 and under: teams of up to four solve 25 original problems in a web test portal, and the top teams advance to a proof round. Its Atlas lets anyone search past problems by topic and difficulty, with typeset solutions.",
+        "why": "OMMC-Website@91ae7740f:src/Pages/Main.tsx:66-90 (a 501c3 nonprofit; an annual original competition open to students 18 or younger) and 199-203 (teams of up to 4). 'Free' from the research line is dropped: no line at the pinned commits says it. 12 words, 2 lines."
+      },
+      "trait": {
+        "rule": {
+          "to": "Top teams advance to a proof round, so once at half Health, its Reach rises to 1.5 times.",
+          "was": "Top teams from the 25-question main round advance to a proof round: at half health or less, its Reach grows to 1.5 times.",
+          "why": "OMMC-Website@91ae7740f:src/Pages/Main.tsx:199-203 ('Top teams advance to the final round, where they solve 7 challenging proof questions'). Unchanged effect: at half health or less, Reach to 1.5 times. 17 words, 2 lines. Copy edit: 'times' replaces 'x' across the set; Health is the card's word for the stat. Draft: \"Top teams advance to a proof round: at half health or less, its Reach rises to 1.5x.\"."
+        }
+      },
+      "moves": {
+        "Test Portal": {
+          "feature": {
+            "to": "The test PDF opens beside 25 answer boxes, and Submit stays locked until all 25 are answered.",
+            "was": "The test PDF opens beside 25 answer boxes, and Submit stays locked until every one of them is filled in.",
+            "why": "OMMC-Test-Portal@f8c3b7eb2:src/portal/pdfViewer.tsx:24-33 (the test PDF); src/portal/test.tsx:157-283 (25 answer boxes) and 331-371 (SUBMIT only when all 25 are filled; otherwise 'Complete all questions'). Face move: 18 words, 3 lines. Copy edit: test.tsx:331-371 requires all 25; keeps the face within 52 words. Draft: \"The test PDF opens beside 25 answer boxes, and Submit stays locked until all 25 have an answer.\"."
+          }
+        },
+        "Team of Four": {
+          "feature": {
+            "to": "Up to four students enter as one team, each adding an age, grade and school, or the word anonymous.",
+            "was": "Students enter as a team of up to four, listing each member's age, grade and school, or simply anonymous.",
+            "why": "OMMC-Test-Portal@f8c3b7eb2:src/portal/test.tsx:285-301 (a member needs name, age, grade and school), 493-495 ('put anonymous in the boxes'), 530 (at most four). 19 words."
+          }
+        },
+        "Problem Atlas": {
+          "feature": {
+            "to": "Search past problems by text, topic and difficulty, then open each typeset solution when you want it.",
+            "was": "Search past problems by their text, filter by topic and difficulty, and open each typeset solution only when you want it.",
+            "why": "OMMC-Atlas@94847f913:src/Pages/Atlas/Atlas.tsx:68-105, 126-220 (text search and topic and difficulty filters); src/Components/AtlasComponents/Question.tsx:7, 48-67 (the LaTeX solution stays hidden until View Solution). Face move: 21 words, 3 lines. Copy edit: keeps the face within 52 words. Draft: \"Search past contest problems by text, filter by topic and difficulty, and open each typeset solution only when you want it.\"."
+          }
+        },
+        "Saved Locally": {
+          "feature": {
+            "to": "Each answer saves in the browser as you type and reloads from the server when you sign in, so nothing is lost.",
+            "was": "Each answer saves in the browser as you type and returns from the server when you sign in, so nothing is lost.",
+            "why": "OMMC-Test-Portal@f8c3b7eb2:src/portal/question.tsx:19-24 and src/utils/useLocalStorage.tsx:23-33 (saved on every keystroke); src/portal/test.tsx:79-103, 109-155 (the stored row refills every box at sign in). 'Returns' becomes 'reloads'. 22 words."
+          }
+        }
+      }
+    },
+    "atlas": {
+      "what": {
+        "to": "General Translation's magazine, each story an issue with a live cover.",
+        "was": "Atlas is the online magazine Kevin designed and built for General Translation's long writing. Each story is an issue with its own live cover, art and colors, read as a web page or opened as a magazine whose pages turn, in the reader's language.",
+        "why": "Kevin's brief (11-01): 'The General Translation magazine: each story is an issue with its own cover'; gpu/covers.ts:1-4, 34-67 (each story's cover is its own live fluid). The name prints as small factual text, allowed on this card only (owner ruling 11-01; tools/check.mjs GT_EXEMPT_ID). 12 words, 2 lines. Copy edit: Same shape as Powerlifting's; the name prints as small factual text, the owner's 11-01 ruling for this card only. Fits the what box's two lines (Chromium, Katagami Sans, .work/copy-editor/lines.cjs). Draft: \"General Translation's magazine: each story is an issue with a live cover.\"."
+      },
+      "trait": {
+        "rule": {
+          "to": "A spread turns two pages, so its moves that hit more than once land at least twice.",
+          "was": "Its moves that hit more than once land at least two hits, because on a wide screen each leaf turns two pages.",
+          "why": "riffle/flip.ts:16-17 (from the breakpoint width two pages show at once) and 74-88 (two pages a leaf on a spread, one on a phone). Unchanged effect, its own multi-hit moves land at least two hits; 16 words, 2 lines. Copy edit: Fact first, then the rule; riffle/flip.ts:16-17, 74-88. Holds two lines at 0.040W, so the face keeps its 8 (Chromium, .work/copy-editor/lines.cjs). Draft: \"On wide screens a leaf turns two pages, so its multi-hit moves land at least twice.\"."
+        }
+      },
+      "moves": {
+        "Fluid Cover": {
+          "feature": {
+            "to": "Every issue's cover is a live fluid simulation in its own three colors, stirred by your pointer.",
+            "was": "Each issue's cover is a live fluid in its own colors, so no two issues look alike, and a pointer stirs it.",
+            "why": "gpu/covers.ts:34-67 (four covers, each with its own three colors and seed); gpu/fluid-wgsl.ts:1-7 (a fluid solver printed in three of the cover's inks); ui/Cover.tsx:29-32 (a pointer stirs it). 'Live fluid' is said as 'live fluid simulation' for a visitor. Face move: 22 words, 3 lines. Copy edit: keeps the face within 52 words; covers.ts:34-67 (three colors each). Draft: \"Each issue's cover is a live fluid simulation in its own three colors, so no two match, and your pointer stirs it.\"."
+          }
+        },
+        "Magazine Pages": {
+          "feature": {
+            "to": "Each story is laid out as magazine pages of two text columns, and a click turns each page over at the spine.",
+            "was": "Each story is set into real magazine pages in two columns, and they turn like paper, two pages to a leaf.",
+            "why": "riffle/paginate.ts:1-18 (two text columns a page on a Swiss grid); riffle/flip.ts:1-9 (each leaf one rigid sheet turned about the spine by a click). The old 'turn like paper' was a simile. 22 words."
+          }
+        },
+        "Translated Titles": {
+          "feature": {
+            "to": "Pick one of nine languages on the globe's dial, and every story title resets in that language.",
+            "was": "Pick a language and every title resets in it, in its own script, with Chinese and Japanese titles set upright.",
+            "why": "stories.ts:152-224 (each title in nine languages: en, es, pt, de, ar, hi, zh, ko, ja); ui/LanguageRing.tsx:32-44 (the codes round the globe's dial); Landing.tsx:84-99 (a pick sets the titles' language). The upright Chinese, Japanese and Korean spines stay in the receipt. Face move: 19 words, 3 lines. Copy edit: keeps the face within 52 words. Draft: \"Pick one of nine languages on the globe's dial, and every story title resets in that language's own script.\"."
+          }
+        },
+        "Dot Globe": {
+          "feature": {
+            "to": "A globe printed in dots turns to the chosen language's city and pins its coordinates, then stops drawing until it turns again.",
+            "was": "A globe printed in dots turns to the chosen city and pins its exact coordinates, then stops drawing until it moves.",
+            "why": "globe.ts:1-7 (an orthographic Earth in 1-bit dots; it draws once per camera and animates only while it turns); ui/Globe.tsx:27-28 (the pin and its coordinates); Landing.tsx:90-93 (a language moves the coordinates to one of its cities). 22 words."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+ "wide": "broadcast/media/atlas/wide.webp",
+ "portrait": "broadcast/media/atlas/portrait.webp",
+ "poster": "broadcast/media/atlas/poster.webp",
+ "loop": "broadcast/media/atlas/loop.mp4",
+ "hero": "broadcast/media/atlas/wide.webp",
+ "object": "broadcast/media/atlas/object.webp",
+ "objectSize": [
+  1400,
+  756
+ ],
+ "emblem": "broadcast/media/atlas/emblem.svg",
+ "groundImage": "broadcast/media/atlas/ground.webp",
+ "palette": [
+  "#141414",
+  "#ece4d0",
+  "#6e8fec"
+ ],
+ "source": "The hall from the live front page (its hairline guides) around the blueprint issue's cover, its WebGPU fluid stirred by a pointer and recorded in real time (cap/at-moves/cover, 4.0 to 9.0 s, cropped 1000 x 625 about the cover and resampled to 30 fps), looped over 120 frames with 30 dissolved (tools/loop.py). Emblem: the press mark (r4/ex media/atlas/logo.svg). Ground: r4/ex grounds/atlas.webp.",
+ "files": [
+  {
+   "file": "broadcast/media/atlas/wide.webp",
+   "sha256": "6d79d4533d133644534b068aa3972de0c91348ba7d52606867834a1040ee092a",
+   "w": 2400,
+   "h": 1500
+  },
+  {
+   "file": "broadcast/media/atlas/portrait.webp",
+   "sha256": "d56b712c51b6a697b0d10a039c4c0c97e7f35aa361718e407acc58d2f8faf883",
+   "w": 786,
+   "h": 1100
+  },
+  {
+   "file": "broadcast/media/atlas/poster.webp",
+   "sha256": "a8b1814bebeb2d19d907d1ee89b95ff3765c6f127417b4ed556ea5f73021b540",
+   "w": 1920,
+   "h": 1200
+  },
+  {
+   "file": "broadcast/media/atlas/loop.mp4",
+   "sha256": "050fa2797812f65cf49af4d5d2defc5151306e6b28d1af43266d6868c2dca545",
+   "w": 1536,
+   "h": 960,
+   "frames": 120
+  },
+  {
+   "file": "broadcast/media/atlas/object.webp",
+   "sha256": "a81f6ea67b5a358b6e1fc4dda4388ba5462d92237375dfcef49c80aee3f51e26",
+   "w": 1400,
+   "h": 756,
+   "from": "r4/ex media/atlas/pop@2x.webp (trimmed to alpha, 1400 px)"
+  },
+  {
+   "file": "broadcast/media/atlas/emblem.svg",
+   "sha256": "f929ce2e5d8b1b20e60264fe82dfa9c25a0fee33a723cbe406bf71055e4aaef2",
+   "from": "out/atlas/logo.svg"
+  },
+  {
+   "file": "broadcast/media/atlas/ground.webp",
+   "sha256": "8ca8990c0909a02b8af978c59745be31cab134e57530d7b3a7de36526f49c5c4",
+   "from": "r4/ex grounds/atlas.webp (1600 px)",
+   "tone": "mean relative luminance 0.381 -> 0.060 (linear light x 0.157, .work/battle-r4/next-b/tools/tone-ground.py; the original in retired/grounds/)"
+  }
+ ]
+}

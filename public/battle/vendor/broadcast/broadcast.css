@@ -1,0 +1,638 @@
+/* Showdown, broadcast. Two worlds split the screen, a score bug carries the state, every attack cuts to a replay in
+   which the attacking card stays in frame. Everything is positioned absolutely inside a fixed frame, every number and
+   label sits in a fixed box, and motion writes only transform, opacity, clip and mask, so nothing ever moves the
+   layout (CLS 0).
+   Every control is the gallery's: Katagami Sans, one clay lit from the top left in its dark room (the --ui-* tokens,
+   generated into card.gen.css from ../cards/ui.css and vendor/neu-tokens.css), raised at rest and sunk when pressed. */
+@property --seam { syntax: '<number>'; inherits: true; initial-value: 50; }
+
+:root {
+  --ink: #050506;
+  --paper: #f2f0ea;
+  --paper-2: rgba(242, 240, 234, .72);
+  --glass: rgba(9, 9, 11, .9);
+  --sans: "Katagami Sans", system-ui, sans-serif;
+  --gut: 16px;
+  --ap: 12.9%;            /* one matte at 2.39:1 */
+  --slam: cubic-bezier(.2, .9, .1, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--ink); color: var(--paper); overflow: hidden; }
+body { font: 400 15px/1.35 var(--sans); font-kerning: normal; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* one ring for every control, ink-1 two px out, on clay and on any world */
+:focus-visible { outline: 2px solid var(--ui-ink-1); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#bc { position: fixed; inset: 0; overflow: hidden; contain: strict; background: var(--ink); }
+#bc { --ui-gap: 4px; }
+@media (pointer: coarse), (max-width: 719px) { #bc { --ui-ctl: 44px; --ui-icon: 20px; } }
+.i { width: var(--ui-icon, 18px); height: var(--ui-icon, 18px); fill: currentColor; flex: none; display: block; }
+
+/* ============================================================ the card: the round-3 card in the battle's box
+   The card is ../cards/card.css (card.gen.css, scoped under .bc-card), printed by markup.js card(). The box is the
+   battle's: it is placed and moved here, and broadcast/src/card.ts lays the card out at its tier and scales it into the
+   box. Over it lie the battle's own layers: the hit's white, the crack, the crit split, the one-ink drain, the dim and
+   the X-ray; under it, for a pop-up, its inside. */
+.bc-card { --c: var(--paper); position: absolute; aspect-ratio: 63 / 88; container-type: size; isolation: isolate; }
+.bc-card > .card { position: absolute; left: 0; top: 0; --card: 100cqw; transform-origin: 0 0; cursor: inherit; touch-action: auto; }
+.bc-card .body { will-change: auto; transition: none; }
+.bc-card .body::before { transition: none; }
+/* a card that turns over (Elo's blind option) shows its back flat over its face; the scene picks which by opacity */
+.bc-card[data-back] .back { transform: none; }
+.bc-pop { position: absolute; left: 10%; right: 10%; top: 12%; aspect-ratio: 1; border-radius: 50%; border: 1.2cqw solid #fff; opacity: 0; pointer-events: none; }
+.bc-card-inside { position: absolute; inset: 0; border-radius: 4.8cqw; overflow: hidden; background: #000; }
+.bc-card-inside-ground { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bc-card-inside-obj { position: absolute; left: 6%; bottom: 12%; height: 64%; width: 88%; object-fit: contain; object-position: 50% 100%; transform-origin: 50% 100%; filter: drop-shadow(0 3cqh 4cqh rgba(0, 0, 0, .45)); }
+.bc-card-inside-obj[data-window] { -webkit-mask: radial-gradient(closest-side, #000 62%, transparent); mask: radial-gradient(closest-side, #000 62%, transparent); filter: none; }
+/* the hit, laid over the card: it keeps the card's corners (4.8% of its width, SPEC 2.1) */
+.bc-card-flash, .bc-card-split, .bc-card-ink, .bc-card-crack, .bc-card-dim, .bc-card-xray { position: absolute; inset: 0; opacity: 0; pointer-events: none; border-radius: 4.8cqw; }
+.bc-card-flash { background: #fff; mix-blend-mode: screen; }
+.bc-card-split-a { background: #ff2d55; mix-blend-mode: screen; }
+.bc-card-split-b { background: #19e3ff; mix-blend-mode: multiply; }
+.bc-card-ink { background: #2a2a2c; mix-blend-mode: color; }
+.bc-card-ink::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #1b1b1d; mix-blend-mode: multiply; opacity: .55; }
+.bc-card-dim { background: #000; }
+.bc-card-xray { background: #fff; mix-blend-mode: difference; }
+.bc-card-crack { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' fill='none' stroke-linejoin='round' stroke-linecap='round'%3E%3Cg stroke='%23000' stroke-opacity='.6' stroke-width='3'%3E%3Cpath d='M58 52 44 30 48 14 40 0M58 52 80 40 92 46 100 38M58 52 66 76 58 96 64 120 60 140M58 52 32 64 18 60 0 72M58 52 74 66 96 70M44 30 30 24M66 76 82 88'/%3E%3C/g%3E%3Cg stroke='%23fff' stroke-width='1.2'%3E%3Cpath d='M58 52 44 30 48 14 40 0M58 52 80 40 92 46 100 38M58 52 66 76 58 96 64 120 60 140M58 52 32 64 18 60 0 72M58 52 74 66 96 70M44 30 30 24M66 76 82 88'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat; transform-origin: 58% 37%; }
+
+/* ============================================================ the arena: two worlds and the seam
+   Each half is the world its lead's card prints (broadcast/src/worlds.ts): the card's room picture under the gallery's
+   live pour of the same ground (#world, one canvas for both halves, cut by the seam's half planes), then the lead's
+   subject standing in it over its contact shade. */
+.arena { position: absolute; inset: 0; --seam: 50; --tilt: 5vh; --stand: 1; transition: --seam .7s cubic-bezier(.2, .8, .2, 1); }
+.world, .stand { position: absolute; inset: 0; overflow: hidden; }
+.world { background: #0b0b0d; }
+.world[data-side="player"], .stand[data-side="player"] { clip-path: polygon(0 0, calc(var(--seam) * 1% + var(--tilt)) 0, calc(var(--seam) * 1% - var(--tilt)) 100%, 0 100%); }
+.world[data-side="rival"], .stand[data-side="rival"] { clip-path: polygon(calc(var(--seam) * 1% + var(--tilt)) 0, 100% 0, 100% 100%, calc(var(--seam) * 1% - var(--tilt)) 100%); }
+.world-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; -webkit-mask-size: 12px 12px; mask-size: 12px 12px; }
+.world-live { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; pointer-events: none; }
+.arena[data-live="gpu"] .world:not([data-room]) .world-still { visibility: hidden; }
+.arena[data-worlds="off"] :is(.world-live, .stand) { visibility: hidden; }
+.arena[data-worlds="off"][data-live="room"] .world-still { visibility: visible; }
+/* the subject stands on its half's floor, in the middle of the half; as the seam moves it follows by transform only, so
+   the seam's motion never moves a box (CLS) */
+.stand { --x: calc(var(--seam) * .5vw); --floor: 74vh; --mw: 31vw; --mh: 50vh; }
+.stand[data-side="rival"] { --x: calc((100 + var(--seam)) * .5vw); }
+.stand-subject { position: absolute; left: 0; top: 0; width: min(var(--mw), var(--mh) * var(--ar, 1)); aspect-ratio: var(--ar, 1); height: auto; display: block;
+  opacity: var(--stand); transform: translate3d(var(--x), calc(var(--floor) + (1 - var(--stand)) * 3vh), 0) translate(-50%, -100%); filter: drop-shadow(0 1.4vh 1.6vh rgba(0, 0, 0, .28)); }
+.stand-subject:not([src]) { visibility: hidden; }
+.stand-subject[data-window] { -webkit-mask: radial-gradient(closest-side, #000 62%, transparent); mask: radial-gradient(closest-side, #000 62%, transparent); filter: none; }
+.stand-shade { position: absolute; left: 0; top: 0; width: calc(min(var(--mw), var(--mh) * var(--ar, 1)) * 1.1); height: 5vh; transform: translate3d(var(--x), var(--floor), 0) translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .42), rgba(0, 0, 0, 0)); opacity: var(--stand); }
+.stand[data-card] .stand-shade { --ar: 1.4; }
+.world-down { position: absolute; inset: 0; background: rgba(5, 5, 6, .78); opacity: 0; transition: opacity .5s; }
+.stand[data-down="true"] .world-down { opacity: 1; }
+.seam { position: absolute; top: -2%; bottom: -2%; left: 0; width: 2px; margin-left: -1px; background: var(--paper); transform: translate3d(calc(var(--seam) * 1vw), 0, 0) skewX(-5.7deg); box-shadow: 0 0 24px rgba(0, 0, 0, .6); }
+.vignette { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(5, 5, 6, .55), rgba(5, 5, 6, 0) 18%), linear-gradient(to top, rgba(5, 5, 6, .94), rgba(5, 5, 6, .5) 22%, rgba(5, 5, 6, 0) 44%); }
+
+/* ============================================================ the stage: the replay cut */
+.stage { position: absolute; inset: 0; z-index: 5; container-type: size; }
+.stage-black { position: absolute; inset: 0; z-index: 4; background: #000; opacity: 0; transition: opacity .12s; pointer-events: none; }
+.sd-scene { --sd-bar: #000; --sd-bayer-cell: 6px; --sd-stroke: rgba(0, 0, 0, .8); --sd-crit: color-mix(in oklab, var(--c, #ff4d5e) 82%, #fff); --ex: color-mix(in oklab, var(--c, #8ea2ff) 74%, #000); }
+/* A still is a panel at its own aspect, a little in from the frame and clear of the dealt card. */
+.sd-scene[data-feature="still"][data-kind="attack"] .sd-feature { scale: .86; translate: 5cqw 0; filter: drop-shadow(0 4cqh 6cqh rgba(0, 0, 0, .6)); }
+.sd-scene[data-feature="still"][data-kind="attack"][data-side="rival"] .sd-feature { translate: -5cqw 0; }
+
+/* A mask over a name in a clip, drawn as a sticker in the island's own style (bday.land). */
+.sd-mask[data-style="sticker"] { border-radius: 5px; box-shadow: 0 0 0 2px #fff, 2px 3px 0 2px #2b1d14; }
+
+/* the attacker's card, dealt in front of the bars; its object breaks out of the window over the lower matte */
+/* its foot stands high enough that, fallen back and turned, the card's name still reads above the frame's edge */
+.bc-deal { left: 3.5cqw; bottom: 7cqh; height: 46cqh; transform-origin: 50% 100%; will-change: transform; }
+.sd-scene[data-side="rival"] .bc-deal { left: auto; right: 3.5cqw; }
+.sd-scene[data-kind="attack"] .sd-cutout > img, .sd-scene[data-kind="attack"] .sd-cutout > .sd-sil { inset: auto; left: 9cqw; bottom: 3cqh; width: 46cqw; height: 66cqh; object-position: 22% 100%; will-change: transform, opacity; }
+.sd-scene[data-kind="attack"][data-side="rival"] .sd-cutout > img, .sd-scene[data-kind="attack"][data-side="rival"] .sd-cutout > .sd-sil { left: auto; right: 9cqw; object-position: 78% 100%; }
+.sd-scene .sd-cutout > img { filter: drop-shadow(0 2cqh 4cqh rgba(0, 0, 0, .5)); }
+.sd-cutout > .sd-ph { display: none; }
+/* the lower third (a trait, a status, an item, Guard): a smaller card, its name beside it, its value in the matte */
+.bc-deal-third { left: 4cqw; bottom: 3.5cqh; height: 33cqh; }
+.sd-scene[data-side="rival"] .bc-deal-third { left: auto; right: 4cqw; }
+.sd-scene[data-kind="trait"] .sd-cutout > img { display: none; }
+/* a status, an item and Guard happen to the card's subject: it stands in its world as it does in the arena, beside the
+   small card, so the frame always has its subject (a trait's scene is its card's own) */
+.sd-scene:is([data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-cutout > img { inset: auto; left: 30cqw; bottom: 13cqh; width: 50cqw; height: 60cqh; object-position: 50% 100%; }
+.sd-scene:is([data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-cutout > img { left: 20cqw; }
+.bc-deal-result { left: calc(50cqw - 21.12cqh); bottom: 18cqh; height: 59cqh; }
+.sd-scene[data-kind="result"] .sd-cutout > img { display: none; }
+
+/* the contact: the target in its world takes the hit */
+.sd-scene[data-kind="attack"] .sd-target > img, .sd-scene[data-kind="attack"] .sd-target > .sd-sil, .sd-target > .sd-ph { display: none; }
+.bc-contact { position: absolute; inset: 0; overflow: hidden; transform-origin: 94% 24%; background: #0b0b0d; will-change: transform, opacity; }
+.bc-contact[data-from="rival"] { transform-origin: 6% 24%; }
+.bc-contact-world { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bc-contact-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 56% 52%, rgba(0, 0, 0, 0), rgba(0, 0, 0, .55)); }
+.bc-contact[data-from="rival"] .bc-contact-shade { background: radial-gradient(ellipse 60% 70% at 44% 52%, rgba(0, 0, 0, 0), rgba(0, 0, 0, .55)); }
+.bc-contact > .bc-rush { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bc-contact-card { position: absolute; height: 58cqh; aspect-ratio: 63 / 88; left: calc(56cqw - 20.76cqh); top: 20cqh; transform-origin: 50% 60%; }
+.bc-contact[data-from="rival"] .bc-contact-card { left: calc(44cqw - 20.76cqh); }
+.bc-contact-card > .bc-card { inset: 0; height: 100%; transform-origin: 50% 80%; }
+.bc-contact[data-ending="crash"] { transform-origin: 56% 49%; }
+.bc-contact[data-ending="crash"][data-from="rival"] { transform-origin: 44% 49%; }
+.bc-contact-frame { position: absolute; inset: 0; border: 10px solid var(--paper); opacity: 0; }
+.bc-contact-seam { position: absolute; top: -10%; bottom: -10%; left: -2px; width: 4px; background: var(--paper); opacity: 0; box-shadow: 0 0 30px rgba(0, 0, 0, .6); }
+.bc-contact-num { position: absolute; left: 56cqw; top: 44cqh; translate: -50% -50%; font: 700 clamp(22px, 3.4cqw, 58px)/1 var(--sans); font-variant-numeric: tabular-nums; color: #fff; -webkit-text-stroke: .06em #000; paint-order: stroke fill; opacity: 0; }
+.bc-contact[data-from="rival"] .bc-contact-num { left: 44cqw; }
+
+/* a switch-in: the card opens like a pop-up into its world */
+.bc-popup { left: calc(50cqw - 19.33cqh); top: 21cqh; height: 54cqh; transform-origin: 50% 50%; will-change: transform, opacity; }
+.bc-popup .face { transform-origin: 0 50%; }
+.bc-popup[data-from="rival"] .face { transform-origin: 100% 50%; }
+.sd-scene[data-kind="switch"] .sd-cutout > img { display: none; }
+/* a knockout: the card held up in front of the bars */
+.bc-kocard { left: calc(50cqw - 21.12cqh); top: 17cqh; height: 59cqh; transform-origin: 50% 90%; -webkit-mask-size: 6px 6px; mask-size: 6px 6px; }
+.sd-scene[data-kind="ko"] .sd-target > img, .sd-scene[data-kind="ko"] .sd-target > .sd-sil { display: none; }
+
+/* the call-out: the move's own name, a hard extrusion in the card's colour, straddling the lower matte */
+.sd-callout { display: block; padding: 0; }
+.sd-callout-text { position: absolute; right: 5.5cqw; bottom: calc(var(--ap) - .2em); width: 64cqw; height: 1.1em; display: block; text-align: right; overflow: visible;
+  font: 800 min(8.6cqw, 64cqw / (var(--clen, 10) * .64), 150px)/1 var(--sans); font-variation-settings: "wght" var(--sd-wght, 800); color: #fff;
+  text-shadow: .014em .014em 0 var(--ex), .028em .028em 0 var(--ex), .042em .042em 0 var(--ex), .056em .056em 0 var(--ex), .07em .07em 0 var(--ex), .1em .14em .3em rgba(0, 0, 0, .55); }
+.sd-scene[data-side="rival"] .sd-callout-text { right: auto; left: 5.5cqw; text-align: left;
+  text-shadow: -.014em .014em 0 var(--ex), -.028em .028em 0 var(--ex), -.042em .042em 0 var(--ex), -.056em .056em 0 var(--ex), -.07em .07em 0 var(--ex), -.1em .14em .3em rgba(0, 0, 0, .55); }
+.sd-callout[data-style="ledger"] .sd-callout-text { font: 600 min(5cqw, 80px)/1 var(--sans); font-variant-numeric: tabular-nums; color: #e7ffef; text-shadow: 0 .04em 0 rgba(0, 0, 0, .6), 0 0 .3em rgba(80, 255, 170, .35); -webkit-text-stroke: 0; }
+.sd-callout[data-style="sticker"] .sd-callout-text { color: #ff5da2; -webkit-text-stroke: .07em #fff; paint-order: stroke fill; text-shadow: .05em .06em 0 #2b1d14; }
+.sd-callout[data-style="specimen"] .sd-callout-text { font-weight: 100; font-variation-settings: "wght" var(--sd-wght, 100); width: var(--spec-w, 64cqw); text-align: left; }
+.sd-callout:is([data-style="switch"], [data-style="ko"], [data-style="result"]) .sd-callout-text { right: 0; left: 0; width: auto; text-align: center; bottom: calc(var(--sd-mat, 17cqh) / 2 - .45em); font: 650 min(7cqh, 9cqw, 84px, 88cqw / (var(--clen, 10) * .56))/1 var(--sans); text-shadow: none; -webkit-text-stroke: 0; }
+.sd-scene[data-kind="switch"] { --sd-mat: 17cqh; }
+.sd-scene[data-kind="ko"] { --sd-mat: 24.7cqh; }
+.sd-scene[data-kind="result"] { --sd-mat: 18.8cqh; }
+/* (merge) Where a pop-up has grown over the lower matte, the entrance name sits on the card's art: a soft ink halo keeps it
+   legible on any art and is invisible on the matte. Paint only, no box change. */
+.sd-callout[data-style="switch"] .sd-callout-text { text-shadow: 0 0 .3em rgba(0, 0, 0, .78), 0 0 .1em rgba(0, 0, 0, .9), 0 .04em .5em rgba(0, 0, 0, .6); }
+.sd-callout[data-style="ko"] .sd-callout-text { text-decoration: line-through; text-decoration-thickness: .06em; color: rgba(242, 240, 234, .86); }
+.sd-callout[data-style="trait"] .sd-callout-text { left: calc(4cqw + 26cqh); right: auto; width: auto; max-width: 54cqw; bottom: calc(10.1cqh + 1.4cqh); height: auto; text-align: left;
+  font: 650 min(4.4cqh, 3.2cqw, 50px)/1 var(--sans); padding: .36em .7em .42em .8em; background: rgba(8, 8, 10, .92); box-shadow: inset .22em 0 0 var(--c, var(--paper)); text-shadow: none; -webkit-text-stroke: 0; }
+.sd-scene[data-side="rival"] .sd-callout[data-style="trait"] .sd-callout-text { left: auto; right: calc(4cqw + 26cqh); padding: .36em .8em .42em .7em; box-shadow: inset -.22em 0 0 var(--c, var(--paper)); }
+
+/* the number and its receipt */
+.sd-damage { display: block; padding: 0; transform-origin: 84% 42%; }
+.sd-scene[data-side="rival"] .sd-damage { transform-origin: 16% 42%; }
+.sd-number { position: absolute; right: 5.5cqw; top: 32cqh; display: block; text-align: right; font: 800 min(12cqw, 26cqh, 200px)/.9 var(--sans); font-variant-numeric: tabular-nums; color: #fff; text-shadow: 0 .03em 0 rgba(0, 0, 0, .4), 0 .06em .4em rgba(0, 0, 0, .55); }
+.sd-scene[data-side="rival"] .sd-number { right: auto; left: 5.5cqw; text-align: left; }
+.sd-scene[data-label="word"] .sd-number { font-size: min(6.4cqw, 13cqh, 110px); top: 38cqh; }
+.sd-receipt { position: absolute; right: 5.5cqw; top: calc(32cqh + min(12cqw, 26cqh, 200px) * .95); max-width: 42cqw; text-align: right; font: 500 clamp(11px, .95cqw, 14px)/1.4 var(--sans); font-variant-numeric: tabular-nums; }
+.sd-scene[data-side="rival"] .sd-receipt { right: auto; left: 5.5cqw; text-align: left; }
+.sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-number { top: auto; right: auto; left: calc(4cqw + 26cqh); bottom: 2.6cqh; font: 650 min(4.4cqh, 40px)/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--paper); text-shadow: none; -webkit-text-stroke: 0; }
+.sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-number { left: auto; right: calc(4cqw + 26cqh); }
+.sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-receipt { display: none; }
+/* (merge) The value's 1.25x entry scales about the value itself, not the attack number's place: it never leaves the frame. */
+.sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-damage { transform-origin: calc(4cqw + 26cqh) calc(100% - 2.6cqh); }
+.sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-damage { transform-origin: calc(100% - 4cqw - 26cqh) calc(100% - 2.6cqh); }
+.sd-credit { inset: auto 2cqw 1.2cqh auto; max-width: 56cqw; font-size: 10px; color: rgba(255, 255, 255, .8); text-shadow: none; }
+.sd-scene[data-side="rival"] .sd-credit { inset: auto auto 1.2cqh 2cqw; text-align: left; }
+.sd-credit:empty { display: none; }
+
+/* ---------- effects ---------- */
+.bc-band { position: absolute; top: -12%; bottom: -12%; left: -24%; right: -24%; background: linear-gradient(90deg, var(--c) 0 61%, var(--paper) 61% 62.2%, var(--ink) 62.2%); overflow: hidden; transform: translate3d(-140%, 0, 0); will-change: transform; }
+.sd-scene[data-side="rival"] .bc-band { background: linear-gradient(270deg, var(--c) 0 61%, var(--paper) 61% 62.2%, var(--ink) 62.2%); }
+.bc-band-tex { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .22; mix-blend-mode: multiply; filter: grayscale(.4) contrast(1.4); }
+/* the band's material (looks.ts): the card's world fills its colour field, the colour kept as the leading edge; or the
+   card's own marks over the colour */
+.bc-band[data-look="world"] .bc-band-tex { opacity: 1; mix-blend-mode: normal; filter: none; clip-path: inset(0 42% 0 0); }
+.sd-scene[data-side="rival"] .bc-band[data-look="world"] .bc-band-tex { clip-path: inset(0 0 0 42%); }
+.bc-band-marks { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sd-scene[data-side="rival"] .bc-band-marks { transform: scaleX(-1); }
+.bc-rush { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bc-stamp { position: absolute; right: 5.5cqw; top: calc(32cqh - 7cqh); font: 700 min(3cqw, 6cqh, 46px)/1 var(--sans); font-variant-numeric: tabular-nums; color: #fff; background: #111; padding: .12em .32em; transform-origin: 50% 100%; }
+.sd-scene[data-side="rival"] .bc-stamp { right: auto; left: 5.5cqw; }
+.bc-stamp[data-crit] { background: #ff3b4f; }
+.bc-ledger { position: absolute; z-index: 13; left: 5cqw; top: calc(var(--ap) + 5cqh); font: 500 clamp(12px, 1.25cqw, 19px)/1.55 var(--sans); font-variant-numeric: tabular-nums; color: #dfffe9; text-shadow: 0 1px 0 #000, 0 0 10px rgba(0, 0, 0, .7); }
+.sd-scene[data-side="rival"] .bc-ledger { left: auto; right: 5cqw; text-align: right; }
+.bc-ledger-row { min-height: 1.55em; white-space: pre; }
+.bc-ledger-typed { display: inline-block; }
+/* the ledger is the receipt typed out: the receipt waits until it has gone, so the arithmetic never prints twice or
+   over itself (a long receipt crossed the ledger on a phone) */
+.sd-scene:has(> .bc-ledger) .sd-receipt { opacity: 0; }
+.bc-ledger-total { font-weight: 700; font-size: 1.5em; color: #fff; border-top: 1px solid rgba(223, 255, 233, .5); margin-top: .2em; padding-top: .15em; }
+.bc-tele { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.bc-tele path { fill: none; stroke: #ffd84a; stroke-width: 5px; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.bc-redact { position: absolute; left: 0; top: 0; display: grid; place-items: center; transform-origin: 0 0; background: rgba(18, 16, 13, .96); color: #fff; font-family: var(--sans); font-variant-numeric: tabular-nums; font-weight: 700; letter-spacing: .02em; box-shadow: inset 0 0 0 1px rgba(232, 200, 140, .7); white-space: nowrap; }
+.bc-tc { position: absolute; z-index: 13; left: 5.5cqw; bottom: calc(var(--ap) / 2); translate: 0 50%; display: flex; align-items: center; gap: 8px; font: 500 13px/1 var(--sans); font-variant-numeric: tabular-nums; color: #fff; }
+.bc-tc::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #ff3b3b; }
+.bc-scrubline { position: absolute; z-index: 13; left: calc(5.5cqw + 26px); right: 5.5cqw; bottom: calc(var(--ap) / 2 - 1px); height: 2px; background: rgba(255, 255, 255, .2); }
+.bc-scrubline i { position: absolute; inset: 0; background: #fff; transform-origin: left; transform: scaleX(0); }
+.sd-scene[data-kind="attack"] .bc-scrubline { left: calc(5.5cqw + 26px + 30cqh); }
+.sd-scene[data-kind="attack"] .bc-tc { left: calc(5.5cqw + 30cqh); }
+.sd-scene[data-kind="attack"][data-side="rival"] .bc-scrubline { left: calc(5.5cqw + 26px); right: calc(5.5cqw + 30cqh); }
+.sd-scene[data-kind="attack"][data-side="rival"] .bc-tc { left: 5.5cqw; }
+.bc-caption { position: absolute; z-index: 13; left: 50%; top: calc(var(--ap) + 24cqh); translate: -50% 0; background: #000; color: #fff; font: 500 clamp(18px, 2.3cqw, 36px)/1.2 var(--sans); padding: .22em .6em .28em; white-space: pre; }
+.bc-caption:empty { visibility: hidden; }
+.bc-wave { position: absolute; z-index: 13; left: 30%; top: calc(var(--ap) + 7cqh); width: 40%; height: 14%; }
+.bc-axis { position: absolute; z-index: 13; right: 5.5cqw; width: 38cqw; bottom: calc(var(--ap) + 13cqh); }
+.sd-scene[data-side="rival"] .bc-axis { right: auto; left: 5.5cqw; }
+.bc-axis-rail { position: relative; height: 2px; background: rgba(255, 255, 255, .4); container-type: inline-size; }
+.bc-axis-rail i { position: absolute; top: -6px; width: 1px; height: 14px; background: rgba(255, 255, 255, .55); }
+.bc-axis-rail i[data-n]::after { content: attr(data-n); position: absolute; top: 18px; left: 0; translate: -50% 0; font: 500 11px/1 var(--sans); font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .7); }
+.bc-axis-head { position: absolute; left: 0; top: -10px; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #ff5246; box-shadow: 0 0 0 4px rgba(255, 82, 70, .25); will-change: transform; }
+.bc-axis-read { margin-top: 34px; font: 500 clamp(13px, 1.3cqw, 18px)/1 var(--sans); font-variant-numeric: tabular-nums; white-space: pre; color: #fff; }
+.bc-doodles { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bc-doodles path { fill: #ff5da2; fill-opacity: 0; stroke: #fff; stroke-width: 4px; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+/* ---------- the HUD on the matte: during a scene the score rides the top bar, white on black ---------- */
+.bc-mhud { opacity: .42; transition: opacity .2s; position: absolute; left: 50%; bottom: 3.6cqh; width: min(880px, 90cqw); height: 5.6cqh; translate: -50% 0; display: grid; grid-template-columns: minmax(0, 1fr) 6.4cqh minmax(0, 1fr); align-items: center; column-gap: 2cqw; color: #fff; }
+.bc-mhud-tag { --c: var(--paper); grid-row: 1; grid-column: 1; display: grid; grid-template-columns: minmax(0, 1fr) 3.4em; grid-template-rows: auto 3px; column-gap: 12px; row-gap: 6px; align-items: end; min-width: 0; }
+.bc-mhud-tag[data-side="rival"] { grid-column: 3; grid-template-columns: 3.4em minmax(0, 1fr); }
+.bc-mhud-name { grid-area: 1 / 1; font: 600 min(14px, 1.9cqh)/1 var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.bc-mhud-tag[data-side="rival"] .bc-mhud-name { grid-area: 1 / 2; text-align: right; }
+.bc-mhud-hp { grid-area: 2 / 1; position: relative; height: 3px; background: rgba(255, 255, 255, .18); overflow: hidden; }
+.bc-mhud-tag[data-side="rival"] .bc-mhud-hp { grid-area: 2 / 2; }
+.bc-mhud-hp i { position: absolute; inset: 0; transform-origin: left; }
+.bc-mhud-tag[data-side="rival"] .bc-mhud-hp i { transform-origin: right; }
+.bc-mhud-ghost { background: rgba(255, 255, 255, .55); transition: transform .55s .32s cubic-bezier(.3, .7, .2, 1); }
+.bc-mhud-fill { background: var(--c); transition: transform .2s ease-out; }
+.bc-mhud-num { grid-area: 1 / 2 / 3 / 3; align-self: center; font: 700 min(22px, 3cqh)/1 var(--sans); font-variant-numeric: tabular-nums; text-align: right; }
+.bc-mhud-tag[data-side="rival"] .bc-mhud-num { grid-area: 1 / 1 / 3 / 2; text-align: left; }
+.bc-mhud-turn { grid-row: 1; grid-column: 2; justify-self: stretch; font: 650 min(14px, 1.9cqh)/1 var(--sans); font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .6); }
+
+/* ============================================================ one press for every control (the gallery's, in its dark clay)
+   Raised at rest, sunk while pressed or on: two shadow layers crossfade by opacity (box-shadow never animates); 0.97 in
+   90 ms on press, back in 220. Disabled is flat in ink-3; a control that waits but stays focusable reads ink-2. Tone
+   changes are instant; only transform and opacity move. */
+.key, .plate {
+  position: relative; isolation: isolate; box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: var(--ui-ctl); min-width: var(--ui-ctl); padding: 0 16px; margin: 0;
+  border: 1px solid transparent; border-radius: var(--ui-r-ctl);
+  font: 600 var(--ui-lab)/20px var(--sans); letter-spacing: 0; white-space: nowrap; text-decoration: none;
+  cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  transition: transform 220ms var(--ui-ease);
+}
+.key { background: var(--ui-clay); color: var(--ui-ink-1); }
+.key:has(> .i:first-child) { padding-left: 14px; }
+.key.icon { padding: 0; width: var(--ui-ctl); }
+:is(.key, .plate)::before, :is(.key, .plate)::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: -1; pointer-events: none; transition: opacity 220ms var(--ui-ease); }
+:is(.key, .plate)::before { box-shadow: var(--ui-raise-s); }
+:is(.key, .plate)::after { box-shadow: var(--ui-sink-s); opacity: 0; }
+@media (hover: hover) { .key:hover:not(:disabled, [aria-disabled='true']) { background-color: var(--ui-clay-hi); } }
+:is(.key, .plate):active:not(:disabled, [aria-disabled='true']) { transform: scale(.97); transition-duration: 90ms; }
+:is(.key, .plate):is(:active, [aria-pressed='true'], [aria-expanded='true']):not(:disabled, [aria-disabled='true'])::before { opacity: 0; transition-duration: 90ms; }
+:is(.key, .plate):is(:active, [aria-pressed='true'], [aria-expanded='true']):not(:disabled, [aria-disabled='true'])::after { opacity: 1; transition-duration: 90ms; }
+:is(.key, .plate):is(:disabled, [aria-disabled='true']) { color: var(--ui-ink-2); cursor: default; }
+:is(.key, .plate):is(:disabled, [aria-disabled='true'])::before, :is(.key, .plate):is(:disabled, [aria-disabled='true'])::after { opacity: 0; }
+/* the one filled control of a view: an ink plate with a clay label */
+.plate { background: var(--ui-ink-1); color: var(--ui-clay); }
+@media (hover: hover) { .plate:hover:not([aria-disabled='true']) { background: oklch(from var(--ui-ink-1) calc(l - .06) c h); } }
+/* a sunk track that holds a row of keys, 4 px in (the gallery's tray) */
+.tray { display: flex; gap: var(--ui-gap); padding: var(--ui-inset); border-radius: var(--ui-r-track); background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+/* one cell, two glyphs: Auto's play turns to pause while it runs */
+.swapi { display: grid; }
+.swapi > .i { grid-area: 1 / 1; transition: opacity 300ms var(--ui-ease), transform 300ms var(--ui-ease); }
+.swapi > .on { opacity: 0; transform: scale(.25); }
+[aria-pressed='true'] .swapi > .off { opacity: 0; transform: scale(.25); }
+[aria-pressed='true'] .swapi > .on { opacity: 1; transform: none; }
+
+/* ============================================================ the top bar: Kevin Liu, the score bug, the playback tray
+   One row from 1300 px: the bug centred, as wide as the room the tray leaves it on both sides (880 at most). Narrower,
+   Kevin Liu and the tray take the first row and the bug the second, full width. On a phone the tags split: the rival's
+   under the tray, yours over the console. Every box is fixed, so no label or number ever moves another. */
+#bc { --meta-w: 312px; --top: 12px; --bug-h: 56px; --bug-top: var(--top); }
+.mark { position: absolute; z-index: 21; top: calc(var(--top) + (var(--ui-ctl) + 2 * var(--ui-inset) - 24px) / 2); left: var(--gut); margin: 0; font: 700 20px/24px var(--sans); color: var(--ui-ink-1); white-space: nowrap; text-shadow: 0 1px 12px rgba(0, 0, 0, .45); }
+.meta { position: absolute; z-index: 21; top: var(--top); right: var(--gut); }
+.meta .key { padding: 0 12px; }
+.meta .key:has(> .i:first-child, > .swapi:first-child) { padding-left: 10px; }
+.bug { position: absolute; z-index: 20; top: var(--bug-top); left: 50%; translate: -50% 0; width: min(880px, calc(100vw - 2 * (var(--meta-w) + 2 * var(--gut)))); height: var(--bug-h);
+  display: grid; grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr); align-items: stretch; gap: 0; padding: 6px; border-radius: 16px; background: var(--ui-clay); box-shadow: var(--ui-cast-lift); }
+@media (max-width: 1299px) {
+  #bc { --bug-top: calc(var(--top) + var(--ui-ctl) + 2 * var(--ui-inset) + 10px); }
+  .bug { width: min(880px, calc(100vw - 2 * var(--gut))); }
+}
+.tag { --c: var(--ui-ink-1); position: relative; display: grid; align-items: center; column-gap: 10px; row-gap: 6px; padding: 0 10px; min-width: 0; color: var(--ui-ink-1); }
+.tag[data-side="player"] { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "pips name hpn" "pips hp hpn"; }
+.tag[data-side="rival"] { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "hpn name pips" "hpn hp pips"; text-align: right; }
+/* the column is three pips wide before the team fills it, so the HP bar never moves when it does (CLS) */
+.pips { --pip: 22px; grid-area: pips; display: flex; gap: 3px; margin: 0; padding: 0; list-style: none; min-width: calc(3 * var(--pip) + 6px); }
+.tag[data-side="rival"] .pips { flex-direction: row-reverse; }
+.pips li { position: relative; width: var(--pip); height: 31px; transition: opacity .3s; }
+.pips li > .bc-card { inset: 0; height: 100%; }
+/* the card in play wears the card's own sleeve, in its colour */
+.pips li[data-state="on"] .sleeve { opacity: 1; --sleeve: var(--c); --clay: var(--ink); }
+.pips li[data-state="bench"] { opacity: .62; }
+.pips li[data-state="down"] { opacity: .2; }
+.tag > .name { grid-area: name; align-self: end; font: 600 15px/18px var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* the bar: a sunk track, the card's colour in it, the ghost of what was lost behind */
+.hp { grid-area: hp; align-self: start; position: relative; height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); overflow: hidden; }
+.hp i { position: absolute; inset: 0; transform-origin: left; will-change: transform; border-radius: inherit; }
+.tag[data-side="rival"] .hp i { transform-origin: right; }
+.hp-ghost { background: oklch(from var(--ui-ink-1) l c h / .5); transition: transform .55s .32s cubic-bezier(.3, .7, .2, 1); }
+.hp-fill { background: var(--c); transition: transform .2s ease-out; }
+.hpn { grid-area: hpn; font: 700 24px/1 var(--sans); font-variant-numeric: tabular-nums; width: 3ch; text-align: right; }
+.tag[data-side="rival"] .hpn { text-align: left; }
+/* a condition or a raised stat hangs under its tag, outside the plate, so a name never gives up its room to it */
+.chips { position: absolute; top: calc(100% + 12px); display: flex; gap: 4px; height: 22px; max-width: calc(100% + 6px); overflow: hidden; pointer-events: none; }
+.tag[data-side="player"] .chips { left: -6px; }
+.tag[data-side="rival"] .chips { right: -6px; flex-direction: row-reverse; }
+.chips:empty { display: none; }
+.chips i { flex: none; display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--ui-clay); box-shadow: var(--ui-cast-rest);
+  font: 600 12px/1 var(--sans); font-style: normal; font-variant-numeric: tabular-nums; color: var(--ui-ink-1); white-space: nowrap; }
+.chips i .i { width: 14px; height: 14px; }
+.chips i[data-down] { color: var(--ui-rival); }
+.clock { display: grid; place-items: center; align-self: center; height: 32px; margin: 0 4px; border-radius: 10px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); color: var(--ui-ink-1); font: 700 15px/1 var(--sans); font-variant-numeric: tabular-nums; }
+/* the turn: "T" and a field two figures wide, centred as one, so T9 to T10 fills the second figure and nothing drawn
+   moves (centred text slid its "T", generated text, which a layout shift names no source for) */
+.clock b, .bc-mhud-turn { display: grid; grid-template-columns: auto minmax(2ch, auto); justify-content: center; text-align: left; }
+.bc-mhud-turn::before { content: "T"; }
+.clock b::before { content: "T"; font-weight: 500; color: var(--ui-ink-2); margin-right: 1px; }
+.bug, .meta, .mark { transition: opacity .3s, transform .35s var(--slam); }
+/* every cutscene: the bug, the mark and the tray step out of the frame; the state rides the top matte, dim until the
+   impact (.bc-mhud), so nothing but the scene is lit */
+#bc[data-scene] .bug { opacity: 0; transform: translate3d(0, -130%, 0); }
+#bc[data-scene] .meta, #bc[data-scene] .mark, #bc[data-replay] .meta, #bc[data-replay] .mark { opacity: 0; pointer-events: none; }
+#bc[data-replay] .bug { opacity: 0; transform: translate3d(0, -130%, 0); }
+#bc[data-landed] .bc-mhud { opacity: 1; }
+#bc[data-phase="intro"] .bug, #bc[data-phase="intro"] .meta, #bc[data-phase="boot"] .bug, #bc[data-phase="intro"] .mark { opacity: 0; transform: translate3d(0, -14px, 0); }
+/* the result stands its own teams: the bug steps out, and Kevin Liu and the tray stay over it, Leave and Log in reach */
+#bc[data-phase="result"] .bug { opacity: 0; transform: translate3d(0, -130%, 0); pointer-events: none; }
+#bc[data-phase="result"] .meta, #bc[data-phase="result"] .mark { z-index: 26; }
+
+/* ============================================================ the ticker and the credit */
+.ticker { position: absolute; z-index: 20; left: 50%; bottom: 150px; translate: -50% 0; margin: 0; width: min(1180px, calc(100vw - 2 * var(--gut))); height: 22px; display: flex; justify-content: center; align-items: baseline; gap: 10px; white-space: nowrap; overflow: hidden;
+  font: 500 13px/22px var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-2); text-shadow: 0 1px 10px rgba(0, 0, 0, .6); transition: opacity .2s; }
+.ticker b { font: 600 15px/22px var(--sans); color: var(--ui-ink-1); }
+.ticker em { font: 700 15px/22px var(--sans); font-style: normal; font-variant-numeric: tabular-nums; color: var(--ui-ink-1); }
+.ticker span { overflow: hidden; text-overflow: ellipsis; min-width: 0; color: oklch(from var(--ui-ink-1) l c h / .78); }
+.ticker s { font: 600 15px/22px var(--sans); color: var(--ui-ink-1); }
+#bc[data-scene] .ticker, #bc[data-phase="intro"] .ticker, #bc[data-phase="result"] .ticker, #bc[data-replay] .ticker, #bc[data-panel] .ticker { opacity: 0; }
+/* CoTFly's CC BY 4.0 line: over the arena, the versus and the result, whenever its world or footage is in view */
+.credit { position: absolute; z-index: 41; left: 50%; bottom: 178px; translate: -50% 0; margin: 0; width: min(760px, calc(100vw - 2 * var(--gut))); text-align: center; font: 500 11px/1.35 var(--sans); color: oklch(from var(--ui-ink-1) l c h / .72); text-shadow: 0 1px 8px rgba(0, 0, 0, .7); pointer-events: none; }
+.credit:empty { display: none; }
+#bc[data-phase="intro"] .credit { bottom: 16px; }
+#bc[data-phase="result"] .credit { bottom: 8px; }
+#bc[data-scene] .credit, #bc[data-replay] .credit { opacity: 0; }
+
+/* ============================================================ the console: one clay tray at the foot
+   The four moves are raised keys holding their feature's picture in a sunk window; Guard, Switch, Kit and Hard Reset
+   are keys beside them. Switch and Kit stay sunk while their panel is open. */
+.console { position: absolute; z-index: 20; left: 50%; bottom: 16px; width: min(1180px, calc(100vw - 2 * var(--gut))); translate: -50% 0; display: grid; grid-template-columns: minmax(0, 1fr) 228px; gap: 10px; padding: 10px; border-radius: 20px; background: var(--ui-clay); box-shadow: var(--ui-cast-lift); transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .25s; }
+#bc[data-scene] .console, #bc[data-phase="intro"] .console, #bc[data-phase="result"] .console, #bc[data-replay] .console, #bc[data-phase="boot"] .console { transform: translate3d(0, 130%, 0); opacity: 0; pointer-events: none; }
+.moves-wrap { position: relative; min-width: 0; }
+.moves { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.move { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 44px auto auto; align-content: start; justify-content: stretch; align-items: center; justify-items: stretch; row-gap: 7px; height: 104px; padding: 4px 4px 0; text-align: left; overflow: hidden; }
+.move-art { position: relative; display: block; height: 44px; overflow: hidden; border-radius: calc(var(--ui-r-ctl) - 4px); background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.move-art img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+.move-art::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px oklch(0% 0 0 / .25); pointer-events: none; }
+@media (hover: hover) { .move:hover:not([aria-disabled='true']) .move-art img { transform: scale(1.06); } }
+.move:focus-visible .move-art img { transform: scale(1.06); }
+.move-name { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0 8px; font: 600 16px/20px var(--sans); color: var(--ui-ink-1); }
+.move-name > .i { width: 16px; height: 16px; color: var(--d); }
+.move-name > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.move-name[data-axis] > span { font-variation-settings: "wght" var(--w, 600); font-weight: var(--w, 600); }
+.move-nums { display: block; padding: 0 8px; font: 500 12px/16px var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-2); white-space: pre; }
+.move[aria-disabled='true'] .move-name { color: var(--ui-ink-2); }
+.move[aria-disabled='true'] .move-art img { opacity: .55; }
+.move-ring { position: absolute; top: 4px; right: 4px; min-width: 44px; height: 20px; display: grid; place-items: center; padding: 0 6px; border-radius: 0 calc(var(--ui-r-ctl) - 4px) 0 8px; background: var(--ui-clay); font: 700 12px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-1); }
+.move-ring:empty { display: none; }
+.move[data-ring="up"] .move-ring::before { content: ''; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; background: oklch(80% .16 145); display: inline-block; }
+.move[data-ring="down"] .move-ring::before { content: ''; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; background: var(--ui-rival); display: inline-block; }
+.move-ring { display: flex; align-items: center; justify-content: center; }
+/* the weight a Weight Axis move is set at: a sunk track with a raised thumb, over its own key */
+.wght { position: absolute; bottom: calc(100% + 18px); left: calc(var(--slot, 1) * (100% + 10px) / 4); width: calc((100% - 30px) / 4); display: flex; align-items: center; gap: 10px; height: calc(var(--ui-ctl) + 2 * var(--ui-inset)); padding: 0 12px 0 14px; border-radius: var(--ui-r-track); background: var(--ui-clay); box-shadow: var(--ui-cast-lift); font: 600 13px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-1); }
+.wght input { flex: 1; min-width: 0; height: var(--ui-ctl); margin: 0; background: none; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.wght input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.wght input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.wght input::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: var(--ui-clay); box-shadow: var(--ui-raise-s); }
+.wght input::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: var(--ui-clay); box-shadow: var(--ui-raise-s); }
+.wght input:active::-webkit-slider-thumb { box-shadow: var(--ui-sink-s); }
+.wght input:focus-visible { outline-offset: 0; }
+.wght output { width: 3ch; text-align: right; }
+.acts { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 10px; }
+.acts .key { width: 100%; height: auto; min-height: var(--ui-ctl); }
+#kit, #reset { grid-column: span 2; }
+/* The bench and the Kit open above the console, where the ticker was (it steps out while they are open). */
+.panel { position: absolute; left: 0; right: 0; bottom: calc(100% + 14px); display: flex; gap: 10px; justify-content: center; align-items: flex-end; flex-wrap: wrap; pointer-events: none; }
+.panel > * { pointer-events: auto; }
+.panel .bench { position: relative; width: 158px; height: 248px; padding: 0; border: 0; border-radius: 14px; background: var(--ui-clay); box-shadow: var(--ui-cast-lift); text-align: left; transition: transform .2s var(--slam); }
+.panel .bench > .bc-card { left: 8px; top: 8px; height: 200px; }
+@media (hover: hover) { .panel .bench:hover:not([aria-disabled='true']) { transform: translate3d(0, -4px, 0); } }
+.panel .bench:active:not([aria-disabled='true']) { transform: scale(.97); transition-duration: 90ms; }
+.panel .bench[aria-disabled='true'] > .bc-card { opacity: .45; }
+.bench-hp { position: absolute; left: 10px; right: 10px; bottom: 30px; height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); overflow: hidden; }
+.bench-hp i { position: absolute; inset: 0; background: var(--c); transform-origin: left; }
+.bench-num { position: absolute; left: 10px; bottom: 9px; display: flex; align-items: center; gap: 4px; font: 600 13px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-1); }
+.bench-num .i { width: 14px; height: 14px; color: var(--ui-ink-2); }
+.panel .item { width: 176px; height: 64px; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-content: center; justify-content: stretch; column-gap: 10px; row-gap: 6px; padding: 0 14px; text-align: left; border-radius: 14px; }
+.panel .item::before { box-shadow: var(--ui-cast-lift); }
+.item-name { font: 600 15px/1 var(--sans); }
+.item-short { grid-row: 2; font: 500 13px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-2); }
+.item-left { grid-row: 1 / 3; grid-column: 2; align-self: center; font: 700 18px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.panel > .back { align-self: flex-end; }
+.panel > .back::before { box-shadow: var(--ui-cast-lift); }
+.panel[data-kind="kit"] { max-width: 860px; margin: 0 auto; }
+/* ============================================================ the versus
+   The six cards stand where the gallery's dock hands them over (each is named card-<id> for the cross-document view
+   transition); main.ts places and moves every one of them. */
+.versus { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+.vs-black { position: absolute; inset: 0; background: var(--ink); }
+.vs-card { left: 0; top: 0; transform-origin: 50% 50%; will-change: transform, opacity; }
+.vs-card.lead { z-index: 3; }
+#bc[data-phase="intro"][data-bug] .bug { opacity: 1; transform: none; }
+@view-transition { navigation: auto; }
+::view-transition-group(*) { animation-duration: 460ms; animation-timing-function: cubic-bezier(.2, .9, .1, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 320ms; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+
+/* ============================================================ the result and the reel
+   Every part is sized by the window's width and height, so the title, both teams, the reel and the acts stand whole in
+   any window from 1024x768 up and on a phone. The reel is one row: a chip is 220 px wide at most and gives way to 150
+   before the row scrolls sideways; on a phone two chips and an edge show. Should anything still not
+   fit, the sheet scrolls rather than cut it off. */
+.result { position: absolute; inset: 0; z-index: 25; display: grid; grid-template-columns: minmax(0, 1fr); align-content: safe center; justify-items: center; gap: clamp(14px, 3.2vh, 28px); padding: 96px var(--gut) clamp(20px, 5vh, 40px); text-align: center; overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: none;
+  background: radial-gradient(ellipse at 50% 40%, rgba(5, 5, 6, .35), rgba(5, 5, 6, .92) 70%); }
+/* the seam stands behind the result, never across its title */
+#bc[data-phase="result"] .seam { opacity: 0; transition: opacity .3s; }
+.result[data-ready] { animation: rise .5s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes rise { from { opacity: 0; transform: translate3d(0, 16px, 0); } }
+.res-head { display: grid; gap: clamp(10px, 2.2vh, 20px); }
+.res-title { margin: 0; font: 700 clamp(64px, min(10vw, 15vh), 160px)/.9 var(--sans); color: var(--ui-ink-1); }
+.result[data-winner="rival"] .res-title { color: var(--ui-ink-2); }
+.res-line { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; column-gap: 24px; row-gap: 4px; font: 500 15px/22px var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-2); }
+.res-line b { font-weight: 700; color: var(--ui-ink-1); }
+/* the teams' height: 220 px, less on a short window, and never wider than the window (six 63:88 cards, four gaps) */
+.res-teams { --tg: clamp(24px, 6vw, 90px); --rt: max(96px, min(220px, 24vh, (100vw - 2 * var(--gut) - var(--tg) - 40px) / 4.3)); display: flex; gap: var(--tg); max-width: 100%; }
+.res-team { position: relative; display: flex; gap: 10px; height: var(--rt); }
+.res-team > .bc-card { position: relative; height: var(--rt); }
+.res-team > .bc-card[data-down="true"] { opacity: .32; }
+.reel { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(150px, 220px)); gap: 10px; justify-content: safe center; max-width: min(1180px, 100%); padding: 8px; margin: -8px; overflow: auto hidden; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding: 8px; scrollbar-width: none; }
+.reel::-webkit-scrollbar, .result::-webkit-scrollbar { display: none; }
+.reel-chip { width: auto; height: auto; aspect-ratio: 16 / 10; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; justify-content: stretch; align-items: stretch; padding: 4px 4px 0; text-align: left; border-radius: 14px; scroll-snap-align: start; }
+.reel-chip::before { box-shadow: var(--ui-cast-lift); }
+.reel-pic { position: relative; display: block; overflow: hidden; border-radius: 10px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.reel-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+@media (hover: hover) { .reel-chip:hover .reel-art { transform: scale(1.05); } }
+.reel-chip:focus-visible .reel-art { transform: scale(1.05); }
+.reel-foot { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 8px; }
+.reel-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px/1 var(--sans); }
+.reel-num { flex: none; font: 700 15px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.reel-chip[data-ko] .reel-num { color: var(--ui-rival); }
+.res-acts { flex-wrap: wrap; justify-content: center; }
+
+/* ============================================================ the scrubbable replay, the log, the error
+   The replay plays above its controls: the stage gives the tray its own strip at the foot, so Pause, the track and Close
+   never sit over the lower matte's credit or call-out. */
+#bc { --scrub-h: 72px; }
+#bc[data-replay] .stage { bottom: var(--scrub-h); }
+#bc[data-replay] .stage-black { opacity: 1; }
+.scrub { position: absolute; z-index: 30; left: 50%; bottom: 12px; translate: -50% 0; width: min(760px, calc(100vw - 2 * var(--gut))); display: flex; gap: 10px; align-items: center; padding: 4px; border-radius: var(--ui-r-track); background: var(--ui-clay); box-shadow: var(--ui-cast-lift); }
+.scrub-track { position: relative; flex: 1; height: var(--ui-ctl); display: flex; align-items: center; }
+.scrub-track input { width: 100%; height: var(--ui-ctl); margin: 0; background: none; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.scrub-track input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.scrub-track input::-moz-range-track { height: 6px; border-radius: 3px; background: var(--ui-clay); box-shadow: var(--ui-sink-s); }
+.scrub-track input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -6px; border-radius: 50%; background: var(--ui-ink-1); box-shadow: var(--ui-raise-s); }
+.scrub-track input::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: var(--ui-ink-1); }
+#scrub-marks { position: absolute; left: 9px; right: 9px; top: calc(50% - 10px); height: 4px; pointer-events: none; }
+#scrub-marks i { position: absolute; width: 2px; height: 4px; margin-left: -1px; border-radius: 1px; background: var(--ui-ink-2); }
+#bc[data-replay] .result, #bc[data-replay] .bc-mhud { visibility: hidden; }
+dialog#log { width: min(560px, calc(100vw - 32px)); max-height: 72vh; padding: 0; border: 0; border-radius: 24px; background: var(--ui-clay); color: var(--ui-ink-1); box-shadow: var(--ui-cast-lift), 0 0 0 1px oklch(8% .01 70 / .5); overflow: hidden; }
+dialog#log[open] { display: flex; flex-direction: column; }
+dialog#log::backdrop { background: rgba(0, 0, 0, .55); }
+.log-head { display: flex; justify-content: flex-end; padding: 12px 12px 0; }
+dialog#log ol { list-style: none; margin: 0; padding: 4px 24px 24px; overflow: auto; font: 500 15px/22px var(--sans); font-variant-numeric: tabular-nums; -webkit-mask: linear-gradient(transparent, #000 12px, #000 calc(100% - 16px), transparent); mask: linear-gradient(transparent, #000 12px, #000 calc(100% - 16px), transparent); }
+dialog#log li { padding: 3px 0; }
+dialog#log .log-turn { margin-top: 14px; font: 600 12px/16px var(--sans); color: var(--ui-ink-2); }
+dialog#log .log-turn:first-child { margin-top: 0; }
+dialog#log code { display: block; margin-top: 2px; font: 500 12px/16px var(--sans); font-variant-numeric: tabular-nums; color: var(--ui-ink-2); overflow-wrap: anywhere; }
+.error { position: absolute; z-index: 22; left: 50%; top: calc(var(--bug-top) + var(--bug-h) + 48px); translate: -50% 0; width: min(560px, calc(100vw - 2 * var(--gut))); margin: 0; padding: 12px 16px; text-align: center;
+  font: 600 14px/20px var(--sans); color: var(--ui-ink-1); background: var(--ui-clay); border-radius: 14px; box-shadow: var(--ui-cast-lift), inset 0 0 0 1.5px var(--ui-rival); }
+.error:empty { display: none; }
+#bc[data-scene] .error, #bc[data-replay] .error { opacity: 0; }
+
+/* ============================================================ reduced motion: every scene a still; the name held in the lower matte */
+.sd-scene[data-variant="reduced"] .sd-callout:not([data-style="trait"]) .sd-callout-text { bottom: calc(var(--ap) / 2 - .5em); height: 1em; font-size: min(6.6cqh, 64cqw / (var(--clen, 10) * .64)); }
+.sd-scene[data-variant="reduced"] .sd-callout:is([data-style="switch"], [data-style="ko"], [data-style="result"]) .sd-callout-text { font-size: min(6.6cqh, 9cqw, 88cqw / (var(--clen, 10) * .56)); }
+@media (prefers-reduced-motion: reduce) {
+  .arena, .world-down, .console, .bug, .meta, .mark, .ticker, .hp i, .bc-mhud, .bc-mhud-hp i, .move-art img, .reel-art, .stage-black, .panel .bench, .seam,
+  .key, .plate, :is(.key, .plate)::before, :is(.key, .plate)::after, .swapi > .i { transition: none !important; }
+  .result[data-ready] { animation: none; }
+}
+#bc[data-reduced="force"] :is(.arena, .console, .hp i, .bc-mhud, .bc-mhud-hp i, .bug, .meta, .mark, .ticker, .world-down, .seam) { transition: none !important; }
+#bc[data-reduced="force"] .result[data-ready] { animation: none; }
+
+/* ============================================================ phones: rival above, you below */
+@media (max-width: 719px) {
+  :root { --gut: 12px; }
+  #bc { --top: 10px; --con: calc(244px + env(safe-area-inset-bottom, 0px)); --ui-lab: 14px; --scrub-h: 72px; }
+  .arena { --tilt: 4vw; bottom: var(--con); }
+  .arena { container-type: size; }
+  .world[data-side="rival"], .stand[data-side="rival"] { clip-path: polygon(0 0, 100% 0, 100% calc((100 - var(--seam)) * 1% - var(--tilt)), 0 calc((100 - var(--seam)) * 1% + var(--tilt))); }
+  .world[data-side="player"], .stand[data-side="player"] { clip-path: polygon(0 calc((100 - var(--seam)) * 1% + var(--tilt)), 100% calc((100 - var(--seam)) * 1% - var(--tilt)), 100% 100%, 0 100%); }
+  .world-live { clip-path: inset(0 0 var(--con) 0); }
+  .stand, .stand[data-side="rival"] { --x: 50vw; --mw: 64vw; --mh: 26cqh; }
+  .stand[data-side="rival"] { --floor: calc((100 - var(--seam)) * 1cqh - 3cqh); }
+  .stand[data-side="player"] { --floor: 87cqh; }
+  .seam { top: 0; bottom: auto; left: -5%; right: -5%; width: auto; height: 2px; margin: -1px 0 0; transform: translate3d(0, calc((100 - var(--seam)) * 1cqh), 0) rotate(-4.6deg); }
+  .vignette { background: linear-gradient(to bottom, rgba(5, 5, 6, .72), rgba(5, 5, 6, 0) 26%), linear-gradient(to top, rgba(5, 5, 6, .9), rgba(5, 5, 6, 0) 30%); }
+  .credit { bottom: calc(var(--con) + 116px); font-size: 9.5px; }
+  /* A scene takes the whole screen between the two tags: the rival's stays on top, yours drops to the foot. */
+  .stage { inset: 128px 0 72px; }
+  #bc[data-replay] .stage { bottom: var(--scrub-h); }
+  #bc[data-scene] .stage-black, #bc[data-replay] .stage-black { opacity: 1; }
+  .mark { display: none; }
+  .meta { left: auto; }
+  .bug { display: contents; }
+  #bc[data-scene] .bug, #bc[data-replay] .bug { opacity: 1; transform: none; }
+  .clock { display: none; }
+  .tag { position: absolute; z-index: 20; left: var(--gut); right: var(--gut); height: 50px; padding: 0 12px; border-radius: 14px; background: var(--ui-clay); box-shadow: var(--ui-cast-lift); transition: transform .32s cubic-bezier(.2, .8, .2, 1), opacity .3s; }
+  .tag[data-side="player"] { bottom: var(--con); }
+  .tag[data-side="rival"] { top: calc(var(--top) + var(--ui-ctl) + 2 * var(--ui-inset) + 8px); }
+  /* the chips hang off the arena side of each tag: under the rival's, over yours; a scene takes them away */
+  .chips { max-width: 100%; height: 20px; }
+  .tag[data-side="rival"] .chips { top: calc(100% + 8px); right: 0; }
+  .tag[data-side="player"] .chips { top: auto; bottom: calc(100% + 8px); left: 0; }
+  .chips i { height: 20px; padding: 0 7px; font-size: 11.5px; }
+  .chips i .i { width: 13px; height: 13px; }
+  #bc[data-scene] .chips, #bc[data-replay] .chips { opacity: 0; }
+  .tag > .name { font-size: 14px; line-height: 17px; }
+  .hpn { font-size: 21px; }
+  #bc[data-scene] .tag[data-side="player"], #bc[data-replay] .tag[data-side="player"] { transform: translate3d(0, calc(var(--con) - 12px), 0); }
+  #bc[data-replay] .tag { opacity: 0; }
+  /* the tags frame a scene as the matte HUD does on a wide screen: dim until the impact lands, then lit as HP moves */
+  #bc[data-scene]:not([data-landed]) .tag { opacity: .42; }
+  .bc-mhud { display: none; }
+  .pips { --pip: 18px; }
+  .pips li { height: 25px; }
+  .ticker { bottom: calc(var(--con) + 88px); font-size: 12px; }
+  .ticker span { display: none; }
+  .console { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); grid-template-columns: 1fr; gap: 8px; padding: 8px; border-radius: 18px; }
+  .moves { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .move { height: 76px; grid-template-rows: 28px auto auto; row-gap: 5px; }
+  .move-art { height: 28px; }
+  .move-name { font-size: 15px; line-height: 18px; padding: 0 6px; }
+  .move-nums { font-size: 11px; line-height: 14px; padding: 0 6px; }
+  .acts { grid-template-columns: repeat(3, 1fr); grid-auto-rows: var(--ui-ctl); gap: 8px; }
+  .acts:has(#reset:not([hidden])) { grid-template-columns: repeat(4, 1fr); }
+  .acts .key { padding: 0 8px; }
+  #kit, #reset { grid-column: auto; }
+  .wght { left: auto; right: 0; width: 64%; bottom: calc(100% + 10px); }
+  /* the bench and the Kit stand above your tag, never over it: the tag's 50 px and 10 more over the console's gap */
+  .panel { bottom: calc(100% + (var(--con) - 236px - env(safe-area-inset-bottom, 0px)) + 60px); }
+  .panel .bench { width: 112px; height: 186px; border-radius: 12px; }
+  .panel .bench > .bc-card { left: 6px; top: 6px; height: 140px; }
+  .bench-hp { left: 7px; right: 7px; bottom: 24px; }
+  .bench-num { left: 7px; bottom: 7px; font-size: 12px; }
+  .panel .item { width: calc(50% - 5px); height: 58px; }
+  .error { top: 158px; }
+  .result { gap: 16px; padding: 72px var(--gut) 20px; }
+  #bc[data-phase="result"] .tag { opacity: 0; pointer-events: none; }
+  .res-head { gap: 12px; }
+  .res-title { font-size: 72px; }
+  .res-line { font-size: 13px; column-gap: 14px; }
+  .res-teams { --tg: 18px; --rt: 70px; }
+  .res-team { gap: 5px; }
+  .reel { grid-template-columns: repeat(var(--n, 2), calc((100% - 8px) / 2)); width: calc(100% + 16px); max-width: none; gap: 8px; }
+  .reel:has(> :nth-child(3)) { grid-template-columns: repeat(var(--n, 3), 44%); }
+  .reel-foot { height: 30px; padding: 0 6px; }
+  .reel-name { font-size: 13px; }
+  .res-acts { width: 100%; }
+  .res-acts .key, .res-acts .plate { flex: 1 1 40%; padding: 0 10px; }
+  .scrub { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+  /* In the portrait frame everything is shown whole: the stage fits pictures with 'contain'. */
+  .sd-scene[data-feature="still"][data-kind="attack"] .sd-feature { scale: 1; translate: 0 0; }
+  .bc-deal { left: 4cqw; bottom: 5cqh; height: 30cqh; }
+  .sd-scene[data-side="rival"] .bc-deal { right: 4cqw; }
+  .sd-scene[data-kind="attack"] .sd-cutout > img, .sd-scene[data-kind="attack"] .sd-cutout > .sd-sil { left: 2cqw; bottom: 3cqh; width: 80cqw; height: 46cqh; }
+  .sd-scene[data-kind="attack"][data-side="rival"] .sd-cutout > img, .sd-scene[data-kind="attack"][data-side="rival"] .sd-cutout > .sd-sil { right: 2cqw; }
+  .sd-callout-text { right: 10cqw; width: 85cqw; font-size: min(11cqw, 85cqw / (var(--clen, 10) * .64)); bottom: calc(var(--ap) - .18em); }
+  .sd-scene[data-side="rival"] .sd-callout-text { left: 10cqw; }
+  .sd-callout[data-style="ledger"] .sd-callout-text { font-size: min(10cqw, 44px); }
+  .sd-callout[data-style="trait"] .sd-callout-text { left: 5cqw; right: auto; width: auto; max-width: 90cqw; bottom: calc(10.1cqh + 2cqh); font-size: min(6.4cqw, 26px); }
+  .sd-scene[data-side="rival"] .sd-callout[data-style="trait"] .sd-callout-text { left: auto; right: 5cqw; }
+  .bc-deal-third { left: auto; right: 5cqw; bottom: 26cqh; height: 34cqh; }
+  .sd-scene:is([data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-cutout > img { left: 3cqw; bottom: 24cqh; width: 50cqw; height: 44cqh; }
+  .sd-scene:is([data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-cutout > img { left: 47cqw; }
+  .sd-scene[data-side="rival"] .bc-deal-third { right: auto; left: 5cqw; }
+  .sd-number { top: calc(var(--ap) + 3cqh); right: 5cqw; font-size: min(22cqw, 96px); }
+  .sd-scene[data-side="rival"] .sd-number { left: 5cqw; }
+  .sd-scene[data-label="word"] .sd-number { top: calc(var(--ap) + 4cqh); font-size: min(11cqw, 48px); }
+  /* a scene that moves its number aside narrows its receipt by as much (--sd-dx, the stage's), so it never leaves the frame */
+  .sd-receipt { top: calc(var(--ap) + 3cqh + min(22cqw, 96px) * .95); right: 5cqw; max-width: calc(90cqw - var(--sd-dx, 0cqw)); font-size: 10.5px; }
+  .sd-scene[data-side="rival"] .sd-receipt { left: 5cqw; }
+  .sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-number { top: auto; left: 5cqw; right: auto; bottom: 2.4cqh; font-size: 18px; }
+  .sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-number { left: auto; right: 5cqw; }
+  .sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"]) .sd-damage { transform-origin: 5cqw calc(100% - 2.4cqh); }
+  .sd-scene:is([data-kind="trait"], [data-kind="status"], [data-kind="item"], [data-kind="guard"])[data-side="rival"] .sd-damage { transform-origin: calc(100% - 5cqw) calc(100% - 2.4cqh); }
+  .sd-credit { inset: auto 3cqw 1cqh 3cqw; max-width: none; font-size: 8.5px; text-align: left; }
+  .bc-contact-card { height: 42cqh; left: calc(50cqw - 15.03cqh); top: 30cqh; }
+  .bc-contact[data-from="rival"] .bc-contact-card { left: calc(50cqw - 15.03cqh); }
+  .bc-contact { transform-origin: 92% 26%; }
+  .bc-contact[data-from="rival"] { transform-origin: 8% 26%; }
+  .bc-contact[data-ending="crash"] { transform-origin: 50% 51%; }
+  .bc-contact-num { left: 50cqw; top: 46cqh; }
+  .bc-contact[data-from="rival"] .bc-contact-num { left: 50cqw; }
+  .bc-popup { height: 46cqh; left: calc(50cqw - 16.47cqh); top: 24cqh; }
+  .bc-kocard { height: 46cqh; left: calc(50cqw - 16.47cqh); top: 22cqh; }
+  .bc-deal-result { height: 44cqh; left: calc(50cqw - 15.75cqh); bottom: 22cqh; }
+  .bc-stamp { right: 5cqw; top: calc(var(--ap) + 1cqh); font-size: 18px; }
+  .bc-tc { bottom: calc(var(--ap) / 2); left: 5cqw; }
+  .bc-scrubline, .sd-scene[data-kind="attack"] .bc-scrubline, .sd-scene[data-kind="attack"][data-side="rival"] .bc-scrubline { left: calc(5cqw + 26px); right: 5cqw; }
+  .sd-scene[data-kind="attack"] .bc-tc, .sd-scene[data-kind="attack"][data-side="rival"] .bc-tc { left: 5cqw; }
+  .bc-ledger { top: calc(var(--ap) + 3cqh); left: 5cqw; font-size: 12px; }
+  .sd-scene[data-side="rival"] .bc-ledger { right: 5cqw; }
+  .bc-caption { top: calc(var(--ap) + 20cqh); font-size: 18px; }
+  .bc-wave { left: 15%; width: 70%; top: calc(var(--ap) + 4cqh); height: 10cqh; }
+  .bc-axis { right: 5cqw; width: 90cqw; bottom: calc(var(--ap) + 14cqh); }
+  .sd-scene[data-side="rival"] .bc-axis { left: 5cqw; }
+  .sd-scene[data-variant="reduced"] .sd-callout:not([data-style="trait"]) .sd-callout-text { font-size: min(5.6cqh, 85cqw / (var(--clen, 10) * .64)); }
+}

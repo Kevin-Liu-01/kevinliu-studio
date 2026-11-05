@@ -1,0 +1,8 @@
+<svg viewBox="4 4 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent Machines" shape-rendering="geometricPrecision">
+  <!-- Mauve ring: merged rects to avoid subpixel seams -->
+  <path fill="#9B98A8" d="M10 4h12v6H10V4ZM4 10h6v12H4V10ZM22 10h6v12h-6V10ZM10 22h12v6H10V22Z"/>
+  <!-- White accents -->
+  <path fill="#FFFFFF" d="M23 5h4v4h-4V5ZM10 10h6v6h-6v-6ZM16 16h6v6h-6v-6ZM5 23h4v4H5v-4Z"/>
+  <!-- Near-black center -->
+  <path fill="#09090b" d="M16 10h6v6h-6v-6ZM10 16h6v6h-6v-6Z"/>
+</svg>

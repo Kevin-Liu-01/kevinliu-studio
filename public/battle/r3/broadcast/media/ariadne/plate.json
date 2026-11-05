@@ -1,0 +1,19 @@
+{
+ "wide": "broadcast/media/ariadne/wide.webp",
+ "hero": "broadcast/media/ariadne/wide.webp",
+ "portrait": "broadcast/media/ariadne/portrait.webp",
+ "object": "broadcast/media/ariadne/object.webp",
+ "objectSize": [
+  1400,
+  908
+ ],
+ "loop": "broadcast/media/ariadne/loop.mp4",
+ "poster": "broadcast/media/ariadne/poster.webp",
+ "emblem": "broadcast/media/ariadne/emblem.svg",
+ "groundImage": "broadcast/media/ariadne/ground.webp",
+ "palette": [
+  "#0f0f0f",
+  "#f5f5f5",
+  "#d2beff"
+ ]
+}

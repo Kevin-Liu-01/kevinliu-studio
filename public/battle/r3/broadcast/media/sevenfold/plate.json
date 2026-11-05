@@ -1,0 +1,65 @@
+{
+ "wide": "broadcast/media/sevenfold/wide.webp",
+ "portrait": "broadcast/media/sevenfold/portrait.webp",
+ "poster": "broadcast/media/sevenfold/poster.webp",
+ "loop": "broadcast/media/sevenfold/loop.mp4",
+ "hero": "broadcast/media/sevenfold/wide.webp",
+ "object": "broadcast/media/sevenfold/object.webp",
+ "objectSize": [
+  1400,
+  699
+ ],
+ "emblem": "broadcast/media/sevenfold/emblem.svg",
+ "groundImage": "broadcast/media/sevenfold/ground.webp",
+ "palette": [
+  "#0b0d08",
+  "#f6f1e7",
+  "#f97316"
+ ],
+ "source": "The landing's own ShaderGradient (waterPlane #F97316 #16A34A #FBBF24) stepped frame by frame on a virtual clock from https://sevenfold-demo.vercel.app/ (Sevenfold-Demo@3d5885442, Kevin's landing demo), 1920 x 1200, every element but the hero's full-width canvas hidden (the Trusted By fold never in frame), 165 frames; the loop is frames 0 to 119 with 120 to 149 dissolved into 0 to 29 (tools/loop.py). 40 GET requests, 0 /api/, 0 non-GET (cap/sf-world/requests.json). Ground: r4/ex grounds/sevenfold.webp.",
+ "files": [
+  {
+   "file": "broadcast/media/sevenfold/wide.webp",
+   "sha256": "500a0e508c83e9121b6984c282b843993d73793ad9c8636605df1b9fde0af819",
+   "w": 2400,
+   "h": 1500
+  },
+  {
+   "file": "broadcast/media/sevenfold/portrait.webp",
+   "sha256": "4fd47e3f5fffcb713bb94df7d2869a0a236c7536f7c1520fb5136f2e53b9dd02",
+   "w": 786,
+   "h": 1100
+  },
+  {
+   "file": "broadcast/media/sevenfold/poster.webp",
+   "sha256": "1469080c72010f4fd5acf02ec410888dfbaf78f2d24f470458fd34c60231c0b6",
+   "w": 1920,
+   "h": 1200
+  },
+  {
+   "file": "broadcast/media/sevenfold/loop.mp4",
+   "sha256": "575ca2ca6a2f7b708068b7c538bba8cb4297dc8ef3c7c7ca87f6f266bf6c772a",
+   "w": 1536,
+   "h": 960,
+   "frames": 120
+  },
+  {
+   "file": "broadcast/media/sevenfold/object.webp",
+   "sha256": "b70732903110d56fc8df8d0fa8a274847079f4d689527aa0b1e283de501021c6",
+   "w": 1400,
+   "h": 699,
+   "from": "r4/ex media/sevenfold/pop@2x.webp (trimmed to alpha, 1400 px)"
+  },
+  {
+   "file": "broadcast/media/sevenfold/emblem.svg",
+   "sha256": "6f51dd57ce4f580e825bb6fc92ef40a5073592295d5531f111ef94e46d1f9f34",
+   "from": "r4/ex/media/sevenfold/logo.svg"
+  },
+  {
+   "file": "broadcast/media/sevenfold/ground.webp",
+   "sha256": "125fcc8e780e6ecc3e072a75162d60600ce3ba5c2060d1e4d2417ddc3889e82d",
+   "from": "r4/ex grounds/sevenfold.webp (1600 px)",
+   "tone": "mean relative luminance 0.359 -> 0.060 (linear light x 0.167, .work/battle-r4/next-b/tools/tone-ground.py; the original in retired/grounds/)"
+  }
+ ]
+}

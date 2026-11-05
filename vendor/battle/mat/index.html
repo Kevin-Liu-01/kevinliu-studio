@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" data-boot>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Battle</title>
+<meta name="description" content="Three cards played against three more, on a card mat or an isometric field.">
+<!-- the gallery's folder: every card picture (posters, grounds, subjects) loads from it, read-only -->
+<meta name="gallery" content="../../../r3/cards/">
+<link rel="preload" href="../vendor/fonts/katagami-sans-battle.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Katagami Sans";src:url(../vendor/fonts/katagami-sans-battle.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Katagami Sans Cards";src:url(../vendor/fonts/katagami-sans-cards.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Katagami Mono";src:url(../vendor/fonts/katagami-mono.woff2) format("woff2");font-weight:100 700;font-display:swap}
+html[data-fonts] body{visibility:hidden}
+</style>
+<script>
+/* the first layout waits for the one face (2 s at most), so no box is sized by a fallback and then moves */
+(function (d) {
+  d.dataset.fonts = '';
+  Promise.race([document.fonts.load('800 1em "Katagami Sans"'), new Promise(function (r) { setTimeout(r, 2000); })]).catch(function () {}).then(function () { delete d.dataset.fonts; });
+  /* the battle's scene media (r3/battle, read-only) and the card code copied into vendor/cards */
+  window.MAT_BATTLE_BASE = new URL('../../../r3/battle/', location.href).href;
+  window.MAT_CARD_CODE = new URL('../vendor/cards/', location.href).href;
+})(document.documentElement);
+</script>
+<link rel="stylesheet" href="../vendor/cards/card.gen.css">
+<link rel="stylesheet" href="../vendor/broadcast/stage.css">
+<link rel="stylesheet" href="../shared/battle.css">
+<script>
+/* one page, two stage layouts: the address picks the mode (&mode=), else the folder. Only that layout's sheet and code
+   load now; the other's load once the battle is under way (shared/battle.js) */
+(function (d) {
+  var m = /[#&]mode=(mat|arena)\b/.exec(location.hash), mode = m ? m[1] : /\/arena\//.test(location.pathname) ? 'arena' : 'mat';
+  var dark = false;
+  try { dark = matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {}
+  if (mode === 'arena' || dark) d.dataset.theme = 'dark';
+  var css = document.createElement('link');
+  css.rel = 'stylesheet'; css.href = '../' + mode + '/' + mode + '.css'; css.setAttribute('data-mode', mode); css.setAttribute('blocking', 'render');
+  var js = document.createElement('link');
+  js.rel = 'modulepreload'; js.href = '../' + mode + '/board.js';
+  document.head.append(css, js);
+})(document.documentElement);
+</script>
+</head>
+<body>
+<main id="app" data-phase="boot">
+  <header class="rail" aria-label="Battle">
+    <p class="mark">Kevin Liu</p>
+    <div class="team-rail" id="team" aria-label="Teams" hidden></div>
+    <div class="rail-keys">
+      <div class="seg tray" role="group" aria-label="Mode">
+        <button type="button" class="key" id="mode-mat" aria-pressed="false" aria-keyshortcuts="M">Mat</button>
+        <button type="button" class="key" id="mode-arena" aria-pressed="false" aria-keyshortcuts="M">Arena</button>
+      </div>
+      <div class="keys tray">
+        <button type="button" class="key" id="replay" aria-keyshortcuts="R">Replay</button>
+        <button type="button" class="key" id="logb" aria-keyshortcuts="L">Log</button>
+        <a class="key" id="leave" href="../../../r3/cards/index.html">Leave</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="board" id="board" aria-label="Board"></section>
+
+  <canvas id="world" class="warm" aria-hidden="true"></canvas>
+  <div class="stage" id="stage"></div>
+
+  <nav class="console tray" id="console" aria-label="Commands">
+    <p class="say" id="say" aria-live="polite"></p>
+    <div class="moves" id="moves"></div>
+    <div class="acts">
+      <button type="button" class="key act" id="guard" aria-keyshortcuts="G">Guard</button>
+      <button type="button" class="key act" id="switch" aria-expanded="false" aria-keyshortcuts="S">Switch</button>
+      <button type="button" class="key act" id="kit" aria-expanded="false" aria-keyshortcuts="K">Kit</button>
+      <button type="button" class="key act" id="auto" aria-pressed="false" aria-keyshortcuts="A">Auto</button>
+    </div>
+    <div class="panel" id="panel" hidden></div>
+  </nav>
+
+  <section class="result" id="result" hidden aria-live="polite"></section>
+  <p class="error" id="error" role="alert"></p>
+  <dialog id="log" aria-label="Log"><div class="log-head"><b>Log</b><button type="button" class="key" id="log-close">Close</button></div><ol></ol></dialog>
+  <p class="sr" id="live" aria-live="polite"></p>
+</main>
+<script src="../vendor/cards/markup.js"></script>
+<script src="../vendor/cards/art.js"></script>
+<script src="../vendor/cards/card-env.gen.js"></script>
+<script src="../vendor/cards/card-sprite.gen.js"></script>
+<script src="../vendor/broadcast/media.js"></script>
+<script src="../vendor/broadcast/kit.js"></script>
+<script type="module" src="../shared/battle.js"></script>
+</body>
+</html>

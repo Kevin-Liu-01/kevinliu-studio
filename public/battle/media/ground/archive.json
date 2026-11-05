@@ -1,0 +1,175 @@
+{
+ "map": "archive",
+ "about": "The map's painted floor: P takes floor metres (X right, Y up, Z away, 1) to the map's native px; walkable is the floor the duel may stand on, in floor metres; light is the painting's key, ambient, floor and haze. Cut from r4/stage/ground by .work/stage/build.mjs; never edit by hand.",
+ "source": {
+  "file": "r4/stage/ground/archive.json",
+  "sha": "af76e7aa5b88"
+ },
+ "size": [
+  1619,
+  971
+ ],
+ "hz": 0.36666666666666664,
+ "camera": {
+  "P": [
+   [
+    1206.374908,
+    -9.265545,
+    827.511339,
+    8.598426
+   ],
+   [
+    -15.730073,
+    -1218.990849,
+    419.137431,
+    1131.223507
+   ],
+   [
+    -0.015419,
+    0,
+    0.999881,
+    0
+   ]
+  ],
+  "horizon": 419.32,
+  "focal": 1219,
+  "height": 0.928
+ },
+ "walkable": [
+  [
+   -6.275,
+   9.138
+  ],
+  [
+   -5.947,
+   11.448
+  ],
+  [
+   -4.872,
+   13.797
+  ],
+  [
+   -2.82,
+   15.026
+  ],
+  [
+   -0.245,
+   15.565
+  ],
+  [
+   2.094,
+   14.895
+  ],
+  [
+   4.028,
+   13.273
+  ],
+  [
+   5.243,
+   11.265
+  ],
+  [
+   5.522,
+   8.603
+  ],
+  [
+   1.309,
+   2.048
+  ],
+  [
+   -1.415,
+   2.052
+  ]
+ ],
+ "sizes": {
+  "leader_m": 1.7,
+  "figure_box_m": [
+   1.6,
+   1.5
+  ],
+  "pad_radius_m": 0.9,
+  "leader_footprint_m": 0.3
+ },
+ "duel": {
+  "desktop": {
+   "near": [
+    -1.272,
+    8.179
+   ],
+   "far": [
+    1.632,
+    13.181
+   ],
+   "your_leader": [
+    -2.672,
+    7.879
+   ],
+   "rival_leader": [
+    3.032,
+    13.481
+   ]
+  },
+  "phone": {
+   "near": [
+    -0.602,
+    10.87
+   ],
+   "far": [
+    0.346,
+    14.148
+   ],
+   "your_leader": [
+    -1.232,
+    10.57
+   ],
+   "rival_leader": [
+    0.976,
+    14.448
+   ]
+  }
+ },
+ "light": {
+  "key": {
+   "floor_dir": [
+    0.016,
+    -1
+   ],
+   "azimuth": 179.1,
+   "elevation": 30,
+   "colour": "#ffc1d8",
+   "strength": 3.73
+  },
+  "ambient": {
+   "colour": "#ffc6ff",
+   "level": "#251a25"
+  },
+  "floor": {
+   "mean": "#4e322e",
+   "lit": "#6d4638",
+   "shade": "#38231f"
+  },
+  "haze": {
+   "colour": "#1c1929",
+   "at": {
+    "desktop": {
+     "near": 0,
+     "far": 0
+    },
+    "phone": {
+     "near": 0.089,
+     "far": 0.499
+    }
+   }
+  },
+  "at": {
+   "desktop": {
+    "near": "#53352e",
+    "far": "#653f30"
+   },
+   "phone": {
+    "near": "#4e3740",
+    "far": "#47384c"
+   }
+  }
+ }
+}

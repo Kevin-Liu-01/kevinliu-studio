@@ -1,0 +1,167 @@
+{
+ "map": "runtime",
+ "about": "The map's painted floor: P takes floor metres (X right, Y up, Z away, 1) to the map's native px; walkable is the floor the duel may stand on, in floor metres; light is the painting's key, ambient, floor and haze. Cut from r4/stage/ground by .work/stage/build.mjs; never edit by hand.",
+ "source": {
+  "file": "r4/stage/ground/runtime.json",
+  "sha": "3aac60ba6087"
+ },
+ "size": [
+  1619,
+  971
+ ],
+ "hz": 0.3333333333333333,
+ "camera": {
+  "P": [
+   [
+    774.932354,
+    -0.431531,
+    822.101427,
+    0.850979
+   ],
+   [
+    -0.431531,
+    -774.932354,
+    346.012578,
+    1528.166602
+   ],
+   [
+    0,
+    0,
+    1,
+    0
+   ]
+  ],
+  "horizon": 346.02,
+  "focal": 774.9,
+  "height": 1.972
+ },
+ "walkable": [
+  [
+   -13.125,
+   12.371
+  ],
+  [
+   -11.32,
+   15.332
+  ],
+  [
+   -9.487,
+   17.415
+  ],
+  [
+   -0.309,
+   18.197
+  ],
+  [
+   8.894,
+   17.324
+  ],
+  [
+   10.772,
+   15.237
+  ],
+  [
+   13.732,
+   13.354
+  ],
+  [
+   2.512,
+   2.443
+  ],
+  [
+   -2.597,
+   2.447
+  ]
+ ],
+ "sizes": {
+  "leader_m": 1.7,
+  "figure_box_m": [
+   1.6,
+   1.5
+  ],
+  "pad_radius_m": 0.9,
+  "leader_footprint_m": 0.3
+ },
+ "duel": {
+  "desktop": {
+   "near": [
+    -1.235,
+    4.994
+   ],
+   "far": [
+    1.725,
+    8.043
+   ],
+   "your_leader": [
+    -2.635,
+    4.694
+   ],
+   "rival_leader": [
+    3.125,
+    8.343
+   ]
+  },
+  "phone": {
+   "near": [
+    -1.421,
+    11.404
+   ],
+   "far": [
+    1.561,
+    16.98
+   ],
+   "your_leader": [
+    -2.321,
+    11.104
+   ],
+   "rival_leader": [
+    2.461,
+    17.28
+   ]
+  }
+ },
+ "light": {
+  "key": {
+   "floor_dir": [
+    0.001,
+    -1
+   ],
+   "azimuth": 180,
+   "elevation": 30,
+   "colour": "#eafff0",
+   "strength": 4.54
+  },
+  "ambient": {
+   "colour": "#dbe8ff",
+   "level": "#1d1f23"
+  },
+  "floor": {
+   "mean": "#2e3033",
+   "lit": "#434846",
+   "shade": "#1e1f23"
+  },
+  "haze": {
+   "colour": "#1f252a",
+   "at": {
+    "desktop": {
+     "near": 0.201,
+     "far": 0.34
+    },
+    "phone": {
+     "near": 0,
+     "far": 0.595
+    }
+   }
+  },
+  "at": {
+   "desktop": {
+    "near": "#292d31",
+    "far": "#2e3539"
+   },
+   "phone": {
+    "near": "#353e41",
+    "far": "#323c41"
+   }
+  }
+ }
+}

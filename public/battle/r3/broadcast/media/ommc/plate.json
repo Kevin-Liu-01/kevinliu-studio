@@ -1,0 +1,65 @@
+{
+ "wide": "broadcast/media/ommc/wide.webp",
+ "portrait": "broadcast/media/ommc/portrait.webp",
+ "poster": "broadcast/media/ommc/poster.webp",
+ "loop": "broadcast/media/ommc/loop.mp4",
+ "hero": "broadcast/media/ommc/wide.webp",
+ "object": "broadcast/media/ommc/object.webp",
+ "objectSize": [
+  1400,
+  784
+ ],
+ "emblem": "broadcast/media/ommc/emblem.svg",
+ "groundImage": "broadcast/media/ommc/ground.webp",
+ "palette": [
+  "#34070a",
+  "#fdf2f4",
+  "#ab3a42"
+ ],
+ "source": "Drawn from OMMC's own pictures: the Atlas header's gradient (pink-500, red-500, yellow-500, sampled from the live hero) run out of the cube's three reds (cube.svg), with the Atlas's own geometry constructions (OMMC-Atlas@94847f913 public/images/atlas-circles.png, atlas-hexagons.png) drifting over it on a four-second period (fig/ommc/world.html, 120 frames, loop closes on itself). No network. Emblem: the cube without its wordmark (r4/ex media/ommc/src/cube.svg). Ground: r4/ex grounds/ommc.webp.",
+ "files": [
+  {
+   "file": "broadcast/media/ommc/wide.webp",
+   "sha256": "266b229c3343e350db7cdd3444716bb8abd93a7fb9401f6c170a5b417d9b8134",
+   "w": 2400,
+   "h": 1500
+  },
+  {
+   "file": "broadcast/media/ommc/portrait.webp",
+   "sha256": "2c51e31e63ec0b84b9bfc9a9e705613158f24296d3c23c2b982b1ff28575e808",
+   "w": 786,
+   "h": 1100
+  },
+  {
+   "file": "broadcast/media/ommc/poster.webp",
+   "sha256": "11b3507b670786cbd244f3f953f479e0491609fb48720bb87deecc6208bd2229",
+   "w": 1920,
+   "h": 1200
+  },
+  {
+   "file": "broadcast/media/ommc/loop.mp4",
+   "sha256": "aa8ebeda6dec944801f5f65e84bc238d55171c6afd7ca635852b0d2b7824ff31",
+   "w": 1536,
+   "h": 960,
+   "frames": 120
+  },
+  {
+   "file": "broadcast/media/ommc/object.webp",
+   "sha256": "1189a368903c269bf5bdb5789b8a030ffc559434971fdc64a38059c4a898b562",
+   "w": 1400,
+   "h": 784,
+   "from": "r4/ex media/ommc/pop@2x.webp (trimmed to alpha, 1400 px)"
+  },
+  {
+   "file": "broadcast/media/ommc/emblem.svg",
+   "sha256": "4f9c1e14cbe117522a7eb1e0fd9f7f94035dc30ecbf0ea4a3ac16623aaeb2d85",
+   "from": "out/ommc/cube.svg"
+  },
+  {
+   "file": "broadcast/media/ommc/ground.webp",
+   "sha256": "5551c8947ee0cb7435b92d6ed8eb09abae6e692ec4b2acc1e22dca0b76c2feb2",
+   "from": "r4/ex grounds/ommc.webp (1600 px)",
+   "tone": "mean relative luminance 0.290 -> 0.060 (linear light x 0.207, .work/battle-r4/next-b/tools/tone-ground.py; the original in retired/grounds/)"
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- 050525's top-bar mark (art fix ex.4): its terminal's own block cursor, lit, on its CRT glass. Dedalus-Terminal@2c6801ea8
+       app/globals.css lines 30 to 34 (the crt glass #0a1418, phosphor #d6f7ff, cyan #6dd6ff, scanline) and 267 to 288
+       (term-block one character wide, term-cursor filled with its colour when focused), components/bday/ComputerLayer.tsx
+       line 743 (the phosphor glow). Drawn as shapes, no type. -->
+  <defs>
+    <filter id="g" x="-80%" y="-60%" width="260%" height="220%"><feGaussianBlur stdDeviation="1.6"/></filter>
+  </defs>
+  <rect width="32" height="32" rx="5" fill="#0a1418"/>
+  <g fill="#6dd6ff" opacity="0.06"><rect x="2" y="7" width="28" height="1"/><rect x="2" y="12" width="28" height="1"/><rect x="2" y="17" width="28" height="1"/><rect x="2" y="22" width="28" height="1"/></g>
+  <rect x="11.5" y="7.5" width="9" height="17" fill="#6dd6ff" opacity="0.55" filter="url(#g)"/>
+  <rect x="12" y="8" width="8" height="16" fill="#d6f7ff"/>
+</svg>

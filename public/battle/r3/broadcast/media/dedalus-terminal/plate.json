@@ -1,0 +1,19 @@
+{
+ "wide": "broadcast/media/dedalus-terminal/wide.webp",
+ "hero": "broadcast/media/dedalus-terminal/wide.webp",
+ "portrait": "broadcast/media/dedalus-terminal/portrait.webp",
+ "object": "broadcast/media/dedalus-terminal/object.webp",
+ "objectSize": [
+  1400,
+  779
+ ],
+ "loop": "broadcast/media/dedalus-terminal/loop.mp4",
+ "poster": "broadcast/media/dedalus-terminal/poster.webp",
+ "emblem": "broadcast/media/dedalus-terminal/emblem.svg",
+ "groundImage": "broadcast/media/dedalus-terminal/ground.webp",
+ "palette": [
+  "#0b2124",
+  "#e7e1d2",
+  "#9ff3e6"
+ ]
+}

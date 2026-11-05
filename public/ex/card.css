@@ -1,0 +1,1067 @@
+/* card.css: the card, EX.md 5 to 17. Frame B (Glass) with the judges' grafts: a thin polished rim; smoked glass for
+   the top bar, the footer and the collector chip; frosted slips for the trait, the moves and the what slip, the energy
+   running between them; the art window a clear pane on a foil keyline that the subject breaks through, cracked and
+   shedding shards where it crosses, over a brushed foot lip; the seal struck beside the collector number. Every size is cqw of the
+   card (1cqw = W / 100) on EX.md 5's zone map, and every element shows from the first whole card width at which it
+   reaches 9 css px (EX.md 7). The card is the same printed object in both themes.
+   Layers of a face, back to front (EX.md 13): .en (poster, canvas.ground, the cost 4 glitter: the only clip) 1, .rim 2,
+   .pane and its cracks 3, the glass and then the gloss 4, .pop 5, its glow, .fx and the shards 6, type 7. Nothing that holds .pop or
+   .fx clips: the glass is the pseudo elements of rows that make no stacking context, so their type (z 7) and their glass
+   (z 4) sit on either side of the subject.
+   One light: it falls from the upper left on the room's 1:2 vector (26.57 degrees from vertical), so every shadow on the
+   card is offset (k, 2k) and every lit edge faces up and left.
+   The metal answers the hand: the rim's specular streak (.spec) slides 0.3W with the tilt, by a transform rituals.js
+   writes on it directly (round ex.1: a custom property written per frame repainted the whole card, 370 ms of Paint in a
+   2 s tilt at 6x CPU; a transform on its own layer repaints nothing). Nothing else on the card reads the tilt, so the
+   hairline and the cost 4 foil and glitter hold still and paint once.
+   The rarity ladder (EX.md 15), at wall size: cost 1 a cool silver rim; 2 the rim in the card's hue, brushed; 3 the
+   card's metal, finely etched; 4 a light prism rim under a fine facet emboss, a prism window keyline, a hotter energy,
+   glitter across the whole print and holographic glitter over the text panel, the name and number in chrome.
+   Loads after ui.css and before rituals.css. */
+
+/* ---------- the card ---------- */
+/* --r is registered here as well as in ui.css, so a page that loads card.css alone (the battle) resolves it once, at the
+   card, and every part's radius reads it. A part whose radius is `inherit` is restyled whenever its parent's style
+   changes at all, so a body turned by transform every frame restyled the face, the back, the energy, the rim and the
+   gloss every frame: an inline transform on .body cost 163 to 330 us at 1x, 44 to 60 us with var(--r)
+   (.work/room-ex4b/t/recalc5.mjs). */
+@property --r { syntax: '<length>'; inherits: true; initial-value: 0px; }
+.card {
+  --r: max(3px, calc(var(--card) * 0.048));
+  position: relative; display: block; width: var(--card); aspect-ratio: 63 / 88; box-sizing: border-box;
+  container-type: inline-size; border-radius: var(--r); outline-offset: 3px; text-align: left;
+  font-family: 'Katagami Sans', ui-sans-serif, system-ui, sans-serif; font-synthesis: none; font-kerning: normal;
+  cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: pan-y;
+  -webkit-touch-callout: none; /* a held card drags to the dock; it never opens the image menu */
+  color: var(--k);
+  /* cost 1: a cool silver rim */
+  --m1: #f2f3f5; --m2: #cdd0d4; --m3: #8f9399; --m4: #55585d; --white: #fff;
+}
+/* cost 2: the rim in the card's own hue; cost 3 and 4: the card's metal (EX.md 15) */
+.card[data-cost="2"] {
+  --m1: color-mix(in oklab, var(--mh) 70%, #f5f7f9); --m2: color-mix(in oklab, var(--mh) 80%, var(--ml) 20%);
+  --m3: color-mix(in oklab, var(--ml) 80%, #8a929d); --m4: color-mix(in oklab, var(--ml) 70%, #1d2128);
+}
+.card:is([data-cost="3"], [data-cost="4"]) {
+  --m1: color-mix(in oklab, var(--mh) 70%, var(--g)); --m2: color-mix(in oklab, var(--mh) 45%, var(--p)); --m3: color-mix(in oklab, var(--ml) 50%, var(--d));
+  --m4: color-mix(in oklab, var(--d) 70%, black);
+}
+.card:focus-visible, .card.is-focus { outline: 2px solid var(--ink-1); }
+.card:is(.mine, .theirs):is(:focus-visible, .is-focus) { outline-offset: round(calc(var(--slw) + 3px), 1px); }
+/* At rest a card is flat and paints into the page's own layer; turned (a tilt, a lift, a deal or a flip) it is a 3D
+   group of its own, so the face and the back each hide their far side, and its subject and front effects ride their own
+   layers, so a tilt moves them without painting the card again */
+.body {
+  position: absolute; inset: 0; border-radius: var(--r);
+  box-shadow: var(--cast-rest);
+}
+.card:is(.lift, .flipped) .body, .card.turned .body { transform-style: preserve-3d; will-change: transform; }
+/* (the subject and the front effects take their own layers from their translate3d while turned; nothing below keys a
+   painted element to the .body's style attribute, which changes every frame, so a tilt restyles no gradient and repaints
+   nothing) */
+.body::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r); box-shadow: var(--cast-lift);
+  opacity: 0; transition: opacity 150ms var(--ease); pointer-events: none;
+}
+.card.lift .body::before, .card.is-hover .body::before { opacity: 1; }
+.body { transition: scale 220ms var(--ease); }
+.card:active .body, .card.is-active .body { scale: 0.97; transition-duration: 90ms; }
+.face, .back { position: absolute; inset: 0; border-radius: var(--r); }
+/* each side hides its far side only while the card turns: a flat card's back is hidden outright (below), and a
+   backface rule on a flat card would only cost it a layer */
+.card:is(.lift, .flipped) :is(.face, .back), .card.turned .body > :is(.face, .back), :not(.body) > .back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+/* the face never clips: the subject and its front effects leave the window and the trim (EX.md 13). It is its own
+   group only while its gloss shows (.lit, rituals.js gloss()), so a resting card composites no blend layer */
+.face { overflow: visible; }
+.face.lit { isolation: isolate; }
+.card .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.card :where(svg.i) { display: block; flex: none; fill: currentColor; overflow: visible; }
+
+/* ---------- 1. the energy: the only layer clipped to the card ---------- */
+.en { position: absolute; inset: 0; z-index: 1; border-radius: var(--r); overflow: hidden; background: var(--e); }
+.poster, .ground { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ground { opacity: 0; }
+/* cost 4: glitter across the whole print (.gl.gp, in the card's glint family since round ex.5): 116 seeded flakes (.work/face/glitter/gen.py)
+   on two tiles, 38cqw and 50cqw, so the print never shows one repeat. Round ex.4 (craft): the flakes are each 1.25x the
+   seeded diamond and softened by 0.14 of a tile unit (about half a device px on the 215 px wall at 1x), so they draw the
+   same at 1x as the 2x print box-filtered: 1x against 2x reads 1.01x, 1.29x and 1.05x the costs 1 to 3 median at 50, 215
+   and 250 px (.work/face-ex4-f1/alias-v21). The window keeps the sharp flakes (--fs) on three more tiles under the
+   subject (.gl.gw), where they catch the light round it (cost 4 edge density in the window 0.333 against 0.311 with
+   one tile). Under 120 px (the dock's wells, a mat's smallest card) no flake shows: there each is a fraction of a px and
+   only adds noise. --fl and --fs are defined once per cost 4 card */
+.card[data-cost="4"] {
+  --fl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 38'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='0.14'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' fill='%23fff' d='M12.30 5.08l0.62 0.62l-0.62 0.62l-0.62 -0.62zM2.80 19.80l0.50 0.50l-0.50 0.50l-0.50 -0.50zM2.20 18.82l0.38 0.38l-0.38 0.38l-0.38 -0.38zM16.50 2.20l0.50 0.50l-0.50 0.50l-0.50 -0.50zM16.10 31.00l0.50 0.50l-0.50 0.50l-0.50 -0.50zM8.50 23.05l0.75 0.75l-0.75 0.75l-0.75 -0.75zM21.90 14.22l0.88 0.88l-0.88 0.88l-0.88 -0.88zM1.80 32.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM5.50 4.00l0.50 0.50l-0.50 0.50l-0.50 -0.50zM31.00 6.17l0.62 0.62l-0.62 0.62l-0.62 -0.62zM24.30 13.47l0.62 0.62l-0.62 0.62l-0.62 -0.62zM2.40 1.80l0.50 0.50l-0.50 0.50l-0.50 -0.50zM25.90 15.70l0.50 0.50l-0.50 0.50l-0.50 -0.50zM22.30 16.70l0.50 0.50l-0.50 0.50l-0.50 -0.50zM30.20 26.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM21.80 19.15l0.75 0.75l-0.75 0.75l-0.75 -0.75zM27.70 10.12l0.88 0.88l-0.88 0.88l-0.88 -0.88zM4.50 15.15l0.75 0.75l-0.75 0.75l-0.75 -0.75zM5.80 18.12l0.38 0.38l-0.38 0.38l-0.38 -0.38zM25.40 28.38l0.62 0.62l-0.62 0.62l-0.62 -0.62zM33.30 11.25l0.75 0.75l-0.75 0.75l-0.75 -0.75zM22.60 21.48l0.62 0.62l-0.62 0.62l-0.62 -0.62zM31.90 35.27l0.62 0.62l-0.62 0.62l-0.62 -0.62zM25.20 1.55l0.75 0.75l-0.75 0.75l-0.75 -0.75zM24.60 36.95l0.75 0.75l-0.75 0.75l-0.75 -0.75zM24.60 -1.05l0.75 0.75l-0.75 0.75l-0.75 -0.75zM10.80 13.97l0.62 0.62l-0.62 0.62l-0.62 -0.62zM0.90 17.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM4.40 1.55l0.75 0.75l-0.75 0.75l-0.75 -0.75zM4.90 8.88l0.62 0.62l-0.62 0.62l-0.62 -0.62zM33.10 2.48l0.62 0.62l-0.62 0.62l-0.62 -0.62zM20.90 32.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM32.80 9.97l0.62 0.62l-0.62 0.62l-0.62 -0.62zM13.60 32.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM5.70 6.20l0.50 0.50l-0.50 0.50l-0.50 -0.50zM8.90 17.77l0.62 0.62l-0.62 0.62l-0.62 -0.62zM10.00 -0.42l0.62 0.62l-0.62 0.62l-0.62 -0.62zM10.00 37.58l0.62 0.62l-0.62 0.62l-0.62 -0.62zM14.00 20.75l0.75 0.75l-0.75 0.75l-0.75 -0.75zM26.20 18.98l0.62 0.62l-0.62 0.62l-0.62 -0.62zM34.20 28.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM30.30 14.38l0.62 0.62l-0.62 0.62l-0.62 -0.62zM3.90 23.73l0.38 0.38l-0.38 0.38l-0.38 -0.38zM2.60 7.50l0.50 0.50l-0.50 0.50l-0.50 -0.50zM12.90 1.62l0.38 0.38l-0.38 0.38l-0.38 -0.38zM13.80 0.25l0.75 0.75l-0.75 0.75l-0.75 -0.75zM23.30 5.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM13.20 13.40l0.50 0.50l-0.50 0.50l-0.50 -0.50zM32.30 37.17l0.62 0.62l-0.62 0.62l-0.62 -0.62zM32.30 -0.82l0.62 0.62l-0.62 0.62l-0.62 -0.62zM18.40 2.80l0.50 0.50l-0.50 0.50l-0.50 -0.50zM13.00 9.35l0.75 0.75l-0.75 0.75l-0.75 -0.75zM6.10 0.05l0.75 0.75l-0.75 0.75l-0.75 -0.75zM20.10 4.97l0.62 0.62l-0.62 0.62l-0.62 -0.62zM1.00 19.22l0.88 0.88l-0.88 0.88l-0.88 -0.88zM32.80 25.90l0.50 0.50l-0.50 0.50l-0.50 -0.50zM13.90 5.65l0.75 0.75l-0.75 0.75l-0.75 -0.75zM20.20 29.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM8.50 30.02l0.88 0.88l-0.88 0.88l-0.88 -0.88zM32.40 29.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM28.10 7.97l0.62 0.62l-0.62 0.62l-0.62 -0.62zM1.10 10.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM26.30 35.77l0.62 0.62l-0.62 0.62l-0.62 -0.62zM35.60 36.75l0.75 0.75l-0.75 0.75l-0.75 -0.75zM35.60 -1.25l0.75 0.75l-0.75 0.75l-0.75 -0.75zM13.90 7.90l0.50 0.50l-0.50 0.50l-0.50 -0.50zM7.50 7.08l0.62 0.62l-0.62 0.62l-0.62 -0.62zM34.20 31.38l0.62 0.62l-0.62 0.62l-0.62 -0.62zM24.80 29.93l0.38 0.38l-0.38 0.38l-0.38 -0.38zM25.10 33.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM28.50 17.70l0.50 0.50l-0.50 0.50l-0.50 -0.50zM30.00 11.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM36.90 14.47l0.62 0.62l-0.62 0.62l-0.62 -0.62zM36.00 27.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM4.80 4.95l0.75 0.75l-0.75 0.75l-0.75 -0.75zM30.60 4.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM37.30 24.40l0.50 0.50l-0.50 0.50l-0.50 -0.50zM0.50 36.27l0.62 0.62l-0.62 0.62l-0.62 -0.62zM20.00 34.88l0.62 0.62l-0.62 0.62l-0.62 -0.62zM8.00 9.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM9.10 21.80l0.50 0.50l-0.50 0.50l-0.50 -0.50zM15.90 4.25l0.75 0.75l-0.75 0.75l-0.75 -0.75zM13.40 16.77l0.62 0.62l-0.62 0.62l-0.62 -0.62zM34.40 15.25l0.75 0.75l-0.75 0.75l-0.75 -0.75zM19.10 19.57l0.62 0.62l-0.62 0.62l-0.62 -0.62zM18.00 26.88l0.62 0.62l-0.62 0.62l-0.62 -0.62zM12.40 19.07l0.62 0.62l-0.62 0.62l-0.62 -0.62zM29.80 3.38l0.62 0.62l-0.62 0.62l-0.62 -0.62zM9.40 9.75l0.75 0.75l-0.75 0.75l-0.75 -0.75zM19.30 20.65l0.75 0.75l-0.75 0.75l-0.75 -0.75zM23.30 18.57l0.62 0.62l-0.62 0.62l-0.62 -0.62zM20.30 17.35l0.75 0.75l-0.75 0.75l-0.75 -0.75zM26.60 32.55l0.75 0.75l-0.75 0.75l-0.75 -0.75zM9.90 20.45l0.75 0.75l-0.75 0.75l-0.75 -0.75zM31.90 4.70l0.50 0.50l-0.50 0.50l-0.50 -0.50zM9.10 2.08l0.62 0.62l-0.62 0.62l-0.62 -0.62zM29.80 33.60l0.50 0.50l-0.50 0.50l-0.50 -0.50zM27.20 24.60l0.50 0.50l-0.50 0.50l-0.50 -0.50zM33.50 36.30l0.50 0.50l-0.50 0.50l-0.50 -0.50zM18.50 36.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM18.50 -1.15l0.75 0.75l-0.75 0.75l-0.75 -0.75zM6.10 15.78l0.62 0.62l-0.62 0.62l-0.62 -0.62zM12.90 6.90l0.50 0.50l-0.50 0.50l-0.50 -0.50zM27.40 0.08l0.62 0.62l-0.62 0.62l-0.62 -0.62zM16.70 0.20l0.50 0.50l-0.50 0.50l-0.50 -0.50zM2.40 36.65l0.75 0.75l-0.75 0.75l-0.75 -0.75zM2.40 -1.35l0.75 0.75l-0.75 0.75l-0.75 -0.75zM36.90 3.50l0.50 0.50l-0.50 0.50l-0.50 -0.50zM1.50 29.10l0.50 0.50l-0.50 0.50l-0.50 -0.50zM9.80 4.85l0.75 0.75l-0.75 0.75l-0.75 -0.75zM21.70 26.20l0.50 0.50l-0.50 0.50l-0.50 -0.50zM2.20 25.57l0.62 0.62l-0.62 0.62l-0.62 -0.62zM2.80 34.98l0.62 0.62l-0.62 0.62l-0.62 -0.62zM32.80 16.70l0.50 0.50l-0.50 0.50l-0.50 -0.50zM20.00 8.60l0.50 0.50l-0.50 0.50l-0.50 -0.50zM7.70 11.30l0.50 0.50l-0.50 0.50l-0.50 -0.50z'/%3E%3C/svg%3E");
+  --fs: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 38 38'%3E%3Cpath fill='%23fff' d='M12.3 5.2l0.5 0.5l-0.5 0.5l-0.5-0.5zM2.8 19.9l0.4 0.4l-0.4 0.4l-0.4-0.4zM2.2 18.9l0.3 0.3l-0.3 0.3l-0.3-0.3zM16.5 2.3l0.4 0.4l-0.4 0.4l-0.4-0.4zM16.1 31.1l0.4 0.4l-0.4 0.4l-0.4-0.4zM8.5 23.2l0.6 0.6l-0.6 0.6l-0.6-0.6zM21.9 14.4l0.7 0.7l-0.7 0.7l-0.7-0.7zM1.8 32.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM5.5 4.1l0.4 0.4l-0.4 0.4l-0.4-0.4zM31 6.3l0.5 0.5l-0.5 0.5l-0.5-0.5zM24.3 13.6l0.5 0.5l-0.5 0.5l-0.5-0.5zM2.4 1.9l0.4 0.4l-0.4 0.4l-0.4-0.4zM25.9 15.8l0.4 0.4l-0.4 0.4l-0.4-0.4zM22.3 16.8l0.4 0.4l-0.4 0.4l-0.4-0.4zM30.2 26.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM21.8 19.3l0.6 0.6l-0.6 0.6l-0.6-0.6zM27.7 10.3l0.7 0.7l-0.7 0.7l-0.7-0.7zM4.5 15.3l0.6 0.6l-0.6 0.6l-0.6-0.6zM5.8 18.2l0.3 0.3l-0.3 0.3l-0.3-0.3zM25.4 28.5l0.5 0.5l-0.5 0.5l-0.5-0.5zM33.3 11.4l0.6 0.6l-0.6 0.6l-0.6-0.6zM22.6 21.6l0.5 0.5l-0.5 0.5l-0.5-0.5zM31.9 35.4l0.5 0.5l-0.5 0.5l-0.5-0.5zM25.2 1.7l0.6 0.6l-0.6 0.6l-0.6-0.6zM24.6 37.1l0.6 0.6l-0.6 0.6l-0.6-0.6zM24.6 -0.9l0.6 0.6l-0.6 0.6l-0.6-0.6zM10.8 14.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM0.9 17.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM4.4 1.7l0.6 0.6l-0.6 0.6l-0.6-0.6zM4.9 9l0.5 0.5l-0.5 0.5l-0.5-0.5zM33.1 2.6l0.5 0.5l-0.5 0.5l-0.5-0.5zM20.9 33l0.6 0.6l-0.6 0.6l-0.6-0.6zM32.8 10.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM13.6 33l0.6 0.6l-0.6 0.6l-0.6-0.6zM5.7 6.3l0.4 0.4l-0.4 0.4l-0.4-0.4zM8.9 17.9l0.5 0.5l-0.5 0.5l-0.5-0.5zM10 -0.3l0.5 0.5l-0.5 0.5l-0.5-0.5zM10 37.7l0.5 0.5l-0.5 0.5l-0.5-0.5zM14 20.9l0.6 0.6l-0.6 0.6l-0.6-0.6zM26.2 19.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM34.2 29l0.6 0.6l-0.6 0.6l-0.6-0.6zM30.3 14.5l0.5 0.5l-0.5 0.5l-0.5-0.5zM3.9 23.8l0.3 0.3l-0.3 0.3l-0.3-0.3zM2.6 7.6l0.4 0.4l-0.4 0.4l-0.4-0.4zM12.9 1.7l0.3 0.3l-0.3 0.3l-0.3-0.3zM13.8 0.4l0.6 0.6l-0.6 0.6l-0.6-0.6zM23.3 5.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM13.2 13.5l0.4 0.4l-0.4 0.4l-0.4-0.4zM32.3 37.3l0.5 0.5l-0.5 0.5l-0.5-0.5zM32.3 -0.7l0.5 0.5l-0.5 0.5l-0.5-0.5zM18.4 2.9l0.4 0.4l-0.4 0.4l-0.4-0.4zM13 9.5l0.6 0.6l-0.6 0.6l-0.6-0.6zM6.1 0.2l0.6 0.6l-0.6 0.6l-0.6-0.6zM20.1 5.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM1 19.4l0.7 0.7l-0.7 0.7l-0.7-0.7zM32.8 26l0.4 0.4l-0.4 0.4l-0.4-0.4zM13.9 5.8l0.6 0.6l-0.6 0.6l-0.6-0.6zM20.2 29.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM8.5 30.2l0.7 0.7l-0.7 0.7l-0.7-0.7zM32.4 30l0.6 0.6l-0.6 0.6l-0.6-0.6zM28.1 8.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM1.1 10.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM26.3 35.9l0.5 0.5l-0.5 0.5l-0.5-0.5zM35.6 36.9l0.6 0.6l-0.6 0.6l-0.6-0.6zM35.6 -1.1l0.6 0.6l-0.6 0.6l-0.6-0.6zM13.9 8l0.4 0.4l-0.4 0.4l-0.4-0.4zM7.5 7.2l0.5 0.5l-0.5 0.5l-0.5-0.5zM34.2 31.5l0.5 0.5l-0.5 0.5l-0.5-0.5zM24.8 30l0.3 0.3l-0.3 0.3l-0.3-0.3zM25.1 34l0.6 0.6l-0.6 0.6l-0.6-0.6zM28.5 17.8l0.4 0.4l-0.4 0.4l-0.4-0.4zM30 12l0.6 0.6l-0.6 0.6l-0.6-0.6zM36.9 14.6l0.5 0.5l-0.5 0.5l-0.5-0.5zM36 27.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM4.8 5.1l0.6 0.6l-0.6 0.6l-0.6-0.6zM30.6 5l0.6 0.6l-0.6 0.6l-0.6-0.6zM37.3 24.5l0.4 0.4l-0.4 0.4l-0.4-0.4zM0.5 36.4l0.5 0.5l-0.5 0.5l-0.5-0.5zM20 35l0.5 0.5l-0.5 0.5l-0.5-0.5zM8 9.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM9.1 21.9l0.4 0.4l-0.4 0.4l-0.4-0.4zM15.9 4.4l0.6 0.6l-0.6 0.6l-0.6-0.6zM13.4 16.9l0.5 0.5l-0.5 0.5l-0.5-0.5zM34.4 15.4l0.6 0.6l-0.6 0.6l-0.6-0.6zM19.1 19.7l0.5 0.5l-0.5 0.5l-0.5-0.5zM18 27l0.5 0.5l-0.5 0.5l-0.5-0.5zM12.4 19.2l0.5 0.5l-0.5 0.5l-0.5-0.5zM29.8 3.5l0.5 0.5l-0.5 0.5l-0.5-0.5zM9.4 9.9l0.6 0.6l-0.6 0.6l-0.6-0.6zM19.3 20.8l0.6 0.6l-0.6 0.6l-0.6-0.6zM23.3 18.7l0.5 0.5l-0.5 0.5l-0.5-0.5zM20.3 17.5l0.6 0.6l-0.6 0.6l-0.6-0.6zM26.6 32.7l0.6 0.6l-0.6 0.6l-0.6-0.6zM9.9 20.6l0.6 0.6l-0.6 0.6l-0.6-0.6zM31.9 4.8l0.4 0.4l-0.4 0.4l-0.4-0.4zM9.1 2.2l0.5 0.5l-0.5 0.5l-0.5-0.5zM29.8 33.7l0.4 0.4l-0.4 0.4l-0.4-0.4zM27.2 24.7l0.4 0.4l-0.4 0.4l-0.4-0.4zM33.5 36.4l0.4 0.4l-0.4 0.4l-0.4-0.4zM18.5 37l0.6 0.6l-0.6 0.6l-0.6-0.6zM18.5 -1l0.6 0.6l-0.6 0.6l-0.6-0.6zM6.1 15.9l0.5 0.5l-0.5 0.5l-0.5-0.5zM12.9 7l0.4 0.4l-0.4 0.4l-0.4-0.4zM27.4 0.2l0.5 0.5l-0.5 0.5l-0.5-0.5zM16.7 0.3l0.4 0.4l-0.4 0.4l-0.4-0.4zM2.4 36.8l0.6 0.6l-0.6 0.6l-0.6-0.6zM2.4 -1.2l0.6 0.6l-0.6 0.6l-0.6-0.6zM36.9 3.6l0.4 0.4l-0.4 0.4l-0.4-0.4zM1.5 29.2l0.4 0.4l-0.4 0.4l-0.4-0.4zM9.8 5l0.6 0.6l-0.6 0.6l-0.6-0.6zM21.7 26.3l0.4 0.4l-0.4 0.4l-0.4-0.4zM2.2 25.7l0.5 0.5l-0.5 0.5l-0.5-0.5zM2.8 35.1l0.5 0.5l-0.5 0.5l-0.5-0.5zM32.8 16.8l0.4 0.4l-0.4 0.4l-0.4-0.4zM20 8.7l0.4 0.4l-0.4 0.4l-0.4-0.4zM7.7 11.4l0.4 0.4l-0.4 0.4l-0.4-0.4z'/%3E%3C/svg%3E");
+}
+/* Round ex.5 (collector and owner): the flakes catch light in the card's own colours. Each field is a mask fixed to the
+   card (.gl, the seeded tiles above) over a colour layer twice its reach (.tw) in the card's glint family, within 25
+   degrees of its hue: glint, white and the energy taken toward glint, in two stripe sets at the room's light angle and
+   across it. rituals.js slides each .tw with the tilt by transform, as it slides the rim's streak (0.3W either way), so
+   one flake brightens as its neighbour dims and a turn reads as light moving over foil; nothing repaints, and at rest
+   the fields print as before in position, in the card's glint (the prism sweep they had put cyan and pink specks, 6.8%
+   of Claude of Tanks' window, over its fire and smoke) */
+.card .gl { position: absolute; display: block; pointer-events: none; overflow: hidden; }
+.card .gl > .tw { position: absolute; inset: -32cqw; display: block; pointer-events: none; transition: transform 250ms step-start;
+  background:
+    repeating-linear-gradient(63deg, transparent 0, rgb(255 255 255 / 0.6) 1.6cqw, transparent 3.2cqw, transparent 12.4cqw),
+    repeating-linear-gradient(153deg, oklch(0.55 0.16 calc(var(--hue) - 12)) 0, var(--e) 2.5cqw, var(--g) 4.5cqw, var(--white) 5.5cqw,
+      var(--g) 6.5cqw, var(--e) 8.5cqw, oklch(0.55 0.16 calc(var(--hue) - 12)) 11cqw); }
+.card:is(.lift, .turned) .gl > .tw { will-change: transform; }
+/* the print's soft glitter, two tiles, 38cqw (.gp) and 50cqw (.gq), so the print never shows one repeat. From 225 px,
+   where the descriptions and the what line print, neither tile lies under the type: each keeps out of the text panel's
+   type column (0.060W to 0.936W, 0.658W to 1.214W) and the what line's (0.060W to 0.770W, 1.275W to 1.359W), so the
+   frosted slips show clear glass behind the type and the glitter round it (craft ex.5: under the frost the print's
+   flakes still touched 1.2 to 5.2% of the ink at 300 and 480 px). Each is its own field, because a mask folds its
+   layers in order and one fold cannot cut both tiles by the same frame. The frame's rects are in the field's own box
+   (the card and 0.04W round it) */
+.card .gl:is(.gp, .gq) { inset: -4cqw; -webkit-mask: none; }
+.card .gl.gp { mask: var(--fl) 0 0 / 38cqw 38cqw repeat; }
+.card .gl.gq { mask: var(--fl) 17cqw 9cqw / 50cqw 50cqw repeat; }
+@container (width >= 225px) {
+  .card .gl:is(.gp, .gq) {
+    --frame: linear-gradient(#000 0 0) 0 0 / 100% 69.8cqw no-repeat, linear-gradient(#000 0 0) 0 69.8cqw / 10cqw 55.6cqw no-repeat,
+      linear-gradient(#000 0 0) 97.6cqw 69.8cqw / 10.4cqw 55.6cqw no-repeat, linear-gradient(#000 0 0) 0 125.4cqw / 100% 6.1cqw no-repeat,
+      linear-gradient(#000 0 0) 0 131.5cqw / 10cqw 8.4cqw no-repeat, linear-gradient(#000 0 0) 81cqw 131.5cqw / 27cqw 8.4cqw no-repeat,
+      linear-gradient(#000 0 0) 0 139.9cqw / 100% 7.8cqw no-repeat; }
+  /* (the shorthand resets mask-composite, so the fold follows it in each rule: the tile intersects the frame's union) */
+  .card .gl.gp { mask: var(--fl) 0 0 / 38cqw 38cqw repeat, var(--frame); mask-composite: intersect, add, add, add, add, add, add, add; }
+  .card .gl.gq { mask: var(--fl) 17cqw 9cqw / 50cqw 50cqw repeat, var(--frame); mask-composite: intersect, add, add, add, add, add, add, add; }
+}
+/* the window's sharp flakes (--fs), three more tiles under the subject */
+.card .gl.gw { left: 3.4cqw; right: 3.4cqw; top: 14.6cqw; height: 50cqw; z-index: 1; -webkit-mask: none;
+  mask: var(--fs) 7cqw 3cqw / 33cqw 33cqw repeat, var(--fs) 21cqw 13cqw / 44cqw 44cqw repeat, var(--fs) 2cqw 19cqw / 27cqw 27cqw repeat,
+    var(--fs) 13cqw 29cqw / 23cqw 23cqw repeat, var(--fs) 29cqw 7cqw / 36cqw 36cqw repeat;
+  mask-composite: add; }
+@container (width < 120px) {
+  .card .gl { display: none; }
+}
+/* the chase tier's energy runs hotter: its poster and its live ground take one more step of contrast and saturation
+   (round ex.4, collector: cost 4 was the calmest tier), from 120 px; ?nogpu prints the same poster through the same
+   filter, so the first paint equals the live frame */
+@container (width >= 120px) {
+  .card[data-cost="4"] .en :is(.poster, .ground) { filter: contrast(1.15) saturate(1.3); }
+}
+
+/* ---------- 2. the rim: one even polished band, 0.034W, outer radius 0.048W, inner 0.016W, an engraved keyline. A
+   specular streak (.spec, twice the card's size, masked to the band with the rim) crosses the top rail at 0.35W at
+   rest and slides 0.3W either way with the tilt, by transform on its own layer, so the polish moves and nothing repaints
+   ---------- */
+.rim {
+  /* overflow hidden: the streak is twice the card's size, and the rim holds no subject, so it may clip (the page then
+     never scrolls to the streak's box) */
+  position: absolute; inset: 0; z-index: 2; border-radius: var(--r); pointer-events: none; overflow: hidden;
+  --polish: linear-gradient(153deg, var(--m3) 0%, var(--m2) 24%, var(--m1) 37.5%, var(--m2) 47%,
+    var(--m3) 53%, var(--m4) 58%, var(--m3) 62%, var(--m2) 66%, var(--m1) 69%, var(--m2) 72%, var(--m3) 78%, var(--m4) 100%);
+  background: var(--polish) 50% 50% / 200% 200% no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1397' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M48 0H952A48 48 0 0 1 1000 48V1349A48 48 0 0 1 952 1397H48A48 48 0 0 1 0 1349V48A48 48 0 0 1 48 0ZM50 34A16 16 0 0 0 34 50V1347A16 16 0 0 0 50 1363H950A16 16 0 0 0 966 1347V50A16 16 0 0 0 950 34Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1397' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M48 0H952A48 48 0 0 1 1000 48V1349A48 48 0 0 1 952 1397H48A48 48 0 0 1 0 1349V48A48 48 0 0 1 48 0ZM50 34A16 16 0 0 0 34 50V1347A16 16 0 0 0 50 1363H950A16 16 0 0 0 966 1347V50A16 16 0 0 0 950 34Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  box-shadow: inset 0 0 0 0.25cqw rgb(255 255 255 / 0.65), inset 0 0 0 0.5cqw rgb(0 0 0 / 0.14);
+}
+.rim > .spec {
+  position: absolute; inset: -50%; display: block; pointer-events: none;
+  background: linear-gradient(153deg, transparent 25.2%, rgb(255 255 255 / 0.78) 29.7%, transparent 34.2%);
+}
+/* the streak's own layer while the card is lifted, so the tilt moves it without painting the card again */
+.card.lift .rim > .spec { will-change: transform; }
+.rim::after {
+  content: ''; position: absolute; inset: 2.95cqw; border-radius: 2.05cqw;
+  border: 0.45cqw solid color-mix(in oklab, var(--m4) 75%, black); box-shadow: 0 0 0 0.18cqw rgb(255 255 255 / 0.7);
+}
+/* cost 2: brushed along each rail, a line a device px wide on the wall's 215 px card, faint enough that the rail still
+   reads as one bright line (round ex.2, craft: fine-scale L* std at most 8 on every rim) */
+.card[data-cost="2"] .rim {
+  background: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.2) 0 0.45cqw, rgb(0 0 0 / 0.035) 0.45cqw 0.9cqw, transparent 0.9cqw 1.3cqw) 0 0 / 100% 3.4cqw repeat-x,
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.2) 0 0.45cqw, rgb(0 0 0 / 0.035) 0.45cqw 0.9cqw, transparent 0.9cqw 1.3cqw) 0 100% / 100% 3.4cqw repeat-x,
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.45cqw, rgb(0 0 0 / 0.035) 0.45cqw 0.9cqw, transparent 0.9cqw 1.3cqw) 0 0 / 3.4cqw 100% repeat-y,
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.45cqw, rgb(0 0 0 / 0.035) 0.45cqw 0.9cqw, transparent 0.9cqw 1.3cqw) 100% 0 / 3.4cqw 100% repeat-y,
+    var(--polish) 50% 50% / 200% 200% no-repeat;
+}
+/* cost 3: etched, a fine cross-hatch cut into the metal like an engraved bezel: drawn as an svg tile, so its hairlines are
+   antialiased at every width instead of aliasing into stripes at 1x (round ex.2, craft) */
+.card[data-cost="3"] .rim {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M-1 1L1 -1M0 12L12 0M11 13L13 11' stroke='%23fff' stroke-opacity='.34' stroke-width='1.2'/%3E%3Cpath d='M-1 11L1 13M0 0L12 12M11 -1L13 1' stroke='%23000' stroke-opacity='.1' stroke-width='1.2'/%3E%3C/svg%3E") 0 0 / 1.2cqw 1.2cqw repeat,
+    var(--polish) 50% 50% / 200% 200% no-repeat;
+}
+/* cost 4: prism. The spectrum runs round the rim from the card's own hue, light like the wall's bright frames, under a
+   fine diamond facet emboss (a 0.6cqw lattice: 2.9 px at 480, so it reads as foil, not as the coarse argyle checker of
+   round ex.1), with a soft sheen (the moving streak is the rim's .spec); the glitter is the print's, across the card */
+.card[data-cost="4"] .rim {
+  background:
+    linear-gradient(153deg, transparent 33%, oklch(0.98 0.05 calc(var(--hue) + 120) / 0.5) 37.5%, transparent 42%) 50% 50% / 200% 200% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 6'%3E%3Cpath d='M0 0L6 6M6 0L0 6' stroke='%23fff' stroke-opacity='.42' stroke-width='.7'/%3E%3Cpath d='M0 3L3 6L6 3' fill='none' stroke='%23000' stroke-opacity='.1' stroke-width='.7'/%3E%3C/svg%3E") 0 0 / 0.6cqw 0.6cqw repeat,
+    linear-gradient(153deg, oklch(0.8 0.19 var(--hue)), oklch(0.86 0.18 calc(var(--hue) + 60)), oklch(0.88 0.18 calc(var(--hue) + 120)),
+      oklch(0.84 0.16 calc(var(--hue) + 180)), oklch(0.76 0.19 calc(var(--hue) + 240)), oklch(0.8 0.2 calc(var(--hue) + 300)),
+      oklch(0.8 0.19 calc(var(--hue) + 360)), oklch(0.86 0.18 calc(var(--hue) + 60)), oklch(0.84 0.18 calc(var(--hue) + 120)))
+      50% 50% / 200% 200% no-repeat;
+}
+
+/* ---------- 3. the window, 0.146W to 0.646W (0.500W, round ex.2: the owner's squint read 0.454W as a text card): a clear
+   pane on a 0.005W foil keyline, four mitred bevel faces, reflections; cracks ---------- */
+.pane {
+  position: absolute; left: 3.4cqw; right: 3.4cqw; top: 14.6cqw; height: 50cqw; z-index: 3; border-radius: 1.2cqw; pointer-events: none;
+  background: linear-gradient(116deg, transparent 0 10%, rgb(255 255 255 / 0.22) 10.4% 13.4%, transparent 13.8% 16.8%,
+    rgb(255 255 255 / 0.15) 17.1% 18.3%, transparent 18.6% 71%, rgb(255 255 255 / 0.1) 71.4% 75.5%, transparent 75.9%);
+  /* the foil keyline (frame C's 0.005W): a bright line over a dark one, so the window still reads at 140 to 215 px */
+  box-shadow: inset 0 0 0 0.5cqw var(--m1), inset 0 0 0 0.75cqw color-mix(in oklab, var(--m4) 80%, black),
+    inset 0.35cqw 0.7cqw 1.4cqw rgb(255 255 255 / 0.25), inset -0.4cqw -0.8cqw 2cqw color-mix(in oklab, var(--d) 40%, transparent);
+}
+/* the four mitred bevel faces inside the keyline (frame A): light from the top left, dark toward the bottom right */
+.pane::before {
+  content: ''; position: absolute; inset: 0.75cqw; border-radius: 0.6cqw; pointer-events: none;
+  border-style: solid; border-width: 0.7cqw;
+  border-color: rgb(255 255 255 / 0.55) color-mix(in oklab, var(--d) 45%, transparent) color-mix(in oklab, var(--d) 60%, transparent) rgb(255 255 255 / 0.35);
+}
+.card[data-cost="4"] .pane::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 0.5cqw; pointer-events: none;
+  background: linear-gradient(153deg, oklch(0.9 0.13 var(--hue)), oklch(0.93 0.11 calc(var(--hue) + 90)), oklch(0.86 0.14 calc(var(--hue) + 180)),
+    oklch(0.84 0.15 calc(var(--hue) + 270)), oklch(0.9 0.13 calc(var(--hue) + 360)));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.crk { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 3; overflow: visible; pointer-events: none;
+  fill: none; stroke: rgb(255 255 255 / 0.9); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round;
+  filter: drop-shadow(0 0 0.25cqw color-mix(in oklab, var(--d) 70%, transparent)); }
+/* the window's foot: a brushed lip, 0.646W to 0.658W, square ends, a bright 0.002W upper edge and a contact shadow (frame A) */
+.sill {
+  position: absolute; left: 3.4cqw; right: 3.4cqw; top: 64.6cqw; height: 1.2cqw; z-index: 4; pointer-events: none;
+  background: linear-gradient(180deg, var(--white) 0 0.2cqw, var(--m1) 0.2cqw, var(--m2) 42%, var(--m4) 82%, var(--m3) 100%),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 0.12cqw, transparent 0.12cqw 0.35cqw);
+  background-blend-mode: soft-light, normal;
+  box-shadow: 0.175cqw 0.35cqw 0.7cqw rgb(0 0 0 / 0.32);
+}
+
+/* The frost is the same fractal noise as before (an SVG feTurbulence, white with 0.14 mean alpha), printed once as a
+   raster (icons/frost.webp, 180 px, and frost@2x.webp, 360 px, .work/face-ex4-f1/frost.mjs), so a repaint samples a
+   picture instead of laying its SVG document out again (room ex.4: 59 such layouts in one 4x lens close; a pocket's
+   repaint 14 ms at 1x with the SVG and 6 ms without it) */
+/* Round ex.5 (engineer, the swap rehearsal): the tile is part of this sheet, as a data URL of icons/frost.webp byte for
+   byte, so it resolves wherever the sheet is served from. A relative url() resolved against the sheet's own address, and
+   the battle serves this file scoped as broadcast/card.gen.css, where icons/frost@2x.webp 404s. A page that ships the
+   2x raster beside itself may set --frost (the gallery's ui.css: image-set of icons/frost.webp 1x and
+   icons/frost@2x.webp 2x); a page that sets nothing (the battle) prints this 1x tile */
+.card { --frost-tile: var(--frost, url("data:image/webp;base64,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")); }
+/* ---------- 4. glass. Smoked: the top bar, the footer and the collector chip. Frosted slips: the trait, the moves and
+   the what slip, a 62% tint with its grain over the energy, 0.008W of shadow; from 300 px each slip also takes the
+   room's double shadow and its refracting rim. Each is a pseudo element at z 4 of a row that makes no stacking
+   context, so the row's type sits at z 7 above the subject. ---------- */
+.card .top::before, .card .foot::before, .card .no::before {
+  content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, var(--d) 91%, transparent), color-mix(in oklab, var(--d) 96%, transparent));
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.3), inset 0 0 0 0.16cqw rgb(255 255 255 / 0.12),
+    0.3cqw 0.6cqw 1.4cqw -0.2cqw color-mix(in oklab, var(--d) 55%, transparent);
+}
+.card :is(.trait, .move, .what)::before {
+  content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 1.6cqw;
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) 66%, transparent) 0%,
+      color-mix(in oklab, var(--p) 62%, transparent) 40%, color-mix(in oklab, var(--p) 64%, transparent) 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0.125cqw 0.25cqw 0 rgb(255 255 255 / 0.55), 0.4cqw 0.8cqw 0.8cqw -0.5cqw color-mix(in oklab, var(--d) 45%, transparent);
+}
+.card .what::before { border-radius: 0.8cqw; }
+
+/* ---------- the top bar: 0.034W to 0.146W, its lower edge a 0.006W metal hairline ---------- */
+.card .top { position: absolute; left: 3.4cqw; right: 3.4cqw; top: 3.4cqw; height: 11.2cqw; margin: 0; padding: 0; max-width: none; display: block; }
+.card .top::before { border-radius: 1.6cqw 1.6cqw 0 0; }
+.card .top::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 0.6cqw; z-index: 4;
+  background: linear-gradient(90deg, var(--m3), var(--m1) 12%, var(--white) 23%, var(--m2) 33%, var(--m4) 46%, var(--m2) 58%,
+    var(--m1) 68%, var(--white) 77%, var(--m2) 88%, var(--m3)) 50% 0 / 200% 100% no-repeat;
+}
+/* cost 4: the top bar in the card's metal, brushed, dark enough for its white type */
+.card[data-cost="4"] .top::before {
+  background: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.07) 0 0.2cqw, transparent 0.2cqw 0.5cqw),
+    linear-gradient(172deg, color-mix(in oklab, var(--ml) 82%, white) 0%, var(--ml) 26%, color-mix(in oklab, var(--d) 80%, black) 72%, var(--ml) 100%);
+  background-blend-mode: normal;
+}
+.card .top > * { position: absolute; z-index: 7; }
+/* the logo tile (EX.md 9): 0.092W of light metal with the product's own mark centred and contained */
+.card .logo {
+  left: 1.4cqw; top: 1cqw; width: 9.2cqw; height: 9.2cqw; box-sizing: border-box; padding: 1.2cqw; border-radius: 1.6cqw; display: none;
+  background: linear-gradient(153deg, var(--white) 0%, var(--m1) 38%, var(--m2) 100%);
+  box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), inset -0.175cqw -0.35cqw 0.5cqw rgb(0 0 0 / 0.22), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38);
+}
+/* a mark drawn for a dark ground sits on its own ground inside the tile; a mark that is a full tile prints edge to edge */
+.card .logo.on { background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(153deg, var(--white), var(--m2)) border-box; border: 0.4cqw solid transparent; padding: 0.8cqw; }
+.card .logo.fill { padding: 0; overflow: hidden; }
+.card .logo.fill img { object-fit: cover; }
+.card .logo[data-logo="none"] { background: linear-gradient(153deg, var(--white) 0%, var(--m1) 38%, var(--m2) 100%); }
+.card .logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* under 188 px (the mat and the wells) the tile grows to 0.104W, centred on the bar's 0.053W, and its padding falls to
+   0.006W but never under 1 css px, so the mark's own box is at least 0.090W (its ink at least 9 css px from 120 px, T1)
+   and its metal rim still parts a dark mark from a dark bar; a mark on its own ground keeps a 1 px metal border and
+   prints edge to edge inside it. That thin rim keeps only the metal's light half and no inner shade, as the cost 4
+   foil keeps its light stops under 300 px, and a ring of the light metal outside the tile (0.0025W, at least 0.5 px)
+   widens it without taking from the mark. The tile grows toward the bar's left edge (0.004W in), so it ends 0.014W
+   before the name. At 0.092W with 0.012W padding a mark was 6 to 8 px there (round ex.4,
+   Kevin 11-02: "make sure the awesome logos are still there and visible"). The name keeps its 0.156W start */
+@container (width < 188px) {
+  .card .top .logo { left: 0.4cqw; top: 0.1cqw; width: 10.4cqw; height: 10.4cqw; padding: max(0.6cqw, 1px);
+    background: linear-gradient(153deg, var(--white) 0%, var(--m1) 100%);
+    box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), 0 0 0 max(0.25cqw, 0.5px) var(--m1), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
+  .card .top .logo.on { border-width: max(0.3cqw, 1px); padding: 0; background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(153deg, var(--white), var(--m1)) border-box; }
+  .card .top .logo.fill { padding: 0; }
+}
+/* the name: one line at its fit (markup.js nameFit), its caps centred on the line the logo tile and the health number
+   share, 0.056W below the bar's top (Kevin 11-02: "for long titles that are spilling in two lines, like claude of tanks
+   and agent machines ... i meant make them ONE line", "also make these vertically centered"). A fitted title fills the
+   slot with 0.7% in hand, so it never breaks. Only where its fit falls under the 9 px floor (Princeton Powerlifting under
+   279 px, beyond the wider slots below 200 px) does the floored line overrun the slot, and then it breaks at its space
+   into two balanced lines, centred the same way (EX.md 5) */
+.card .nm { left: 12.2cqw; top: 0; height: 11.2cqw; box-sizing: border-box; display: flex; align-items: center; }
+.card .name {
+  display: none; max-width: 42cqw; font-weight: 800; line-height: 0.9; color: var(--white); text-wrap: balance;
+  font-size: max(9px, min(7.15cqw, calc(var(--nf) * 100cqw))); text-box: trim-both cap alphabetic;
+  text-shadow: 0.125cqw 0.25cqw 0.6cqw color-mix(in oklab, var(--d) 60%, black);
+}
+/* cost 4: the name and the number foiled. A clipped fill paints only inside its own box, and the box ends at the cap
+   line and the baseline, so it is padded past the ascenders (f, 0.034em over the cap) and the descenders (g, y, p,
+   0.21em) and pulled back by the same
+   margin: the type keeps its place and every stroke takes the foil. The foil is chrome, so it reads as metal at rest
+   (round ex.2, collector: it read plain white): sky light over each line's caps, a dark horizon in the card's deep metal
+   across the middle of the cap height (light enough that a bar there, as in G, still reads on the smoked bar), the
+   metal's own light below it, one band per 0.9em line */
+.card[data-cost="4"] .name, .card[data-cost="4"] .hpn {
+  background: linear-gradient(180deg, var(--white) 0%, var(--g) 16%, var(--white) 34%, color-mix(in oklab, var(--ml) 72%, var(--mh)) 45%,
+    color-mix(in oklab, var(--ml) 40%, var(--mh)) 54%, var(--mh) 68%, var(--white) 84%, var(--g) 100%) 0 0 / 100% 0.9em repeat-y;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  padding-block: 0.06em 0.3em; margin-block: -0.06em -0.3em;
+  text-shadow: none; filter: drop-shadow(0.125cqw 0.25cqw 0.4cqw color-mix(in oklab, var(--d) 60%, black));
+}
+/* under 300 px the chrome's dark horizon greyed the chase names (round ex.4, craft: median ink luminance 0.52 to 0.64
+   and 4.0 to 4.6:1 on the bar at 215 and 250 px, the weakest names on the wall): there the foil keeps only its light
+   stops, white, glint and the light metal, and the bar under it runs from the card's metal into its deep tone with no
+   light sheen, so the rarest name is also among the brightest (0.81 to 0.93 and 6.7 to 8.3:1). From 300 px the full
+   chrome and the bar's sheen return */
+@container (width < 300px) {
+  .card[data-cost="4"] .name, .card[data-cost="4"] .hpn {
+    background-image: linear-gradient(180deg, var(--white) 0%, color-mix(in oklab, var(--g) 60%, var(--white)) 30%, var(--white) 50%,
+      color-mix(in oklab, var(--mh) 40%, var(--white)) 74%, var(--white) 92%, var(--g) 100%);
+  }
+  .card[data-cost="4"] .top::before {
+    background: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.07) 0 0.2cqw, transparent 0.2cqw 0.5cqw),
+      linear-gradient(172deg, var(--ml) 0%, color-mix(in oklab, var(--d) 80%, black) 55%, color-mix(in oklab, var(--ml) 70%, black) 100%);
+  }
+}
+.card .hp { right: 1.4cqw; top: 0; height: 11.2cqw; display: flex; align-items: center; gap: 1cqw; color: var(--white); }
+.card .hpi { display: none; width: 4.5cqw; height: 4.5cqw; color: var(--g); }
+.card .hpn { display: none; font-weight: 800; font-size: 7.7cqw; line-height: 1; font-variant-numeric: tabular-nums; text-box: trim-both cap alphabetic;
+  text-shadow: 0.125cqw 0.25cqw 0.6cqw color-mix(in oklab, var(--d) 60%, black); }
+.card .types { display: flex; align-items: center; gap: 1cqw; }
+.card .t1 { display: none; width: 7.2cqw; height: 7.2cqw; color: var(--white); filter: drop-shadow(0.125cqw 0.25cqw 0.4cqw color-mix(in oklab, var(--d) 70%, black)); }
+.card .t2 { display: none; width: 4.8cqw; height: 4.8cqw; color: var(--g); }
+/* provenance: a small smoked strip hung from the bar over the window */
+.card .prov {
+  position: absolute; left: 14.7cqw; top: 14.95cqw; z-index: 7; display: none; padding: 0.75cqw 0.9cqw 0.65cqw; border-radius: 0 0 0.7cqw 0.7cqw;
+  font-size: 2.6cqw; line-height: 1; font-weight: 600; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; color: var(--white);
+  background: color-mix(in oklab, var(--d) 94%, transparent); text-box: trim-both cap alphabetic;
+}
+
+/* ---------- the text panel: 0.658W to 1.214W. Slips from 0.048W to 0.952W; one type column: descriptions at 0.066W,
+   names at 0.156W, power right on 0.930W ---------- */
+.card .band {
+  position: absolute; left: 3.4cqw; right: 3.4cqw; top: 65.8cqw; height: 55.6cqw; box-sizing: border-box; padding: 0.4cqw 1.4cqw;
+  display: flex; flex-direction: column; justify-content: space-evenly;
+}
+.card :is(.trait, .move) { position: relative; display: none; padding: 0 2.2cqw 0 1.8cqw; column-gap: 0; margin: 0; }
+.card :is(.trait, .move) > * { position: relative; z-index: 7; }
+.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto; align-items: center; }
+/* the trait and cost chips: ink plates 0.076W wide with a 0.015W slanted end like a stroke terminal (frame C), so every
+   name after one starts on 0.156W. The trait's plate carries its name too, light on the ink, like the wall's ability
+   label: a subject that steps over the foot passes behind the plate and never under the name's own ink */
+.card :is(.ti, .mc) {
+  width: var(--chip); height: 4.9cqw; box-sizing: border-box; display: flex; align-items: center; gap: 0.6cqw; padding: 0 0 0 0.8cqw; color: var(--g);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--d) 78%, white), var(--d) 55%, color-mix(in oklab, var(--d) 80%, black));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1.5cqw) 100%, 0 100%); border-radius: 0.6cqw 0 0 0.6cqw;
+}
+/* a move that adapts prints both of the card's icons, and its chip grows to hold them */
+.card { --chip: 7.6cqw; }
+.card[data-col="2"] { --chip: 12.9cqw; }
+.card .mc.two { width: 12.9cqw; }
+/* the trait's label is one plate (round ex.2: chip and name were two gradients meeting on a 1 to 2 px light seam): the
+   name's plate runs under the chip, which keeps only its icon and sits above it */
+.card .trait > .ti { clip-path: none; padding-left: 0.9cqw; background: none; z-index: 8; }
+.card .ti svg.i { width: 4.5cqw; height: 4.5cqw; } /* 9 px at 200 px, where the header shows */
+.card .tn { justify-self: start; align-self: stretch; display: flex; align-items: center; height: 4.9cqw; margin: 0 0 0 calc(-1 * var(--chip)); padding: 0 2cqw 0 calc(var(--chip) + 1.4cqw); font-weight: 700; font-size: 4.7cqw; line-height: 1; color: var(--white); white-space: nowrap;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--d) 78%, white), var(--d) 55%, color-mix(in oklab, var(--d) 80%, black));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1.5cqw) 100%, 0 100%); border-radius: 0.6cqw; align-self: center; }
+/* the panel holds 0.556W (round ex.2, 0.046W given to the window): a 0.003W top pad, three 0.049W headers, at most
+   eight 0.044W lines (EX.md 10), 0.006W of padding a row and two 0.008W gaps come to 0.536W, so the last slip ends
+   0.020W above the footer; a face with fewer lines spreads the rest between its rows */
+.card :is(.tr, .md) { display: none; grid-column: 1 / -1; font-weight: 500; font-size: 4cqw; line-height: 4.4cqw; color: var(--k); padding: 0.1cqw 0 0.5cqw; text-wrap: pretty; }
+/* (round ex.5, craft: balance narrowed the move blocks, 37 of 104 multi-line blocks with their longest line under 0.80 of
+   the column under a full-width trait line; pretty fills each line, and markup.js kept() holds a block's last words
+   together where its last line would end short. The trait's rule stays balanced: its two lines already run near the
+   column's width, and filled, its first line ran under the subjects that cross the window's foot (E6b, 24 cards in
+   context with subject pixels on that line's keep-out, 0 balanced)) */
+.card .tr { text-wrap: balance; }
+.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto; align-items: center; }
+/* a block's last words, kept together (markup.js kept()) */
+.card .kw { white-space: nowrap; }
+.card .mc svg.i { width: 4.7cqw; height: 4.7cqw; } /* 0.047W: 9 px from 192, where the row shows */
+.card .mn { justify-self: start; margin-left: 1.4cqw; font-weight: 800; font-size: 4.7cqw; line-height: 1; color: var(--k); text-box: trim-both cap alphabetic; white-space: nowrap; }
+.card .mp { font-weight: 800; font-size: 5cqw; line-height: 1; color: var(--k); font-variant-numeric: tabular-nums; text-box: trim-both cap alphabetic; white-space: nowrap; }
+.card .mp small { font-size: 1em; font-weight: 600; margin-left: 0.15em; }
+
+/* ---------- the footer: weak, resist and cost on a smoked strip, 1.214W to 1.271W; the first icon on 0.066W, the cost
+   pips ending on 0.930W ---------- */
+.card .foot { position: absolute; left: 3.4cqw; right: 3.4cqw; top: 121.4cqw; height: 5.7cqw; box-sizing: border-box; padding: 0 3.6cqw 0 3.2cqw;
+  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }
+.card .foot::before, .card .no::before { border-radius: 1.2cqw; }
+.card .foot > * { position: relative; z-index: 7; display: flex; align-items: center; gap: 0.4cqw; color: var(--white); white-space: nowrap; }
+.card .foot svg.i { width: 4.5cqw; height: 4.5cqw; }
+.card .foot svg.lab { color: var(--g); margin-right: 0.5cqw; }
+.card .foot b { font-size: 4.5cqw; line-height: 1; font-weight: 700; margin: 0 0.8cqw 0 0.3cqw; text-box: trim-both cap alphabetic; font-variant-numeric: tabular-nums; }
+.card .foot .sr { position: absolute; }
+/* the cost: one pip per ink, each a bevelled block of the card's metal, lit from the upper left */
+.card .cost { gap: 1cqw; justify-content: flex-end; }
+.card .cost i { width: 4.5cqw; height: 4.5cqw; box-sizing: border-box; border-radius: 0.9cqw; border: 0 solid var(--m1);
+  background: linear-gradient(153deg, var(--m1) 0%, var(--m2) 34%, var(--m3) 68%, var(--m4) 100%);
+  box-shadow: inset 0.2cqw 0.4cqw 0 color-mix(in oklab, var(--m1) 70%, white), inset -0.2cqw -0.4cqw 0 color-mix(in oklab, var(--m4) 70%, black),
+    0.15cqw 0.3cqw 0.3cqw rgb(0 0 0 / 0.4); }
+.card.nofit .cost i { background: transparent; border-width: max(1.5px, 0.8cqw); box-shadow: none; }
+
+/* ---------- the bottom line, 1.277W to 1.357W: what the product is on a slip from 0.048W (its type on 0.066W), and the
+   collector chip at the right, the set's seal before its number, the number right on 0.930W. The slip gave the chip
+   0.02W (0.01W of its width and 0.01W of the gap). Round ex.5 (craft): its type keeps 0.018W from the slip's left edge
+   and 0.016W from its right (it ran as close as 0.011W there), and the what line is set 0.006em tighter so the longest,
+   Claude of Tanks', still sets in two lines (its best break needs 0.692W of a 0.687W measure untracked) ---------- */
+/* the seal and the number share the first line, so the seal stands at 0.785W on every card; the sha, when it shows,
+   runs under them both, right on 0.930W */
+.card .no { position: absolute; left: 77.9cqw; top: 127.5cqw; width: 17.3cqw; height: 8.4cqw; box-sizing: border-box; padding: 0 2.2cqw 0 0.6cqw;
+  display: none; grid-template-columns: auto auto; justify-content: end; align-content: center; align-items: center; row-gap: 1.4cqw; color: var(--white); }
+.card .no > * { position: relative; z-index: 7; }
+/* the seal (EX.md 15): the set's emblem is Kevin's own kl signature, the favicon's mark (icon kl, copied point for
+   point from the Personal Website's kevin-liu-mark.tsx), in white like the number. Kevin 11-02: "i dont think the
+   shield needs to be in those cards in the header, should be in footers of the card", then "for the kl badge use our
+   proper logo". It stands in the collector chip before the number, as a set's mark stands by its card number: a
+   0.042W box whose ink (20 by 17.1 of its 24 units) is 0.035W wide and 0.030W tall, a little taller than the number's
+   caps, centred on the chip, from 300 px, where the ink reaches 9 px tall */
+.card .no .seal { display: none; grid-area: 1 / 1; width: 4.2cqw; height: 4.2cqw; margin-right: 0.3cqw; filter: drop-shadow(0.06cqw 0.12cqw 0.1cqw rgb(0 0 0 / 0.5)); }
+/* 9.5 px at the least: a 9 px run of figures paints at 8.9 once its box rounds, so the floor carries the rounding */
+.card .no b { grid-area: 1 / 2; justify-self: end; font-size: max(9.5px, 3.6cqw); line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; text-box: trim-both cap alphabetic; white-space: nowrap; }
+.card .no .rc { display: none; grid-area: 2 / 1 / 3 / 3; justify-self: end; font-size: 2.6cqw; line-height: 1; font-weight: 600; color: var(--g); white-space: nowrap; text-box: trim-both cap alphabetic; font-variant-numeric: tabular-nums; }
+/* (craft ex.4: the two lines' descenders crossed the slip's bottom rim at 300 and 480 px, because the block was centred
+   cap to baseline in a 0.080W slip. The slip and the chip now run 1.275W to 1.359W, 0.004W of each gap beside them, and
+   the block is trimmed to the first line's cap and the last line's descent (Katagami Sans: cap 0.7275em, descent
+   0.24em, the ink of p, g and y 0.216em) at a 0.040W pitch, so the slip holds cap, pitch and descent with 0.0039W above
+   the cap and 0.0048W under the lowest ink) */
+.card .what { position: absolute; left: 4.8cqw; top: 127.5cqw; width: 72.1cqw; height: 8.4cqw; box-sizing: border-box; padding: 0 1.6cqw 0 1.8cqw;
+  display: none; align-items: center; }
+.card .what p { position: relative; z-index: 7; margin: 0; font-size: 3.75cqw; line-height: 4cqw; font-weight: 500; letter-spacing: -0.006em; color: var(--k); text-wrap: pretty; text-box: trim-both cap text; }
+
+/* cost 4: holographic glitter over the text panel (round ex.4; .gt since round ex.5). The etch of rays before it (one
+   every 1 degree at L 0.93 over the window and the panel) washed the energy out: the chase tier read as the calmest,
+   its energy behind the text 0.104 against 0.155 to 0.186 for costs 1 to 3 (collector), and it aliased into swirls at 1x
+   (craft). Here the print's own seeded flakes, soft (--fl) on a 66cqw tile, take the card's energy colour from deep to
+   glint (round ex.5: a prism sweep round the wheel put 3.2% of each chase panel in off-hue specks), so each reads as a
+   point of light in the slip, never as a veil. It shows from 200 px, where the trait's slip does, over the slips (z 4,
+   after them in the face) and under the subject and the type. From 225 px, where the descriptions print, it keeps to the
+   panel's two side margins, outside the type column (0.034W to 0.060W and 0.936W to 0.966W), so no flake touches a
+   glyph (craft ex.5: 3.0 to 5.7% of the ink touched a flake at 300 and 480 px); the print's soft glitter (.gp) still
+   shows between the slips and through their frost */
+.card .gl.gt { left: 3.4cqw; right: 3.4cqw; top: 65.8cqw; height: 55.6cqw; z-index: 4; display: none; opacity: 0.9; -webkit-mask: none;
+  mask: var(--fl) 3cqw 2cqw / 66cqw 66cqw repeat; }
+.card .gl.gt > .tw {
+  background:
+    repeating-linear-gradient(63deg, transparent 0, oklch(0.92 0.06 var(--hue) / 0.85) 1.8cqw, transparent 3.6cqw, transparent 12.4cqw),
+    repeating-linear-gradient(153deg, oklch(0.56 0.19 calc(var(--hue) - 15)) 0, oklch(0.67 0.2 var(--hue)) 4cqw, oklch(0.8 0.15 calc(var(--hue) + 15)) 5.6cqw,
+      oklch(0.67 0.2 var(--hue)) 7.2cqw, oklch(0.56 0.19 calc(var(--hue) - 15)) 11cqw); }
+@container (width >= 200px) { .card .gl.gt { display: block; } }
+@container (width >= 225px) {
+  .card .gl.gt { mask: var(--fl) 3cqw 2cqw / 66cqw 66cqw repeat, linear-gradient(#000 0 0) 0 0 / 2.6cqw 100% no-repeat, linear-gradient(#000 0 0) 100% 0 / 3cqw 100% no-repeat;
+    mask-composite: intersect, add, add; }
+}
+
+/* ---------- 5. the subject, above the rim and the panels, never clipped ---------- */
+.card .pop { position: absolute; z-index: 5; display: block; pointer-events: none; overflow: visible; }
+.card .pop img { display: block; width: 100%; height: auto; max-width: none; user-select: none; }
+/* its cast shadow on the print (markup.js cast()): the subject's silhouette offset 0.75cqw, 1.5cqw on the room's 1:2
+   vector and blurred, inside .en, which clips to the card, so nothing soft crosses the trim (round ex.1: the subject's
+   own drop-shadow filters spilled haze past it on 17 of 26 cards) */
+.card .cast { position: absolute; display: block; pointer-events: none; background: color-mix(in oklab, var(--d) 65%, transparent);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: blur(0.6cqw); }
+/* round ex.2: the same shadow baked as its own picture (media/<id>/cast.webp), with no mask or filter in any repaint */
+.card img.cast { background: none; -webkit-mask-image: none; mask-image: none; filter: none; height: auto; max-width: none; }
+/* the subject's glow (markup.js glow(), round ex.4): additive light laid over the print and the subject, right after
+   .pop and above it, never clipped */
+.card .face > img.glw { position: absolute; z-index: 6; display: block; height: auto; max-width: none; pointer-events: none; user-select: none; mix-blend-mode: plus-lighter; }
+/* pixel art (Agent Pets) keeps its whole blocks once a block is at least a device px */
+@container (width >= 120px) { .card .pop[data-pixel] img { image-rendering: pixelated; } }
+/* turned in 3D the picture is resampled at its own scale, where nearest keeps or drops a block by a thousandth of a
+   degree: a tilted card draws it smooth (as a turned print did in round 4.2) */
+.card.turned .body .pop[data-pixel] img { image-rendering: auto; }
+/* ---------- 6. front effects: the energy's sparks and marks (ground.js), the pane's shards and glitter ---------- */
+.card .fx { position: absolute; left: -7.143%; top: 7.102%; width: 114.286%; height: 44.318%; z-index: 6; pointer-events: none; }
+.card .fx > img, .card .fx > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.card .fx > canvas { opacity: 0; }
+.card .shards { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 6; overflow: visible; pointer-events: none; }
+.card .shards .sd { fill: color-mix(in oklab, var(--d) 72%, transparent); }
+.card .shards .sh { fill: rgb(255 255 255 / 0.66); stroke: rgb(255 255 255 / 0.98); stroke-width: 2.2; stroke-linejoin: round; }
+.card .shards .fl { fill: var(--white); }
+/* the gloss: a light that follows the hand (rituals.js gloss()), over the glass and under the subject and the type
+   (round ex.4, craft: at z 6 it blended over the subject and a hover tilt cut the window's mean S by 4 to 8%; at z 4,
+   after the slips in the face, it holds within 3%). Round ex.5 (collector: "a tilt washes the print"): it is a streak
+   0.25W wide across the room's light angle (153 degrees, the rim's own) through the hand, in the card's energy colour,
+   blended overlay, so where it passes the slips deepen into the card's hue and their light channels lift: the card turns
+   richer, never paler (the white soft-light disc before it cut the panel's S at every spot; the streak raises the
+   best spot's panel S by 3 to 8%, .work/face-ex5/tilt). Overlay keeps a light slip light, so the type over it keeps its
+   contrast. Over the window it shows at a sixth of its strength and at full over the text panel, so the picture leads,
+   and it never blends over the smoked glass that carries white type (the top bar, the footer and the collector line) */
+.glarebox { position: absolute; inset: 0; z-index: 4; border-radius: var(--r); overflow: hidden; pointer-events: none; visibility: hidden;
+  --gm: linear-gradient(transparent 14.6cqw, rgb(0 0 0 / 0.167) 16cqw, rgb(0 0 0 / 0.167) 64.6cqw, #000 66cqw, #000 120.6cqw, transparent 121.4cqw);
+  -webkit-mask: var(--gm); mask: var(--gm); }
+.face.lit .glarebox { visibility: visible; mix-blend-mode: overlay; }
+.glare {
+  position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; pointer-events: none;
+  background: linear-gradient(153deg, transparent 46.3%, color-mix(in oklab, var(--e) 60%, transparent) 48.4%, var(--e) 50%,
+    color-mix(in oklab, var(--e) 60%, transparent) 51.6%, transparent 53.7%);
+  opacity: 0;
+}
+.face.lit .glare { will-change: transform, opacity; }
+
+/* ---------- from 300 px: the slips take the room's double shadow and their refracting rim ---------- */
+@container (width >= 300px) {
+  .card :is(.trait, .move, .what)::before {
+    box-shadow: inset 0.175cqw 0.35cqw 0 rgb(255 255 255 / 0.8),
+      inset -0.175cqw -0.35cqw 0 color-mix(in oklab, var(--d) 26%, transparent), inset 0 0 0 0.16cqw rgb(255 255 255 / 0.3),
+      -0.25cqw -0.5cqw 1cqw -0.2cqw rgb(255 255 255 / 0.25), 0.55cqw 1.1cqw 2cqw -0.4cqw color-mix(in oklab, var(--d) 55%, transparent);
+  }
+  .card :is(.trait, .move, .what)::after {
+    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 1.6cqw; padding: 0.3cqw;
+    background: linear-gradient(153deg, rgb(255 255 255 / 0.9) 0%, rgb(255 255 255 / 0.3) 22%, transparent 42%, transparent 62%,
+      color-mix(in oklab, var(--d) 40%, transparent) 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  }
+  .card .what::after { border-radius: 0.8cqw; }
+}
+
+/* ---------- the ladder: each element from the first whole width at which it reaches 9 css px (EX.md 7) ---------- */
+@container (width >= 98px) { .card .logo { display: block; } }
+@container (width >= 117px) { .card .hpn { display: block; } }
+@container (width >= 125px) { .card .t1 { display: block; } }
+@container (width >= 126px) { .card .name { display: block; } }
+/* the name's slot widens into whatever the health block has not yet shown, 0.032W short of it, so a 9 px name keeps
+   one line as long as it can: 0.42W from 200 px (EX.md 5), 0.475W from 188 px (no health icon), 0.533W from 156 px (no
+   second type), 0.55W below that, 0.015W short of the health block */
+@container (width < 200px) { .card .name { max-width: 47.5cqw; } }
+@container (width < 188px) { .card .name { max-width: 53.3cqw; } }
+@container (width < 156px) { .card .name { max-width: 55cqw; } }
+@container (width >= 188px) { .card .t2 { display: block; } }
+@container (width >= 192px) { .card .move { display: grid; } }
+@container (width >= 200px) { .card .trait { display: grid; } .card .hpi { display: block; } .card .foot { display: grid; } .card .no { display: grid; } }
+@container (width >= 225px) {
+  .card :is(.tr, .md) { display: block; }
+  .card .band { justify-content: space-between; gap: 0.8cqw; padding: 0.3cqw 1.4cqw 2cqw; }
+}
+@container (width >= 240px) { .card .what { display: flex; } }
+@container (width >= 300px) { .card .no .seal { display: block; } }
+@container (width >= 347px) { .card .prov, .card .no .rc { display: block; } }
+/* a subject that fills the window's top band leaves the strip no room: it does not print (media.gen.js pop.prov) */
+.card .prov.none { display: none !important; }
+
+/* ---------- the backs. The set's back, one for all 26 and the same in both themes: a gunmetal plate with the set's 26
+   hues bursting from the seal, struck large at its centre, inside the silver rim. The info back (the lens's flip side):
+   the product, its trait, all four moves and the facts with their receipts. ---------- */
+.back {
+  transform: rotateY(180deg); overflow: hidden;
+  background: radial-gradient(circle at 50% 46%, #4a505c 0%, #2a2e36 38%, #121419 78%);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.3);
+  /* the kl signature at its centre, in silver whatever the card's cost */
+  color: #e4e8ee;
+}
+/* a card's back shows only while the card turns: at rest the face covers it, so it draws nothing and holds no layer */
+.card .back { visibility: hidden; transform: none; }
+.card.flipped .back, .card.turned .body > .back { visibility: visible; transform: rotateY(180deg); }
+/* the burst: the 26 hues round the wheel, cut into 52 rays and etched rings, starting clear of the kl signature so it
+   reads on the dark centre */
+.back .tint {
+  position: absolute; inset: 0; pointer-events: none;
+  background: conic-gradient(from 0deg at 50% 46%, oklch(0.78 0.16 0), oklch(0.8 0.16 45), oklch(0.86 0.16 90), oklch(0.82 0.16 135),
+    oklch(0.8 0.14 180), oklch(0.74 0.15 225), oklch(0.7 0.17 270), oklch(0.74 0.18 315), oklch(0.78 0.16 360));
+  -webkit-mask: repeating-conic-gradient(from 0deg at 50% 46%, #000 0 2.4deg, transparent 2.4deg 6.923deg),
+    radial-gradient(circle at 50% 46%, transparent 26%, #000 31%, rgb(0 0 0 / 0.8) 55%, transparent 96%);
+  -webkit-mask-composite: source-in;
+  mask: repeating-conic-gradient(from 0deg at 50% 46%, #000 0 2.4deg, transparent 2.4deg 6.923deg),
+    radial-gradient(circle at 50% 46%, transparent 26%, #000 31%, rgb(0 0 0 / 0.8) 55%, transparent 96%);
+  mask-composite: intersect;
+}
+.back .tint::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-radial-gradient(circle at 50% 46%, transparent 0 2.6cqw, rgb(255 255 255 / 0.22) 2.6cqw 2.9cqw);
+}
+/* the set's rim: the cost 1 silver, with its engraved keyline */
+.back::after {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r); pointer-events: none;
+  background: linear-gradient(153deg, #eef1f4 0%, #8a929d 9%, #eef1f4 17%, #fff 21%, #c6ccd4 27%, #4e5560 37%, #c6ccd4 46%, #eef1f4 53%,
+    #fff 57%, #8a929d 66%, #4e5560 74%, #c6ccd4 82%, #eef1f4 91%, #8a929d 100%);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1397' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M48 0H952A48 48 0 0 1 1000 48V1349A48 48 0 0 1 952 1397H48A48 48 0 0 1 0 1349V48A48 48 0 0 1 48 0ZM50 34A16 16 0 0 0 34 50V1347A16 16 0 0 0 50 1363H950A16 16 0 0 0 966 1347V50A16 16 0 0 0 950 34Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1397' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M48 0H952A48 48 0 0 1 1000 48V1349A48 48 0 0 1 952 1397H48A48 48 0 0 1 0 1349V48A48 48 0 0 1 48 0ZM50 34A16 16 0 0 0 34 50V1347A16 16 0 0 0 50 1363H950A16 16 0 0 0 966 1347V50A16 16 0 0 0 950 34Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+.back .emb {
+  position: absolute; left: 25%; top: 46%; width: 50%; height: auto; aspect-ratio: 1; translate: 0 -50%; fill: currentColor;
+  filter: drop-shadow(0.6cqw 1.2cqw 1.2cqw rgb(0 0 0 / 0.55)) drop-shadow(0 0 3cqw rgb(255 255 255 / 0.25));
+}
+/* The info back is a collectible too (collector ex.4: it was a pale spec sheet, mean S 0.30 against the front's 0.58,
+   with empty bands at the top and the foot): the card's own energy, its poster (.ibg), inside the rim of its cost, and
+   every block of type on a frosted slip of its own energy colour (the hue's energy with 15% of its panel tint, at 86 to
+   90%, so the energy shows through it at the remaining alpha), spread from the top of the print to its foot. The ink is
+   the card's ink taken 15% toward black, the labels and the title the deep tone taken toward it, so body text and
+   receipts hold 4.5:1 and names 3:1 on their slips (.work/face-ex4-f1/backs-b6: mean S 0.453 on the 26 at 480 px) */
+.back.info { --q: color-mix(in oklab, var(--p) 15%, var(--e)); --ik: color-mix(in oklab, var(--k) 85%, black); background: var(--e); color: var(--ik); box-shadow: none; }
+.back.info::after { content: none; }
+.back.info .ibg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.back.info .ib { position: absolute; inset: 3.4cqw; z-index: 3; padding: 2.4cqw 2.4cqw; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 1.1cqw;
+  font-size: max(9px, 2cqw); line-height: 1.25; font-weight: 500; }
+.back.info :is(.ihd, .itrait, .imoves li, .irc) { position: relative; border-radius: 1.6cqw;
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--q), white 12%) 90%, transparent) 0%, color-mix(in oklab, var(--q) 86%, transparent) 40%, color-mix(in oklab, var(--q) 88%, transparent) 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0.125cqw 0.25cqw 0 rgb(255 255 255 / 0.55), 0.4cqw 0.8cqw 0.8cqw -0.5cqw color-mix(in oklab, var(--d) 45%, transparent); }
+.back.info :is(.ihd, .itrait, .imoves li, .irc) { min-width: 0; }
+.back.info .ihd { display: flex; gap: 3cqw; align-items: center; padding: 1.8cqw; }
+.back.info :is(.ilogo) { flex: none; width: 21cqw; height: 21cqw; box-sizing: border-box; padding: 2.2cqw; border-radius: 2.8cqw;
+  background: linear-gradient(153deg, var(--white), var(--m1) 38%, var(--m2)); box-shadow: inset 0.15cqw 0.3cqw 0 var(--white), 0.3cqw 0.6cqw 1.4cqw color-mix(in oklab, var(--d) 45%, transparent); }
+.back.info .ilogo.on { background: var(--lg); }
+.back.info .ilogo.fill { padding: 0; overflow: hidden; }
+.back.info .ilogo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.back.info h3 { margin: 0 0 0.8cqw; font-size: max(9px, 4.6cqw); line-height: 1; font-weight: 800; color: color-mix(in oklab, var(--d) 60%, var(--k)); }
+.back.info p { margin: 0; }
+.back.info .iwhat { font-size: max(9px, 2.4cqw); line-height: 1.25; }
+.back.info code { display: block; margin-top: 0.4cqw; font: 500 max(9px, 1.9cqw)/1.25 'Katagami Sans', ui-sans-serif, sans-serif; color: color-mix(in oklab, var(--ik) 94%, var(--p)); overflow-wrap: anywhere; }
+.back.info .nb { white-space: nowrap; }
+.back.info :is(.itrait, .imoves li) { padding: 1cqw 1.8cqw; }
+.back.info .itrait p { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1cqw; }
+/* the trait's name is set as a move's name is */
+.back.info .itrait b { font-size: max(9px, 2.8cqw); font-weight: 800; }
+.back.info .ti { width: auto; height: 3.6cqw; padding: 0 1.8cqw 0 0.8cqw; }
+.back.info .ti svg.i, .back.info .mc svg.i { width: max(9px, 2.8cqw); height: max(9px, 2.8cqw); }
+.back.info .mc { width: auto; height: 3.6cqw; padding: 0 1.8cqw 0 0.8cqw; }
+/* one column that never grows past the back: a long receipt set on one line (.long) keeps its ellipsis instead of
+   widening the slip and pushing its description off the card */
+.back.info .imoves { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.1cqw; }
+.back.info .ih { display: flex; align-items: center; gap: 1.4cqw; font-size: max(9px, 2.8cqw); }
+.back.info .ih b { font-weight: 800; flex: 1; }
+.back.info .ip { font-weight: 800; font-variant-numeric: tabular-nums; }
+.back.info .ip small { font-size: 1em; margin-left: 0.15em; }
+.back.info .im { color: color-mix(in oklab, var(--ik) 94%, var(--p)); font-size: max(9px, 2cqw); margin-left: auto; white-space: nowrap; }
+.back.info .ih b + .im { margin-left: 0; }
+.back.info .ip { margin-left: auto; }
+/* the facts, the pinned commit and the credit share one slip. Each fact is two rows of one grid (its line, then its
+   receipt) on a subgrid, so the two columns' receipts share a baseline whatever wraps above them; a value and its unit
+   never part, and the label wraps whole after them (craft ex.4: '192.75 commits per active / day Pace 130') */
+.back.info .irc { padding: 1.4cqw 1.8cqw; display: grid; gap: 1.2cqw; }
+.back.info .ifacts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.2cqw; column-gap: 2cqw; }
+.back.info .ifacts li { grid-row: span 2; display: grid; grid-template-columns: max(9px, 2.8cqw) minmax(0, 1fr); grid-template-rows: subgrid; row-gap: 0.4cqw; column-gap: 1cqw; align-items: start; }
+.back.info .ifacts li svg.i { width: max(9px, 2.8cqw); height: max(9px, 2.8cqw); color: color-mix(in oklab, var(--d) 45%, var(--k)); }
+/* the value and the label are the line's two items with a 0.6em gap between them; a label that wraps starts its own
+   line on the value's edge, with no gap before it (craft ex.5: an inline margin set 'Pace 130' 7 px in at 604 px) */
+.back.info .ifacts li > p { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.6em; }
+.back.info .ifacts .vu { white-space: nowrap; }
+.back.info .ifacts .lb { color: color-mix(in oklab, var(--d) 45%, var(--k)); font-weight: 700; white-space: nowrap; }
+.back.info.long :is(.itrait, .imoves) code { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* long receipts: one line each, in full in the sheet */
+.back.info .ifacts li > code { grid-column: 2; margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* in full in the sheet beside the lens */
+.back.info :is(.ipin, .credit) { color: color-mix(in oklab, var(--ik) 94%, var(--p)); }
+/* under 480 px a lens shows the info back's head, the trait and the four moves; the receipts and facts are in the sheet */
+@container (width < 480px) { .back.info :is(code, .irc) { display: none; } .back.info .ib { gap: 1.6cqw; } }
+.card.flipped .body { transform: rotateY(180deg); }
+
+/* ---------- the sleeve: a rim of your ink round the trim (a rival wears theirs), parted from the print by a hairline of
+   the clay it sits on. Both widths come from the card's registered width, never cqw. ---------- */
+.card { --slg: max(1px, calc(var(--card) * 0.005)); --slw: calc(var(--slg) + max(2px, calc(var(--card) * 0.016))); }
+.sleeve {
+  position: absolute; inset: 0; border-radius: var(--r);
+  box-shadow: 0 0 0 var(--slg) var(--clay), 0 0 0 var(--slw) var(--sleeve, var(--ink-1));
+  opacity: 0; transition: opacity 150ms var(--ease); pointer-events: none;
+}
+.card.mine .sleeve { opacity: 1; }
+.card.theirs .sleeve { opacity: 1; --sleeve: var(--rival); }
+/* a turned card lifts its sleeve a px off the print, so the 3D group never sorts it under the face */
+.card.turned .body > .sleeve, .card.flipped .sleeve { transform: translateZ(1px); }
+
+/* forced colours: the squares keep their count and their fill (filled, or hollow when the card no longer fits); your
+   sleeve is Highlight and theirs the text colour */
+@media (forced-colors: active) {
+  .sleeve { inset: calc(-1 * var(--slw)); border: var(--slw) solid CanvasText; border-radius: calc(var(--r) + var(--slw)); }
+  .card.mine .sleeve { border-color: Highlight; }
+  .card.theirs .sleeve { border-color: CanvasText; }
+  .card .cost i { forced-color-adjust: none; background: CanvasText; }
+  .card.nofit .cost i { background: transparent; border: 1px solid CanvasText; }
+}
+
+/* ---------- the inspect sheet's own type (markup.js sheet(); ui.css sets the sheet). It opens on what the product is,
+   under the disciplines (owner ex.4: "the info boxes explain what it is better"). While the lens shows its info back,
+   which prints the what line, the trait and all four moves, the sheet keeps only the facts with their receipts, the
+   pinned commit and the credit, so no text shows twice (collector ex.4); gallery.js marks the side on #inspect ---------- */
+.sheet .swhat { margin: 0 0 20px; font: 500 17px/24px var(--sans); color: var(--ink-1); text-wrap: pretty; }
+.inspect[data-side="back"] .sheet-body > :not(.facts, .pin, .credit) { display: none; }
+
+/* ===== families (EX.md 23): tools/design.mjs prints design/families.css here; edit that file, never this section ===== */
+/* The card families (EX.md 23; r4/studio/DESIGN.md, ported 11-03). tools/design.mjs prints this file as the last
+   section of card.css, so the gallery, the components sheet and the battle's scoped copy (broadcast/card.gen.css) carry
+   it; edit this file, never that section. Every card prints the same zones at the same sizes, places and tiers (EX.md 5
+   to 7): the top bar's contents, the text column (0.070W to 0.930W, slips 0.048W to 0.952W, 0.658W to 1.214W), the
+   footer and the bottom line. A family changes what holds them: the aperture (.pane marks its box), the frame (the
+   card's own border in .rim, masked to design/frames/<id>.svg), the top bar's plate and the text's construction. Sizes
+   are cqw of the card: design/families.js's numbers divided by ten.
+   Layers stay EX.md 13's: .en (energy, a poster's or storyboard's set, the subject's cast) 1, .rim and .rimo (the
+   border, its finish, its streak, its over layer) 2, .pane 3, the plates 4, .pop 5, .glw and .fx 6, type 7. Nothing that
+   holds .pop or .fx clips: .rim clips only its own picture, finish and streak, a storyboard panel clips only its own set,
+   inside .en, the only clipped layer. The frost is card.css's own tile (--frost-tile: a data URL, or the page's 2x raster
+   through --frost), so this section names no relative url either. */
+
+/* ---------- the border: the card's own material, masked to its family's frame and its own alpha ---------- */
+.card.dz .rim, .card.dz[data-cost] .rim {
+  background: none !important; box-shadow: none;
+  -webkit-mask-position: 0 0; mask-position: 0 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+.card.dz .rim::after { content: none; }
+.card.dz .rim > .bd, .card.dz .rimo > .bdo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.card.dz .rimo { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  -webkit-mask-position: 0 0; mask-position: 0 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in; mask-composite: intersect; }
+/* the streak keeps its slide on the tilt, now as light across the material */
+.card.dz .rim > .spec { background: linear-gradient(153deg, transparent 27%, rgb(255 255 255 / 0.3) 29.7%, transparent 32.4%); }
+/* a trimmed card (Mailroom's perforation, Local Search's chamfer): the energy takes the border's trim inline */
+.card.dz .en { -webkit-mask-position: 0 0; mask-position: 0 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+
+/* the cost ladder (EX.md 15), printed as light on the border's own material and nowhere else (direction c), hard
+   enough to read at rest (collector, studio-1) and drawn above the pixel grid (craft, studio-2: the 0.42 to 0.6cqw
+   gradients of studio-1 aliased into one moire hatch on every cost 3 and 4 rim, 0.9 to 1.3 px on the 215 px wall).
+   Each step keeps the one below it and adds light, never a finer texture: no pass repeats under 1.5cqw, and a pass
+   carries at most one texture, an SVG tile the browser rasterises antialiased:
+   1 ink, the material flat as the product draws it;
+   2 embossed, its own shapes raised and lit from the upper left on the room's 1:2 vector (the bevel on .bd), under a
+     brushed sheen: one broad band of light across the rim;
+   3 etched, a harder bevel, the card's metal laid in and one engraved hatch struck every 2.2cqw (1.56cqw apart across the cut);
+   4 foil, the hardest bevel with a prism edge, the material struck as chrome (design/lit: its own relief under the
+     strongest specular, so every shape the product draws catches a point of light at its own edges) under a prism sheen
+     laid soft, with the chrome name and number and the prism keyline on the aperture. No shared texture: a lattice
+     struck over every foil rim made the four rims one fence and hid the material (owner and craft, studio-2; studio
+     closer round 2: with it 319 of 325 ring pairs, the four foil rims among the failing six; without it 323).
+   The passes print in the border's over layer too (.rimo > .fin), so a frame piece over the aperture's edge takes its
+   card's finish. A photo or sprite material (data-flat) takes the bevel on its pieces' edges from cost 3, never under
+   its picture. No glitter and no conic etch on any card (Kevin, 11-02) */
+.card.dz[data-finish="embossed"]:not([data-flat]) .rim > .bd {
+  filter: drop-shadow(-0.12cqw -0.24cqw 0 rgb(255 255 255 / 0.62)) drop-shadow(0.12cqw 0.24cqw 0.05cqw rgb(0 0 0 / 0.45));
+}
+.card.dz[data-finish="etched"] .rim > .bd {
+  filter: drop-shadow(-0.14cqw -0.28cqw 0 rgb(255 255 255 / 0.8)) drop-shadow(0.14cqw 0.28cqw 0.05cqw rgb(0 0 0 / 0.5));
+}
+.card.dz[data-finish="foil"] .rim > .bd {
+  filter: drop-shadow(-0.16cqw -0.32cqw 0 rgb(255 255 255 / 0.95)) drop-shadow(-0.08cqw -0.16cqw 0 oklch(0.9 0.14 calc(var(--hue) + 120))) drop-shadow(0.16cqw 0.32cqw 0.06cqw rgb(0 0 0 / 0.55));
+}
+.card.dz :is(.rim, .rimo) > .fin { position: absolute; inset: 0; display: none; pointer-events: none; }
+.card.dz :is(.rim, .rimo) > .fin::before, .card.dz :is(.rim, .rimo) > .fin::after { content: none; position: absolute; inset: 0; pointer-events: none; }
+/* 2: the brushed sheen, one broad band of light (no brushing lines) */
+.card.dz[data-finish="embossed"] :is(.rim, .rimo) > .fin {
+  display: block; mix-blend-mode: soft-light;
+  background: linear-gradient(153deg, transparent 30%, rgb(255 255 255 / 0.55) 46%, transparent 62%);
+}
+/* 3: the metal laid in over the relief, and one engraved hatch: a cut every 2.2cqw (1.56cqw apart across the cut), its
+   lit lip and its shadow, drawn antialiased in one SVG tile */
+.card.dz[data-finish="etched"] :is(.rim, .rimo) > .fin {
+  display: block; mix-blend-mode: hard-light;
+  background: linear-gradient(153deg, color-mix(in oklab, var(--mh) 35%, transparent), color-mix(in oklab, var(--ml) 22%, transparent) 55%, color-mix(in oklab, var(--mh) 30%, transparent));
+}
+.card.dz[data-finish="etched"] :is(.rim, .rimo) > .fin::after {
+  content: '';
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M-5.5 5.5l11-11M-5.5 27.5l33-33M16.5 27.5l11-11' stroke='%23000' stroke-opacity='.42' stroke-width='1.8' transform='translate(.9 .9)'/%3E%3Cpath d='M-5.5 5.5l11-11M-5.5 27.5l33-33M16.5 27.5l11-11' stroke='%23fff' stroke-opacity='.95' stroke-width='1.9'/%3E%3C/svg%3E") 0 0 / 2.2cqw 2.2cqw repeat;
+}
+/* 4: the prism sheen laid soft over the chrome relief (design/lit), so the material keeps its colour and leads */
+.card.dz[data-finish="foil"] :is(.rim, .rimo) > .fin {
+  display: block; mix-blend-mode: soft-light;
+  background:
+    linear-gradient(153deg, oklch(0.8 0.19 var(--hue) / 0.36), oklch(0.86 0.18 calc(var(--hue) + 60) / 0.36), oklch(0.88 0.18 calc(var(--hue) + 120) / 0.36),
+      oklch(0.84 0.16 calc(var(--hue) + 180) / 0.36), oklch(0.76 0.19 calc(var(--hue) + 240) / 0.36), oklch(0.8 0.2 calc(var(--hue) + 300) / 0.36),
+      oklch(0.8 0.19 calc(var(--hue) + 360) / 0.36), oklch(0.86 0.18 calc(var(--hue) + 60) / 0.36), oklch(0.84 0.18 calc(var(--hue) + 120) / 0.36)) 50% 50% / 200% 200% no-repeat;
+}
+/* cost 4's bar is struck in the same metal as its rim: its brushing cut deeper, so the chase card's head reads as metal at
+   rest (the chrome name and number stay the base's) */
+.card.dz[data-cost="4"]:not([data-fam="B"]) .top::before { background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.18cqw, rgb(0 0 0 / 0.12) 0.18cqw 0.32cqw, transparent 0.32cqw 0.6cqw),
+    linear-gradient(172deg, color-mix(in oklab, var(--ml) 82%, white) 0%, var(--ml) 26%, color-mix(in oklab, var(--d) 80%, black) 72%, var(--ml) 100%); }
+@container (width < 300px) {
+  .card.dz[data-cost="4"]:not([data-fam="B"]) .top::before { background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.18cqw, rgb(0 0 0 / 0.12) 0.18cqw 0.32cqw, transparent 0.32cqw 0.6cqw),
+      linear-gradient(172deg, var(--ml) 0%, color-mix(in oklab, var(--d) 80%, black) 55%, color-mix(in oklab, var(--ml) 70%, black) 100%); }
+}
+/* the generic fireworks go on every card (design/card.js also leaves out round ex.5's cost 4 glitter fields, .gl): the cost 4 glitter over the print, the sharp flakes in the window (r4/ex ex.4's
+   .en::before) and the holographic glitter over the text panel (Kevin, 11-02: no fake fireworks; the brief: no glitter
+   unless it is the product's own material) */
+.card.dz .en::after, .card.dz[data-cost="4"] .en::after, .card.dz[data-cost="4"] .en::before { content: none; }
+.card.dz[data-cost="4"] .face::after { content: none; }
+/* r4/ex's chase tier runs its energy hotter (contrast 1.15, saturate 1.3, from 120 px); its contrast lifts the ground behind
+   the type past the cap the fork holds it under (OKLab L 0.885, tools/ground-edits.json e_capL) into near-white blobs
+   (Glyphfield 83 to 96, Jarhead and Claude of Tanks back over their 11-02 counts), so here the chase tier keeps only the
+   saturation */
+@container (width >= 120px) { .card.dz[data-cost="4"] .en :is(.poster, .ground) { filter: saturate(1.3); } }
+
+/* ---------- the aperture: .pane marks where the picture shows; the border draws its edge in its own material ---------- */
+.card.dz .sill { display: none; }
+.card.dz .pane { background: none; box-shadow: none; right: auto; border-radius: 1.4cqw; }
+.card.dz .pane::before { content: none; }
+.card.dz:is([data-fam="Y"], [data-fam="B"], [data-fam="T"], [data-fam="P"]) .pane::after { content: none; }
+.card.dz[data-fam="K"] .pane { border-radius: 0.8cqw; }
+.card.dz[data-fam="S"] .pane { border-radius: 0; }
+.card.dz[data-fam="D"] .pane { border-radius: 4cqw; }
+.card.dz[data-id="dedalus-terminal"] .pane { border-radius: 6.4cqw; }
+/* a poster's set: the product's own picture under the whole card inside its 0.050W ring, fading into the energy below
+   the picture's band so the plates float over one continuous print */
+.card.dz .set { position: absolute; inset: 5cqw; border-radius: 2.4cqw; background-repeat: no-repeat; pointer-events: none;
+  -webkit-mask: linear-gradient(#000 0 52%, rgb(0 0 0 / 0.55) 72%, transparent 96%); mask: linear-gradient(#000 0 52%, rgb(0 0 0 / 0.55) 72%, transparent 96%); }
+/* a poster's set runs the whole card, under the text too (variety, studio-1: the posters read as windows when their set
+   faded out at the first plate); under the text it prints at 28% over the card's energy (assign.json set.fade may start the fade higher), so a
+   night picture keeps the panel as light and as coloured as the wall's (E3) */
+.card.dz[data-fam="B"] .set { --fs: 44%; --fo: 0.28;
+  -webkit-mask: linear-gradient(#000 0 var(--fs), rgb(0 0 0 / var(--fo)) calc(var(--fs) + 10%), rgb(0 0 0 / var(--fo)) 100%);
+  mask: linear-gradient(#000 0 var(--fs), rgb(0 0 0 / var(--fo)) calc(var(--fs) + 10%), rgb(0 0 0 / var(--fo)) 100%); }
+/* a storyboard's earlier panels */
+.card.dz .sb { position: absolute; inset: 0; pointer-events: none; }
+.card.dz .sbp { position: absolute; overflow: hidden; border-radius: 1cqw; }
+.card.dz .sbp img { position: absolute; display: block; height: auto; max-width: none; user-select: none; }
+/* a tower's hero carries its own shadow on its alpha, on the room's 1:2 vector */
+.card.dz .pop[data-hero] img { filter: drop-shadow(0.4cqw 0.8cqw 0.6cqw color-mix(in oklab, var(--d) 70%, transparent)); }
+/* the front effect: one svg of the product's own pieces over the card and up to 0.10W past each side (fx/<id>/fx.svg,
+   viewBox -100 0 1200 1397); a card with none keeps the empty .fx. The layer's own box is its reach, 0.066W past each
+   side of the trim (EX.md 13), so a room that holds a card's reach holds its box (tools/verify.mjs C23 reads it at 390 px);
+   the picture keeps the svg's whole frame and overflows the box by its transparent 0.034W on each side, never clipped */
+.card.dz .fx.dzfx { left: -6.6cqw; top: 0; width: 113.2cqw; height: 139.7cqw; }
+.card.dz .fx.dzfx > img { position: absolute; left: -3.4cqw; top: 0; right: auto; bottom: auto; width: 120cqw; height: 139.7cqw; display: block; max-width: none; }
+
+/* ---------- the text zone's box, by family (collector and craft, studio-1: the lower half printed as one template).
+   Each construction owns its own box; the band's padding takes the difference, so the trait, both moves and every type
+   line keep the same places, sizes and tiers on every card (zones.json: top, logo, hp, trait, moves, foot, no, seal and
+   what identical). --dz-bt and --dz-bb are how far the box reaches above 0.658W and below 1.214W, --dz-bx how far past
+   0.034W on each side:
+     W, Y, D, B  0.034 to 0.966, 0.658 to 1.214: slips, caption cards, key caps on a deck, a band behind each type line
+     K, S        0.034 to 0.966, 0.646 to 1.357: one sheet from the window's foot to the bottom line
+     T           0.034 to 0.966, 0.646 to 1.271: a plinth from rim to rim, under the footer
+     P           0.034 to 0.966, 0.590 to 1.214: strips from rim to rim, from the panorama's sill
+   (no construction covers the rim: the border's own material stays beside the text on every card) ---------- */
+.card.dz { --dz-bt: 0cqw; --dz-bb: 0cqw; --dz-bx: 0cqw; }
+.card.dz:is([data-fam="K"], [data-fam="S"]) { --dz-bt: 1.2cqw; --dz-bb: 14.3cqw; }
+.card.dz[data-fam="T"] { --dz-bt: 1.2cqw; --dz-bb: 5.7cqw; }
+.card.dz[data-fam="P"] { --dz-bt: 6.8cqw; }
+.card.dz .band { top: calc(65.8cqw - var(--dz-bt)); height: calc(55.6cqw + var(--dz-bt) + var(--dz-bb)); left: calc(3.4cqw - var(--dz-bx)); right: calc(3.4cqw - var(--dz-bx));
+  padding: calc(0.4cqw + var(--dz-bt)) calc(1.4cqw + var(--dz-bx)) calc(0.4cqw + var(--dz-bb)); }
+@container (width >= 225px) { .card.dz .band { padding: calc(0.3cqw + var(--dz-bt)) calc(1.4cqw + var(--dz-bx)) calc(2cqw + var(--dz-bb)); } }
+
+/* ---------- the top bar's plate, by family (its contents never move) ---------- */
+/* K, a ruled bar: a scale of ticks along its head and its foot, every tenth long */
+.card.dz[data-fam="K"] .top::before { border-radius: 0.8cqw 0.8cqw 0 0; }
+.card.dz[data-fam="K"] .top::after { top: 0; bottom: 0; height: auto; background:
+  repeating-linear-gradient(90deg, var(--m1) 0 0.25cqw, transparent 0.25cqw 1.55cqw) 0 0 / 100% 1.3cqw no-repeat,
+  repeating-linear-gradient(90deg, var(--white) 0 0.3cqw, transparent 0.3cqw 7.75cqw) 0 0 / 100% 2.2cqw no-repeat,
+  repeating-linear-gradient(90deg, var(--m1) 0 0.25cqw, transparent 0.25cqw 1.55cqw) 0 100% / 100% 1.3cqw no-repeat,
+  repeating-linear-gradient(90deg, var(--white) 0 0.3cqw, transparent 0.3cqw 7.75cqw) 0 100% / 100% 2.2cqw no-repeat,
+  linear-gradient(var(--m3), var(--m3)) 0 100% / 100% 0.3cqw no-repeat; }
+/* S, a title strip on the plate's graph paper: square, keylined, the health block in its own cell */
+.card.dz[data-fam="S"] .top::before { border-radius: 0;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.22) 0.2cqw, transparent 0.2cqw) 0 0 / 1.5cqw 1.5cqw,
+    linear-gradient(rgb(255 255 255 / 0.22) 0.2cqw, transparent 0.2cqw) 0 0 / 1.5cqw 1.5cqw,
+    var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, var(--d) 91%, transparent), color-mix(in oklab, var(--d) 96%, transparent));
+  background-blend-mode: normal, normal, soft-light, normal;
+  box-shadow: inset 0 0 0 0.35cqw color-mix(in oklab, var(--g) 55%, transparent); }
+.card.dz[data-fam="S"] .top::after { left: 58.6cqw; right: auto; width: 0.35cqw; height: auto; top: 1.4cqw; bottom: 1.4cqw; background: color-mix(in oklab, var(--g) 55%, transparent); }
+/* T, a square lintel across both columns: an architrave line under its head, heavy below */
+.card.dz[data-fam="T"] .top::before { border-radius: 0; box-shadow: inset 0 1cqw 0 color-mix(in oklab, var(--d) 60%, black), inset 0 1.3cqw 0 color-mix(in oklab, var(--g) 45%, transparent), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.3); }
+.card.dz[data-fam="T"] .top::after { height: 1.2cqw; }
+/* P, a plate on the strip */
+.card.dz[data-fam="P"] .top::before { border-radius: 1.6cqw 1.6cqw 0.6cqw 0.6cqw; }
+/* B, no bar: the logo tile, the name and the health block each float on their own smoked plate over the picture. The
+   tile's plate is the bar's own ::before cut down to the tile's square (r4/ex port: on a bright picture the light metal
+   tile stood at 2.0 to 2.9:1 against Claude of Tanks' fire and Ariadne's lilac, E15's 3:1 bar read), so the bar's metal at
+   cost 4 and its frost carry over; the closer's 11-05 rule below replaces that plate with a bezel on the two tiles */
+.card.dz[data-fam="B"] .top::after { content: none; }
+/* The Poster's bar stays open under its tile (closer, 11-05): variety's top floors read the family's open top, 0.097 of its
+   top zone in energy, against 0.042 with a backing plate on all five and 0.075 with one on two. Where the picture behind
+   the tile is light enough to need it (design/assign.json tile_plate: Claude of Tanks and Ariadne, the cards E15 read
+   under 3:1 without one), the tile itself wears a smoked bezel, inside its edge and round it, in the card's deep: E15
+   reads the tile's rim against the bar behind it, and the bezel is that rim */
+.card.dz[data-fam="B"] .top::before { content: none; }
+.card.dz[data-fam="B"][data-plate] .top .logo { box-shadow: inset 0 0 0 max(0.6cqw, 1.5px) color-mix(in oklab, var(--d) 55%, black), 0 0 0 max(0.5cqw, 1px) color-mix(in oklab, var(--d) 55%, black), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
+/* a mark on its own dark ground (.on) keeps its ground; its thin metal border takes the bezel's smoke, so the rim is one
+   dark band from the ring outside to the ground inside */
+.card.dz[data-fam="B"][data-plate] .top .logo.on { background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(color-mix(in oklab, var(--d) 55%, black), color-mix(in oklab, var(--d) 55%, black)) border-box; }
+.card.dz[data-fam="B"] :is(.nm, .hp)::before {
+  content: ''; position: absolute; z-index: -1; top: 1.5cqw; bottom: 1.5cqw; left: -1.6cqw; right: -0.9cqw; border-radius: 4.2cqw; pointer-events: none;
+  background: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, var(--d) 88%, transparent), color-mix(in oklab, var(--d) 94%, transparent));
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.28), 0.3cqw 0.6cqw 1.2cqw -0.2cqw rgb(0 0 0 / 0.45); }
+/* the pills' padding is held so the name's pill ends at least 0.015W before the health block's on a title that fills its
+   0.42W slot (craft, studio-2: Princeton TD's pills were 0.5 px apart at 215 px): the name's pill runs 0.9cqw past the
+   name, the health block's starts 0.8cqw before it */
+.card.dz[data-fam="B"] .hp::before { left: -0.8cqw; right: -1.4cqw; }
+@container (width < 126px) { .card.dz[data-fam="B"] .nm::before { content: none; } }
+@container (width < 117px) { .card.dz[data-fam="B"] .hp::before { content: none; } }
+/* D, the device's top bezel: rounded above, a lip of glass below (direction c) */
+.card.dz[data-fam="D"] .top::before { border-radius: 3cqw 3cqw 1cqw 1cqw; box-shadow: inset 0 -0.5cqw 0 color-mix(in oklab, var(--d) 55%, black), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.25); }
+.card.dz[data-fam="D"] .top::after { left: 3cqw; right: 3cqw; height: 0.35cqw; bottom: 0.8cqw; border-radius: 0.2cqw; opacity: 0.7; }
+
+/* ---------- the text: the same rows, sizes and places, built eight ways ----------
+   Every construction is struck in the base slip's own tint (the card's panel colour, 62 to 76% over its energy, with
+   its frost), so the panel stays as spectral and as alive as the wall (E1, E3) and the ground's matter still reads
+   through it (E5); what changes is the construction: its outline, what it is cut into and the drawing on it. */
+.card.dz { --dz-pa: 34%;
+  --dz-tint: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) calc(var(--dz-pa) + 4%), transparent) 0%,
+      color-mix(in oklab, var(--p) var(--dz-pa), transparent) 40%, color-mix(in oklab, var(--p) calc(var(--dz-pa) + 2%), transparent) 100%); }
+/* W, the window card: the base's frosted slips, in the same tint */
+.card.dz[data-fam="W"] :is(.trait, .move)::before { background: var(--dz-tint); }
+/* K, the specimen sheet: one thin paper sheet (near-white paper, 78 to 84% white in the panel's hue at 27 to 29%, so it reads
+   paler and cooler than any other family's text: collector, studio-2, the lower halves of one hue matched across families;
+   the matter still reads through it) from the window's foot to the
+   bottom line, square at its head, every row standing on its header's baseline rule and closed by a hairline, a double margin rule where the rail runs; no slips */
+.card.dz[data-fam="K"] { --dz-pa: 26%;
+  --dz-tint: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 84%) 29%, transparent),
+    color-mix(in oklab, color-mix(in oklab, var(--p), white 78%) 27%, transparent) 40%, color-mix(in oklab, color-mix(in oklab, var(--p), white 78%) 28%, transparent)); }
+.card.dz[data-fam="K"] .band::before {
+  content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 0 0 1.4cqw 1.4cqw;
+  background:
+    linear-gradient(90deg, transparent 1.5cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 1.5cqw 1.85cqw, transparent 1.85cqw 2.3cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 2.3cqw 2.5cqw, transparent 2.5cqw),
+    var(--dz-tint);
+  background-blend-mode: normal, soft-light, normal;
+  box-shadow: inset 0 0.4cqw 0 color-mix(in oklab, var(--d) 80%, transparent), inset 0 0 0 0.16cqw rgb(255 255 255 / 0.3), 0.3cqw 0.6cqw 1.2cqw -0.3cqw color-mix(in oklab, var(--d) 50%, transparent);
+}
+.card.dz[data-fam="K"] :is(.trait, .move)::before {
+  border-radius: 0; box-shadow: none;
+  background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 2.4cqw) 0.3cqw no-repeat,
+    linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)) 2.4cqw 100% / calc(100% - 2.4cqw) 0.2cqw no-repeat;
+}
+.card.dz[data-fam="K"] :is(.trait, .move)::after { content: none; }
+.card.dz[data-fam="K"] :is(.foot, .no, .what)::before, .card.dz[data-fam="K"] .what::after { border-radius: 0.3cqw; }
+/* S, the drafting sheet: one sheet of the plate's graph paper from the window's foot to the bottom line, its lines in
+   the card's deep tone (a fine grid under a coarse one), the rows its ruled cells, and the parts rail carried down the right as the
+   title block's column (0.784W to 0.952W), where every power sits in its own cell; keylined in the deep tone */
+.card.dz[data-fam="S"] .band::before {
+  content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  --gl: color-mix(in oklab, var(--d) 24%, transparent); --gm: color-mix(in oklab, var(--d) 40%, transparent); --gk: color-mix(in oklab, var(--d) 75%, transparent);
+  background:
+    linear-gradient(90deg, var(--gm) 0.45cqw, transparent 0.45cqw) 1.4cqw 0 / 7.5cqw 7.5cqw,
+    linear-gradient(var(--gm) 0.45cqw, transparent 0.45cqw) 0 1.2cqw / 7.5cqw 7.5cqw,
+    linear-gradient(90deg, var(--gl) 0.25cqw, transparent 0.25cqw) 1.4cqw 0 / 1.5cqw 1.5cqw,
+    linear-gradient(var(--gl) 0.25cqw, transparent 0.25cqw) 0 1.2cqw / 1.5cqw 1.5cqw,
+    var(--dz-tint);
+  background-blend-mode: normal, normal, normal, normal, soft-light, normal;
+  box-shadow: inset 0 0 0 0.4cqw color-mix(in oklab, var(--d) 75%, transparent), 0.4cqw 0.8cqw 1.2cqw -0.4cqw color-mix(in oklab, var(--d) 50%, transparent);
+}
+/* the title block's column (0.784W to 0.952W: its double rule and a lighter cell) prints only in each row's head line,
+   beside the head and the power, never through a description (craft, studio-2: the rule at 0.784W ran through the
+   descriptions, which set out to 0.80 to 0.915W); a power wider than the cell sits on its own pale plate over the rule.
+   In the row's own box (0.048W to 0.952W): the rules at 73.61 to 73.96cqw and 74.51 to 74.71cqw, the cell to the end */
+.card.dz[data-fam="S"] :is(.trait, .move)::before { border-radius: 0; box-shadow: inset 0 -0.3cqw 0 color-mix(in oklab, var(--d) 60%, transparent);
+  --gk: color-mix(in oklab, var(--d) 75%, transparent);
+  background:
+    linear-gradient(90deg, transparent 73.61cqw, var(--gk) 73.61cqw 73.96cqw, transparent 73.96cqw 74.51cqw, var(--gk) 74.51cqw 74.71cqw, rgb(255 255 255 / 0.3) 74.71cqw) 0 0 / 100% 4.9cqw no-repeat; }
+.card.dz[data-fam="S"] .mp { background: color-mix(in oklab, color-mix(in oklab, var(--p), white 58%) 94%, transparent); box-shadow: -0.8cqw 0 0 color-mix(in oklab, color-mix(in oklab, var(--p), white 58%) 94%, transparent); }
+.card.dz[data-fam="S"] :is(.trait, .move)::after { content: none; }
+.card.dz[data-fam="S"] :is(.what)::before, .card.dz[data-fam="S"] :is(.what)::after, .card.dz[data-fam="S"] :is(.foot, .no)::before { border-radius: 0; }
+.card.dz[data-fam="S"] .foot::before {
+  background: linear-gradient(90deg, transparent 33.9cqw, rgb(255 255 255 / 0.5) 33.9cqw 34.25cqw, transparent 34.25cqw 61.9cqw, rgb(255 255 255 / 0.5) 61.9cqw 62.25cqw, transparent 62.25cqw),
+    var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, var(--d) 92%, transparent), color-mix(in oklab, var(--d) 96%, transparent));
+  background-blend-mode: normal, soft-light, normal; box-shadow: inset 0 0 0 0.35cqw color-mix(in oklab, var(--g) 50%, transparent);
+}
+/* T, the plinth: the tower stands on one slab laid from rim to rim under the footer, in the slips' own tint, its
+   cornice in the card's deep tone over a lit fillet, the rows set in its face and parted by incised joints; no slips */
+.card.dz[data-fam="T"] .band::before {
+  content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 22%) calc(var(--dz-pa) + 4%), transparent), color-mix(in oklab, var(--p) var(--dz-pa), transparent));
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0 1.2cqw 0 var(--d), inset 0 1.55cqw 0 color-mix(in oklab, var(--g), white 30%), 0 -0.5cqw 1cqw -0.2cqw color-mix(in oklab, var(--d) 55%, transparent);
+}
+.card.dz[data-fam="T"] :is(.trait, .move)::before { background: none; box-shadow: none; border-radius: 0; }
+.card.dz[data-fam="T"] .move::before { border-top: 0.3cqw solid color-mix(in oklab, var(--d) 55%, transparent); top: -0.45cqw; box-shadow: inset 0 0.25cqw 0 rgb(255 255 255 / 0.6); }
+.card.dz[data-fam="T"] :is(.trait, .move)::after { content: none; }
+.card.dz[data-fam="T"] :is(.foot, .no, .what)::before, .card.dz[data-fam="T"] .what::after { border-radius: 0.4cqw; }
+/* P, strips: the rows run square from rim to rim, as the panorama does above them, light and deep in turn with a lit
+   seam, so the panel reads as banded */
+.card.dz[data-fam="P"] :is(.trait, .move)::before, .card.dz[data-fam="P"] :is(.trait, .move)::after { border-radius: 0; left: -1.4cqw; right: -1.4cqw; }
+.card.dz[data-fam="P"] :is(.trait, .move)::before { box-shadow: inset 0 0.3cqw 0 rgb(255 255 255 / 0.6), inset 0 -0.3cqw 0 color-mix(in oklab, var(--d) 50%, transparent);
+  background: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 45%) 74%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) 70%, transparent));
+  background-blend-mode: soft-light, normal; }
+.card.dz[data-fam="P"] .move:nth-child(2)::before {
+  background: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), var(--e) 45%) 80%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), var(--e) 55%) 80%, transparent));
+  background-blend-mode: soft-light, normal; }
+.card.dz[data-fam="P"] .foot::before { border-radius: 0; }
+/* P, the what slip: the panorama's rim runs trim to trim under the bottom line, so the slip's plate is 10 points more
+   opaque than the base's (Sandbox Arena's red and white kerb read 4.45:1 behind its ink at 64%; E10 needs 4.5) */
+.card.dz[data-fam="P"] .what::before {
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) 76%, transparent) 0%,
+      color-mix(in oklab, var(--p) 72%, transparent) 40%, color-mix(in oklab, var(--p) 74%, transparent) 100%);
+  background-blend-mode: soft-light, normal;
+}
+/* Y, caption cards: each row a card pinned under the panels, a deep tab down its left edge and a tab on its head, a hard
+   shadow down and right */
+.card.dz[data-fam="Y"] :is(.trait, .move)::before { border-radius: 0 1.2cqw 1.2cqw 0;
+  background: linear-gradient(90deg, var(--d) 0 1.2cqw, transparent 1.2cqw), var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 62%) 88%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), white 48%) 86%, transparent));
+  background-blend-mode: normal, soft-light, normal;
+  box-shadow: 0.55cqw 0.55cqw 0 color-mix(in oklab, var(--d) 70%, transparent); }
+.card.dz[data-fam="Y"] :is(.trait, .move)::after { content: ''; inset: auto auto 100% 0; width: 14cqw; height: 0.75cqw; padding: 0; border-radius: 0.5cqw 0.5cqw 0 0; background: var(--d); -webkit-mask: none; mask: none; }
+/* D, key caps on the device's deck: one brushed deck under the panel in the device's deep tone (40 to 48% deep at 62 to
+   66%, the darkest panel of the set, so a device reads apart from a pale sheet of its hue: collector, studio-2), each
+   row's head a raised key cap with a lip, the descriptions printed on the deck between them */
+.card.dz[data-fam="D"] .band::before {
+  content: ''; position: absolute; inset: 0 0 0.6cqw; z-index: 4; pointer-events: none; border-radius: 2.4cqw;
+  background: repeating-linear-gradient(180deg, rgb(255 255 255 / 0.22) 0 0.15cqw, transparent 0.15cqw 0.6cqw),
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 40%) 62%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 48%) 66%, transparent));
+  box-shadow: inset 0 0.35cqw 0.6cqw color-mix(in oklab, var(--d) 50%, transparent), inset 0 -0.2cqw 0 rgb(255 255 255 / 0.6);
+}
+.card.dz[data-fam="D"] :is(.trait, .move)::before { bottom: auto; height: 4.9cqw; border-radius: 1.4cqw;
+  background: linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 60%) 92%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) 92%, transparent));
+  box-shadow: inset 0.125cqw 0.25cqw 0 rgb(255 255 255 / 0.75), inset 0 -0.6cqw 0 color-mix(in oklab, var(--d) 50%, transparent), 0.25cqw 0.5cqw 0.5cqw -0.2cqw color-mix(in oklab, var(--d) 60%, transparent); }
+.card.dz[data-fam="D"] :is(.trait, .move)::after { content: none; }
+.card.dz[data-fam="D"] :is(.what)::before, .card.dz[data-fam="D"] :is(.what)::after, .card.dz[data-fam="D"] :is(.foot, .no)::before { border-radius: 2.2cqw; }
+/* B, a poster: no slab under the rows. Each head is its own band and each line of a description its own band (card.js
+   wraps the text in .ln), in the card's panel tint, so the picture runs between the rows, beside every short line and
+   between a move's name and its power (variety, studio-1) */
+.card.dz[data-fam="B"] :is(.trait, .move)::before, .card.dz[data-fam="B"] :is(.trait, .move)::after { content: none; }
+.card.dz[data-fam="B"] .ln, .card.dz[data-fam="B"] :is(.mn, .mp) {
+  --pp: color-mix(in oklab, color-mix(in oklab, var(--p), white 38%) 90%, transparent);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; border-radius: 0.6cqw;
+  box-shadow: 0.2cqw 0.4cqw 0.6cqw -0.2cqw rgb(0 0 0 / 0.4); }
+.card.dz[data-fam="B"] .ln { background: var(--pp); padding: 0 0.8cqw; margin: 0 -0.8cqw; }
+.card.dz[data-fam="B"] :is(.mn, .mp) { background: var(--pp); padding: 1cqw 1.2cqw; }
+.card.dz[data-fam="B"] .mn { margin-left: 0.2cqw; }
+.card.dz[data-fam="B"] .mp { margin-right: -1.2cqw; }
+.card.dz[data-fam="B"] .what::before { border-radius: 2.6cqw; }
+.card.dz[data-fam="B"] :is(.foot, .no)::before { border-radius: 2.8cqw; }
+
+/* ---------- a trimmed card (Mailroom's perforation, Local Search's chamfer, Agent Pets' stepped corners, Agent Machines'
+   gear rack): its cast and its sleeve follow the trim (border lane 3, 11-02: the rounded box's shadow and sleeve left a
+   faint rounded ghost outside the cut). The cast is the room's own rest and lift shadows (vendor/neu-tokens.css) as drop
+   shadows of the trimmed silhouette, under the face; the sleeve is the same two rings, clay then your ink, cut from the
+   trim scaled out by their widths ---------- */
+:root, [data-theme="light"] {
+  --dz-rest: drop-shadow(0.45px 0.89px 1px oklch(42% 0.035 70 / 0.18)) drop-shadow(0.89px 1.79px 2px oklch(42% 0.035 70 / 0.14)) drop-shadow(1.79px 3.58px 4px oklch(42% 0.035 70 / 0.12));
+  --dz-lift: drop-shadow(2.68px 5.37px 6px oklch(42% 0.035 70 / 0.198)) drop-shadow(5.37px 10.73px 12px oklch(42% 0.035 70 / 0.154)) drop-shadow(10.73px 21.47px 24px oklch(42% 0.035 70 / 0.132));
+}
+[data-theme="dark"] {
+  --dz-rest: drop-shadow(0.45px 0.89px 1px oklch(8% 0.01 70 / 0.45)) drop-shadow(0.89px 1.79px 2px oklch(8% 0.01 70 / 0.35)) drop-shadow(1.79px 3.58px 4px oklch(8% 0.01 70 / 0.3));
+  --dz-lift: drop-shadow(2.68px 5.37px 6px oklch(8% 0.01 70 / 0.495)) drop-shadow(5.37px 10.73px 12px oklch(8% 0.01 70 / 0.385)) drop-shadow(10.73px 21.47px 24px oklch(8% 0.01 70 / 0.33));
+}
+.card.dz[data-trim] .body, .card.dz[data-trim] .body::before { box-shadow: none; }
+.card.dz .tsh { position: absolute; inset: 0; pointer-events: none; filter: var(--dz-rest); }
+.card.dz:is(.lift, .is-hover) .tsh { filter: var(--dz-lift); }
+.card.dz .tsh > i { position: absolute; inset: 0; background: var(--d);
+  -webkit-mask-position: 0 0; mask-position: 0 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.card.dz[data-trim] .sleeve { inset: calc(-1 * var(--slw)); border-radius: 0; box-shadow: none; background: var(--sleeve, var(--ink-1));
+  -webkit-mask: var(--trim) 0 0 / 100% 100% no-repeat, var(--trim) var(--slw) var(--slw) / calc(100% - 2 * var(--slw)) calc(100% - 2 * var(--slw)) no-repeat; -webkit-mask-composite: xor;
+  mask: var(--trim) 0 0 / 100% 100% no-repeat exclude, var(--trim) var(--slw) var(--slw) / calc(100% - 2 * var(--slw)) calc(100% - 2 * var(--slw)) no-repeat; }
+.card.dz[data-trim] .sleeve::before { content: ''; position: absolute; inset: calc(var(--slw) - var(--slg)); background: var(--clay);
+  -webkit-mask: var(--trim) 0 0 / 100% 100% no-repeat, var(--trim) var(--slg) var(--slg) / calc(100% - 2 * var(--slg)) calc(100% - 2 * var(--slg)) no-repeat; -webkit-mask-composite: xor;
+  mask: var(--trim) 0 0 / 100% 100% no-repeat exclude, var(--trim) var(--slg) var(--slg) / calc(100% - 2 * var(--slg)) calc(100% - 2 * var(--slg)) no-repeat; }
+
+/* a shaped aperture's cost 4 keyline runs on the aperture's own path (design/frames/<id>-key.svg, tools/build.mjs), so on
+   Jarhead it turns down round the notch instead of crossing it and its island (border lane 3, 11-02) */
+.card.dz[data-cost="4"] .pane[data-key]::after { padding: 0; border-radius: 0;
+  -webkit-mask: var(--key) 0 0 / 100% 100% no-repeat; mask: var(--key) 0 0 / 100% 100% no-repeat; }
+
+/* the seal and the name are card.css's own (markup.js icon kl in .no; .nm): the kl signature in the collector chip
+   before the number, 0.042W from 300 px, and every title on one line in a 0.42W slot, centred on the bar's centre line
+   (NOTES.md 'Seal, 11-02' and 'Names, 11-02'). No family moves either. */
+/* ===== end of the families ===== */

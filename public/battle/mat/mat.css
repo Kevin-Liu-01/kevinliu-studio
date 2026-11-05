@@ -1,0 +1,305 @@
+/* The Mat. The gallery's clay room, continued: one wide sunk tray of the same clay, each zone a well cut to its card,
+   the centre line and the turn disc embossed, nothing printed but each half's own quiet screen (a Bayer gradient in
+   the side's ink) and the leads' worlds as halftone on the floor round their wells. Soft is the room, gloss is the
+   work: the eighteen printed cards carry the colour. Every motion is transform and opacity; every box is fixed. */
+:root {
+  --room: var(--room-clay);
+  --ink: var(--room-ink-1);
+  --ink-2: var(--room-ink-2);
+  --ink-3: var(--room-ink-3);
+  --rival: var(--room-rival, oklch(52% 0.19 30));
+  --tray: oklch(86.8% 0.017 74);
+  --well: oklch(83.6% 0.019 72);
+  --well-sink: inset 2px 4px 9px oklch(42% 0.035 70 / .34), inset -1px -2px 3px oklch(100% 0 0 / .5), inset 0 0 0 1px oklch(42% 0.035 70 / .08);
+  --screen-ink: oklch(19% 0.012 75 / 0.075);
+  --screen-rival: oklch(52% 0.19 30 / 0.08);
+  --sans: "Katagami Sans", "Katagami Sans Cards", system-ui, sans-serif;
+  --slam: cubic-bezier(.2, .9, .1, 1);
+  --gut: 16px;
+  --sd-bar: #000;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --tray: oklch(21.5% 0.01 72);
+  --well: oklch(18.5% 0.01 72);
+  --well-sink: inset 2px 4px 9px oklch(0% 0 0 / .6), inset -1px -2px 3px oklch(100% 0 0 / .05), inset 0 0 0 1px oklch(0% 0 0 / .4);
+  --screen-ink: oklch(98% 0.004 80 / 0.06);
+  --screen-rival: oklch(64% 0.17 30 / 0.1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--room); color: var(--ink); }
+body { font: 400 15px/1.35 var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.i { width: 18px; height: 18px; fill: currentColor; flex: none; display: block; }
+#app { position: fixed; inset: 0; overflow: hidden; contain: strict; }
+html[data-boot] #app { visibility: hidden; }
+
+/* ============================================================ the controls: the gallery's, raised clay, sunk when pressed */
+.key {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 44px;
+  padding: 0 14px; border: 0; border-radius: 11px; background: var(--room-clay); color: var(--ink); text-decoration: none;
+  font: 600 15px/1 var(--sans); white-space: nowrap; box-shadow: var(--room-raise-s); transition: box-shadow 160ms, transform 90ms, background-color 160ms;
+}
+@media (hover: hover) { .key:hover:not([aria-disabled="true"]) { background: var(--room-clay-hi); } }
+.key:active:not([aria-disabled="true"]) { transform: scale(.97); }
+.key:is([aria-pressed="true"], [aria-expanded="true"]) { box-shadow: var(--room-sink-s); }
+.key[aria-disabled="true"] { color: var(--ink-3); cursor: default; box-shadow: none; }
+.key.plate { background: var(--ink); color: var(--room-clay); }
+.tray { display: flex; gap: 4px; padding: 4px; border-radius: 15px; background: var(--room-clay); box-shadow: var(--room-sink-s); }
+
+/* ============================================================ the top rail */
+.rail { position: absolute; z-index: 30; left: 0; right: 0; top: 0; height: var(--mat-y, 64px); display: flex; align-items: center; justify-content: space-between; padding: 0 24px 6px; transition: opacity .2s .25s; }
+.mark { margin: 0; font: 700 20px/1 var(--sans); }
+.rail-keys { display: flex; gap: 10px; }
+.seg .key { min-width: 76px; }
+
+/* ============================================================ the board: the mat and everything on it (the camera moves it) */
+.board { position: absolute; inset: 0; z-index: 1; }
+.mat-cam { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.mat {
+  position: absolute; left: 0; top: 0; transform-origin: 50% 50%; transform-style: preserve-3d;
+  border-radius: 30px; background: var(--tray); box-shadow: var(--room-sink-l), 0 0 0 1px color-mix(in oklab, var(--room-clay) 60%, oklch(42% 0.035 70 / .5));
+}
+.mat[data-phone="true"] { border-radius: 20px; }
+.mat-screen { position: absolute; left: 0; top: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
+.mat-screen > i { position: absolute; left: 0; right: 0; top: 0; background: var(--screen-ink); -webkit-mask: var(--bayer) 0 0 / 12px 12px repeat; mask: var(--bayer) 0 0 / 12px 12px repeat; }
+.mat-screen > i[data-side="rival"] { background: var(--screen-rival); }
+/* the stitched edge of a good playmat: one dashed rule, sunk 10 px in */
+.mat-stitch { position: absolute; inset: 10px; border-radius: 22px; border: 1.5px dashed color-mix(in oklab, var(--ink) 24%, transparent); box-shadow: 0 1px 0 oklch(100% 0 0 / .45); pointer-events: none; }
+/* one lamp over the table: a soft pool of light on the mat, warmer at the centre */
+.mat-light { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(ellipse 60% 70% at 50% 46%, oklch(100% 0.02 85 / .22), transparent 70%), radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, oklch(30% 0.03 60 / .08)); }
+:root[data-theme="dark"] .mat-light { background: radial-gradient(ellipse 60% 70% at 50% 46%, oklch(70% 0.03 80 / .08), transparent 70%); }
+/* what the battle leaves on the mat, and what draws on it */
+.mat-decals { position: absolute; inset: 0; pointer-events: none; }
+.mat-decal { position: absolute; left: 0; top: 0; border-radius: 50%; }
+.mat-decal-scorch { background: radial-gradient(closest-side, oklch(28% 0.03 55 / .55), oklch(35% 0.04 60 / .25) 60%, transparent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' width='9' height='9' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='2' y='0' width='1' height='1'/%3E%3Crect x='1' y='1' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='0' y='2' width='1' height='1'/%3E%3Crect x='2' y='2' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='3' y='3' width='1' height='1'/%3E%3Crect x='1' y='0' width='1' height='1'/%3E%3Crect x='3' y='2' width='1' height='1'/%3E%3C/svg%3E") 0 0 / 9px 9px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' width='9' height='9' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='2' y='0' width='1' height='1'/%3E%3Crect x='1' y='1' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='0' y='2' width='1' height='1'/%3E%3Crect x='2' y='2' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='3' y='3' width='1' height='1'/%3E%3Crect x='1' y='0' width='1' height='1'/%3E%3Crect x='3' y='2' width='1' height='1'/%3E%3C/svg%3E") 0 0 / 9px 9px; }
+.mat-fx { position: absolute; inset: 0; pointer-events: none; transform: translateZ(70px); }
+.mat-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.mat-blob { position: absolute; left: 0; top: 0; object-fit: contain; image-rendering: pixelated; transform-origin: 50% 100%; filter: drop-shadow(0 8px 8px oklch(0% 0 0 / .3)); }
+.mat[data-phone="true"] .mat-stitch { inset: 6px; border-radius: 15px; }
+.mat-line { position: absolute; left: 28px; right: 28px; top: -1px; height: 2px; border-radius: 1px; background: color-mix(in oklab, var(--tray) 88%, #000);
+  box-shadow: 0 1px 0 oklch(100% 0 0 / .7), 0 -1px 0 oklch(42% 0.035 70 / .18); pointer-events: none; }
+:root[data-theme="dark"] .mat-line { box-shadow: 0 1px 0 oklch(100% 0 0 / .08), 0 -1px 0 oklch(0% 0 0 / .5); }
+.mat-mark { position: absolute; left: 0; top: 0; display: grid; place-items: center; padding: 10px; border-radius: 50%; background: var(--tray); pointer-events: none; }
+.mat-mark .i { width: 100%; height: 100%; color: var(--tray); filter: drop-shadow(1px 1.5px 0 oklch(100% 0 0 / .8)) drop-shadow(-.8px -1px 0 oklch(42% 0.035 70 / .35)); }
+:root[data-theme="dark"] .mat-mark .i { filter: drop-shadow(1px 1.5px 0 oklch(100% 0 0 / .07)) drop-shadow(-.8px -1px 0 oklch(0% 0 0 / .6)); }
+.mat-disc { position: absolute; left: 0; top: 0; display: grid; place-items: center; border-radius: 50%; background: var(--room-clay); box-shadow: var(--room-raise-m); pointer-events: none; }
+.mat-disc b { font: 800 22px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink); }
+.mat[data-phone="true"] .mat-disc { border-radius: 10px; box-shadow: var(--room-raise-s); }
+.mat[data-phone="true"] .mat-disc b { font-size: 11px; }
+.mat[data-phone="true"] .mat-disc { border-radius: 8px; }
+
+/* the leads' worlds, a halftone print on the floor round each active well: the card's room through the 4x4 Bayer */
+.mat-tint {
+  position: absolute; left: 0; top: 0; background: center / cover no-repeat; opacity: .62; pointer-events: none; transform-origin: 50% 50%;
+  -webkit-mask-image: radial-gradient(closest-side, #000 52%, transparent 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='2' y='0' width='1' height='1'/%3E%3Crect x='1' y='1' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='0' y='2' width='1' height='1'/%3E%3Crect x='2' y='2' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='3' y='3' width='1' height='1'/%3E%3C/svg%3E");
+  mask-image: radial-gradient(closest-side, #000 52%, transparent 100%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1'/%3E%3Crect x='2' y='0' width='1' height='1'/%3E%3Crect x='1' y='1' width='1' height='1'/%3E%3Crect x='3' y='1' width='1' height='1'/%3E%3Crect x='0' y='2' width='1' height='1'/%3E%3Crect x='2' y='2' width='1' height='1'/%3E%3Crect x='1' y='3' width='1' height='1'/%3E%3Crect x='3' y='3' width='1' height='1'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%, 12px 12px; mask-size: 100% 100%, 12px 12px; -webkit-mask-repeat: no-repeat, repeat; mask-repeat: no-repeat, repeat;
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+.mat-tint[data-pour] { z-index: 6; }
+
+/* the wells: each cut to its card (a 63:88 card's corner is 4.8% of its width), sunk 6 px round it */
+.well { position: absolute; left: 0; top: 0; border: 0; padding: 0; margin: 0; background: none; border-radius: 4.8% / 3.44%; display: block; }
+.well::before { content: ""; position: absolute; inset: -6px; border-radius: inherit; background: var(--well); box-shadow: var(--well-sink); }
+.well-active::before { inset: -8px; }
+button.well { cursor: pointer; }
+button.well[disabled] { cursor: default; }
+button.well:focus-visible { outline: 2px solid var(--ink); outline-offset: 9px; }
+.well-ko::after { content: ""; position: absolute; inset: 22% 26%; border-radius: 50%; border: 2px solid color-mix(in oklab, var(--ink) 10%, transparent); }
+.ko-count { position: absolute; left: 0; top: 0; font: 800 34px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink-2); pointer-events: none;
+  text-shadow: 1px 1px 0 oklch(100% 0 0 / .7); }
+:root[data-theme="dark"] .ko-count { text-shadow: 1px 1px 0 oklch(0% 0 0 / .6); }
+.mat[data-phone="true"] .ko-count { font-size: 22px; }
+
+/* the result's row lies on a clear band: every well and tray under it fills in with the mat */
+:is(.well, .kit-tray)[data-under="true"] { opacity: 0; pointer-events: none; transition: opacity .3s; }
+/* a scene staged on the mat: past the band's host the window dims as its bars dim the mat */
+.mat-dim { position: absolute; z-index: 2; left: 0; top: 0; width: 100%; height: 0; background: var(--band-dim); opacity: 0; pointer-events: none; }
+
+/* the Kit: a small sunk tray at each side's end, nine chips, lit while one is left */
+.kit-tray { position: absolute; left: 0; top: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 12px; border: 0; margin: 0; border-radius: 16px; background: var(--well); box-shadow: var(--well-sink); }
+button.kit-tray { cursor: pointer; }
+.kit-chip { border-radius: 50%; background: var(--room-clay); box-shadow: var(--room-raise-s); transition: opacity .3s; }
+.kit-chip[data-left="0"] { background: none; box-shadow: var(--room-sink-s); }
+.kit-tray[data-side="rival"] .kit-chip:not([data-left="0"]) { background: color-mix(in oklab, var(--room-clay) 84%, var(--rival)); }
+
+/* ============================================================ the cards on the mat: the HUD is on them */
+.mat-cards { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+.slot { position: absolute; left: 0; top: 0; transform-origin: 50% 100%; will-change: transform; transform-style: preserve-3d; pointer-events: none; }
+.slot-lift { position: absolute; inset: 0; transform-origin: 50% 100%; transform-style: preserve-3d; transition: opacity .18s; }
+.slot-shake, .slot-flip { position: absolute; inset: 0; transform-origin: 50% 55%; }
+.slot .bc-card { left: 0; top: 0; width: 100%; height: 100%; }
+.slot .bc-card .card { pointer-events: none; }
+.slot[data-away="true"] .slot-lift { opacity: 0; transition-duration: 0s; }
+.slot[data-dim="true"] { opacity: .38; transition: opacity .5s; }
+.slot:is([data-face="down"], [data-zone="ko"]) :is(.tab, .chips, .tokens) { opacity: 0; }
+.slot[data-zone="finale"] :is(.chips, .tokens) { opacity: 0; transition: opacity .3s; }
+.slot[data-zone="finale"][data-out="true"] .tab { opacity: 0; }
+.slot[data-zone="finale"][data-out="true"] .slot-flip { opacity: .5; filter: saturate(.2); transition: opacity .4s, filter .4s; }
+.mat[data-finale] .leader-quote { max-width: 190px; }
+.mat[data-finale] .leader[data-side="player"] .leader-quote { right: auto; left: 0; }
+.mat[data-finale] .leader[data-side="rival"] .leader-quote { left: auto; right: 0; }
+
+/* the HP tab: die-cut on the card's top edge in the card's colour; its figures are the card's HP */
+.tab {
+  position: absolute; left: 7%; top: 0; translate: 0 -62%; display: flex; align-items: baseline; gap: .12em; height: calc(var(--ah) * .15);
+  padding: 0 .42em 0 .38em; color: var(--tab-ink); background: var(--tab); font: 800 calc(var(--ah) * .11)/1 var(--sans); font-variant-numeric: tabular-nums;
+  border-radius: .28em .28em .12em .12em; box-shadow: 0 1px 0 oklch(0% 0 0 / .18), inset 0 1px 0 oklch(100% 0 0 / .35); align-items: center; white-space: nowrap;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, calc(100% - .32em) 100%, 0 100%);
+}
+.tab-hp { display: inline-block; min-width: 3ch; text-align: right; }
+.tab-max { font-size: .44em; font-weight: 700; opacity: .72; }
+.tab[data-low="true"] { background: repeating-linear-gradient(-45deg, var(--tab) 0 4px, color-mix(in oklab, var(--tab) 55%, #000) 4px 6px); }
+.chips { position: absolute; left: 7%; top: 9%; display: flex; flex-wrap: wrap; gap: 4px; max-width: 86%; pointer-events: none; }
+.chips i { display: inline-flex; align-items: center; gap: 3px; height: calc(var(--ah) * .075); padding: 0 .55em; border-radius: 999px; background: oklch(19% 0.012 75 / .86); color: #fbf9f4; font: 700 calc(var(--ah) * .046)/1 var(--sans); font-style: normal; white-space: nowrap; }
+.chips i[data-down] { background: var(--rival); }
+.chips .i { width: 1.1em; height: 1.1em; }
+/* the tokens: round, ink, white figures, laid on the art; past three they fold into one */
+.tokens { position: absolute; inset: 15% 7% 36% 7%; pointer-events: none; }
+.token {
+  position: absolute; display: grid; place-items: center; width: calc(var(--aw) * .25); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, oklch(34% 0.01 75), oklch(14% 0.01 75) 70%); color: #fbf9f4; font: 800 calc(var(--aw) * .085)/1 var(--sans); font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 2px oklch(98% 0 0 / .9), 0 3px 6px oklch(0% 0 0 / .35);
+}
+.token[data-i="0"] { right: 2%; top: 0; }
+.token[data-i="1"] { left: 8%; top: 22%; }
+.token[data-i="2"] { right: 14%; top: 50%; }
+.token[data-fold] { right: 50%; top: 18%; translate: 50% 0; width: calc(var(--aw) * .34); font-size: calc(var(--aw) * .1); }
+.slot-flash { position: absolute; inset: 0; border-radius: 4.8% / 3.44%; background: #fff; opacity: 0; pointer-events: none; }
+.slot-ring { position: absolute; inset: -5px; border-radius: 7% / 5%; border: 3px solid var(--tab); opacity: 0; pointer-events: none; }
+.slot-ring[data-kind="heal"] { border-color: oklch(98% 0 0); box-shadow: 0 0 18px var(--tab); }
+.slot-shield { position: absolute; inset: -9% -12%; border-radius: 50% / 46%; border: 3px solid var(--tab); box-shadow: inset 0 0 22px color-mix(in oklab, var(--tab) 50%, transparent); opacity: 0; pointer-events: none; }
+.slot-stamp { position: absolute; left: 50%; bottom: 17%; translate: -50% 0; padding: .32em .7em .38em; background: oklch(14% 0.01 75); color: #fbf9f4; font: 800 calc(var(--ah) * .07)/1 var(--sans); white-space: nowrap; opacity: 0; pointer-events: none; transform-origin: 50% 50%; }
+.slot-stamp[data-kind="crit"] { bottom: auto; top: 30%; background: var(--rival); font-size: calc(var(--ah) * .11); }
+.slot-stamp[data-kind="miss"] { bottom: auto; top: 34%; background: #fbf9f4; color: oklch(14% 0.01 75); box-shadow: 0 0 0 2px oklch(14% 0.01 75); }
+.slot-stamp[data-kind="support"] { background: var(--tab); color: var(--tab-ink); }
+/* a repeat played on the board alone: the move's name stamped across the attacking card */
+.slot-stamp[data-kind="move"] { background: var(--tab); color: var(--tab-ink); font-size: calc(var(--ah) * .085); }
+.item-chip { position: absolute; left: 0; top: 0; z-index: 8; padding: 8px 12px; border-radius: 999px; background: var(--ink); color: var(--room-clay); font: 700 13px/1 var(--sans); white-space: nowrap; pointer-events: none; box-shadow: 0 6px 16px oklch(0% 0 0 / .3); }
+
+/* ============================================================ the leaders: the Landing's original sheets, at their corners */
+.leader { position: absolute; left: 0; top: 0; pointer-events: none; transform-style: preserve-3d; }
+.leader-sprite { position: absolute; left: 0; top: 0; background-repeat: no-repeat; image-rendering: pixelated; }
+.leader-shade { position: absolute; left: 0; top: 0; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, oklch(30% 0.02 70 / .38), transparent); }
+.leader-plate { position: absolute; left: 50%; top: calc(100% + 2px); translate: -50% 0; margin: 0; display: grid; justify-items: center; gap: 3px; white-space: nowrap; }
+.leader-plate b { font: 800 14px/1 var(--sans); color: var(--ink); }
+.leader-plate span { font: 600 11px/1 var(--sans); color: var(--ink-2); }
+.leader[data-side="rival"] .leader-plate b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--rival); margin-right: 6px; vertical-align: 1px; }
+.leader-quote {
+  position: absolute; z-index: 7; transform: translateZ(90px); margin: 0; width: max-content; max-width: 230px; padding: 9px 14px 10px; background: var(--ink); color: var(--room-clay);
+  font: 600 14px/1.25 var(--sans); text-wrap: balance; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+}
+.leader[data-side="player"] .leader-quote { right: 40%; bottom: calc(100% - 4px); }
+.leader[data-side="rival"] .leader-quote { left: 30%; top: calc(100% + 44px); }
+.leader-quote b { display: none; }
+.mat[data-phone="true"] .leader-quote { display: none; }
+.mat[data-phone="true"] .leader-plate b { font-size: 11px; }
+.mat[data-phone="true"] .leader-plate span { display: none; }
+
+/* ============================================================ the stage over the board */
+.stage { position: absolute; inset: 0; z-index: 25; pointer-events: none; container-type: size; }
+.sd-scene { --sd-bayer-cell: 6px; }
+#app[data-scene] .rail, #app[data-scene] .console { opacity: 0; transition: opacity .12s 0s; pointer-events: none; }
+#app[data-busy="false"]:not([data-scene]) :is(.rail, .console) { transition-delay: 0s; }
+#app[data-scene] .result { opacity: 0; }
+#app[data-scene] .leader-quote { opacity: 0; }
+
+/* ============================================================ the console: four move keys with their numbers and one line of prose */
+.console {
+  position: absolute; z-index: 20; left: var(--console-x); top: var(--console-y); width: var(--console-w); height: var(--console-h);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; padding: 6px; border-radius: 18px; transition: opacity .2s .25s;
+}
+.say { display: none; }
+.moves { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; min-width: 0; }
+.move { display: grid; grid-template-rows: auto auto minmax(0, 1fr); align-content: start; justify-items: stretch; gap: 6px; height: 100%; padding: 11px 13px 10px; text-align: left; white-space: normal; border-radius: 13px; min-width: 0; }
+.move-head { display: flex; align-items: center; gap: 7px; min-width: 0; font: 700 15px/1.1 var(--sans); }
+.move-head .i { color: var(--d); }
+.move-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.move-ring { margin-left: auto; flex: none; width: 3.1em; text-align: center; font: 800 11.5px/1 var(--sans); font-variant-numeric: tabular-nums; padding: 4px 0; border-radius: 6px; }
+.move[data-ring="up"] .move-ring { background: var(--ink); color: var(--room-clay); }
+.move[data-ring="down"] .move-ring { box-shadow: inset 0 0 0 1.5px var(--ink-3); color: var(--ink-2); }
+.move-nums { font: 600 12.5px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.move-desc { font: 400 12.5px/1.32 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+.move[aria-disabled="true"] .move-head .i { color: var(--ink-3); }
+.acts { display: grid; grid-template-columns: repeat(2, minmax(84px, 1fr)); grid-auto-rows: minmax(44px, 1fr); gap: 6px; }
+.act { padding: 0 10px; }
+.panel { position: absolute; left: 6px; right: 6px; bottom: calc(100% + 10px); display: grid; gap: 8px; padding: 10px; border-radius: 16px; background: var(--room-clay); box-shadow: var(--room-raise-l); }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.panel-head b { font: 700 16px/1 var(--sans); padding-left: 4px; }
+.panel-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.panel .key { flex-direction: column; align-items: flex-start; gap: 4px; padding: 9px 14px; }
+.panel .key span { font: 500 12px/1 var(--sans); color: var(--ink-2); }
+.panel .key.item { flex-direction: row; align-items: center; }
+.panel .key.item em { font: 700 12px/1 var(--sans); font-style: normal; color: var(--ink-2); }
+
+/* ============================================================ the result rises from the console */
+.result {
+  position: absolute; z-index: 26; left: var(--console-x); width: var(--console-w); top: calc(var(--console-y) - 24px); min-height: calc(var(--console-h) + 24px);
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 22px; padding: 16px 22px; border-radius: 20px; background: var(--room-clay); box-shadow: var(--room-raise-l);
+  transition: opacity .2s;
+}
+.result h1 { margin: 0; font: 800 46px/1 var(--sans); }
+.result p { margin: 0; font: 600 14px/1.4 var(--sans); color: var(--ink-2); white-space: pre-wrap; }
+.result-keys { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.error { position: absolute; z-index: 40; left: 50%; top: 70px; translate: -50% 0; margin: 0; padding: 0 12px; font: 600 13px/1.4 var(--sans); color: var(--rival); }
+.error:empty { display: none; }
+dialog#log { width: min(560px, calc(100vw - 32px)); max-height: min(70vh, 640px); padding: 0; border: 0; border-radius: 18px; background: var(--room-clay); color: var(--ink); box-shadow: var(--room-raise-l); }
+dialog#log::backdrop { background: oklch(0% 0 0 / .35); }
+.log-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 10px 18px; background: var(--room-clay); }
+.log-head b { font: 700 16px/1 var(--sans); }
+dialog#log ol { list-style: none; margin: 0; padding: 0 18px 18px; display: grid; gap: 6px; font: 500 14px/1.35 var(--sans); }
+dialog#log .log-turn { margin-top: 8px; font-weight: 700; color: var(--ink-2); }
+dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--ink-2); }
+
+@media (max-width: 1199px) { .move-nums { font-size: 11.5px; } .move { padding: 10px 11px 9px; } }
+/* ============================================================ phones: the rival above, you below, the console a 2x2 */
+@media (max-width: 719px) {
+  .rail { padding: 0 8px 4px; }
+  .mark { display: none; }
+  .rail-keys { width: 100%; justify-content: space-between; gap: 6px; }
+  .seg .key { min-width: 64px; }
+  #replay { display: none; }
+  .key { padding: 0 12px; font-size: 14px; }
+  .console { grid-template-columns: 1fr; grid-template-rows: 38px minmax(0, 1fr) 48px; padding: 6px; }
+  .say { display: block; margin: 0; padding: 4px 6px 0; font: 600 13px/1.3 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .moves { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(44px, 1fr)); }
+  .move { grid-template-rows: auto auto; gap: 5px; padding: 8px 10px; }
+  .move-head { font-size: 14px; }
+  .move-desc { display: none; }
+  .move-nums { font-size: 11.5px; }
+  .acts { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 44px; }
+  .result { grid-template-columns: 1fr; gap: 10px; padding: 14px; top: auto; bottom: 8px; }
+  .slot:is([data-zone="bench"], [data-zone="ko"]) .tab { scale: 1.4; transform-origin: 0 100%; }
+  .result h1 { font-size: 34px; }
+  .result-keys { justify-content: stretch; }
+  .result-keys .key { flex: 1 1 40%; }
+  /* while a turn plays the mat takes the console's room: only the row of acts stays (Auto among them), on its own tray */
+  .console { transition: opacity .2s .25s, background-color .2s, box-shadow .2s; }
+  .acts { position: relative; }
+  .acts::before { content: ""; position: absolute; inset: -4px; z-index: -1; border-radius: 15px; background: var(--room-clay); box-shadow: var(--room-sink-s); opacity: 0; transition: opacity .2s; }
+  #app[data-turn="true"] .console { background-color: transparent; box-shadow: none; pointer-events: none; }
+  #app[data-turn="true"] :is(.say, .moves) { visibility: hidden; opacity: 0; }
+  #app[data-turn="true"] .acts { pointer-events: auto; }
+  #app[data-turn="true"] .acts::before { opacity: 1; }
+  #app[data-turn="true"][data-scene] .console { opacity: 1; }
+  #app[data-turn="true"][data-scene] .acts { opacity: .36; pointer-events: none; }
+  /* a phone's mat lies flat: no 3D context to keep */
+  .mat[data-phone="true"], .mat[data-phone="true"] :is(.mat-cards, .slot, .slot-lift, .leader) { transform-style: flat; }
+}
+
+/* ============================================================ reduced motion: every step a still */
+@media (prefers-reduced-motion: reduce) {
+  .rail, .console, .key, .slot-lift, .slot[data-dim], .kit-chip, .result, #app[data-scene] .rail, #app[data-scene] .console, .slot[data-zone="finale"] :is(.chips, .tokens) { transition: none !important; }
+}
+
+/* the deal's cards, printed ahead one a frame in an unseen box at their slot's size (board.js prepare) */
+.mat-print { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; contain: strict; }
+.mat-print .bc-card { left: 0; top: 0; width: 100%; height: 100%; }

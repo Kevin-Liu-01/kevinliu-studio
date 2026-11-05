@@ -1,0 +1,19 @@
+{
+ "wide": "broadcast/media/sandbox-arena/wide.webp",
+ "hero": "broadcast/media/sandbox-arena/wide.webp",
+ "portrait": "broadcast/media/sandbox-arena/portrait.webp",
+ "object": "broadcast/media/sandbox-arena/object.webp",
+ "objectSize": [
+  1400,
+  821
+ ],
+ "loop": "broadcast/media/sandbox-arena/loop.mp4",
+ "poster": "broadcast/media/sandbox-arena/poster.webp",
+ "emblem": "broadcast/media/sandbox-arena/emblem.svg",
+ "groundImage": "broadcast/media/sandbox-arena/ground.webp",
+ "palette": [
+  "#0a0a0b",
+  "#ededf0",
+  "#e10600"
+ ]
+}

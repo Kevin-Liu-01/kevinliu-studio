@@ -1,0 +1,184 @@
+/* rituals.css, the rituals lane's: the deck and the pack (the packet, its crimped seal and the strip the
+   tear plays on), the room's dimmer, the world canvas, the stage the rituals fly copies across, the battle
+   entry's subjects, shades, house lights and flares, and @view-transition. Every state
+   here is still; rituals.js moves them by transform and opacity only. Loads last. */
+
+/* ---------- the deck and the pack ---------- */
+/* Radii here read the tile's --r, never `inherit`: a child that inherits a property its parent does not pass down by
+   itself is restyled whenever its parent's style changes at all, so a pack or deck turned by transform every frame
+   restyled its whole stack every frame (.work/room-ex4b/t/recalc5.mjs; the card's own parts in card.css likewise). */
+.tile > * { --r: max(3px, calc(var(--card) * 0.048)); position: relative; display: block; width: var(--card); aspect-ratio: 63 / 88; border-radius: var(--r); container-type: inline-size; box-sizing: border-box; }
+.deck { color: inherit; -webkit-tap-highlight-color: transparent; }
+.cardlike { position: absolute; inset: 0; border-radius: var(--r); }
+.cardlike .back { transform: none; }
+.pile .p2 { transform: translate(3.2px, 6.4px); box-shadow: var(--cast-rest); }
+.pile .p1 { transform: translate(1.6px, 3.2px); box-shadow: var(--cast-rest); }
+.deck .lead { box-shadow: var(--cast-rest); transition: scale 220ms var(--ease); }
+.deck:active .lead { scale: 0.97; transition-duration: 90ms; }
+.deck .turn { position: absolute; inset: 0; border-radius: var(--r); transform-style: preserve-3d; transition: transform 350ms var(--ease-move); will-change: transform; }
+.deck .turn > * { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.deck .prev {
+  position: absolute; inset: 0; border-radius: var(--r); transform: rotateY(180deg); overflow: hidden;
+  background: #0f1729 url(media/previous-site/face@2x.webp) 100% 50% / 333.34% auto no-repeat;
+  box-shadow: var(--edge-print);
+}
+@media (hover: hover) { .deck:hover .turn { transform: rotateY(180deg); } }
+.deck.is-hover .turn, .deck:focus-visible .turn { transform: rotateY(180deg); }
+.deck:focus-visible { outline-offset: 3px; }
+
+.pack { padding: 0; border: 1px solid transparent; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: pan-y; font: inherit; user-select: none; }
+.pk { position: absolute; inset: -1px; border-radius: var(--r); transform-style: preserve-3d; will-change: transform; transition: scale 220ms var(--ease); }
+.pack:active:not([aria-disabled='true']) .pk { scale: 0.97; transition-duration: 90ms; }
+.pk::before { content: ''; position: absolute; inset: 0; border-radius: var(--r); box-shadow: var(--cast-rest); }
+.pk::after { content: ''; position: absolute; inset: 0; border-radius: var(--r); box-shadow: var(--cast-lift); opacity: 0; transition: opacity 150ms var(--ease); }
+.pack.lift .pk::after, .pack.is-hover .pk::after { opacity: 1; }
+.half { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; will-change: transform; box-shadow: var(--edge-print); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.half.l { left: 0; border-radius: var(--r) 0 0 var(--r); transform-origin: 0 50%; }
+.half.r { right: 0; border-radius: 0 var(--r) var(--r) 0; transform-origin: 100% 50%; }
+.fan { position: absolute; top: 0; bottom: 0; width: 200%; }
+.half.l .fan { left: 0; } .half.r .fan { left: -100%; }
+.fan i { position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; }
+/* the seal: the sheet's own clay, heat-pressed into ridges lit from the top left (one light). The top
+   crimp is the tear strip; under it waits the packet's dark mouth. The foot crimp never moves. */
+.pk { --crimp: repeating-linear-gradient(90deg, oklch(from var(--clay) calc(l + 0.06) c h) 0, var(--clay) 0.7cqw, oklch(from var(--clay) calc(l - 0.13) c h) 2cqw, oklch(from var(--clay) calc(l + 0.06) c h) 2.4cqw); }
+.half::before { content: ''; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 9cqw; background: linear-gradient(oklch(16% 0.012 70), oklch(16% 0.012 70 / 0.55) 55%, oklch(16% 0.012 70 / 0)); }
+.half::after { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 6cqw; background: var(--crimp); box-shadow: inset 0 1px 0 oklch(42% 0.035 70 / 0.22); }
+.strip { position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 9cqw; display: flex; pointer-events: none; }
+.strip i { position: relative; flex: 1 1 0; background: var(--crimp); transform-origin: 100% 100%; }
+/* the strip's links take their own layers only while a packet tears on the stage (the tile and the spare never tear) */
+.stage.on .ghost .strip i { will-change: transform; }
+.strip i:first-child { border-top-left-radius: var(--r); }
+.strip i:last-child { border-top-right-radius: var(--r); }
+/* the perforation the tear follows */
+.strip i::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1.6cqw;
+  background: radial-gradient(circle, oklch(16% 0.012 70 / 0.6) 0.36cqw, transparent 0.46cqw) 0.6cqw 50% / 2.4cqw 100% repeat-x;
+}
+/* light catching the fresh edge where the strip parts */
+.strip .sheen {
+  position: absolute; top: -20%; bottom: -20%; left: 0; width: 16cqw; opacity: 0; pointer-events: none; will-change: transform, opacity;
+  background: radial-gradient(closest-side, oklch(100% 0 0 / 0.9), oklch(100% 0 0 / 0.35) 55%, oklch(100% 0 0 / 0));
+  mix-blend-mode: soft-light;
+}
+.pk-foot {
+  position: absolute; z-index: 2; left: 5cqw; right: 5cqw; bottom: 7.5%; height: var(--ctl); border-radius: var(--r-ctl);
+  background: var(--clay); color: var(--ink-1); display: grid; place-items: center; box-shadow: var(--raise-s);
+  font: 600 var(--lab)/20px var(--sans);
+}
+.pack .lab.on { opacity: 1; }
+.pack[aria-disabled='true'] { cursor: default; }
+.pack[aria-disabled='true'] .lab.on { opacity: 0; }
+.pack[aria-disabled='true'] .lab.off { opacity: 1; color: var(--ink-3); }
+.pack[aria-disabled='true'] .pk-foot { box-shadow: none; }
+.pack[aria-disabled='true'] .pk::before { opacity: 0.4; }
+.pack[aria-disabled='true'] .half { filter: saturate(0.25); opacity: 0.6; }
+.pack:focus-visible, .pack.is-focus { outline: 2px solid var(--ink-1); outline-offset: 3px; }
+.pack.open .pk { opacity: 0; }
+
+/* ---------- worlds, the stage and the reveal ---------- */
+/* the room's dimmer sits under the worlds and over the gallery: the lights go down for the pack's hit */
+.dimmer { position: fixed; inset: 0; z-index: 9; background: oklch(14% 0.012 70); opacity: 0; pointer-events: none; will-change: opacity; }
+#world { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 10; pointer-events: none; display: block; }
+.stage { position: fixed; inset: 0; z-index: 45; pointer-events: none; }
+.stage .card, .flyer { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform, opacity; pointer-events: none; }
+/* A pack's copies hold the 3D group a turn needs from the moment they wait on the stage until they land: the body on
+   its own layer, each side hiding its far side, the sleeve a px off the print (card.css .turned, held). So the reveal
+   never adds or removes a layer as a card turns, rocks and lies flat (each change laid out every layer on the page
+   again: engineer ex.3), and a card lying flat at its stand shows the raster it took there while it waited. */
+.stage > .card:not(.flyer) .body { transform-style: preserve-3d; will-change: transform; }
+.stage > .card:not(.flyer) .body > :is(.face, .back) { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.stage > .card:not(.flyer) .body > .sleeve { transform: translateZ(1px); }
+/* A wall card's face is laid out at twice its size and drawn at half (craft ex.5), so a tilt can print it at device
+   scale 2. Rotated in 3D, a layer drawn at the screen's own scale is resampled once more by the compositor, and every
+   window went soft (sharpness tilted over rest 0.16 to 0.60 at 1x). Zoomed 2 (every length, cqw and px alike, doubles)
+   and scaled 0.5, the face at rest paints the same picture into the page (text, rules and pictures land within a px,
+   .work/room-ex5/tilt/wall); turned, its layer and the subject's hold will-change, which Chrome rasters at no less than
+   the native scale, so each is drawn at 2x and halved as it turns. It is laid out so from the first paint because the
+   zoom is inherited: switched on as a turn starts, it restyled and laid out the whole face again (about 46 ms with the CPU
+   slowed 6x, a 92 to 125 ms frame); held, a turn only adds will-change to two boxes. The face takes its size from the
+   card's own width (inset would size it in the unzoomed body) and stands as one group over the sleeve, as its parts did.
+   Turned, every subject, the ground's canvas and the front effects' canvas go into the 2x raster whole (nearest) and are
+   halved, so no picture px is softened before the turn resamples it and pixel art never drops a block (a smooth 2x left
+   Elo at 0.70 and Agent Pets at 0.40). Measured (.work/room-ex5/t/tilt.mjs, sharp.py, the craft's crops): tilted over
+   rest Turboslide 1.38, Agent Pets 0.67, Elo 1.21, Loop 1.26 (were 0.43, 0.16, 0.59, 0.48), saturation within 2.7%.
+   The lens, the dock and the stage keep their own rasters. */
+.wall .card .body > .face { zoom: 2; inset: auto; left: 0; top: 0; width: 100cqw; height: calc(100cqw * 88 / 63); transform: scale(0.5); transform-origin: 0 0; z-index: 1; }
+.wall .card.turned .body > .face { will-change: transform; }
+.wall .card.turned .body .pop.art { will-change: transform; }
+.wall .card.turned .body .pop img, .wall .card.turned .en > canvas.ground, .wall .card.turned .fx > canvas { image-rendering: pixelated; }
+/* and each copy's subject is drawn through an effect of its own (an opacity a ten-thousandth under 1: under half a level
+   on any pixel), so the browser filters its picture the same way in every raster of the card, in the reveal's frames, at
+   the climax and after any restyle round it; drawn straight into the card's raster, a later restyle rastered it again
+   through another path, which moved its one pixel edges by up to 40 levels (E6b, room ex.4) */
+.stage > .card:not(.flyer) .pop img { opacity: 0.9999; }
+/* a copy waiting for the next pack keeps its subject and its glow out of raster until the reveal (rituals.js prepare) */
+.stage > .card.waiting :is(.pop, .glw) { visibility: hidden; }
+.stage.on { pointer-events: auto; }
+/* the packet a tear plays on: a copy of the tile, the same box to the pixel, over the cards inside it */
+.stage .ghost { position: absolute; left: 0; top: 0; z-index: 30; box-sizing: border-box; aspect-ratio: 63 / 88; container-type: inline-size; border-radius: var(--r); will-change: transform, opacity; }
+.ghost .lab.on { opacity: 1; }
+/* the two leads' names share one row above the dock, yours left and theirs right; on a phone they stack, yours
+   above, so neither name ever sets on more than two lines or meets the other */
+.duels { position: absolute; z-index: 4; left: 24px; right: 24px; bottom: calc(var(--dock) + 24px); display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; pointer-events: none; }
+.duel { margin: 0; font: 900 clamp(32px, 4.4vw, 64px)/1.05 var(--sans); padding: 10px 22px 12px; border-radius: 20px; opacity: 0; max-width: 42vw; text-wrap: balance; }
+.duel.b { text-align: right; }
+@media (max-width: 639px) {
+  .duels { left: 12px; right: 12px; bottom: calc(var(--dock) + 16px); flex-direction: column; align-items: flex-start; gap: 8px; }
+  .duel { font-size: clamp(28px, 8vw, 48px); max-width: calc(100% - 64px); padding: 8px 16px 10px; border-radius: 16px; }
+  .duel.b { align-self: flex-end; }
+}
+/* held upright, the teams stack (rituals.js stands): the rival's name tops its half and yours sits under your
+   team, above the dock */
+@media (max-width: 639px) and (orientation: portrait) {
+  .duels { top: 12px; flex-direction: column-reverse; justify-content: space-between; }
+}
+/* the entry: each team's three subjects stand on their lead's world over a contact shade, as the house
+   lights go down toward the arena's dark */
+.scrim { position: absolute; inset: 0; opacity: 0; pointer-events: none; will-change: opacity; background: radial-gradient(120% 80% at 50% 64%, oklch(10% 0.01 70 / 0.12), oklch(10% 0.01 70 / 0.5) 55%, oklch(10% 0.01 70 / 0.9)); }
+.subject { position: absolute; left: 0; top: 0; aspect-ratio: 63 / 88; container-type: inline-size; transform-origin: 0 0; will-change: transform, opacity; pointer-events: none; }
+.subject .art { z-index: auto; }
+/* a pop-out cut from its card keeps its place in the card's cqw (its inline left, top and width) and its picture
+   at the box's width: card.css sets both only inside .card, and outside it the copy fell back to an inline box
+   at the picture's own pixels, 1,200 px across, so six subjects heaped over each other and the names */
+.subject .pop { position: absolute; display: block; overflow: visible; }
+.subject .pop img { display: block; width: 100%; height: auto; max-width: none; user-select: none; }
+.subject .pop[data-pixel] img { image-rendering: pixelated; }
+/* a window that stands without a cutout (Turboslide's lantern) leaves its paper behind: its edges fade out
+   from the middle, so it stands on the world as a picture, never as a rectangle with paper corners */
+.subject .win {
+  -webkit-mask: var(--mask-win) 0 0 / 100% 100% no-repeat, radial-gradient(closest-side, #000 62%, transparent) 50% 46% / 100% 100% no-repeat;
+  -webkit-mask-composite: source-in;
+  mask: var(--mask-win) 0 0 / 100% 100% no-repeat, radial-gradient(closest-side, #000 62%, transparent) 50% 46% / 100% 100% no-repeat;
+  mask-composite: intersect;
+}
+.shade { position: absolute; left: 0; top: 0; border-radius: 50%; background: radial-gradient(closest-side, oklch(0% 0 0 / 0.42), oklch(0% 0 0 / 0)); opacity: 0; will-change: transform, opacity; pointer-events: none; }
+/* a dock card's flare as its name carries it into the arena */
+.flare { position: absolute; inset: 0; z-index: 6; border-radius: inherit; opacity: 0; pointer-events: none; will-change: opacity; background: radial-gradient(120% 90% at 28% 22%, oklch(100% 0 0 / 0.95), oklch(100% 0 0 / 0.35) 45%, oklch(100% 0 0 / 0) 80%); }
+
+/* ---------- the compositor takes every value a ritual writes each frame ----------
+   rituals.js writes a transform or an opacity on these elements every frame of a tilt, a lift, the deal, a pack and
+   the entry: a 3D turn, a rotation, or a value inside a turned card or on an element with no layer of its own. Written
+   straight into a style, such a value makes Chrome lay out every layer on the page again in that frame (Layerize: 13
+   to 22 ms with the CPU slowed 6x, every frame, whatever moved). Written through a running transition that steps at
+   its start, the value shows in the same frame exactly as written, and the compositor updates the element's own layer
+   instead. A quarter second outlasts the frames of a busy host (6x CPU: p95 90 ms), so each write lands while the
+   last one still runs. A flat move or scale on an element that already has its layer (will-change: the stage's
+   cards, the lens card, the entry's subjects, shades, scrim and flares, the dimmer) is updated directly by the
+   compositor already, so it stays out of this list. The press's scale keeps its own ease (card.css). */
+.card .body { transition: scale 220ms var(--ease), transform 250ms step-start; }
+.card:active .body, .card.is-active .body { transition-duration: 90ms, 250ms; }
+:is(.card .art, .card .glw, .card .fx, .rim > .spec, .card .glare, .card .band, .well .card .sleeve, .well .hold > .card,
+  .ghost :is(.half, .strip, .strip i, .pk-foot), .duel) {
+  transition: transform 250ms step-start, opacity 250ms step-start;
+}
+/* The pack's copies and a flying team card as well: each has its layer (will-change), but a move that also scales, written
+   straight into its style, still laid out every layer on the page again in each frame of a reveal (a 4x pack's trace:
+   Layerize 761 ms of 2.5 s written straight, 433 through the stepped transition, .work/room-ex4b/t/packtr.log) */
+.stage > .card, .flyer { transition: transform 250ms step-start, opacity 250ms step-start; }
+
+/* reduced motion: the deck holds its back */
+@media (prefers-reduced-motion: reduce) {
+  .deck .turn, .deck .lead, .pk { transition: none; }
+  @media (hover: hover) { .deck:hover .turn { transform: none; } }
+}
+@view-transition { navigation: auto; }
