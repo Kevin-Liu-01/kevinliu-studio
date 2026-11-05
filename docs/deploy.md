@@ -1,6 +1,16 @@
 # Deploy and the domain swap
 
-Kevin approved the first deploy and the swap on 2026-11-05. memory.md records what ran and when.
+Kevin approved the first deploy and the swap on 2026-11-05, and both ran that day:
+
+- GitHub `Kevin-Liu-01/kevinliu-studio` (private); Vercel project `kevinliu-studio` (prj_F68SqUnxzK9bpIQyMMHooFLFY2QV) in
+  kl01s-projects, deploying `main` to production.
+- Swap step 1's rollback target: `kevin-portfolio-iv0ewmkqn-kl01s-projects.vercel.app` (dpl_vwKrHwfeEe7BtdgXdmGUhcJD6HCd).
+- Moving `www.kevinliu.studio` (`POST /v1/projects/kevin-portfolio/domains/www.kevinliu.studio/move`) also moved every
+  domain that redirects to it: `kevinliu.studio`, `kevinliu.biz`, `www.kevinliu.biz`, `kevin-liu.tech` and
+  `www.kevin-liu.tech`, each still redirecting to www.
+- PortfolioMon-Showdown `main` 8822911 merges `claude/own-domain` and rewords its copy; portfoliomon.kevinliu.studio
+  now claims its own canonical, sitemap and `llms.txt`.
+- Not run: swap step 5 (Kevin's) and step 6.
 
 ## Build
 

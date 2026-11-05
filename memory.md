@@ -39,3 +39,15 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   without the employer; email `hello@kevinliu.studio` (the domain has no MX record yet); analytics stay Vercel only.
 - **Open**: Arena rail at 320px; wall cards as real links; agent-docs kit should learn Astro's routed `src/pages`;
   mail for kevinliu.studio.
+
+## 2026-11-05: first deploy and the swap (merge run, Claude Code)
+
+- **Type**: deploy
+- **Ran**: private GitHub repo `Kevin-Liu-01/kevinliu-studio`; Vercel project `kevinliu-studio` in kl01s-projects;
+  smoke test and browser check on `kevinliu-studio.vercel.app`; moved `www.kevinliu.studio` (and with it the apex,
+  kevinliu.biz and kevin-liu.tech, which redirect to www) from `kevin-portfolio`; smoke test on www passes;
+  PortfolioMon-Showdown `main` 8822911 (own-domain merge plus copy) deployed to portfoliomon.kevinliu.studio.
+- **Rollback**: docs/deploy.md, target `kevin-portfolio-iv0ewmkqn`.
+- **Open**: Kevin retires `kevin-portfolio-2-eight.vercel.app` (project `kevin-portfolio-2`, still 200 on 2026-11-05);
+  Search Console and Bing sitemap submission; mail for kevinliu.studio; battle-r4b merge; Arena rail at 320px; wall
+  cards as links; agent-docs kit and Astro `src/pages`.
