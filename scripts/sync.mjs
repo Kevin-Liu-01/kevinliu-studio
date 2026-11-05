@@ -37,7 +37,7 @@ const STAGES = {
   // r4/ex: the 26 cards. Runtime files go to public/ex (served at /ex/); build-only modules go to vendor/ex.
   cards: [
     { from: EX, to: 'public/ex', files: only('ui.css', 'card.css', 'rituals.css', 'fighters.js', 'engine.js', 'media.gen.js', 'art.js', 'motion.js', 'markup.js', 'rituals.js', 'gallery.js', 'ground.js', 'grounds/shell.js', 'grounds/recipes.js', 'grounds/programs.gen.js') },
-    { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^posters\/[\w-]+(@0\.5x)?\.(webp|avif)$/.test(f) && !/-fx/.test(f)) },
+    { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^posters\/[\w-]+(@0\.5x)?\.(webp|avif)$/.test(f)) },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^grounds\/[\w-]+\.webp$/.test(f)) },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => CARD_MEDIA.test(f) || f === 'media/prototemplate/window@2x.webp') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^(borders\/[\w-]+\/(border|over|trim)\.svg|fx\/[\w-]+\/fx\.svg|design\/(frames|lit|fxcut)\/[\w.-]+\.svg|icons\/frost(@2x)?\.webp)$/.test(f)) },
@@ -73,10 +73,67 @@ function soundFiles(list) {
 }
 
 // ---------- transforms: the only edits, applied on the way in ----------
-// Each returns the new text. They exist because the round pages were written to be served from the rounds folder.
+// Each returns the new text. A patch names the exact text it attaches to; if a round changes that text the patch
+// matches zero or two places and the sync stops, so a hook is never dropped quietly.
+function patch(file, text, pairs) {
+  for (const [find, replace] of pairs) {
+    const n = text.split(find).length - 1;
+    if (n !== 1) throw new Error(`${file}: patch anchor found ${n} times, expected once:\n  ${find.slice(0, 120)}`);
+    text = text.replace(find, () => (typeof replace === 'function' ? replace(find) : replace));
+  }
+  return text;
+}
+const after = (add) => (find) => find + add;
+const before = (add) => (find) => add + find;
+// r4/sound INTEGRATION.md section 2, the gallery's hooks, as written for the merge run. The player is reached only
+// through globalThis.Sound?. so a page whose sound failed to load behaves as before.
+const SND = "\n  const SND = () => globalThis.Sound || null;\n  const snd = (id, o) => SND()?.play(id, o) ?? null;\n  const pan = (el) => SND()?.panOf(el) ?? 0;";
+const TILT = "\n      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefined) { const v = ((e.clientX - c.tx) / Math.max(1, t - c.tt)) * 1000 / w; if (c.tdir && Math.sign(v) && Math.sign(v) !== c.tdir && Math.abs(v) > 0.6) snd('card.tilt', { key: el.dataset.id, pan: pan(el) }); if (Math.abs(v) > 0.05) c.tdir = Math.sign(v); } c.tx = e.clientX; c.tt = t; }";
+const GRAIN = "\n        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }";
+const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }\n      ";
 const TRANSFORMS = {
+  // the battle page lives at /battle and /battle/arena here, and returns to the cards at /
+  'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
+    ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
+    ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
+  ]),
   // the battle's media manifest carries the rounds' gate notes, which the page never shows; ship them empty
   'public/battle/vendor/broadcast/media.js': (t) => t.replace(/"gates":\[(?:"(?:[^"\\]|\\.)*",?)*\]/g, '"gates":[]'),
+  // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
+  'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
+  'public/ex/gallery.js': (t) => patch('gallery.js', t, [
+    ["const BATTLE = new URL($('meta[name=\"battle\"]').content, document.baseURI).href;", after(SND + "\n  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('a, button'); if (b && !b.closest('.card, #pause, #sound, [data-mode-set], #play, #pack, .addbtn, .close')) snd('ui.tap'); });")],
+    ["if (b) setMode(b.dataset.modeSet); });", "if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });"],
+    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });"],
+    ["if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return;", after(" snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);")],
+    ["aim(c, clamp((e.clientX - r.x - 6) / (r.w - 12)), clamp((e.clientY - top - 6) / (r.h - 12)));", after(TILT)],
+    ["if (!el.matches(':focus-visible') || RM()) return;", after(" snd('ui.step', { pan: pan(el) }); SND()?.load('sig:' + el.dataset.id);")],
+    ["st = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, moved: false, hold: 0 };", before("snd('ui.press', { pan: pan(c.el) }); ")],
+    ["else if (k === 'f' || k === 'F') { e.preventDefault();", after(" snd('card.flip');")],
+    ["function flipLens() {\n    const p = I.print;\n    if (!p) return;", after(" snd('card.flip');")],
+    ["S.you.push(id);\n    teamChanged();", after("\n    if (!silent) snd(S.you.length === SIZE ? 'team.complete' : 'team.add', from && !RM() ? {} : { offsetMs: 0 });")],
+    ["S.you = S.you.filter((x) => x !== id);", after(" snd('team.remove');")],
+    ["const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget';", after(" snd('team.refuse');")],
+    ["if (RM() || !Ground.available) { go(); return; }", "if (RM() || !Ground.available) { snd('ui.tap'); go(); return; }"],
+    // the lens's address is the card's own page here (/cards/<id>), not a folder under the page's <base>
+    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }"],
+    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`);"],
+    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else history.replaceState(null, '', '/' + location.search + location.hash);"],
+    ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
+  ]),
+  'public/ex/rituals.js': (t) => patch('rituals.js', t, [
+    ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
+    ["T.kind = 'deal';", before("{ const sh = SND()?.schedule(SND().dealCues()); const fin = T.finish; T.finish = () => { sh?.cancel(40); fin.call(T); }; } ")],
+    ["T.kind = 'entry';", before("SND()?.schedule(SND().entryCues()); SND()?.music(null, { fadeMs: 600 }); ")],
+    ["st.P = ghostPack();", after(" snd('pack.grab', { pan: pan(packEl) });")],
+    ["tearTo(st.P, clamp((dx * st.P.dir) / st.P.r.w), st.P.dir, dy);", after(GRAIN)],
+    ["const from = P.p, fdy = P.dy, dir = P.dir;", after(" snd('pack.reseal');")],
+    ["const p0 = P.p, dy0 = P.dy;", after(" snd('pack.rip', { delayMs: ms });")],
+    ["T.skip = true;\n      T.kind = 'pack';", before(REVEAL)],
+    ["if (I.id && !I.closing) { if (id !== I.id) step(id); return; }", after(" if (!instant) { snd('card.lift'); snd('lift', { card: id }); }")],
+    ["function step(id) {\n      while (I.jobs.length) I.jobs.shift()();", after(" snd('card.step');")],
+    ["if (!I.shown) { finish(); return; }\n      I.jobs = [];", after(" snd('card.close');")],
+  ]),
 };
 
 // ---------- the scan ----------

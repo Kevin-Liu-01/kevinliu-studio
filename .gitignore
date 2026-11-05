@@ -10,3 +10,4 @@ dist/
 /rounds/
 
 /.sync-cache/
+/.claude/

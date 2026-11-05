@@ -185,7 +185,7 @@ const logLines = [];
 const store = createStore();
 const plan = createPlan(store, { specials: q.get('specials') !== 'off', repeats: q.get('repeats') !== 'off' });
 const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
-let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') : /\/arena\//.test(location.pathname) ? 'arena' : 'mat';
+let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
 let layout = null, switching = null;
 
 // ============================================================ instrumentation the tests read, only with ?debug
@@ -657,7 +657,7 @@ function showResult() {
 }
 function leaveHref() {
   const p = match ? `#you=${match.team.join(',')}&rival=${match.rival.join(',')}&seed=${match.seed}` : '';
-  return `../../../r3/cards/index.html${p}`;
+  return `/${p}`;
 }
 function openLog() {
   const d = $('#log');

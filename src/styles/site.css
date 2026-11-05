@@ -1,0 +1,97 @@
+/* The site's own layer over the card room (public/ex/ui.css, the rounds' clay): the header's brand and links, the
+   footer, the card pages and the plain pages. The room's tokens (--clay, --ink-1..3, --raise-s, --sink-s) come from
+   the neumorphic tokens every page inlines, so a card page and the gallery stand in the same light. */
+@font-face {
+  font-family: 'Katagami Site';
+  src: url('/fonts/katagami-sans-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  /* the fallback's metrics match Inter's, which Katagami Sans is generated from */
+}
+:root { --site: 'Katagami Site', 'Katagami Sans', ui-sans-serif, system-ui, sans-serif; --measure: 64ch; }
+
+.skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
+.skip:focus-visible { top: 12px; }
+
+/* ---------- header ---------- */
+header.top.site { gap: 16px; }
+header.top .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; color: var(--ink-1); text-decoration: none; min-height: var(--ctl); }
+header.top .brand .kl { width: 28px; height: 28px; flex: none; }
+header.top .brand h1, header.top .brand .name { margin: 0; font: 700 20px/24px var(--sans); white-space: nowrap; text-box: trim-both cap alphabetic; }
+header.top .links { display: flex; gap: 4px; }
+header.top .links a {
+  display: grid; place-items: center; min-height: var(--ctl); padding: 0 12px; border-radius: var(--r-ctl);
+  font: 500 var(--lab)/20px var(--sans); color: var(--ink-2); text-decoration: none;
+}
+header.top .links a[aria-current='page'] { color: var(--ink-1); font-weight: 600; box-shadow: var(--sink-s); }
+@media (hover: hover) { header.top .links a:hover { color: var(--ink-1); } }
+header.top .swapi .on { display: none; }
+header.top #sound[aria-pressed='true'] .on { display: block; }
+header.top #sound[aria-pressed='true'] .off { display: none; }
+@media (max-width: 639px) {
+  header.top.site { gap: 6px; }
+  header.top .brand .kl { width: 24px; height: 24px; }
+  header.top .brand h1, header.top .brand .name { font-size: 17px; }
+  header.top .links a { padding: 0 8px; }
+  header.top .seg { display: none; }
+}
+@media (max-width: 379px) { header.top .brand :is(h1, .name) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }
+
+/* ---------- footer: one line of where else Kevin is ---------- */
+.foot { padding: 32px var(--g) calc(var(--dock) + 40px); }
+.foot nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; }
+.foot a { display: inline-grid; place-items: center; min-height: 44px; padding: 0 10px; font: 500 14px/20px var(--site); color: var(--ink-2); text-decoration: none; }
+@media (hover: hover) { .foot a:hover { color: var(--ink-1); } }
+html:not(:has(.dock)) .foot { padding-bottom: 40px; }
+
+/* ---------- a card's own page: the card at full size on its own colour, its sheet beside it ---------- */
+.cardpage {
+  --e: var(--hue-e, #c9c2b8); --dp: var(--hue-d, #3a332c);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; align-items: start;
+  padding: 24px var(--g) 0; max-width: 1160px; margin: 0 auto; box-sizing: border-box;
+}
+.cardpage .stand {
+  position: relative; display: grid; place-items: center; padding: clamp(28px, 6vw, 72px) clamp(16px, 4vw, 56px);
+  border-radius: 28px; background: color-mix(in oklab, var(--e) 46%, var(--clay)); isolation: isolate;
+  container-type: inline-size;
+}
+[data-theme='dark'] .cardpage .stand { background: color-mix(in oklab, var(--e) 22%, var(--clay)); }
+.cardpage .stand .card { --card: min(440px, 100cqw - 8px); width: var(--card); }
+.cardpage .info { max-width: var(--measure); font: 400 16px/1.55 var(--site); color: var(--ink-1); }
+.cardpage h1 { margin: 0 0 12px; font: 800 clamp(34px, 5vw, 52px)/1.04 var(--sans); }
+.cardpage .what { margin: 0 0 20px; font-size: 19px; line-height: 1.45; color: var(--ink-1); }
+.cardpage .go { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; }
+.cardpage .go a { text-decoration: none; padding: 0 16px; min-height: var(--ctl); display: inline-flex; align-items: center; gap: 8px; font: 600 var(--lab)/20px var(--sans); }
+.cardpage .go a .i { width: 16px; height: 16px; }
+.cardpage h2 { margin: 28px 0 10px; font: 700 15px/20px var(--sans); color: var(--ink-2); }
+.cardpage .facts, .cardpage .moves { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.cardpage .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cardpage .facts li, .cardpage .moves li, .cardpage .trait { padding: 14px 16px; border-radius: 16px; background: var(--clay); box-shadow: var(--raise-s); }
+.cardpage .facts b { display: block; font: 800 24px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
+.cardpage .facts span { color: var(--ink-2); font-size: 14px; }
+.cardpage .moves p, .cardpage .trait p { margin: 0; }
+.cardpage code { display: block; margin-top: 8px; font: 500 12px/1.45 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
+.cardpage .pin { margin-top: 20px; font-size: 14px; color: var(--ink-2); }
+.cardpage .pin a { color: inherit; }
+.cardpage .disc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; }
+.cardpage .disc span { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; min-height: 32px; border-radius: 999px; background: var(--clay); box-shadow: var(--sink-s); font: 600 13px/20px var(--sans); }
+.cardpage .disc .i { width: 16px; height: 16px; }
+.pager { display: flex; justify-content: space-between; gap: 12px; max-width: 1160px; margin: 40px auto 0; padding: 0 var(--g); box-sizing: border-box; }
+.pager a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: var(--r-ctl); background: var(--clay); box-shadow: var(--raise-s); color: var(--ink-1); text-decoration: none; font: 600 14px/20px var(--sans); }
+.pager a:active { box-shadow: var(--sink-s); }
+@media (min-width: 900px) {
+  .cardpage { grid-template-columns: minmax(360px, 520px) minmax(0, 1fr); gap: 56px; padding-top: 32px; }
+  .cardpage .stand { position: sticky; top: 24px; }
+}
+
+/* ---------- plain pages: about, the battle's notes, 404 ---------- */
+.prose { max-width: var(--measure); margin: 0 auto; padding: 40px var(--g) 0; font: 400 17px/1.6 var(--site); color: var(--ink-1); }
+.prose h1 { margin: 0 0 16px; font: 800 clamp(34px, 5vw, 48px)/1.05 var(--sans); }
+.prose h2 { margin: 36px 0 12px; font: 700 18px/24px var(--sans); }
+.prose a { color: inherit; text-underline-offset: 3px; }
+.prose ul { padding-left: 1.1em; }
+.prose li { margin: 6px 0; }
+.prose .lede { font-size: 20px; line-height: 1.45; }
+.minis { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.minis a { display: grid; gap: 8px; text-decoration: none; color: var(--ink-1); font: 600 14px/18px var(--sans); }
+.minis img { width: 100%; height: auto; aspect-ratio: 63 / 88; border-radius: 10px; box-shadow: var(--raise-s); background: var(--clay); }

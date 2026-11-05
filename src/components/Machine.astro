@@ -1,0 +1,21 @@
+---
+// The Machine view: the page's Markdown twin and the commands that fetch it, in ui.css's CRT style. The same text
+// the .md endpoint serves, so a person can see exactly what an agent reads.
+import { TWINS } from '../lib/twins';
+import { SITE } from '../lib/site';
+interface Props { path: string }
+const { path } = Astro.props;
+const md = (TWINS[path] ?? TWINS['/'])();
+const twin = path === '/' || !TWINS[path] ? '/index.md' : `${path}.md`;
+const cmds: [string, string][] = [
+  [`curl -s ${SITE}/llms.txt`, 'every page, one line each'],
+  [`curl -s ${SITE}/llms-full.txt`, 'every card in one file'],
+  [`curl -s -H "Accept: text/markdown" ${SITE}${path === '/' ? '/' : path}`, 'this page as Markdown'],
+];
+const bytes = Buffer.byteLength(md).toLocaleString('en-US');
+---
+<main class="machine" aria-label="Machine view">
+  <nav><a href="/">~/kevinliu</a><a href={twin}>{twin}</a><a href="/llms.txt">/llms.txt</a><span><button type="button" data-mode-set="human" aria-pressed="false">Human</button> / <button type="button" data-mode-set="machine" aria-pressed="false">Machine</button></span></nav>
+  <pre>{cmds.map(([c, n]) => <Fragment><span class="dim"># {n}</span>{'\n'}<span class="dim">$</span> {c}{'\n'}</Fragment>)}</pre>
+  <pre><span class="tick">HTTP 200</span> · text/markdown · {bytes} bytes{'\n'}{md}</pre>
+</main>

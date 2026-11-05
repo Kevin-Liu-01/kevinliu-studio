@@ -20,6 +20,10 @@
   const KS = ART.places(FIGHTERS);
   const params = new URLSearchParams(location.search);
   const BATTLE = new URL($('meta[name="battle"]').content, document.baseURI).href;
+  const SND = () => globalThis.Sound || null;
+  const snd = (id, o) => SND()?.play(id, o) ?? null;
+  const pan = (el) => SND()?.panOf(el) ?? 0;
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('a, button'); if (b && !b.closest('.card, #pause, #sound, [data-mode-set], #play, #pack, .addbtn, .close')) snd('ui.tap'); });
   // The cards that battle holds, with its own costs and budget (tools/agents.mjs reads its roster at build). A pack
   // and the rival's deal draw only those, and a team holding a card it does not hold yet keeps Play held, so Play
   // never opens a battle with other teams than the dock's. Without the tag every card plays.
@@ -79,7 +83,7 @@
     $$('[data-mode-set]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modeSet === mode)));
     $$('.seg').forEach((s) => s.style.setProperty('--i', mode === 'machine' ? 1 : 0));
   }
-  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-mode-set]'); if (b) setMode(b.dataset.modeSet); });
+  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-mode-set]'); if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });
   setMode(root.dataset.mode || 'human');
   const pauseBtn = $('#pause');
   function setPaused(on) {
@@ -88,7 +92,7 @@
     Ground.paused = p;
     try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}
   }
-  pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));
+  pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });
   setPaused('paused' in root.dataset);
 
   // ---------- the rituals ----------
@@ -239,7 +243,7 @@
     // the pocket's box is held while the hand stays (shifted by any scroll since), so no pointermove forces
     // a layout
     el.addEventListener('pointerenter', (e) => {
-      if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return;
+      if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return; snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);
       c.sy = sy;
       c.box = measuredAt === innerWidth && c.home ? { x: c.home.x, y: c.home.y - c.sy, w: c.home.w, h: c.home.h } : rectOf(c.pocket);
       el.classList.add('lift'); c.pocket.classList.add('up');
@@ -250,6 +254,7 @@
       if (!c.box) { c.box = rectOf(c.pocket); c.sy = sy; }
       const r = c.box, top = r.y - (sy - c.sy);
       aim(c, clamp((e.clientX - r.x - 6) / (r.w - 12)), clamp((e.clientY - top - 6) / (r.h - 12)));
+      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefined) { const v = ((e.clientX - c.tx) / Math.max(1, t - c.tt)) * 1000 / w; if (c.tdir && Math.sign(v) && Math.sign(v) !== c.tdir && Math.abs(v) > 0.6) snd('card.tilt', { key: el.dataset.id, pan: pan(el) }); if (Math.abs(v) > 0.05) c.tdir = Math.sign(v); } c.tx = e.clientX; c.tt = t; }
       wake(c);
     });
     el.addEventListener('pointerleave', () => {
@@ -259,7 +264,7 @@
       rest(c);
     });
     el.addEventListener('focus', () => {
-      if (!el.matches(':focus-visible') || RM()) return;
+      if (!el.matches(':focus-visible') || RM()) return; snd('ui.step', { pan: pan(el) }); SND()?.load('sig:' + el.dataset.id);
       el.classList.add('lift');
       c.sweep = 0; wake(c);
     });
@@ -297,7 +302,7 @@
     let st = null;
     c.el.addEventListener('pointerdown', (e) => {
       if (e.button !== 0 || G.ritual) return;
-      st = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, moved: false, hold: 0 };
+      snd('ui.press', { pan: pan(c.el) }); st = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, moved: false, hold: 0 };
       if (e.pointerType !== 'mouse') st.hold = setTimeout(() => { if (st && !st.moved) startDrag(e); }, 300);
     });
     function startDrag(e) {
@@ -363,7 +368,7 @@
     if (/^Arrow/.test(k)) { e.preventDefault(); walk(c.el, k); }
     else if (k === 'a' || k === 'A') { e.preventDefault(); toggle(c.id, { from: rectOf(c.body) }); }
     else if (k === 'Enter' || k === ' ') { e.preventDefault(); openInspect(c.id); }
-    else if (k === 'f' || k === 'F') { e.preventDefault(); c.to.flip = c.to.flip ? 0 : 180; if (RM()) c.flip.x = c.to.flip; wake(c); }
+    else if (k === 'f' || k === 'F') { e.preventDefault(); snd('card.flip'); c.to.flip = c.to.flip ? 0 : 180; if (RM()) c.flip.x = c.to.flip; wake(c); }
   }
   for (const t of tiles) if (!t.classList.contains('card')) t.addEventListener('keydown', (e) => { if (/^Arrow/.test(e.key)) { e.preventDefault(); walk(t, e.key); } });
 
@@ -375,18 +380,19 @@
     const slot = S.you.length;
     S.you.push(id);
     teamChanged();
+    if (!silent) snd(S.you.length === SIZE ? 'team.complete' : 'team.add', from && !RM() ? {} : { offsetMs: 0 });
     if (from && !RM()) R.fly(id, from, wellOf('you', slot));
     if (!silent) say(`${titleOf(id)} joined your team, ${spent()} of ${BUDGET} inks`);
     if (S.you.length === SIZE) formRival();
     return true;
   }
   function removeCard(id) {
-    S.you = S.you.filter((x) => x !== id);
+    S.you = S.you.filter((x) => x !== id); snd('team.remove');
     teamChanged();
     say(`${titleOf(id)} left your team, ${spent()} of ${BUDGET} inks`);
   }
   function refuse(id) {
-    const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget';
+    const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget'; snd('team.refuse');
     say(`${titleOf(id)}: ${why}`);
     const c = cards[id];
     if (c && !RM()) { c.push.v = 520; wake(c); }
@@ -541,7 +547,7 @@
     if (!url || leaving) return;
     if (globalThis.__holdNavigation) return; // the judges' frame-time probe stays on the page
     leaving = true;
-    history.replaceState(history.state, '', location.pathname.replace(/cards\/[^/]+\/$/, '') + location.search + `#you=${S.you.join(',')}&rival=${S.rival.join(',')}&seed=${S.seed}`);
+    history.replaceState(history.state, '', location.pathname.replace(/\/cards\/[^/]+$/, '/') + location.search + `#you=${S.you.join(',')}&rival=${S.rival.join(',')}&seed=${S.seed}`);
     location.assign(url);
   }
   addEventListener('pageshow', () => { leaving = false; });
@@ -557,7 +563,7 @@
       if (S.you.length === SIZE && S.rival.length === SIZE && out.length) say(`${and(out.map(titleOf))} ${out.length > 1 ? 'are' : 'is'} not in the battle yet`);
       return;
     }
-    if (RM() || !Ground.available) { go(); return; }
+    if (RM() || !Ground.available) { snd('ui.tap'); go(); return; }
     R.entry(go);
   }
   $('#play').addEventListener('click', play);
@@ -736,7 +742,7 @@
   }
   function flipLens() {
     const p = I.print;
-    if (!p) return;
+    if (!p) return; snd('card.flip');
     backLive();
     p.to.flip = p.to.flip ? 0 : 180;
     ins.dataset.side = p.to.flip ? 'back' : 'front';
@@ -813,19 +819,19 @@
     lensTop() { lensMoved = top0(ins, lensMoved); },
     inert: setInert,
     opened(id, push) {
-      if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }
+      if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }
       const keys = viaKeys;
       focusSoon(() => { if (I.id === id) (keys ? $('#lifted') : ins).focus({ preventScroll: true }); });
     },
     stepped(id) {
-      history.replaceState({ card: id }, '', `cards/${id}/`);
+      history.replaceState({ card: id }, '', `/cards/${id}`);
       const keys = viaKeys;
       focusSoon(() => { if (I.id === id && !ins.contains(document.activeElement)) (keys ? $('#lifted') : ins).focus({ preventScroll: true }); });
     },
     leaving(fromPop) {
       if (!fromPop) {
         if (I.pushed && history.state && history.state.card) history.back();
-        else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);
+        else history.replaceState(null, '', '/' + location.search + location.hash);
       }
       I.pushed = false;
     },

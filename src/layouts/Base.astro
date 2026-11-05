@@ -1,0 +1,64 @@
+---
+// The one page frame. A room page (home, a card) prints cards: it serves the card system's sheets from /ex/ and sets
+// <base href="/ex/"> so every relative path the rounds' code writes (media/, posters/, borders/) resolves as authored.
+// Every link this site writes is absolute for that reason.
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Machine from '../components/Machine.astro';
+import Analytics from '../components/Analytics.astro';
+import Footer from '../components/Footer.astro';
+import { cardFontB64, neuTokens, masks, sprite } from '../lib/cards';
+import '../styles/site.css';
+
+interface Props {
+  seo: Parameters<typeof Seo>[0];
+  room?: boolean;
+  scripts?: string[]; // classic scripts under /ex/, in order (defer)
+  html?: Record<string, string | boolean>;
+  twinPath?: string;
+  main?: string; // the id the skip link lands on
+}
+const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main' } = Astro.props;
+const fontFace = `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2;base64,${cardFontB64}) format("woff2");font-weight:100 900;font-display:block}`;
+---
+<!doctype html>
+<html lang="en" data-mode="human" {...html}>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+{room && <base href="/ex/" />}
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#e9e4dc" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1d1a17" media="(prefers-color-scheme: dark)" />
+<Seo {...seo} />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preload" href="/fonts/katagami-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+<script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);try{if(localStorage.getItem('ill-mode')==='machine')d.dataset.mode='machine'}catch(e){}var t=q.get('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=t;try{if(localStorage.getItem('ill-pause')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)d.dataset.paused=''}catch(e){}})()</script>
+<style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
+<script is:inline>/* the cards' face, decoded before the first layout so no line wraps twice (r4/ex build.mjs) */try{var t=document.getElementById("kface").textContent,i=t.indexOf("base64,")+7,b=atob(t.slice(i,t.indexOf(")",i))),u=new Uint8Array(b.length);for(var k=0;k<b.length;k++)u[k]=b.charCodeAt(k);document.fonts.add(new FontFace("Katagami Sans",u,{weight:"100 900",display:"block"}))}catch(e){}</script>
+<link rel="stylesheet" href="/ex/ui.css" />
+{room && <link rel="stylesheet" href="/ex/card.css" />}
+{room && <link rel="stylesheet" href="/ex/rituals.css" />}
+{scripts.map((s) => <script is:inline defer src={`/ex/${s}`}></script>)}
+<slot name="head" />
+<Analytics />
+</head>
+<body>
+<a class="skip" href={`${seo.path}#${main}`}>Skip to content</a>
+<div class="human">
+<div id="behind">
+<Header path={seo.path} />
+<slot />
+<Footer />
+</div>
+<slot name="overlay" />
+</div>
+<Machine path={twinPath} />
+<Fragment set:html={sprite} />
+<slot name="foot" />
+<script is:inline>/* Human and Machine on every page (gallery.js does the same on the home page; both write the same state) */document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mode-set]');if(!b)return;var m=b.dataset.modeSet,d=document.documentElement;d.dataset.mode=m;try{localStorage.setItem('ill-mode',m)}catch(_){}document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',m==='machine'?1:0)})});(function(){var m=document.documentElement.dataset.mode;if(m==='machine'){document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',1)})}})()</script>
+</body>
+</html>

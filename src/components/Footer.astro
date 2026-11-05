@@ -1,0 +1,10 @@
+---
+import { SOCIAL, EMAIL, PREVIOUS } from '../lib/site';
+---
+<footer class="foot">
+  <nav aria-label="Elsewhere">
+    {SOCIAL.map((s) => <a href={s.url} rel="me">{s.name}</a>)}
+    <a href={`mailto:${EMAIL}`}>Email</a>
+    <a href="/llms.txt">llms.txt</a>
+  </nav>
+</footer>

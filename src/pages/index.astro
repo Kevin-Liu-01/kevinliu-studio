@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import { fighters, rules, card, M, env, battleRoster, whatOf } from '../lib/cards';
+import { cardPath } from '../lib/twins';
+import { SITE, NAME, DESCRIPTION, person } from '../lib/site';
+
+const ART_RATIO = 88 / 63;
+const wall = fighters.map((f, i) => `<li class="pocket" style="--n:${i}">${card(f)}</li>`).join('\n');
+const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
+const jsonld = [
+  { '@type': 'WebSite', '@id': `${SITE}/#site`, url: `${SITE}/`, name: NAME, description: DESCRIPTION, author: { '@id': person['@id'] }, inLanguage: 'en' },
+  person,
+  {
+    '@type': 'ItemList',
+    name: `${NAME}'s projects`,
+    numberOfItems: fighters.length,
+    itemListElement: fighters.map((f, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}${cardPath(f)}`, name: f.title, description: whatOf(f) })),
+  },
+];
+---
+<Base
+  seo={{ title: NAME, description: DESCRIPTION, path: '/', og: 'home', imageAlt: `${NAME}'s ${fighters.length} project cards`, jsonld }}
+  room
+  main="gallery"
+  scripts={['fighters.js', 'engine.js', 'grounds/shell.js', 'media.gen.js', 'art.js', 'motion.js', 'markup.js', 'rituals.js']}
+>
+  <Fragment slot="head">
+    <meta name="battle" content="/battle" />
+    {roster && <meta name="battle-roster" content={roster} />}
+    <script is:inline type="module" src="/sound/boot.gallery.js"></script>
+    <script is:inline defer src="/ex/gallery.js"></script>
+  </Fragment>
+  <main class="gallery" id="gallery">
+    <ul class="wall" aria-label="Cards" set:html={`${wall}\n<li class="pocket tile">${M.deck()}</li>\n<li class="pocket tile">${M.pack(fighters, ART_RATIO, env)}</li>`} />
+  </main>
+  <Fragment set:html={M.dock([], [], fighters, rules, env)} />
+  <Fragment slot="overlay">
+    <canvas id="world" aria-hidden="true"></canvas>
+    <div class="stage" id="stage" aria-hidden="true"></div>
+    <Fragment set:html={M.inspect()} />
+    <p class="sr" role="status" id="status"></p>
+  </Fragment>
+</Base>

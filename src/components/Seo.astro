@@ -1,0 +1,52 @@
+---
+// Every page's head metadata: title, description, canonical, share cards (image and loop), the Markdown twin and
+// JSON-LD. One component, so no page can ship without a canonical or a share image.
+import { NAME, HANDLE, SITE, abs } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  og?: string; // og/<name> without extension: og/<name>.jpg (1200x630) and og/<name>.mp4 (2400x1260)
+  imageAlt?: string;
+  type?: 'website' | 'profile' | 'article';
+  jsonld?: object[];
+  twin?: string | null; // the Markdown twin's path
+}
+const { title, description, path, og = 'home', imageAlt, type = 'website', jsonld = [], twin = path === '/' ? '/index.md' : `${path}.md` } = Astro.props;
+const url = abs(path);
+const image = `${SITE}/og/${og}.jpg`;
+const video = `${SITE}/og/${og}.mp4`;
+const fullTitle = path === '/' ? title : `${title} | ${NAME}`;
+const ld = jsonld.length ? JSON.stringify(jsonld.length === 1 ? { '@context': 'https://schema.org', ...jsonld[0] } : { '@context': 'https://schema.org', '@graph': jsonld }).replace(/</g, '\\u003c') : null;
+---
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={url} />
+<meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1" />
+<meta name="author" content={NAME} />
+{twin && <link rel="alternate" type="text/markdown" href={twin} title="Markdown" />}
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={NAME} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={image} />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt ?? title} />
+<meta property="og:video" content={video} />
+<meta property="og:video:type" content="video/mp4" />
+<meta property="og:video:width" content="2400" />
+<meta property="og:video:height" content="1260" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={HANDLE} />
+<meta name="twitter:creator" content={HANDLE} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={imageAlt ?? title} />
+{ld && <script type="application/ld+json" set:html={ld} />}

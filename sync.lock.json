@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "7fbf4ef1 (with uncommitted changes)",
- "synced": "2026-11-05T21:13:37.538Z",
+ "synced": "2026-11-05T21:50:40.665Z",
  "stages": {
   "cards": {
-   "files": 484,
-   "bytes": 64308055,
+   "files": 536,
+   "bytes": 64725639,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -54,13 +54,13 @@
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
-     "sha256": "388ecca8ad87b44777b725a46ad54344956aa6c92c07db7ed2071f0c34223e6b",
-     "bytes": 68303
+     "sha256": "5a8365dd13029f9e1dc316c3344ce2a7081ba7163b6f94ed260a65a16ab9b2b5",
+     "bytes": 69658
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "73e8c5ebc269161d41edd16e150d93549ea799e6a5cf4111c21d319b27b876b1",
-     "bytes": 58002
+     "sha256": "3d6f67968f4da0171be6cedcf12c6c494fc12021f6887f9fab2d5759f308e9c2",
+     "bytes": 59121
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
@@ -82,6 +82,16 @@
      "sha256": "1b0f542c70e02e26c84838d2450a00736f722185eb1d8795250bf89472429818",
      "bytes": 83632
     },
+    "public/ex/posters/agent-machines-fx.webp": {
+     "src": "r4/ex/posters/agent-machines-fx.webp",
+     "sha256": "05197b4396f4a85faf3aac9927bd4be7f21b3106261e16c66a06e37395dbcdb1",
+     "bytes": 13096
+    },
+    "public/ex/posters/agent-machines-fx@0.5x.webp": {
+     "src": "r4/ex/posters/agent-machines-fx@0.5x.webp",
+     "sha256": "3b215f5c7b83c4c5c6a6420980538f06fafa511560807f13e27bc474bd8c33d5",
+     "bytes": 6646
+    },
     "public/ex/posters/agent-machines.webp": {
      "src": "r4/ex/posters/agent-machines.webp",
      "sha256": "23c6dc1b93c0a56617cbc4210f553bb4b45de847a5ba7271a7acb1d59180367c",
@@ -91,6 +101,16 @@
      "src": "r4/ex/posters/agent-machines@0.5x.avif",
      "sha256": "dc977183e61ec5dc5b9c73bd3e5c444c2acbba364cacc3647b247af1d016aecf",
      "bytes": 26065
+    },
+    "public/ex/posters/agent-pets-fx.webp": {
+     "src": "r4/ex/posters/agent-pets-fx.webp",
+     "sha256": "14b901ba92855f87e8489d71a5d4828f81b4174829439c45db29fba0504ca2c9",
+     "bytes": 13828
+    },
+    "public/ex/posters/agent-pets-fx@0.5x.webp": {
+     "src": "r4/ex/posters/agent-pets-fx@0.5x.webp",
+     "sha256": "921acceb89ce75ef92380d780b650b0b2ba96864d9f07222f5c81dddcb3903c7",
+     "bytes": 6976
     },
     "public/ex/posters/agent-pets.webp": {
      "src": "r4/ex/posters/agent-pets.webp",
@@ -102,6 +122,16 @@
      "sha256": "4674bab170692659f232fd7c351f898c8fad17c0c53d03b36a9aee816f8e56ad",
      "bytes": 23035
     },
+    "public/ex/posters/ariadne-fx.webp": {
+     "src": "r4/ex/posters/ariadne-fx.webp",
+     "sha256": "0036a52c64b78be1cf7a3fdfa20b39c5bedf926ae92c4e20919029d0e21f6950",
+     "bytes": 48
+    },
+    "public/ex/posters/ariadne-fx@0.5x.webp": {
+     "src": "r4/ex/posters/ariadne-fx@0.5x.webp",
+     "sha256": "f7f8c72728c0f3d886864652bffa8bddeea6a22218c67120f5a74751bcef1f12",
+     "bytes": 44
+    },
     "public/ex/posters/ariadne.webp": {
      "src": "r4/ex/posters/ariadne.webp",
      "sha256": "8db1fec8b750302e1ec7a4fec6e238ba7a32389e7cdf50379478e1f765d50d01",
@@ -111,6 +141,16 @@
      "src": "r4/ex/posters/ariadne@0.5x.avif",
      "sha256": "7c508feecafaa3526edd38db594b4f49972ef98865ab40b59916184c5cc47622",
      "bytes": 25388
+    },
+    "public/ex/posters/atlas-fx.webp": {
+     "src": "r4/ex/posters/atlas-fx.webp",
+     "sha256": "9caf50fe8b6262905d040815b9555dbfce8bd647dcd5cd7bcecfd421f1ccdeee",
+     "bytes": 12640
+    },
+    "public/ex/posters/atlas-fx@0.5x.webp": {
+     "src": "r4/ex/posters/atlas-fx@0.5x.webp",
+     "sha256": "4b6a72c9050e6028f911b5f56a1178a455a5d819477eab5e37a4144e334601a1",
+     "bytes": 5832
     },
     "public/ex/posters/atlas.webp": {
      "src": "r4/ex/posters/atlas.webp",
@@ -122,6 +162,16 @@
      "sha256": "871aa626059bd7a5a9d42dcf2789fe0ef183ec05fa42c081376bf762222db7c8",
      "bytes": 21143
     },
+    "public/ex/posters/bday-land-fx.webp": {
+     "src": "r4/ex/posters/bday-land-fx.webp",
+     "sha256": "0be64df40a1e4c824be6722f761522aca6fee8813a943db412ca1d401c20c520",
+     "bytes": 13556
+    },
+    "public/ex/posters/bday-land-fx@0.5x.webp": {
+     "src": "r4/ex/posters/bday-land-fx@0.5x.webp",
+     "sha256": "26687b879b6d80fa0151bcbd019316c26d5c68c3fef2074a3fa12004d4977715",
+     "bytes": 6310
+    },
     "public/ex/posters/bday-land.webp": {
      "src": "r4/ex/posters/bday-land.webp",
      "sha256": "bf8693253d78327d4eb91e7757788723a83e4b468b452a78357df5e62e5a41b3",
@@ -131,6 +181,16 @@
      "src": "r4/ex/posters/bday-land@0.5x.avif",
      "sha256": "45f80de4df72cbed0c8773d9dbad7c7d971a5759cf1de5d6815950d6b0ee8ff0",
      "bytes": 21354
+    },
+    "public/ex/posters/claude-of-tanks-fx.webp": {
+     "src": "r4/ex/posters/claude-of-tanks-fx.webp",
+     "sha256": "0036a52c64b78be1cf7a3fdfa20b39c5bedf926ae92c4e20919029d0e21f6950",
+     "bytes": 48
+    },
+    "public/ex/posters/claude-of-tanks-fx@0.5x.webp": {
+     "src": "r4/ex/posters/claude-of-tanks-fx@0.5x.webp",
+     "sha256": "f7f8c72728c0f3d886864652bffa8bddeea6a22218c67120f5a74751bcef1f12",
+     "bytes": 44
     },
     "public/ex/posters/claude-of-tanks.webp": {
      "src": "r4/ex/posters/claude-of-tanks.webp",
@@ -142,6 +202,16 @@
      "sha256": "0847a2f73ff3e3588d1e114e1935111a7d0eaf4480d74188a156d1575618e45c",
      "bytes": 28892
     },
+    "public/ex/posters/cotfly-fx.webp": {
+     "src": "r4/ex/posters/cotfly-fx.webp",
+     "sha256": "09e59d3b1fea4396d10eb9c4958e22d28897cc1bd1498eb8035a51a4c9444652",
+     "bytes": 14306
+    },
+    "public/ex/posters/cotfly-fx@0.5x.webp": {
+     "src": "r4/ex/posters/cotfly-fx@0.5x.webp",
+     "sha256": "939f9a00c673c56d9ac7429ef2a7a0d03239640e7f17ba8dbaf615a4a8c3b772",
+     "bytes": 6862
+    },
     "public/ex/posters/cotfly.webp": {
      "src": "r4/ex/posters/cotfly.webp",
      "sha256": "2e2998eef3da999380e0dad8ed48467da45888d27f2c509ef2677c8bc9eb8bcb",
@@ -151,6 +221,16 @@
      "src": "r4/ex/posters/cotfly@0.5x.avif",
      "sha256": "5d020a0d40800d7d94a735d52de08ae060d3dbe070f0d11104595a092b616cb5",
      "bytes": 20809
+    },
+    "public/ex/posters/dedalus-terminal-fx.webp": {
+     "src": "r4/ex/posters/dedalus-terminal-fx.webp",
+     "sha256": "34b41646736d03adfd17f7cbebd51b229506f4a3da227a26d7f3970169f5ec37",
+     "bytes": 12874
+    },
+    "public/ex/posters/dedalus-terminal-fx@0.5x.webp": {
+     "src": "r4/ex/posters/dedalus-terminal-fx@0.5x.webp",
+     "sha256": "a61e57129ebcc6c3b9329f90ac5f71edb8eaeba607739297fee74bb0483a4ba9",
+     "bytes": 6022
     },
     "public/ex/posters/dedalus-terminal.webp": {
      "src": "r4/ex/posters/dedalus-terminal.webp",
@@ -162,6 +242,16 @@
      "sha256": "f309c8fc98e82229a5e7eea5b4c7c24d4e8eafa98e92dd392598da84fb7e147a",
      "bytes": 20942
     },
+    "public/ex/posters/elo-fx.webp": {
+     "src": "r4/ex/posters/elo-fx.webp",
+     "sha256": "0d74d01c4dc8c9ee677c44f0109072026b6eec33d5c0b25ce5ac86a6e3ebc0bb",
+     "bytes": 16532
+    },
+    "public/ex/posters/elo-fx@0.5x.webp": {
+     "src": "r4/ex/posters/elo-fx@0.5x.webp",
+     "sha256": "ac9fb33cb4e5aa436fe8300a2584b8f597db193ccf3d245e7e7f5bc5ae4a7cfa",
+     "bytes": 7978
+    },
     "public/ex/posters/elo.webp": {
      "src": "r4/ex/posters/elo.webp",
      "sha256": "6cd8dca67ad3c2ec1b47a70cb65542fd28d51441d4c7efaf4b8a88e2a14efe1e",
@@ -171,6 +261,16 @@
      "src": "r4/ex/posters/elo@0.5x.avif",
      "sha256": "931f3558577776b70d6affadd37908934000a5b2ec74ab7e7c70c904d99755c7",
      "bytes": 22301
+    },
+    "public/ex/posters/glyphfield-fx.webp": {
+     "src": "r4/ex/posters/glyphfield-fx.webp",
+     "sha256": "0036a52c64b78be1cf7a3fdfa20b39c5bedf926ae92c4e20919029d0e21f6950",
+     "bytes": 48
+    },
+    "public/ex/posters/glyphfield-fx@0.5x.webp": {
+     "src": "r4/ex/posters/glyphfield-fx@0.5x.webp",
+     "sha256": "f7f8c72728c0f3d886864652bffa8bddeea6a22218c67120f5a74751bcef1f12",
+     "bytes": 44
     },
     "public/ex/posters/glyphfield.webp": {
      "src": "r4/ex/posters/glyphfield.webp",
@@ -182,6 +282,16 @@
      "sha256": "7ae482135cee2d11ffe38dd50cbdb04f51dd71d721e3201a687623e2d0eaca4a",
      "bytes": 29564
     },
+    "public/ex/posters/jarhead-fx.webp": {
+     "src": "r4/ex/posters/jarhead-fx.webp",
+     "sha256": "ca122852aca79b9c7cbbe5e4236c34f00e2c40074c4ca55dab911321c24659ca",
+     "bytes": 12176
+    },
+    "public/ex/posters/jarhead-fx@0.5x.webp": {
+     "src": "r4/ex/posters/jarhead-fx@0.5x.webp",
+     "sha256": "8c2ccd7647b576d28d5b841977ac1d8f7e9bb0b47e9f14b9fc5406bb6376a330",
+     "bytes": 6368
+    },
     "public/ex/posters/jarhead.webp": {
      "src": "r4/ex/posters/jarhead.webp",
      "sha256": "70d799c1a59eab3e00c3a6f516798e24d7ec4b2fcbaea2add415cceb57c8f263",
@@ -191,6 +301,16 @@
      "src": "r4/ex/posters/jarhead@0.5x.avif",
      "sha256": "03a4e4e08e064adfc8a83ee1ef8889f088e06939a137aab6a92e71e6c4e5eadf",
      "bytes": 20860
+    },
+    "public/ex/posters/katagami-fx.webp": {
+     "src": "r4/ex/posters/katagami-fx.webp",
+     "sha256": "288f8d5dd3cd9e501ddb999bb2332203ce5dd0d20af040ff472056202320cde1",
+     "bytes": 11958
+    },
+    "public/ex/posters/katagami-fx@0.5x.webp": {
+     "src": "r4/ex/posters/katagami-fx@0.5x.webp",
+     "sha256": "4c0e4c5cf341fb68ea8a206db153e008c70be2ce9215a5307c357e777e0f0316",
+     "bytes": 5936
     },
     "public/ex/posters/katagami.webp": {
      "src": "r4/ex/posters/katagami.webp",
@@ -202,6 +322,16 @@
      "sha256": "239d1834c5acd421b5196f2147f99c3127ca19da52589d97cd9b335ff01419d5",
      "bytes": 23556
     },
+    "public/ex/posters/kevin-wiki-fx.webp": {
+     "src": "r4/ex/posters/kevin-wiki-fx.webp",
+     "sha256": "be530a947a4c8054721ac01d40e15e78d58ece31c84a560c1105066c01dc735c",
+     "bytes": 13730
+    },
+    "public/ex/posters/kevin-wiki-fx@0.5x.webp": {
+     "src": "r4/ex/posters/kevin-wiki-fx@0.5x.webp",
+     "sha256": "ff3f8b1f9379dea8e8fc53c8334ea2363aa6b24c833c10bda21acab31bb8f564",
+     "bytes": 6702
+    },
     "public/ex/posters/kevin-wiki.webp": {
      "src": "r4/ex/posters/kevin-wiki.webp",
      "sha256": "934f0d8102ef73d2f76c41aafda697c1afcf07d96df40d6d46cfe96ee943d800",
@@ -211,6 +341,16 @@
      "src": "r4/ex/posters/kevin-wiki@0.5x.avif",
      "sha256": "ae526723932e1d938f298e59d00d5be2288f124b23c6e75d2740da2344220d3b",
      "bytes": 22490
+    },
+    "public/ex/posters/local-search-fx.webp": {
+     "src": "r4/ex/posters/local-search-fx.webp",
+     "sha256": "7ea25e6187ba0bf4fc3149cb075cae2ee29cb155b0f57cce575d943c8c57d60e",
+     "bytes": 10186
+    },
+    "public/ex/posters/local-search-fx@0.5x.webp": {
+     "src": "r4/ex/posters/local-search-fx@0.5x.webp",
+     "sha256": "1f5f2f0dc13a41699f2c6bc5f07a1400fc3dec258216e96a353cf418dd1e0619",
+     "bytes": 4610
     },
     "public/ex/posters/local-search.webp": {
      "src": "r4/ex/posters/local-search.webp",
@@ -222,6 +362,16 @@
      "sha256": "7bb8257e7e5780263885574ccd1fa9dc85b80365a33630bd64f9b0217b7eb156",
      "bytes": 10627
     },
+    "public/ex/posters/loop-fx.webp": {
+     "src": "r4/ex/posters/loop-fx.webp",
+     "sha256": "e8d2e4401e3a6b930aeebda277b23f9210831672351530ec2b6140c79867048d",
+     "bytes": 15304
+    },
+    "public/ex/posters/loop-fx@0.5x.webp": {
+     "src": "r4/ex/posters/loop-fx@0.5x.webp",
+     "sha256": "5485d9d11375887145068926c03485f17e4c0ad726904c5244e0cf1eb86c8680",
+     "bytes": 7554
+    },
     "public/ex/posters/loop.webp": {
      "src": "r4/ex/posters/loop.webp",
      "sha256": "d422d8f657fa92c02015f21efb5118d880db57e49f899566bb4fbdccd902b839",
@@ -231,6 +381,16 @@
      "src": "r4/ex/posters/loop@0.5x.avif",
      "sha256": "d581635998138c3cfe007b02b7a0d8f5769ff419a5977c6ac35dfc90e1d86e52",
      "bytes": 15129
+    },
+    "public/ex/posters/mailroom-fx.webp": {
+     "src": "r4/ex/posters/mailroom-fx.webp",
+     "sha256": "274b49b7e643dd43d95c9f91e708bc308578c81948cee00a6fef4c64c8a253b0",
+     "bytes": 11846
+    },
+    "public/ex/posters/mailroom-fx@0.5x.webp": {
+     "src": "r4/ex/posters/mailroom-fx@0.5x.webp",
+     "sha256": "d18559f654b69c6de1b98873f2f3d6d540da8aa108d3fd1783afe56d8ee560e7",
+     "bytes": 5964
     },
     "public/ex/posters/mailroom.webp": {
      "src": "r4/ex/posters/mailroom.webp",
@@ -242,6 +402,16 @@
      "sha256": "bf6ebfd55f46c80489b8cbad22f04cac74784dfa510440f3674ccef427bd91c5",
      "bytes": 17083
     },
+    "public/ex/posters/ommc-fx.webp": {
+     "src": "r4/ex/posters/ommc-fx.webp",
+     "sha256": "1a39256b13ef528b15219fbbf9d46242e789e0e7a9b1c340debf9fab4d8ee494",
+     "bytes": 16174
+    },
+    "public/ex/posters/ommc-fx@0.5x.webp": {
+     "src": "r4/ex/posters/ommc-fx@0.5x.webp",
+     "sha256": "0ec64091311b087b26a20fd826172460b43cea3a77130e8521a3b2d54bd67a45",
+     "bytes": 7494
+    },
     "public/ex/posters/ommc.webp": {
      "src": "r4/ex/posters/ommc.webp",
      "sha256": "bb885e05b0996dbc154cc15bbef30910321c074b6ad5802aa90575568618c937",
@@ -251,6 +421,16 @@
      "src": "r4/ex/posters/ommc@0.5x.avif",
      "sha256": "b8faef56ab301cc9accfa65c82a6dab5c665d759cb05a30716bdf4bc655c21af",
      "bytes": 24813
+    },
+    "public/ex/posters/podium-fx.webp": {
+     "src": "r4/ex/posters/podium-fx.webp",
+     "sha256": "f8be7ecc00bc3abef4e19dfa9f277cb65098104b23f6730d99cc81e815ebb00f",
+     "bytes": 13536
+    },
+    "public/ex/posters/podium-fx@0.5x.webp": {
+     "src": "r4/ex/posters/podium-fx@0.5x.webp",
+     "sha256": "3667c103715da17872d2ed9c77b23d966f66d9ba9d47fdad28249bfa8eec0042",
+     "bytes": 6402
     },
     "public/ex/posters/podium.webp": {
      "src": "r4/ex/posters/podium.webp",
@@ -262,6 +442,16 @@
      "sha256": "59c73082d0b2cbfb9b61e363603c93bd83c2a67cfd537ae93da3b72f7290f390",
      "bytes": 21771
     },
+    "public/ex/posters/powerlifting-fx.webp": {
+     "src": "r4/ex/posters/powerlifting-fx.webp",
+     "sha256": "67c0a58a733417d9490906c1974094c575492fc993d14e442d54f5f70297105e",
+     "bytes": 9302
+    },
+    "public/ex/posters/powerlifting-fx@0.5x.webp": {
+     "src": "r4/ex/posters/powerlifting-fx@0.5x.webp",
+     "sha256": "70ef6d34bec19eedd1c8b4257cb672da59eb96c472ba1a972624f4f8296c9231",
+     "bytes": 4496
+    },
     "public/ex/posters/powerlifting.webp": {
      "src": "r4/ex/posters/powerlifting.webp",
      "sha256": "05b78a6924977396bd3046fbedd75d8a1d72da92d0f9715e926616fe3cf47c29",
@@ -271,6 +461,16 @@
      "src": "r4/ex/posters/powerlifting@0.5x.avif",
      "sha256": "f5f5ec84c9fff0724f005771e32fc47e70fd1aff855c51f3852400ad69234f10",
      "bytes": 21036
+    },
+    "public/ex/posters/princeton-td-fx.webp": {
+     "src": "r4/ex/posters/princeton-td-fx.webp",
+     "sha256": "0036a52c64b78be1cf7a3fdfa20b39c5bedf926ae92c4e20919029d0e21f6950",
+     "bytes": 48
+    },
+    "public/ex/posters/princeton-td-fx@0.5x.webp": {
+     "src": "r4/ex/posters/princeton-td-fx@0.5x.webp",
+     "sha256": "f7f8c72728c0f3d886864652bffa8bddeea6a22218c67120f5a74751bcef1f12",
+     "bytes": 44
     },
     "public/ex/posters/princeton-td.webp": {
      "src": "r4/ex/posters/princeton-td.webp",
@@ -282,6 +482,16 @@
      "sha256": "5b8859563a312ec34765ee464c83b32ec28a66f75166253143acd29b062e1dad",
      "bytes": 11402
     },
+    "public/ex/posters/prototemplate-fx.webp": {
+     "src": "r4/ex/posters/prototemplate-fx.webp",
+     "sha256": "0036a52c64b78be1cf7a3fdfa20b39c5bedf926ae92c4e20919029d0e21f6950",
+     "bytes": 48
+    },
+    "public/ex/posters/prototemplate-fx@0.5x.webp": {
+     "src": "r4/ex/posters/prototemplate-fx@0.5x.webp",
+     "sha256": "f7f8c72728c0f3d886864652bffa8bddeea6a22218c67120f5a74751bcef1f12",
+     "bytes": 44
+    },
     "public/ex/posters/prototemplate.webp": {
      "src": "r4/ex/posters/prototemplate.webp",
      "sha256": "8911636f400e4768199e92019b571e31f77306d59e90ad26d95cd97eef892754",
@@ -291,6 +501,16 @@
      "src": "r4/ex/posters/prototemplate@0.5x.avif",
      "sha256": "481aa2389e83913a6ec46c2b2e115a938bf5e132125f4c41de10fa6f2c6519f5",
      "bytes": 21546
+    },
+    "public/ex/posters/relay-fx.webp": {
+     "src": "r4/ex/posters/relay-fx.webp",
+     "sha256": "f1a57e8700035cc80780b2ba5d4e7c50a76d07fcd68a9da24ac5461ce3eaf746",
+     "bytes": 12994
+    },
+    "public/ex/posters/relay-fx@0.5x.webp": {
+     "src": "r4/ex/posters/relay-fx@0.5x.webp",
+     "sha256": "2723351e96aac77925fd901babc82df355e052bc759a873a8782d99ce9d07635",
+     "bytes": 6234
     },
     "public/ex/posters/relay.webp": {
      "src": "r4/ex/posters/relay.webp",
@@ -302,6 +522,16 @@
      "sha256": "fcca60a2e5f9ae963a3ef5529eca4e76ca78153dcf51e3e970f733f05cc7e31e",
      "bytes": 16146
     },
+    "public/ex/posters/sandbox-arena-fx.webp": {
+     "src": "r4/ex/posters/sandbox-arena-fx.webp",
+     "sha256": "eded39dc210e9d89331ad229b1cfd5758202ee7694191a9127f9e1b05aee462b",
+     "bytes": 16508
+    },
+    "public/ex/posters/sandbox-arena-fx@0.5x.webp": {
+     "src": "r4/ex/posters/sandbox-arena-fx@0.5x.webp",
+     "sha256": "9338490cde7d73240097f552b0343a8f3ae62e0fcf9bac1c321602474fc3f14f",
+     "bytes": 7996
+    },
     "public/ex/posters/sandbox-arena.webp": {
      "src": "r4/ex/posters/sandbox-arena.webp",
      "sha256": "06e9bb55e0b5d04c1f7b486343c9be4fc7a569b4866f4a6195e3ec3d85294cd1",
@@ -311,6 +541,16 @@
      "src": "r4/ex/posters/sandbox-arena@0.5x.avif",
      "sha256": "5cdf5c0c06333de74caed3d6be43a4c1a0d50e97d580750f0678fbe2564d3968",
      "bytes": 33603
+    },
+    "public/ex/posters/sevenfold-fx.webp": {
+     "src": "r4/ex/posters/sevenfold-fx.webp",
+     "sha256": "3844e1f000f2f559fc1724b746f8a504e45ceb9d5cd6e49b256cf9166c09eb2d",
+     "bytes": 10978
+    },
+    "public/ex/posters/sevenfold-fx@0.5x.webp": {
+     "src": "r4/ex/posters/sevenfold-fx@0.5x.webp",
+     "sha256": "fdc8b8f465c4bce17f4d23e86f00900325f3841278a84a6b2cab7ccda0f2cbc3",
+     "bytes": 5316
     },
     "public/ex/posters/sevenfold.webp": {
      "src": "r4/ex/posters/sevenfold.webp",
@@ -322,6 +562,16 @@
      "sha256": "339dc80dc05a709eba2b2c70c6984ec48da7b620d47c5622639df1565a9dfb3e",
      "bytes": 18695
     },
+    "public/ex/posters/sigil-ui-fx.webp": {
+     "src": "r4/ex/posters/sigil-ui-fx.webp",
+     "sha256": "a15a553976c2055e87d7e09a432c8c333f22d6c54401b65d6aa9d7a302b14dc2",
+     "bytes": 13570
+    },
+    "public/ex/posters/sigil-ui-fx@0.5x.webp": {
+     "src": "r4/ex/posters/sigil-ui-fx@0.5x.webp",
+     "sha256": "2ec68217ef2c780cd604f48216399137032af643f9f377da50045ffc73a22ebb",
+     "bytes": 6348
+    },
     "public/ex/posters/sigil-ui.webp": {
      "src": "r4/ex/posters/sigil-ui.webp",
      "sha256": "659b0112344cfa2b248ea78e9912e5ebd87e5a69ecc340f0256875539bb7acc5",
@@ -331,6 +581,16 @@
      "src": "r4/ex/posters/sigil-ui@0.5x.avif",
      "sha256": "a3e4403cbfffda918535a842de815b626c0c5df89ccb119d00092f1d5713209c",
      "bytes": 17544
+    },
+    "public/ex/posters/turboslide-fx.webp": {
+     "src": "r4/ex/posters/turboslide-fx.webp",
+     "sha256": "5bf925f6e59b37c28b40384be9a592db26d392676bac12d264ae171483e08ef1",
+     "bytes": 14204
+    },
+    "public/ex/posters/turboslide-fx@0.5x.webp": {
+     "src": "r4/ex/posters/turboslide-fx@0.5x.webp",
+     "sha256": "300894d31a1312cd93b0193d4d9173354f33cbf8cb1079789d3c3aad5e19067b",
+     "bytes": 7306
     },
     "public/ex/posters/turboslide.webp": {
      "src": "r4/ex/posters/turboslide.webp",
@@ -2431,7 +2691,7 @@
   },
   "sound": {
    "files": 1102,
-   "bytes": 20382954,
+   "bytes": 20382862,
    "list": {
     "public/sound/sound.js": {
      "src": "r4/sound/sound.js",
@@ -2440,8 +2700,8 @@
     },
     "public/sound/boot.gallery.js": {
      "src": "r4/sound/boot.gallery.js",
-     "sha256": "95dc0df7c29d8248e63717fce1b490e1f2418e55a50bf73c3949b266431fbbb0",
-     "bytes": 5920
+     "sha256": "ee842e30eee43a271355710c7ce0daa1a8928f1e36c8b108f415a84463526678",
+     "bytes": 5828
     },
     "public/sound/manifest.gallery.json": {
      "src": "r4/sound/manifest.gallery.json",
@@ -7947,7 +8207,7 @@
   },
   "battle": {
    "files": 756,
-   "bytes": 136698949,
+   "bytes": 136698926,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -7991,8 +8251,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "31993d91eaf2de5358533a45c9075db928fdaf525c794a592b27716724b326ec",
-     "bytes": 46087
+     "sha256": "f468e98c620db038286a11b052cabaf7e24c802932bfdd92e12f9e12e878cc3d",
+     "bytes": 46064
     },
     "public/battle/shared/fx.js": {
      "src": "r4/play/shared/fx.js",

@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import { fighters, card, M, whatOf, factLines, hueOf, type Fighter } from '../../lib/cards';
+import { cardPath } from '../../lib/twins';
+import { SITE, NAME, person } from '../../lib/site';
+
+export function getStaticPaths() {
+  return fighters.map((f) => ({ params: { id: f.id }, props: { f } }));
+}
+const { f } = Astro.props as { f: Fighter };
+const i = fighters.indexOf(f);
+const prev = fighters[(i + fighters.length - 1) % fighters.length];
+const next = fighters[(i + 1) % fighters.length];
+const what = whatOf(f);
+const hue = hueOf(f);
+const repo = f.repo?.replace(/ .*$/, '');
+const pinned = (f as any).pinned as { sha: string; date?: string } | undefined;
+const category = f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication';
+const work: Record<string, unknown> = {
+  '@type': ['katagami', 'atlas'].includes(f.id) ? 'CreativeWork' : 'SoftwareApplication',
+  '@id': `${SITE}${cardPath(f)}#work`,
+  name: f.title,
+  description: what,
+  url: f.url ?? `${SITE}${cardPath(f)}`,
+  image: `${SITE}/og/${f.id}.jpg`,
+  dateCreated: String(f.year),
+  author: { '@id': person['@id'] },
+  creator: { '@id': person['@id'] },
+  keywords: f.disciplines.join(', '),
+  ...(repo ? { sameAs: [repo] } : {}),
+};
+if (work['@type'] === 'SoftwareApplication') Object.assign(work, { applicationCategory: category, operatingSystem: 'Web' });
+const jsonld = [
+  work,
+  { '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: NAME, item: `${SITE}/` },
+    { '@type': 'ListItem', position: 2, name: f.title, item: `${SITE}${cardPath(f)}` },
+  ] },
+];
+const description = `${f.title}: ${what}`.slice(0, 158);
+const discIcon = (d: string) => M.icon(d.toLowerCase());
+---
+<Base
+  seo={{ title: f.title, description, path: cardPath(f), og: f.id, imageAlt: `The ${f.title} card`, jsonld }}
+  room
+  html={{ 'data-card': f.id }}
+>
+  <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
+    <div class="stand" set:html={card(f, { id: `c-${f.id}`, focusable: false })} />
+    <article class="info">
+      <h1>{f.title}</h1>
+      <p class="what">{what}</p>
+      <p class="disc">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</p>
+      <p class="go">
+        {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>Open {f.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span></a>}
+        {repo && <a class="press" href={repo} rel="noopener"><span>Source</span></a>}
+      </p>
+      <h2>The numbers</h2>
+      <ul class="facts">
+        {factLines(f).map((x) => <li><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></li>)}
+      </ul>
+      {f.trait && <Fragment><h2>Trait</h2><div class="trait"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div></Fragment>}
+      <h2>Moves</h2>
+      <ol class="moves">
+        {f.moves.map((mv) => <li><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></li>)}
+      </ol>
+      {pinned && <p class="pin">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</p>}
+    </article>
+  </main>
+  <nav class="pager" aria-label="Cards">
+    <a href={cardPath(prev)} rel="prev"><Fragment set:html={M.icon('prev')} />{prev.title}</a>
+    <a href={cardPath(next)} rel="next">{next.title}<Fragment set:html={M.icon('next')} /></a>
+  </nav>
+</Base>

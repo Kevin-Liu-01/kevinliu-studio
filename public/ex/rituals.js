@@ -23,6 +23,9 @@
     const { $, $$, RM, say, and, optsOf, rectOf, titleOf, cost } = G;
     const { clamp, lerp, ease } = M;
     const win = M.win;
+    const SND = () => globalThis.Sound || null;
+    const snd = (id, o) => SND()?.play(id, o) ?? null;
+    const pan = (el) => SND()?.panOf(el) ?? 0;
     // ease.crit stops 1% short of its end (0.990 at 1), so a card it carries stood 1.8 degrees turned and a pixel off its
     // slot; this is the same curve scaled to land exactly, so a card at its end stands flat, whole and unresampled
     const CRIT1 = ease.crit(1);
@@ -259,7 +262,7 @@
           if (sl) sl.style.opacity = t >= 1200 ? '' : turned.toFixed(3);
         });
       }, () => { minis.forEach((m) => { if (m) m.style.opacity = ''; }); S.rival.forEach((id) => cards[id].el.classList.add('theirs')); own(T); idle(warm); });
-      T.kind = 'deal'; // a Play pressed while it lands waits for it (gallery.js play)
+      { const sh = SND()?.schedule(SND().dealCues()); const fin = T.finish; T.finish = () => { sh?.cancel(40); fin.call(T); }; } T.kind = 'deal'; // a Play pressed while it lands waits for it (gallery.js play)
       G.ritual = T;
     }
 
@@ -538,7 +541,7 @@
         names.forEach((p) => { p.style.opacity = String(n); p.style.transform = `translateY(${((1 - ease.out(n)) * 12).toFixed(1)}px)`; });
         if (t > 0 && Ground.driver) Ground.driver();
       }, () => { own(T); done(); });
-      T.kind = 'entry';
+      SND()?.schedule(SND().entryCues()); SND()?.music(null, { fadeMs: 600 }); T.kind = 'entry';
       G.ritual = T;
     }
 
@@ -762,7 +765,7 @@
     }
     // Esc before the seal breaks lets the strip spring back and reseals the packet
     function reseal(P) {
-      const from = P.p, fdy = P.dy, dir = P.dir;
+      const from = P.p, fdy = P.dy, dir = P.dir; snd('pack.reseal');
       const T = M.timeline(300, (t) => { const k = ease.crit(t / 300); tearTo(P, from * (1 - k), dir, fdy * (1 - k)); }, () => { dropGhost(P); own(T); });
       G.ritual = T;
     }
@@ -786,13 +789,14 @@
           if (Math.abs(dy) > Math.abs(dx) && e.pointerType !== 'mouse') { st = null; return; } // yield to scroll
           try { packEl.setPointerCapture(st.id); } catch (err) {}
           prepare();
-          st.P = ghostPack();
+          st.P = ghostPack(); snd('pack.grab', { pan: pan(packEl) });
           st.P.dir = dx >= 0 ? 1 : -1;
           const s = st;
           G.ritual = tearRitual(s.P, () => { s.done = true; });
         }
         if (st.done) return;
         tearTo(st.P, clamp((dx * st.P.dir) / st.P.r.w), st.P.dir, dy);
+        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }
       });
       const end = (e, cancel) => {
         if (!st || e.pointerId !== st.id) return;
@@ -828,7 +832,7 @@
     // the strip completes its tear: 220 ms from a release past 55%, 360 ms from the keyboard; skip: at once
     function commitTear(P, ms, skip) {
       if (skip) { tearTo(P, 1, P.dir, 0); reveal(P).finish(); return; }
-      const p0 = P.p, dy0 = P.dy;
+      const p0 = P.p, dy0 = P.dy; snd('pack.rip', { delayMs: ms });
       // the reveal starts where the tear ended, on the frame's clock (Motion.timeline t0), not a frame later
       const T = M.timeline(ms, (t) => tearTo(P, lerp(p0, 1, ease.out(t / ms)), P.dir, dy0 * (1 - t / ms)), () => { own(R); reveal(P, T.over); });
       const R = tearRitual(P, () => T.cancel());
@@ -956,6 +960,7 @@
         $('.pk', packEl).animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.2,0,0,1)' });
       }, t0);
       begun = true;
+      const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }
       T.skip = true;
       T.kind = 'pack';
       T.climax = Fj(0); // the frame before the first card leaves: every card turned and printed, the hit's world in the room
@@ -1012,7 +1017,7 @@
     const still0 = () => { root.classList.add('inspecting'); };
     function open(id, { instant = false, push = true } = {}) {
       if (G.ritual) return;
-      if (I.id && !I.closing) { if (id !== I.id) step(id); return; }
+      if (I.id && !I.closing) { if (id !== I.id) step(id); return; } if (!instant) { snd('card.lift'); snd('lift', { card: id }); }
       if (I.id && I.closing) { // reopening mid-close retargets from the current frame
         if (id === I.id) { I.closing = false; I.to = 1; I.go = true; ins.classList.add('open'); M.add(tick); return; }
         finish();
@@ -1090,7 +1095,7 @@
     // a step prints the next card and its sheet together, so the two never disagree; a lift still being built
     // finishes first
     function step(id) {
-      while (I.jobs.length) I.jobs.shift()();
+      while (I.jobs.length) I.jobs.shift()(); snd('card.step');
       const { cards } = G;
       cards[I.id].el.style.visibility = '';
       I.from = G.cardRect(id);
@@ -1107,7 +1112,7 @@
     function close(fromPop) {
       if (!I.id || I.closing) return;
       if (!I.shown) { finish(); return; }
-      I.jobs = [];
+      I.jobs = []; snd('card.close');
       I.closing = true; I.to = 0;
       I.from = G.cardRect(I.id);
       ins.classList.remove('open');

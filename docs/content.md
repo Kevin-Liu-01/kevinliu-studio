@@ -1,0 +1,51 @@
+# Content model
+
+## Cards
+
+One source: `public/ex/fighters.js` (synced from r4/ex, generated there by `tools/import-roster.py` from
+`roster/battle-roster.json` and the copy editor's `copy/overrides.json`). Each fighter has `id`, `title`, `year`, `url`,
+`repo`, `disciplines`, `pinned` (the commit its numbers were read at), `what` (one line), `stats` (hp, atk, def, spd),
+`cost` (inks), `facts` (build, reach, proof, pace, each with a receipt), `trait` and `moves` (each with a receipt).
+
+`src/lib/cards.ts` loads it and exposes `fighters`, `card()`, `sheet()`, `whatOf()`, `factLines()`, `hueOf()` and the
+battle's roster. Pages, twins and JSON-LD all read from there, so a card's words are the same on its face, its page,
+its twin and its structured data.
+
+To change a card's words or numbers, change the rounds (r4/ex `copy/overrides.json` or the roster), rebuild there, and
+`pnpm sync` here.
+
+## Site facts
+
+`src/lib/site.ts` holds the name, the bio, the social links, the email and the previous site's address.
+
+Open for Kevin:
+- The bio line. The site uses the line already public on the previous site's `llms.txt`. The Personal Website's owner
+  notes list two other candidates ("Design engineer, San Francisco" and "Princeton CS '28").
+- The email `hello@kevinliu.biz`. kevinliu.biz has auto-renew off (2026-10-08), so this address lapses with it.
+
+## Rules the content keeps
+
+- Nothing from the franchise the cards are inspired by: no names, marks, fonts, energy icons or trainer sprites.
+  The scan in `scripts/sync.mjs` and `scripts/verify-build.mjs` fails on the names.
+- No real people's names or photos. Agent Pets' figures carry no names in any text.
+- General Translation appears only on the Atlas card and its records.
+- OMMC participants are minors: nothing here requests or links the OMMC portal's participant routes.
+- The Personal Website's `public/media/art/`, `public/media/curation/` (GPS-tagged) and
+  `public/media/portfoliomon/trainers/` never come here. The guard fails any image with GPS metadata.
+
+## What did not carry over from the Personal Website, and why
+
+| Kept | Why |
+| --- | --- |
+| The kl signature (favicon and header mark) | Kevin's mark; the cards' seal prints the same one |
+| Social links | canonical, already public |
+| Katagami Sans (Latin subset, 45 KB) | Kevin's own type family, OFL; the cards already set in it |
+| The release-guard idea (GPS, truncation, per-page checks) | rewritten for static output in `scripts/verify-build.mjs` |
+
+| Left behind | Why |
+| --- | --- |
+| The Proof design, Archivo and Newsreader | the new look is the card room; Proof was a different direction |
+| The 18 essays | each depends on a custom interactive figure; a text-only port would read broken. A follow-up |
+| The Vault engines | their own surface; not part of the four goals |
+| The old 33-sound kit | replaced by the r4 sound kit |
+| TanStack Start, React, Fumadocs, GSAP | no part of this site needs a client framework |
