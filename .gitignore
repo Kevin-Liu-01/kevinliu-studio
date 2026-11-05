@@ -11,3 +11,4 @@ dist/
 
 /.sync-cache/
 /.claude/
+.vercel
