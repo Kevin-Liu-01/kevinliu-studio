@@ -49,22 +49,22 @@ const discIcon = (d: string) => M.icon(d.toLowerCase());
     <div class="stand" set:html={card(f, { id: `c-${f.id}`, focusable: false })} />
     <article class="info">
       <h1>{f.title}</h1>
-      <p class="what">{what}</p>
-      <p class="disc">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</p>
-      <p class="go">
+      <p class="cp-what">{what}</p>
+      <p class="cp-disc">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</p>
+      <p class="cp-go">
         {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>Open {f.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span></a>}
         {repo && <a class="press" href={repo} rel="noopener"><span>Source</span></a>}
       </p>
       <h2>The numbers</h2>
-      <ul class="facts">
+      <ul class="cp-facts">
         {factLines(f).map((x) => <li><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></li>)}
       </ul>
-      {f.trait && <Fragment><h2>Trait</h2><div class="trait"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div></Fragment>}
+      {f.trait && <Fragment><h2>Trait</h2><div class="cp-trait"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div></Fragment>}
       <h2>Moves</h2>
-      <ol class="moves">
+      <ol class="cp-moves">
         {f.moves.map((mv) => <li><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></li>)}
       </ol>
-      {pinned && <p class="pin">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</p>}
+      {pinned && <p class="cp-pin">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</p>}
     </article>
   </main>
   <nav class="pager" aria-label="Cards">

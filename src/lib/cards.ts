@@ -55,7 +55,7 @@ export const M = require(path.join(EX, 'markup.js'));
 const FACE = sandbox(path.join(VX, 'face.gen.js'), 'FACE');
 const MEDIA = (sandbox(path.join(EX, 'media.gen.js'), 'MEDIA') || {}).media || {};
 const BANDS = JSON.parse(fs.readFileSync(path.join(VX, 'bands.json'), 'utf8')).cards ?? {};
-const WALL = await import(path.join(VX, 'tools/wall-rule.mjs'));
+const WALL = await import(/* @vite-ignore */ path.join(VX, 'tools/wall-rule.mjs'));
 
 // VP8X / VP8 / VP8L header: width and height of a webp the card prints
 const webpSize = (rel: string) => {

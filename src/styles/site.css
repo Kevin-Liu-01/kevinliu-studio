@@ -52,30 +52,31 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 }
 .cardpage .stand {
   position: relative; display: grid; place-items: center; padding: clamp(28px, 6vw, 72px) clamp(16px, 4vw, 56px);
-  border-radius: 28px; background: color-mix(in oklab, var(--e) 46%, var(--clay)); isolation: isolate;
+  border-radius: 28px; isolation: isolate;
+  background: radial-gradient(110% 80% at 50% 38%, color-mix(in oklab, var(--e) 78%, white 6%), color-mix(in oklab, var(--e) 40%, var(--clay)) 72%);
   container-type: inline-size;
 }
-[data-theme='dark'] .cardpage .stand { background: color-mix(in oklab, var(--e) 22%, var(--clay)); }
+[data-theme='dark'] .cardpage .stand { background: radial-gradient(110% 80% at 50% 38%, color-mix(in oklab, var(--e) 62%, black 8%), color-mix(in oklab, var(--dp) 70%, var(--clay)) 78%); }
 .cardpage .stand .card { --card: min(440px, 100cqw - 8px); width: var(--card); }
 .cardpage .info { max-width: var(--measure); font: 400 16px/1.55 var(--site); color: var(--ink-1); }
 .cardpage h1 { margin: 0 0 12px; font: 800 clamp(34px, 5vw, 52px)/1.04 var(--sans); }
-.cardpage .what { margin: 0 0 20px; font-size: 19px; line-height: 1.45; color: var(--ink-1); }
-.cardpage .go { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; }
-.cardpage .go a { text-decoration: none; padding: 0 16px; min-height: var(--ctl); display: inline-flex; align-items: center; gap: 8px; font: 600 var(--lab)/20px var(--sans); }
-.cardpage .go a .i { width: 16px; height: 16px; }
+.cardpage .cp-what { margin: 0 0 20px; font-size: 19px; line-height: 1.45; color: var(--ink-1); }
+.cardpage .cp-go { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; }
+.cardpage .cp-go a { text-decoration: none; padding: 0 16px; min-height: var(--ctl); display: inline-flex; align-items: center; gap: 8px; font: 600 var(--lab)/20px var(--sans); }
+.cardpage .cp-go a .i { width: 16px; height: 16px; }
 .cardpage h2 { margin: 28px 0 10px; font: 700 15px/20px var(--sans); color: var(--ink-2); }
-.cardpage .facts, .cardpage .moves { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.cardpage .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cardpage .facts li, .cardpage .moves li, .cardpage .trait { padding: 14px 16px; border-radius: 16px; background: var(--clay); box-shadow: var(--raise-s); }
-.cardpage .facts b { display: block; font: 800 24px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
-.cardpage .facts span { color: var(--ink-2); font-size: 14px; }
-.cardpage .moves p, .cardpage .trait p { margin: 0; }
+.cardpage .cp-facts, .cardpage .cp-moves { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.cardpage .cp-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cardpage .cp-facts li, .cardpage .cp-moves li, .cardpage .cp-trait { padding: 14px 16px; border-radius: 16px; background: var(--clay); box-shadow: var(--raise-s); }
+.cardpage .cp-facts b { display: block; font: 800 24px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
+.cardpage .cp-facts span { color: var(--ink-2); font-size: 14px; }
+.cardpage .cp-moves p, .cardpage .cp-trait p { margin: 0; }
 .cardpage code { display: block; margin-top: 8px; font: 500 12px/1.45 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
-.cardpage .pin { margin-top: 20px; font-size: 14px; color: var(--ink-2); }
-.cardpage .pin a { color: inherit; }
-.cardpage .disc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; }
-.cardpage .disc span { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; min-height: 32px; border-radius: 999px; background: var(--clay); box-shadow: var(--sink-s); font: 600 13px/20px var(--sans); }
-.cardpage .disc .i { width: 16px; height: 16px; }
+.cardpage .cp-pin { margin-top: 20px; font-size: 14px; color: var(--ink-2); }
+.cardpage .cp-pin a { color: inherit; }
+.cardpage .cp-disc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; }
+.cardpage .cp-disc span { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; min-height: 32px; border-radius: 999px; background: var(--clay); box-shadow: var(--sink-s); font: 600 13px/20px var(--sans); }
+.cardpage .cp-disc .i { width: 16px; height: 16px; }
 .pager { display: flex; justify-content: space-between; gap: 12px; max-width: 1160px; margin: 40px auto 0; padding: 0 var(--g); box-sizing: border-box; }
 .pager a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: var(--r-ctl); background: var(--clay); box-shadow: var(--raise-s); color: var(--ink-1); text-decoration: none; font: 600 14px/20px var(--sans); }
 .pager a:active { box-shadow: var(--sink-s); }
