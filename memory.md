@@ -51,3 +51,32 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: Kevin retires `kevin-portfolio-2-eight.vercel.app` (project `kevin-portfolio-2`, still 200 on 2026-11-05);
   Search Console and Bing sitemap submission; mail for kevinliu.studio; battle-r4b merge; Arena rail at 320px; wall
   cards as links; agent-docs kit and Astro `src/pages`.
+
+## 2026-11-05: performance and pops (perf/no-pops, Claude Code)
+
+- **Type**: perf + fix
+- **Asked**: Kevin, 2026-11-05: "also make the website a lot more performant and better using guillermo rauches
+  website improver" (the `ui-recording-timeline` skill, rauchg/skills 40f2a05, now in `~/.claude/skills`).
+- **Measured**: previews `kevinliu-studio-ompzcprnp` (main 9c6dcba) and `kevinliu-studio-ayb2lpyyy` (52617e8; eaaa07e only adds
+  the header spacers, smoke-tested at `kevinliu-studio-bdtg9om9u`), 3 runs
+  per page at 1440 and 390; paint timelines of local runs. Load average 300 to 500 throughout: timings are inflated,
+  order and counts are not. Table in `docs/performance.md`.
+- **Pops removed**: the wall painting in six waves (posters, subjects and logos arriving after the cards; 131 eager
+  images) now paints whole once its first screen decodes; the pale View Transition crossfade on every card-to-home
+  return (`rituals.css` on card pages); the header's links jumping about 90 px between `/` and every other page;
+  the sound icon flipping after the kit booted; a header-only shell before the wall on return to `/`.
+- **INP**: the first card press spent 5.5 s inside the sound kit's first `AudioContext` (the browser waits on its
+  audio service starting); a silent context at idle moves that off the press: pointerdown 5,680 ms to 48 ms at 1440.
+  At 390 the remaining 600 to 800 ms is presentation delay at DPR 3 on this Mac's GPU, not script; check Speed
+  Insights after shipping.
+- **Bytes**: card pages 38.7 to 13.1 KB of HTML (gzip), home 63.9 to 38.4 KB; one 27.5 KB face instead of 45 KB plus
+  41 KB inline; every named stylesheet and script immutable by content address.
+- **Also**: Arena rail fits 320 px; wall cards link to their pages; battle keys transition only transform;
+  `scripts/paint-capture.mjs` (agent-browser `record` stops when its encoder lags on a loaded Mac); smoke takes
+  `VERCEL_OIDC_TOKEN`; `sync --check` names files.
+- **Open**: battle round (r4/play, other session): the 627 KB `kit.js` bundle boots the board 2.7 s before the deal,
+  a 1.9 s blank behind its font gate, the interface vanishing after each cutscene, Arena pads shown then removed, the
+  move list sliding over the cards at 390; the lens's Escape drops its action bar a frame before the dissolve;
+  `vendor/ex/fonts/katagami-sans-cards.woff2` is now unused (drop it at a sync only after the Portfolio
+  redesign session reports the k6 `r4/ex` install done; no `pnpm sync` before then); not shipped: needs Kevin's yes to
+  merge to `main`, which deploys production.

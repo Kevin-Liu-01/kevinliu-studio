@@ -37,6 +37,10 @@ exactly once, or the sync stops and says which anchor moved.
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
 - `battle/mat/mat.css`, `battle/arena/arena.css`: the wordmark h1 is visually hidden on phones, not removed.
+- `battle/mat/mat.css`, `battle/arena/arena.css`: a key transitions only its press (`transform`); its raise and colour
+  change at once.
+- `battle/arena/arena.css`: under 360 px the rail's column holds the rail's width and the team pips tighten, so Leave
+  stays on screen at 320 px.
 - `battle/vendor/broadcast/media.js`: the rounds' gate notes are emptied (the page never shows them), the Elo and
   Turboslide cards use the captures that replace the dropped ones, and the Prototemplate loop points at the clip that
   exists.
@@ -57,7 +61,8 @@ atoms). The release guard runs the same check on `dist`.
 
 `sync.lock.json` records the rounds' git head, the time, and each file's source path, sha-256 and size. It is rewritten
 only when a file or the rounds' head changed, so a rerun with nothing new leaves no diff. `pnpm sync
---check` exits 1 when any synced file differs from the rounds, so CI or a person can see the repo is behind.
+--check` exits 1 when any synced file differs from the rounds and names each one, so CI or a person can see the
+repo is behind and why.
 
 ## When a round finishes
 

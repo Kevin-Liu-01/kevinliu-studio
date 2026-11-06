@@ -25,6 +25,11 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   make `Accept: text/markdown` negotiation unreachable. In order: redirects (trailing slash, `.html`, `/index`,
   `/cards`, the old site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers, the
   Markdown negotiation, the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
+- Caching: `_astro/` and `fonts/` are immutable; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
+  with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; media under those folders keeps a day
+  with a week of stale-while-revalidate; pages revalidate.
+- A protected preview: `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)" node
+  scripts/smoke.mjs <url>`; agent-browser takes the same token as the `x-vercel-trusted-oidc-idp-token` header.
 - No environment variables. Web Analytics and Speed Insights need their toggles on in the Vercel project.
 
 ## First deploy

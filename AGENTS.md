@@ -18,7 +18,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | `scripts/sync.mjs` | pulls round material by allow-list, patches, scans; writes only when every check passes | yes, carefully |
 | `scripts/verify-build.mjs` | the release guard after every build | yes |
 | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | synced round material | **never by hand**: `pnpm sync` |
-| `docs/` | architecture, sync, content, sound, battle, deploy | yes |
+| `docs/` | architecture, sync, content, sound, battle, deploy, performance | yes |
 
 ## Rules
 
@@ -31,6 +31,8 @@ Read `memory.md` before acting and append to it after every meaningful change.
   participant routes. The guard and the sync scan fail on these.
 - Never ship the ElevenLabs key, takes or receipts. Sound plays only for the visitor's own actions and defaults off
   under reduced motion.
+- Nothing pops: a page paints whole, keeps the header still, and names its assets by content address
+  (`docs/performance.md`). Record a change that touches first paint with `scripts/paint-capture.mjs` before and after.
 - Every page keeps one h1, a canonical, a share image and loop, JSON-LD and a Markdown twin. `pnpm build` fails
   otherwise.
 - Ask Kevin before creating the GitHub repo, pushing, deploying, touching Vercel domains or DNS, adding a paid service

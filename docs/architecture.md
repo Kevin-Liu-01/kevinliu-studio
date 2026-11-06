@@ -30,6 +30,11 @@ The round code writes relative paths (`media/<id>/pop.webp`, `posters/<id>.webp`
 `/cards/elo`). The battle page sets `<base href="/battle/mat/">` (or `arena/`) for the same reason, and a small inline
 script keeps its hash-only history writes on `/battle`.
 
+## First paint and caching
+
+The face, the content-addressed stylesheets and scripts, the wall's held first paint, prefetch and the rest of the
+performance bar are in `docs/performance.md`, with how to measure them.
+
 ## Routes
 
 | Path | What | Twin |
