@@ -7,7 +7,8 @@ import Header from '../components/Header.astro';
 import Machine from '../components/Machine.astro';
 import Analytics from '../components/Analytics.astro';
 import Footer from '../components/Footer.astro';
-import { cardFontB64, neuTokens, masks, sprite } from '../lib/cards';
+import { neuTokens, masks, sprite } from '../lib/cards';
+import { versioned } from '../lib/assets';
 import '../styles/site.css';
 
 interface Props {
@@ -19,17 +20,22 @@ interface Props {
   main?: string; // the id the skip link lands on
 }
 const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main' } = Astro.props;
-// a room inlines the cards' face so no card line wraps twice; a plain page points the same family at the site's
-// preloaded Latin file, which every page caches
-const fontFace = room
-  ? `@font-face{font-family:"Katagami Sans";src:url(data:font/woff2;base64,${cardFontB64}) format("woff2");font-weight:100 900;font-display:block}`
-  : '@font-face{font-family:"Katagami Sans";src:url(/fonts/katagami-sans-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}';
+// One face for every page, preloaded first and cached for a year. It blocks text rather than swapping (the cards'
+// titles are fitted to its advances at build, markup.js ADV), and the fallback is Arial scaled to its width and line,
+// so a page that ever paints before it arrives keeps every line where it was.
+const FONT = '/fonts/katagami-sans-site.woff2';
+const fontFace = [
+  `@font-face{font-family:"Katagami Sans";src:url(${FONT}) format("woff2");font-weight:100 900;font-display:block}`,
+  '@font-face{font-family:"Katagami Sans Fallback";src:local("Arial"),local("ArialMT");font-weight:100 600;size-adjust:106.9%;ascent-override:90.6%;descent-override:22.6%;line-gap-override:0%}',
+  '@font-face{font-family:"Katagami Sans Fallback";src:local("Arial Bold"),local("Arial-BoldMT");font-weight:601 900;size-adjust:102%;ascent-override:95%;descent-override:23.6%;line-gap-override:0%}',
+].join('');
 ---
 <!doctype html>
 <html lang="en" data-mode="human" {...html}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="preload" href={FONT} as="font" type="font/woff2" crossorigin />
 {room && <base href="/ex/" />}
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" content="#e9e4dc" media="(prefers-color-scheme: light)" />
@@ -39,14 +45,14 @@ const fontFace = room
 <link rel="icon" href="/favicon.ico" sizes="32x32" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preload" href="/fonts/katagami-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 <script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);try{if(localStorage.getItem('ill-mode')==='machine')d.dataset.mode='machine'}catch(e){}var t=q.get('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=t;try{if(localStorage.getItem('ill-pause')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)d.dataset.paused=''}catch(e){}})()</script>
 <style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
-{room && <script is:inline>/* the cards' face, decoded before the first layout so no line wraps twice (r4/ex build.mjs) */try{var t=document.getElementById("kface").textContent,i=t.indexOf("base64,")+7,b=atob(t.slice(i,t.indexOf(")",i))),u=new Uint8Array(b.length);for(var k=0;k<b.length;k++)u[k]=b.charCodeAt(k);document.fonts.add(new FontFace("Katagami Sans",u,{weight:"100 900",display:"block"}))}catch(e){}</script>}
-<link rel="stylesheet" href="/ex/ui.css" />
-{room && <link rel="stylesheet" href="/ex/card.css" />}
-{room && <link rel="stylesheet" href="/ex/rituals.css" />}
-{scripts.map((s) => <script is:inline defer src={`/ex/${s}`}></script>)}
+<link rel="stylesheet" href={versioned('/ex/ui.css')} />
+{room && <link rel="stylesheet" href={versioned('/ex/card.css')} />}
+{/* only a page that runs the rituals takes their sheet: it opts the page into cross-document View Transitions, which on
+   a card page crossfaded every return to the wall through a pale frame */}
+{scripts.includes('rituals.js') && <link rel="stylesheet" href={versioned('/ex/rituals.css')} />}
+{scripts.map((s) => <script is:inline defer src={versioned(`/ex/${s}`)}></script>)}
 <slot name="head" />
 <Analytics />
 </head>

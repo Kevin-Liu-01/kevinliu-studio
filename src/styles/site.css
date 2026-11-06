@@ -1,14 +1,12 @@
 /* The site's own layer over the card room (public/ex/ui.css, the rounds' clay): the header's brand and links, the
    footer, the card pages and the plain pages. The room's tokens (--clay, --ink-1..3, --raise-s, --sink-s) come from
    the neumorphic tokens every page inlines, so a card page and the gallery stand in the same light. */
-@font-face {
-  font-family: 'Katagami Site';
-  src: url('/fonts/katagami-sans-latin.woff2') format('woff2');
-  font-weight: 100 900;
-  font-display: swap;
-  /* the fallback's metrics match Inter's, which Katagami Sans is generated from */
-}
-:root { --site: 'Katagami Site', 'Katagami Sans', ui-sans-serif, system-ui, sans-serif; --measure: 64ch; }
+/* the room names its face with no fallback (ui.css --sans); every page adds the Arial cut to the face's width and line
+   (Base.astro), so text never lands on a default serif */
+:root { --sans: 'Katagami Sans', 'Katagami Sans Fallback', ui-sans-serif, system-ui, sans-serif; --site: var(--sans); --measure: 64ch; }
+
+/* the home wall waits for its first screen's pictures (index.astro); only a page with scripts sets data-hold */
+[data-hold] .wall { visibility: hidden; }
 
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
 .skip:focus-visible { top: 12px; }

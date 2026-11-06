@@ -98,8 +98,7 @@ export const battleRoster = (() => {
   return { budget: b.RULES.team.budget as number, cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number> };
 })();
 
-// The page head's pieces the card needs: the cards' face (inlined, so no line wraps twice) and the neumorphic tokens
-export const cardFontB64 = fs.readFileSync(path.join(VX, 'fonts/katagami-sans-cards.woff2')).toString('base64');
+// The page head's piece the card needs: the neumorphic tokens (the face is public/fonts/katagami-sans-site.woff2, Base.astro)
 export const neuTokens = fs.readFileSync(path.join(VX, 'vendor/neu-tokens.css'), 'utf8').replace(/^\/\*.*\*\/\n/, '');
 
 // The icon sprite build.mjs inlines at the foot of each page (icons.svg plus the card's own symbols)

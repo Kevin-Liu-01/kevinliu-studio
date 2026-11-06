@@ -79,7 +79,7 @@ const discIcon = (d: string) => M.icon(d.toLowerCase());
     </article>
   </main>
   <nav class="pager" aria-label="Cards">
-    <a href={cardPath(prev)} rel="prev"><Fragment set:html={M.icon('prev')} />{prev.title}</a>
-    <a href={cardPath(next)} rel="next">{next.title}<Fragment set:html={M.icon('next')} /></a>
+    <a href={cardPath(prev)} rel="prev" data-astro-prefetch="viewport"><Fragment set:html={M.icon('prev')} />{prev.title}</a>
+    <a href={cardPath(next)} rel="next" data-astro-prefetch="viewport">{next.title}<Fragment set:html={M.icon('next')} /></a>
   </nav>
 </Base>

@@ -52,6 +52,10 @@ for (const f of htmls) {
   for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     try { JSON.parse(m[1]); } catch (e) { fail(page, `JSON-LD does not parse: ${e.message}`); }
   }
+  // the face is one cached file, preloaded first; never inlined into a page again (docs/architecture.md, Fonts)
+  if (/font\/woff2;base64/.test(html)) fail(page, 'a font is inlined as base64');
+  // each stylesheet and deferred script a page names under /ex/ carries its content address (vercel.json caches it)
+  for (const m of html.matchAll(/\s(?:href|src)="(\/ex\/[^"]+\.(?:css|js))"/g)) fail(page, `${m[1]} has no ?v= content address`);
   const twin = html.match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
   if (page !== '/404.html' && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
   // every local reference, resolved the way the browser will

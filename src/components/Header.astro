@@ -11,12 +11,12 @@ const NAV = [
 ];
 ---
 <header class="top site">
-  <a class="brand" href="/" aria-label={home ? undefined : 'Kevin Liu, every card'}>
+  <a class="brand" href="/" aria-label={home ? undefined : 'Kevin Liu, every card'} data-astro-prefetch={home ? undefined : 'viewport'}>
     <svg class="kl" viewBox="8 5 80 80" aria-hidden="true"><path fill="currentColor" d={KL_PATH} /></svg>
     {home ? <h1>Kevin Liu</h1> : <span class="name">Kevin Liu</span>}
   </a>
   <nav class="links" aria-label="Site">
-    {NAV.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>)}
+    {NAV.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined} data-astro-prefetch="viewport">{n.label}</a>)}
   </nav>
   <div class="seg" role="group" aria-label="View" style="--i:0">
     {['Human', 'Machine'].map((v, i) => <button type="button" data-mode-set={v.toLowerCase()} aria-pressed={String(!i)} set:html={M.weights(v)} />)}

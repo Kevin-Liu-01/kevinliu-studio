@@ -43,7 +43,7 @@ html[data-boot] #app { visibility: hidden; }
 .key {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 44px;
   padding: 0 14px; border: 0; border-radius: 11px; background: var(--room-clay); color: var(--ink); text-decoration: none;
-  font: 600 15px/1 var(--sans); white-space: nowrap; box-shadow: var(--room-raise-s); transition: box-shadow 160ms, transform 90ms, background-color 160ms;
+  font: 600 15px/1 var(--sans); white-space: nowrap; box-shadow: var(--room-raise-s); transition: transform 90ms;
 }
 @media (hover: hover) { .key:hover:not([aria-disabled="true"]) { background: var(--room-clay-hi); } }
 .key:active:not([aria-disabled="true"]) { transform: scale(.97); }

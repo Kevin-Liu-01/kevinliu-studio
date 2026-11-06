@@ -4,6 +4,7 @@
 // from its own address in the rounds point at this site's copies instead.
 import fs from 'node:fs';
 import path from 'node:path';
+import { versioned } from './assets';
 
 const SRC = fs.readFileSync(path.join(process.cwd(), 'vendor/battle/mat/index.html'), 'utf8');
 
@@ -16,6 +17,9 @@ function swap(text: string, pairs: [string | RegExp, string][]) {
   return text;
 }
 
+// the page's own sheets and scripts by their content address, so a second visit reuses them without asking (vercel.json)
+const own = (attr: 'href' | 'src', file: string): [string, string] => [`${attr}="../${file}"`, `${attr}="${versioned(`/battle/${file}`)}"`];
+
 const head = swap(SRC.slice(SRC.indexOf('<head>') + 6, SRC.indexOf('</head>')), [
   [/<title>[^<]*<\/title>\n?/, ''],
   [/<meta name="description"[^>]*>\n?/, ''],
@@ -25,10 +29,12 @@ const head = swap(SRC.slice(SRC.indexOf('<head>') + 6, SRC.indexOf('</head>')), 
   ["new URL('../../../r3/battle/', location.href).href", "new URL('/battle/r3/', location.href).href"],
   ["new URL('../vendor/cards/', location.href).href", "new URL('/battle/vendor/cards/', location.href).href"],
   ['/\\/arena\\//.test(location.pathname)', '/\\/arena(\\/|$)/.test(location.pathname)'],
+  ...(['vendor/cards/card.gen.css', 'vendor/broadcast/stage.css', 'shared/battle.css'] as const).map((f) => own('href', f)),
 ]);
 const body = swap(SRC.slice(SRC.indexOf('<body>') + 6, SRC.indexOf('</body>')), [
   ['<a class="key" id="leave" href="../../../r3/cards/index.html">Leave</a>', '<a class="key" id="leave" href="/">Leave</a>'],
   ['<p class="mark">Kevin Liu</p>', '<h1 class="mark">Kevin Liu</h1>'],
+  ...['vendor/cards/markup.js', 'vendor/cards/art.js', 'vendor/cards/card-env.gen.js', 'vendor/cards/card-sprite.gen.js', 'vendor/broadcast/media.js', 'vendor/broadcast/kit.js', 'shared/battle.js'].map((f) => own('src', f)),
 ]);
 const htmlAttrs = SRC.match(/<html([^>]*)>/)?.[1] ?? '';
 

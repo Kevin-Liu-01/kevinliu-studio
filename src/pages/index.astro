@@ -2,10 +2,21 @@
 import Base from '../layouts/Base.astro';
 import { fighters, rules, card, M, env, battleRoster, whatOf } from '../lib/cards';
 import { cardPath } from '../lib/twins';
+import { versioned } from '../lib/assets';
 import { SITE, NAME, DESCRIPTION, person } from '../lib/site';
 
 const ART_RATIO = 88 / 63;
-const wall = fighters.map((f, i) => `<li class="pocket" style="--n:${i}">${card(f)}</li>`).join('\n');
+// The wall's first screen (two rows of up to seven, the widest the gallery sets) loads with the page and its first
+// poster first; the cards below wait until the page has loaded, then fetch at idle (the script under the wall), so the
+// first screen never shares the line with pictures nobody can see yet, and no lens, pack or dock ever opens on a hole.
+const FIRST_SCREEN = 14;
+const lazy = (html: string) => html.replace(/<img /g, '<img loading="lazy" ');
+const wall = fighters.map((f, i) => {
+  const c = card(f);
+  const html = i === 0 ? c.replace('<img class="poster" ', '<img class="poster" fetchpriority="high" ') : i < FIRST_SCREEN ? c : lazy(c);
+  // the card is the lens's button; its page is a plain link beside it, for crawlers, agents and pages without scripts
+  return `<li class="pocket" style="--n:${i}">${html}<a class="sr" href="${cardPath(f)}" tabindex="-1" aria-hidden="true">${f.title}</a></li>`;
+}).join('\n');
 const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
 const jsonld = [
   { '@type': 'WebSite', '@id': `${SITE}/#site`, url: `${SITE}/`, name: NAME, description: DESCRIPTION, author: { '@id': person['@id'] }, inLanguage: 'en' },
@@ -25,13 +36,15 @@ const jsonld = [
   scripts={['fighters.js', 'engine.js', 'grounds/shell.js', 'media.gen.js', 'art.js', 'motion.js', 'markup.js', 'rituals.js']}
 >
   <Fragment slot="head">
+    <script is:inline>document.documentElement.dataset.hold = ''</script>
     <meta name="battle" content="/battle" />
     {roster && <meta name="battle-roster" content={roster} />}
-    <script is:inline type="module" src="/sound/boot.gallery.js"></script>
-    <script is:inline defer src="/ex/gallery.js"></script>
+    <script is:inline type="module" src={versioned('/sound/boot.gallery.js')}></script>
+    <script is:inline defer src={versioned('/ex/gallery.js')}></script>
   </Fragment>
   <main class="gallery" id="gallery">
     <ul class="wall" aria-label="Cards" set:html={`${wall}\n<li class="pocket tile">${M.deck()}</li>\n<li class="pocket tile">${M.pack(fighters, ART_RATIO, env)}</li>`} />
+    <script is:inline>/* the wall shows once the pictures of the cards on screen are decoded (1 s at most), so it paints whole instead of card by card; the cards below load unseen, and the rest fetch at idle once the page has loaded. At that idle one silent context is made and closed: the browser's first AudioContext waits on its audio service starting (seconds on a busy phone), and the sound kit makes its own in the visitor's first press, so that press no longer pays for it. Nothing plays and nothing is fetched (docs/sound.md) */(function(d){var vh=innerHeight,imgs=[];document.querySelectorAll(".wall > .pocket").forEach(function(p){var r=p.getBoundingClientRect();if(r.top<vh&&r.bottom>0)p.querySelectorAll("img").forEach(function(i){imgs.push(i.decode().catch(function(){}))})});Promise.race([Promise.all(imgs),new Promise(function(r){setTimeout(r,1000)})]).then(function(){delete d.dataset.hold});addEventListener("load",function(){(self.requestIdleCallback||setTimeout)(function(){document.querySelectorAll('img[loading="lazy"]').forEach(function(i){i.loading="eager"});try{var k=localStorage.getItem("kevin-liu-studio:sound"),C=self.AudioContext||self.webkitAudioContext;if(C&&(k==="on"||k===null&&!matchMedia("(prefers-reduced-motion: reduce)").matches))new C().close()}catch(e){}})},{once:true})})(document.documentElement)</script>
   </main>
   <Fragment set:html={M.dock([], [], fighters, rules, env)} />
   <Fragment slot="overlay">

@@ -31,7 +31,7 @@ html[data-boot] #app { visibility: hidden; }
 .key {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; min-width: 44px;
   padding: 0 14px; border: 0; border-radius: 11px; background: var(--room-clay); color: var(--ink); text-decoration: none;
-  font: 600 15px/1 var(--sans); white-space: nowrap; box-shadow: var(--room-raise-s); transition: box-shadow 160ms, transform 90ms, background-color 160ms;
+  font: 600 15px/1 var(--sans); white-space: nowrap; box-shadow: var(--room-raise-s); transition: transform 90ms;
 }
 @media (hover: hover) { .key:hover:not([aria-disabled="true"]) { background: var(--room-clay-hi); } }
 .key:active:not([aria-disabled="true"]) { transform: scale(.97); }
@@ -341,6 +341,16 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .flag-num { font-size: 18px; }
   .flag-cloth { padding: 0 10px 0 12px; column-gap: 6px; }
   .flag-chips i { height: 18px; font-size: 10px; padding: 0 6px; }
+}
+
+/* ============================================================ kevinliu.studio: the rail at 320 px (scripts/sync.mjs) */
+@media (max-width: 359px) {
+  .rail { grid-template-columns: minmax(0, 1fr); }
+  .team-rail { gap: 4px; }
+  .pips { gap: 3px; }
+  .pip, .pip-face, .pip-back { width: 22px; }
+  .pip { height: 35px; }
+  .pip-face, .pip-back { height: 31px; }
 }
 
 /* ============================================================ reduced motion: every step a still */

@@ -101,6 +101,18 @@ function everyOf(file, text, find, replace, n) {
   return text.split(find).join(replace);
 }
 const HIDE = '  .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }';
+const KEY_EASE = 'transition: box-shadow 160ms, transform 90ms, background-color 160ms;', KEY_MOVE = 'transition: transform 90ms;';
+const NARROW_ARENA = `/* ============================================================ kevinliu.studio: the rail at 320 px (scripts/sync.mjs) */
+@media (max-width: 359px) {
+  .rail { grid-template-columns: minmax(0, 1fr); }
+  .team-rail { gap: 4px; }
+  .pips { gap: 3px; }
+  .pip, .pip-face, .pip-back { width: 22px; }
+  .pip { height: 35px; }
+  .pip-face, .pip-back { height: 31px; }
+}
+
+`;
 const after = (add) => (find) => find + add;
 const before = (add) => (find) => add + find;
 // r4/sound INTEGRATION.md section 2, the gallery's hooks, as written for the merge run. The player is reached only
@@ -132,8 +144,15 @@ const TRANSFORMS = {
   },
   // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
   // accessibility tree
-  'public/battle/mat/mat.css': (t) => patch('mat.css', t, [['  .mark { display: none; }', HIDE]]),
-  'public/battle/arena/arena.css': (t) => everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2),
+  // a key's raise and colour change at once; only its press moves (transform), so no frame repaints a shadow
+  'public/battle/mat/mat.css': (t) => patch('mat.css', t, [['  .mark { display: none; }', HIDE], [KEY_EASE, KEY_MOVE]]),
+  // at 320 px the Arena's team rail (two teams of pips and the turn) was 33 px wider than the rail, and the grid column
+  // it shares with the keys grew with it, so Leave slid off screen: the column holds the rail's width, and the pips and
+  // gaps tighten until the team rail fits
+  'public/battle/arena/arena.css': (t) => patch('arena.css', everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2), [
+    ['/* ============================================================ reduced motion: every step a still */', before(NARROW_ARENA)],
+    [KEY_EASE, KEY_MOVE],
+  ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">']]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
@@ -258,6 +277,8 @@ if (problems.length) {
 }
 if (CHECK) {
   console.log(writes.length || removes.length ? `stale: ${writes.length} changed, ${removes.length} to remove (run pnpm sync)` : 'in sync');
+  for (const [abs] of writes) console.log(`  changed ${path.relative(REPO, abs)}`);
+  for (const abs of removes) console.log(`  remove  ${path.relative(REPO, abs)}`);
   process.exit(writes.length || removes.length ? 1 : 0);
 }
 for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: true }); fs.writeFileSync(`${abs}.tmp`, buf); fs.renameSync(`${abs}.tmp`, abs); }
