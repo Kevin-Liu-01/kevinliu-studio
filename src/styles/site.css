@@ -24,6 +24,7 @@ header.top .links a {
 }
 header.top .links a[aria-current='page'] { color: var(--ink-1); font-weight: 600; box-shadow: var(--sink-s); }
 @media (hover: hover) { header.top .links a:hover { color: var(--ink-1); } }
+header.top .spacer { visibility: hidden; pointer-events: none; }
 header.top .swapi .on { display: none; }
 header.top #sound[aria-pressed='true'] .on { display: block; }
 header.top #sound[aria-pressed='true'] .off { display: none; }
