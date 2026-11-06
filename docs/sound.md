@@ -9,6 +9,10 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 - Sound answers the visitor's own actions: a press, a hover, a tilt, a flip, adding or removing a card, tearing a pack,
   and the battle they start.
 - Nothing is fetched before the first gesture. The player unlocks audio on that gesture.
+- The home page makes one silent `AudioContext` at idle after load and closes it at once (`src/pages/index.astro`,
+  only when sound would be on). A browser's first context waits on its audio service starting, which took 4.7 s inside
+  the first press on a busy machine (2026-11-05); started at idle, the press makes its own context in about 1 ms.
+  Nothing plays and nothing is fetched.
 - Under `prefers-reduced-motion` sound defaults to off. A saved choice (`localStorage['kevin-liu-studio:sound']`)
   always wins and syncs across tabs. The header's speaker button toggles it.
 - The gallery's music loop (`mus.gallery`) is not played: reading the wall makes no sound of its own. This is a

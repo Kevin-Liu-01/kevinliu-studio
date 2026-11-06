@@ -5,8 +5,9 @@
    (Base.astro), so text never lands on a default serif */
 :root { --sans: 'Katagami Sans', 'Katagami Sans Fallback', ui-sans-serif, system-ui, sans-serif; --site: var(--sans); --measure: 64ch; }
 
-/* the home wall waits for its first screen's pictures (index.astro); only a page with scripts sets data-hold */
-[data-hold] .wall { visibility: hidden; }
+/* the home page waits for its first screen's pictures (index.astro; only a page with scripts sets data-hold). Nothing
+   contentful paints meanwhile, so a visitor arriving from another page keeps seeing it until the whole wall is ready */
+[data-hold] .human { visibility: hidden; }
 
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
 .skip:focus-visible { top: 12px; }

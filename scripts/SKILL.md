@@ -1,6 +1,6 @@
 ---
 name: kevinliu-studio-scripts
-description: Procedure for scripts/ in kevinliu-studio: the round sync, the release guard, the smoke check and the icon builder. Read before editing a script.
+description: Procedure for scripts/ in kevinliu-studio: the round sync, the release guard, the smoke check, the paint capture and the icon builder. Read before editing a script.
 ---
 
 # scripts/
@@ -11,3 +11,7 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
 - `verify-build.mjs`: a new site-wide rule goes here so it fails the build, not in a checklist.
 - `smoke.mjs`: runs against a deployment; add a route here when a page is added.
 - `icons.mjs`: rewrites the touch, manifest and ico icons from `public/favicon.svg`.
+- `paint-capture.mjs`: screencasts an agent-browser page to timestamped frames for the `ui-recording-timeline`
+  skill; the procedure is in `docs/performance.md`.
+- `smoke.mjs` takes `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)"` for a
+  protected preview.
