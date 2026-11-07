@@ -60,6 +60,13 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The phone-memory release (`fix/mobile-memory`, 2026-11-07) replaced production deployment
+`kevinliu-studio-35wc6c87l-kl01s-projects.vercel.app` (main 0d8fb9d). To undo it, promote that deployment again
+(Instant Rollback in the `kevinliu-studio` project, or `vercel promote <url> --scope kl01s-projects`), then revert
+the merge on `main`.
+
+Before the domain swap:
+
 1. Move `www.kevinliu.studio` and `kevinliu.studio` back to `kevin-portfolio`.
 2. If swap step 4 has run, also roll `kevin-portfolio` back (Instant Rollback) to the deployment recorded in swap
    step 1. Otherwise www would serve pages whose canonical and sitemap point at portfoliomon.

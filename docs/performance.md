@@ -153,6 +153,10 @@ Settled, the wall scrolled halfway and still for 3 s, iPhone 14, medians of 2 to
 WebContent 345 to 180 MB.
 
 On the iPhone 14 the wall's WebContent rose with every visit before (368, then 550 to 640, then 540 to 680 MB) and
-levels off after (130 to 180, then 430 to 470 just after the Arena, then 335 to 395 MB). The Arena itself holds about
+rises more slowly after (130 to 180, then 430 to 470 just after the Arena, then 335 to 395 MB). Desktop WebKit keeps
+that memory as cache while nothing asks for it back, in both builds. In an 820 s same-run soak (2026-11-07) the wall
+rose 307 → 864 MB on the fix and 538 → 1,272 MB before; WebKit's low-memory warning
+(`notifyutil -p org.WebKit.lowMemory`, the kind iOS sends before killing a tab) dropped both to about 60 to 120 MB
+within 5 s. So a rising soak on desktop WebKit is not a leak by itself: send the warning and see what stays. The Arena itself holds about
 400 MB of WebContent and two WebGL contexts (the battle round's board and broadcast kit); that is the next place to
 look, in r4/play.

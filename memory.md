@@ -103,3 +103,13 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   187 → 43 MB; settled wall GPU 820 → 540, WebContent 345 → 180 MB. No crash in any soak.
 - **Open**: the Arena holds about 400 MB of WebContent and two WebGL contexts (r4/play board and kit); `pnpm check`
   fails on main already (astro check does not support TypeScript 7); not pushed or deployed: Kevin's call.
+- **Checked** (2026-11-07, preview `kevinliu-studio-7lpwp37lc` and local dists of 4df1e39 and 0d8fb9d side by side):
+  memory, layout, cards, battle and code review, each failure adversarially verified; nothing blocking. CLS 0 at 1440
+  and 390; all card interactions and both battles pass with no new console errors; every lock hash and patch
+  reproduces. Same-run 820 s soak: wall WebContent fix 307 → 864 vs before 538 → 1,272 MB, GPU peak 1,046 vs 2,012 MB;
+  the low-memory warning released both, so "levels off" in docs/performance.md now reads "rises more slowly".
+  Known, not blocking: on touch a fast jump shows a card's art up to about 1 s late (lazy pictures); on desktop a
+  long jump can paint one or two frames without card filters (`data-far`). Not covered: real Safari's
+  back-forward cache (Chromium's real cache path passes). Harness: Relay's playwright-core is now 1.63 (needs
+  webkit-2359, not installed); use Prototemplate's 1.62.1, and soak.mjs counts other agents' WebKit processes.
+- **Shipped** (2026-11-07): Kevin said "approved all". Rollback target `kevinliu-studio-35wc6c87l` (docs/deploy.md).
