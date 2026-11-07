@@ -119,3 +119,41 @@ export const sprite = (() => {
 })();
 
 export const KL_PATH: string = M.KL;
+
+// A team of three that fits the battle's budget, in roster order, led by the given card
+export function teamFor(lead: string): string[] | null {
+  if (!battleRoster || !(lead in battleRoster.cost)) return null;
+  const ids = Object.keys(battleRoster.cost).filter((id) => id !== lead);
+  const left = battleRoster.budget - battleRoster.cost[lead];
+  for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+    if (battleRoster.cost[ids[i]] + battleRoster.cost[ids[j]] <= left) return [lead, ids[i], ids[j]];
+  }
+  return null;
+}
+
+// Repositories a visitor cannot open (GitHub answers 404 without a sign-in, checked 2026-11-07). The rounds still list
+// them, so the card pages, twins and JSON-LD link only the rest; scripts/check-seo.mjs fails when one of the rest stops
+// answering 200. Change this when a repository goes public, and in the rounds' roster.
+const CLOSED = new Set(['agent-pets', 'bday-land', 'powerlifting', 'elo', 'kevin-wiki', 'sandbox-arena', 'dedalus-terminal']);
+export const repoOf = (f: Fighter): string | undefined => (f.repo && !CLOSED.has(f.id) && !/\(private\)/.test(f.repo) ? f.repo.replace(/ .*$/, '') : undefined);
+
+// The one sentence that answers "what is <card>": the card's own line with its name as the subject. Only a leading
+// article is lowercased; a line that opens on a name ("General Translation's magazine") keeps its capitals.
+export function answerOf(f: Fighter): string {
+  const what = whatOf(f);
+  if (/^(A|An|The) /.test(what)) return `${f.title} is ${what[0].toLowerCase()}${what.slice(1)}`;
+  if (/^[A-Z][\w.]*(?: [A-Z][\w.]*)*'s /.test(what)) return `${f.title} is ${what}`;
+  return `${f.title}: ${what}`;
+}
+
+// Three cards that share the most disciplines with this one (its first discipline counts double), nearest in the
+// wall's order on a tie, so every card page links to its neighbours in kind rather than only in number.
+export function relatedOf(f: Fighter, n = 3): Fighter[] {
+  const i = FIGHTERS.indexOf(f);
+  const score = (g: Fighter) => g.disciplines.reduce((s, d) => s + (d === f.disciplines[0] ? 2 : f.disciplines.includes(d) ? 1 : 0), 0);
+  return FIGHTERS.filter((g) => g !== f)
+    .map((g) => ({ g, s: score(g), d: Math.abs(FIGHTERS.indexOf(g) - i) }))
+    .sort((a, b) => b.s - a.s || a.d - b.d)
+    .slice(0, n)
+    .map((x) => x.g);
+}

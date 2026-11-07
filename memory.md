@@ -113,3 +113,27 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   back-forward cache (Chromium's real cache path passes). Harness: Relay's playwright-core is now 1.63 (needs
   webkit-2359, not installed); use Prototemplate's 1.62.1, and soak.mjs counts other agents' WebKit processes.
 - **Shipped** (2026-11-07): Kevin said "approved all". Rollback target `kevinliu-studio-35wc6c87l` (docs/deploy.md).
+
+## 2026-11-07: search, answers and share cards (seo/aeo, Claude Code)
+
+- **Type**: feature (SEO, AEO, GEO)
+- **Asked**: Kevin, 2026-11-07 02:28: "massively improve my seo and geo and aeo and include more about myself in the
+  llms.txt. also use og:images in all my links. and make more links!"
+- **Changed**: `src/lib/schema.ts` (one JSON-LD `@graph` per page: WebSite, Person, the page, BreadcrumbList, the
+  card's project with SoftwareSourceCode for public repos, the battle's VideoGame); `src/lib/share.ts` and
+  `pages/share/[name].jpg.ts` (share images for /about, /cards, /battle, /battle/arena and the 404, built from the
+  cards' own share images and Katagami Sans via satori and sharp; `src/share/*.ttf` instanced from the site face);
+  `/cards` (a plain index; its old redirect to `/` is gone); card pages open with "<Card> is ...", link the battle
+  with that card leading and three related cards, and link only repositories a visitor can open (`CLOSED` in
+  `cards.ts`); `site.ts` `FACTS` and `ALSO_KNOWN_AS` with sources for llms.txt's About section; `/about` asks two
+  questions its own words do not answer; footer links `/cards`, the page's twin and llms.txt; `.md` twins carry a
+  canonical `Link` header; sitemap `lastmod` from git, left out where a shallow clone cannot date a page;
+  `scripts/check-seo.mjs`; the guard checks share image size and alt and the graph. `docs/seo.md`.
+- **Checked**: build and guard; `smoke.mjs` and `check-seo.mjs --external` against a local serve of dist that applies
+  vercel.json's routes; Lighthouse SEO 100 on `/`, `/about`, `/cards/claude-of-tanks`, `/cards/atlas`, `/cards`;
+  a card's battle link starts that team; an eight-agent adversarial review (wf_aacfd7cb-5f4), every confirmed finding
+  fixed.
+- **Open**: seven card repositories are private (Agent Pets, bday.land, Powerlifting, Elo, Kevin Wiki, Sandbox
+  Arena, 050525) and the card face (r4/ex markup.js `NOLINK`) still links their commits, a 404 for visitors: fix in
+  the rounds; Kevin to strike any `FACTS` line; Search Console and Bing submission; set `VERCEL_DEEP_CLONE` if every
+  page should carry a `lastmod`.

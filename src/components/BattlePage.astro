@@ -3,6 +3,7 @@ import Seo from './Seo.astro';
 import Analytics from './Analytics.astro';
 import Release from './Release.astro';
 import { battlePage } from '../lib/battle';
+import { graph, page } from '../lib/schema';
 import { SITE, NAME, person } from '../lib/site';
 interface Props { mode: 'mat' | 'arena' }
 const { mode } = Astro.props;
@@ -11,14 +12,10 @@ const title = mode === 'arena' ? 'Battle, Arena' : 'Battle';
 const description = mode === 'arena'
   ? `Play three of ${NAME}'s project cards against three more on a painted floor, with eight original trainer figures and a cutscene for every move.`
   : `Play three of ${NAME}'s project cards against three more on a card mat, with a cutscene for every move.`;
-const jsonld = [
-  { '@type': 'VideoGame', name: `${NAME}'s card battle`, url: `${SITE}${path}`, description, genre: 'Card battle', playMode: 'SinglePlayer', gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Web', author: { '@id': person['@id'] } },
-  person,
-  { '@type': 'BreadcrumbList', itemListElement: [
-    { '@type': 'ListItem', position: 1, name: NAME, item: `${SITE}/` },
-    { '@type': 'ListItem', position: 2, name: title, item: `${SITE}${path}` },
-  ] },
-];
+const game = { '@type': 'VideoGame', '@id': `${SITE}/battle#game`, name: `${NAME}'s card battle`, url: `${SITE}/battle`, description: `Play three of ${NAME}'s project cards against three more, on a card mat or in an arena.`, genre: 'Card battle', playMode: 'SinglePlayer', gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Web browser', isAccessibleForFree: true, inLanguage: 'en', image: `${SITE}/share/battle.jpg`, author: { '@id': person['@id'] }, creator: { '@id': person['@id'] } };
+const share = mode === 'arena' ? 'arena' : 'battle';
+const jsonld = graph(page({ path, type: 'WebPage', name: title, description, image: `${SITE}/share/${share}.jpg`, crumbs: mode === 'arena' ? [['Battle', '/battle'], ['Arena', path]] : [['Battle', path]], mainEntity: { '@id': game['@id'] } }), game);
+const alt = mode === 'arena' ? 'Three project cards against three more on the Arena floor' : 'Three project cards against three more on the card mat';
 ---
 <!doctype html>
 <html lang="en" data-boot>
@@ -26,7 +23,7 @@ const jsonld = [
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href={`/battle/${mode}/`} />
-<Seo title={title} description={description} path={path} jsonld={jsonld} twin={`${path}.md`} />
+<Seo title={title} description={description} path={path} share={share} imageAlt={alt} jsonld={jsonld} twin={`${path}.md`} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>

@@ -19,7 +19,7 @@ generator for metadata.
 | Round material (cards, battle, sound) | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | `scripts/sync.mjs`, never edited by hand |
 | Build-time card loader | `src/lib/cards.ts` | loads `markup.js`, `fighters.js`, `face.gen.js` and the rest in CommonJS sandboxes |
 | Twins and agent files | `src/lib/twins.ts` | every `.md` endpoint, `llms.txt`, `llms-full.txt` and the Machine view |
-| Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro` | title, canonical, Open Graph image and loop, JSON-LD |
+| Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro`, `src/lib/schema.ts`, `src/lib/share.ts` | title, canonical, share image (and loop), one JSON-LD graph; `docs/seo.md` |
 | Pages | `src/pages/` | home (the wall), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404` |
 | Release guard | `scripts/verify-build.mjs` | runs after every build; see `docs/deploy.md` |
 
@@ -40,6 +40,7 @@ performance bar are in `docs/performance.md`, with how to measure them.
 | Path | What | Twin |
 | --- | --- | --- |
 | `/` | the 26-card wall, the pack, the dock (Pick Three), the face-down deck to the previous site | `/index.md` |
+| `/cards` | every card as a plain index with live sites and public sources | `/cards.md` |
 | `/cards/<id>` | one card at full size with its numbers, trait, moves and receipts | `/cards/<id>.md` |
 | `/battle`, `/battle/arena` | the Mat and Arena battle (r4/play) | `/battle.md` |
 | `/about` | the bio, every project and links | `/about.md` |

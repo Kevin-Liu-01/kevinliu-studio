@@ -68,7 +68,7 @@ const fontFace = [
 <div id="behind">
 <Header path={seo.path} />
 <slot />
-<Footer />
+<Footer twin={seo.twin === undefined ? (seo.path === '/' ? '/index.md' : `${seo.path}.md`) : seo.twin} />
 </div>
 <slot name="overlay" />
 </div>

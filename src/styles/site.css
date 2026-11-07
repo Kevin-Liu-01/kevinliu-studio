@@ -85,6 +85,11 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .cardpage code { display: block; margin-top: 8px; font: 500 12px/1.45 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
 .cardpage .cp-pin { margin-top: 20px; font-size: 14px; color: var(--ink-2); }
 .cardpage .cp-pin a { color: inherit; }
+.cardpage .cp-related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.cardpage .cp-related a { display: grid; gap: 2px; padding: 12px 16px; border-radius: 16px; background: var(--clay); box-shadow: var(--raise-s); color: var(--ink-1); text-decoration: none; }
+.cardpage .cp-related a:active { box-shadow: var(--sink-s); }
+.cardpage .cp-related b { font: 700 15px/20px var(--sans); }
+.cardpage .cp-related span { font-size: 13px; color: var(--ink-2); }
 .cardpage .cp-disc { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; }
 .cardpage .cp-disc span { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; min-height: 32px; border-radius: 999px; background: var(--clay); box-shadow: var(--sink-s); font: 600 13px/20px var(--sans); }
 .cardpage .cp-disc .i { width: 16px; height: 16px; }
@@ -104,6 +109,14 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose ul { padding-left: 1.1em; }
 .prose li { margin: 6px 0; }
 .prose .lede { font-size: 20px; line-height: 1.45; }
+.prose dt { margin-top: 18px; font: 700 17px/24px var(--sans); }
+.prose dd { margin: 4px 0 0; }
+.index { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.index li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 14px 0; border-top: 1px solid color-mix(in oklab, var(--ink-2) 22%, transparent); }
+.index .t { font: 700 17px/24px var(--sans); }
+.index .w { grid-column: 1; color: var(--ink-2); font-size: 15px; line-height: 1.5; }
+.index .y { grid-column: 2; grid-row: 1; color: var(--ink-2); font: 500 14px/24px var(--sans); font-variant-numeric: tabular-nums; }
+.index .go { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
 .minis { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
 .minis a { display: grid; gap: 8px; text-decoration: none; color: var(--ink-1); font: 600 14px/18px var(--sans); }
 .minis img { width: 100%; height: auto; aspect-ratio: 63 / 88; border-radius: 10px; box-shadow: var(--raise-s); background: var(--clay); }

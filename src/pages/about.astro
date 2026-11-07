@@ -1,19 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import { fighters, whatOf } from '../lib/cards';
-import { cardPath } from '../lib/twins';
+import { cardPath, QA } from '../lib/twins';
+import { website, page } from '../lib/schema';
 import { SITE, NAME, BIO, ABOUT, SOCIAL, EMAIL, person } from '../lib/site';
 const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
-const jsonld = [
-  { '@type': 'ProfilePage', '@id': `${SITE}/about#page`, url: `${SITE}/about`, name: `About ${NAME}`, mainEntity: { '@id': person['@id'] } },
-  { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } },
-  { '@type': 'BreadcrumbList', itemListElement: [
-    { '@type': 'ListItem', position: 1, name: NAME, item: `${SITE}/` },
-    { '@type': 'ListItem', position: 2, name: 'About', item: `${SITE}/about` },
-  ] },
-];
+// Kevin's employer is named only here and in the files that print this page (docs/content.md)
+const kevin = { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } };
+const jsonld = [website, kevin, ...page({ path: '/about', type: 'ProfilePage', name: `About ${NAME}`, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [['About', '/about']], mainEntity: { '@id': person['@id'] } })];
 ---
-<Base seo={{ title: 'About', description: BIO, path: '/about', type: 'profile', jsonld }}>
+<Base seo={{ title: 'About', fullTitle: `About ${NAME}`, description: BIO, path: '/about', type: 'profile', share: 'about', imageAlt: `${NAME}, with the Claude of Tanks, Katagami and Turboslide cards`, jsonld }}>
   <main class="prose" id="main">
     <h1>About {NAME}</h1>
     {ABOUT.map((runs, i) => (
@@ -24,5 +20,9 @@ const jsonld = [
     <ul>
       {fighters.map((f) => <li><a href={cardPath(f)}>{f.title}</a>. {whatOf(f)}</li>)}
     </ul>
+    <h2>Questions</h2>
+    <dl>
+      {QA.map(([q, a]) => <Fragment><dt>{q}</dt><dd>{a}</dd></Fragment>)}
+    </dl>
   </main>
 </Base>
