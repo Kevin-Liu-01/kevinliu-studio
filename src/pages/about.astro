@@ -1,10 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
 import { fighters, whatOf } from '../lib/cards';
-import { cardPath, QA } from '../lib/twins';
+import { cardPath, QA, aboutMd } from '../lib/twins';
+import { mdHtml } from '../lib/machine';
 import { website, page } from '../lib/schema';
 import { SITE, NAME, BIO, ABOUT, SOCIAL, EMAIL, person } from '../lib/site';
 const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
+// the Machine view's forms: the twin's blocks where the page shows them (its headings are the page's own, marked by
+// machine.css); the line about the cards has no place of its own on the page, so it stands before the projects
+const tw = aboutMd().trimEnd().split('\n\n');
+const at = (h: string) => tw.indexOf(h);
+const paras = tw.slice(1, 1 + ABOUT.length);
+const site = tw[at('## Projects') - 1];
+const projects = tw[at('## Projects') + 1].split('\n');
+const questions = tw.slice(at('## Questions') + 1, at('## Elsewhere'));
+const elsewhere = `${tw[at('## Elsewhere')]}\n\n${tw[at('## Elsewhere') + 1]}`;
 // Kevin's employer is named only here and in the files that print this page (docs/content.md)
 const kevin = { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } };
 const jsonld = [website, kevin, ...page({ path: '/about', type: 'ProfilePage', name: `About ${NAME}`, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [['About', '/about']], mainEntity: { '@id': person['@id'] } })];
@@ -13,16 +23,18 @@ const jsonld = [website, kevin, ...page({ path: '/about', type: 'ProfilePage', n
   <main class="prose" id="main">
     <h1>About {NAME}</h1>
     {ABOUT.map((runs, i) => (
-      <p class={i === 0 ? 'lede' : undefined}>{runs.map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</p>
+      <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runs.map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
     ))}
-    <p>Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p>
+    <p class="sw"><span class="hx">Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>
+    <p class="mx" set:html={mdHtml(site)} />
     <h2>Projects</h2>
     <ul>
-      {fighters.map((f) => <li><a href={cardPath(f)}>{f.title}</a>. {whatOf(f)}</li>)}
+      {fighters.map((f, i) => <li class="sw"><span class="hx"><a href={cardPath(f)}>{f.title}</a>. {whatOf(f)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>)}
     </ul>
     <h2>Questions</h2>
     <dl>
-      {QA.map(([q, a]) => <Fragment><dt>{q}</dt><dd>{a}</dd></Fragment>)}
+      {/* each question and answer is one paragraph of the twin, "**question** answer", split across its dt and dd */}
+      {QA.map(([q, a], i) => <Fragment><dt class="sw"><span class="hx">{q}</span><span class="mx" set:html={mdHtml(questions[i].slice(0, questions[i].indexOf('** ') + 2))} /></dt><dd class="sw"><span class="hx">{a}</span><span class="mx" set:html={mdHtml(questions[i].slice(questions[i].indexOf('** ') + 3))} /></dd></Fragment>)}
     </dl>
   </main>
 </Base>

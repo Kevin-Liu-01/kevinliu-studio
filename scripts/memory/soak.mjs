@@ -1,6 +1,7 @@
 // Memory on phone profiles (docs/performance.md, Memory). Serve a build first (any static server with clean URLs).
 //   PLAYWRIGHT_CORE=<path to a playwright-core whose WebKit and Chromium are installed> \
 //   node scripts/memory/soak.mjs <base-url> <label> <mode: pages|soak> [iphone-14 iphone-se pixel-7] [--secs 180]
+//   PAGES=/,/about limits the pages; ILL_MODE=machine opens them in the Machine view.
 // Writes scripts/memory/out/<label>-<mode>.jsonl (ignored); python3 scripts/memory/summarize.py <file>... prints it.
 // Run WebKit profiles one at a time: its helper processes are found by build path, so two WebKit runs see each other.
 // Process numbers are phys_footprint (what iOS counts), from macOS `footprint`.
@@ -73,6 +74,8 @@ async function launch(name) {
   }
   const ctx = await browser.newContext({ ...pw.devices[device], serviceWorkers: 'block' });
   await ctx.addInitScript(probe);
+  // ILL_MODE=machine opens every page in the Machine view (the mode Base.astro reads before paint)
+  if (process.env.ILL_MODE) await ctx.addInitScript((m) => { try { localStorage.setItem('ill-mode', m); } catch {} }, process.env.ILL_MODE);
   return { browser, ctx, mem: () => procMem(engine, root, before), engine };
 }
 

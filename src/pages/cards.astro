@@ -2,9 +2,12 @@
 // Every card as a plain index: its page, its live site and its public source, one row each
 import Base from '../layouts/Base.astro';
 import { fighters, whatOf, repoOf } from '../lib/cards';
-import { cardPath, CARDS_LEAD, host } from '../lib/twins';
+import { cardPath, CARDS_LEAD, host, cardsMd } from '../lib/twins';
+import { mdHtml } from '../lib/machine';
 import { graph, page, cardList } from '../lib/schema';
 import { SITE, NAME } from '../lib/site';
+// the Machine view's forms: each card's row of the twin's table in its own row (the lead is the twin's own line)
+const rows = cardsMd().split('\n').filter((l) => /^\| \d/.test(l));
 const jsonld = graph(page({ path: '/cards', type: 'CollectionPage', name: `${NAME}'s cards`, description: CARDS_LEAD, image: `${SITE}/share/cards.jpg`, crumbs: [['Cards', '/cards']], mainEntity: { '@id': cardList['@id'] } }), cardList);
 ---
 <Base seo={{ title: 'Cards', description: CARDS_LEAD, path: '/cards', share: 'cards', imageAlt: `All ${fighters.length} of ${NAME}'s project cards`, jsonld }}>
@@ -12,10 +15,10 @@ const jsonld = graph(page({ path: '/cards', type: 'CollectionPage', name: `${NAM
     <h1>Cards</h1>
     <p class="lede">{CARDS_LEAD}</p>
     <ol class="index">
-      {fighters.map((f) => {
+      {fighters.map((f, i) => {
         const repo = repoOf(f);
-        return <li><a class="t" href={cardPath(f)}>{f.title}</a><span class="y">{f.year}</span><span class="w">{whatOf(f)}</span>
-          <span class="go">{f.url && <a href={f.url} rel="noopener">{host(f.url)}</a>}{repo && <a href={repo} rel="noopener">Source</a>}</span></li>;
+        return <li class="sw"><span class="hx"><a class="t" href={cardPath(f)}>{f.title}</a><span class="y">{f.year}</span><span class="w">{whatOf(f)}</span>
+          <span class="go">{f.url && <a href={f.url} rel="noopener">{host(f.url)}</a>}{repo && <a href={repo} rel="noopener">Source</a>}</span></span><span class="mx" set:html={mdHtml(rows[i])} /></li>;
       })}
     </ol>
   </main>

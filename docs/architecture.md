@@ -18,7 +18,7 @@ generator for metadata.
 | --- | --- | --- |
 | Round material (cards, battle, sound) | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | `scripts/sync.mjs`, never edited by hand |
 | Build-time card loader | `src/lib/cards.ts` | loads `markup.js`, `fighters.js`, `face.gen.js` and the rest in CommonJS sandboxes |
-| Twins and agent files | `src/lib/twins.ts` | every `.md` endpoint, `llms.txt`, `llms-full.txt` and the Machine view |
+| Twins and agent files | `src/lib/twins.ts`, `src/lib/machine.ts` | every `.md` endpoint, `llms.txt`, `llms-full.txt` and the Machine view's forms |
 | Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro`, `src/lib/schema.ts`, `src/lib/share.ts` | title, canonical, share image (and loop), one JSON-LD graph; `docs/seo.md` |
 | Pages | `src/pages/` | home (the wall), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404` |
 | Release guard | `scripts/verify-build.mjs` | runs after every build; see `docs/deploy.md` |
@@ -34,6 +34,35 @@ script keeps its hash-only history writes on `/battle`.
 
 The face, the content-addressed stylesheets and scripts, the wall's held first paint, prefetch and the rest of the
 performance bar are in `docs/performance.md`, with how to measure them.
+
+## Machine view
+
+Human and Machine show the same page. In Machine mode every real region keeps its place and its box and shows what an
+agent reads there, so flipping the switch lines the two up one to one:
+
+| Region | Machine form |
+| --- | --- |
+| Human and Machine switch | `text/html` and `text/markdown`: the `Accept` each half asks for. Every address answers `text/markdown` with its twin (`vercel.json`), so the links keep their addresses and this switch is the difference |
+| Brand, nav, pager | `# Kevin Liu` (the twin's first line) on home, `/` elsewhere; each link's address |
+| A wall card | its record: number, id, page, Markdown twin, JSON-LD `@type` and category (`workType` in `src/lib/schema.ts`, which the JSON-LD graph reads too), and its row of `/index.md` |
+| Deck, pack, dock | where the deck goes; what the pack fills, its budget and seed; the ids each well holds, the gauge's words, Play's path and seed, live from `gallery.js`'s `__table` |
+| A card page | the whole record on the stand; the card's twin block by block where the page shows each block (its links, numbers, trait, moves and related cards), headings marked `#` and `##` |
+| About, `/cards`, 404 | each paragraph, list item, question and index row holds its twin's source |
+| Footer | its links as addresses, `/llms.txt`, `/llms-full.txt`, the sitemap; one line (status, type, size) opens the curl commands and the page's whole twin |
+
+How it holds:
+
+- Each machine form (`.mx`) is built at build time from `twins.ts`, `cards.ts` and `site.ts` (`src/lib/machine.ts`) and
+  nested in the element it describes, or stacked with the human form (`.hx`) in one grid cell (`.sw`). Nothing is
+  measured, so it keeps the real grid at every width, and the cards' redesigns move it with them (it keys to
+  `.pocket`, `.card` and the card's id, never to the art).
+- In Human mode the forms are `display: none !important` and the wrappers `display: contents !important`: the human view
+  paints as if they were not there (`scripts/machine-check.mjs` compares it pixel for pixel with another build, and every region's box between the modes).
+- In Machine mode a card is `content-visibility: hidden`: it keeps its box and paints, decodes and fetches nothing. The
+  wall's first-paint hold waits on no picture and fetches none ahead. The world canvas, stage and lens are hidden.
+- Headings keep one text: `#` and `##` come from CSS, so every page still has one h1 and crawlers read one title.
+- The battle pages have no Machine view: their switch would be a new key in r4/play's rail, and the engine's state is
+  only readable under `?debug` there. Both are changes for the battle round.
 
 ## Routes
 

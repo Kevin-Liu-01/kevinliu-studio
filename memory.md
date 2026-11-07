@@ -137,3 +137,31 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   Arena, 050525) and the card face (r4/ex markup.js `NOLINK`) still links their commits, a 404 for visitors: fix in
   the rounds; Kevin to strike any `FACTS` line; Search Console and Bing submission; set `VERCEL_DEEP_CLONE` if every
   page should carry a `lastmod`.
+
+## 2026-11-07: the Machine view aligned to the page (machine/aligned, Claude Code)
+
+- **Type**: feature
+- **Asked**: Kevin, 2026-11-07 02:28: "make a whole new custom machine view with aligned ui to actual ui areas like the
+  human | machine button".
+- **Designed**: three directions built and screenshotted, then scored by three independent judges (wf_1c1252f9-c2b):
+  Source in place (the room written out) won 2 of 3 over Wireframe CRT and Response mapped; grafts from both.
+- **Changed**: `src/lib/machine.ts` (records and twin blocks, from twins.ts, cards.ts and site.ts), `src/styles/
+  machine.css`, `workType` in `src/lib/schema.ts` (the records and the JSON-LD read one type and category), the
+  header, footer, home, card, about, cards and 404 pages; `Machine.astro` removed. docs/architecture.md, Machine view.
+- **How**: each machine form is nested in the element it describes and built at build time, so it keeps the real grid
+  at every width with nothing measured. Human mode hides the forms with `!important`, so its first paint is unchanged.
+  Links keep their addresses; the switch shows the `Accept` each half asks for.
+- **Checked** (WebKit, local serves, origin/main ae3cc56 against this branch; the merge also against seo/aeo 8a068df):
+  the human view is pixel-identical at 1440, 730, 390 and 320 on home, a card, about and 404 (a card's own sparkles
+  differ between runs at most); switching shifts nothing (CLS 0, input shifts included), no horizontal scroll; the
+  header, seg, pockets, dock and footer keep their boxes on home at every width; keyboard switch, aria-pressed and the
+  stored mode work; screen readers read each record as text. build, guard, check-seo pass; smoke differs only on
+  Vercel's own headers and redirects, as origin/main does on the same server.
+- **Memory** (iPhone 14, WebKit, same run, two rounds): Human mode equal (wall WebContent 215 to 224 against 217 to
+  243 MB, pictures 85.7 MB both). Machine mode: pictures equal (48.5 MB) after two fixes (cards out of layout, the
+  pack's fan paints no posters; before them 64.7 MB), canvas equal or lower, WebContent 64 and 68 against 52 and 56 MB
+  on the wall and 23 against 18 on a card page: the old Machine view hid the whole page.
+- **Open**: the battle pages have no Machine view (needs a key in r4/play's rail and engine state outside `?debug`);
+  text blocks on card and about pages grow where their Markdown is longer, so blocks below them move; the footer's
+  addresses take more rows on phones; on phones the way back to Human is the footer's button; the Machine view's
+  12 MB of WebContent over the old one.

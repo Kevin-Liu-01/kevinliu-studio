@@ -16,6 +16,10 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
   200 1200 x 630 JPEG share image with alt, JSON-LD and its twin, and every link (`--external` for outside links,
   unsigned, so a private repository fails). Sites that refuse scripts (LinkedIn, X, princeton.edu, Devpost) print as
   notes.
+- `machine-check.mjs`: compares two served builds in WebKit (or `ENGINE=chromium`): the human view pixel for pixel,
+  every region's box in Human and Machine at 1440, 730, 390 and 320, layout shifts while switching, the keyboard
+  switch, the stored mode, records taller than their box, and screenshots of both modes. Run it after a change to a
+  page's markup or `src/styles/machine.css`.
 - `icons.mjs`: rewrites the touch, manifest and ico icons from `public/favicon.svg`.
 - `paint-capture.mjs`: screencasts an agent-browser page to timestamped frames for the `ui-recording-timeline`
   skill; the procedure is in `docs/performance.md`.

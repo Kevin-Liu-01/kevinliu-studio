@@ -38,6 +38,12 @@ const CATEGORY: Record<string, string> = {
   podium: 'BusinessApplication', sevenfold: 'ReferenceApplication', 'kevin-wiki': 'ReferenceApplication', ariadne: 'EntertainmentApplication',
   cotfly: 'EntertainmentApplication', 'bday-land': 'EntertainmentApplication',
 };
+// a card's @type, and its applicationCategory where that type is software; the Machine view's records print the same
+export function workType(f: Fighter): { type: string; category?: string } {
+  const type = TYPE[f.id] ?? 'SoftwareApplication';
+  if (type !== 'SoftwareApplication' && type !== 'VideoGame') return { type };
+  return { type, category: CATEGORY[f.id] ?? (f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication') };
+}
 const OS: Record<string, string> = { jarhead: 'macOS', 'local-search': 'macOS, Linux, Windows' };
 
 // the project a card stands for, and its source code when the repository is public and named for it
@@ -53,10 +59,8 @@ export function work(f: Fighter) {
     image: `${SITE}/og/${f.id}.jpg`, dateCreated: String(f.year), author: { '@id': ID.kevin }, creator: { '@id': ID.kevin },
     keywords: f.disciplines.join(', '), subjectOf: { '@id': `${abs(cardPath(f))}#page` },
   };
-  if (type === 'SoftwareApplication' || type === 'VideoGame') {
-    const category = CATEGORY[f.id] ?? (f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication');
-    Object.assign(node, { applicationCategory: category, operatingSystem: OS[f.id] ?? 'Web browser' });
-  }
+  const { category } = workType(f);
+  if (category) Object.assign(node, { applicationCategory: category, operatingSystem: OS[f.id] ?? 'Web browser' });
   if (type === 'VideoGame') Object.assign(node, { gamePlatform: 'Web browser', playMode: f.id === 'claude-of-tanks' ? 'MultiPlayer' : 'SinglePlayer' });
   const out: object[] = [node];
   if (ownsRepo) {
