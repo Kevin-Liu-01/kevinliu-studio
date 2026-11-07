@@ -66,11 +66,13 @@ export function mdHtml(s: string) {
 
 /** A card's Markdown twin cut into the blocks its page shows, in its page's order. */
 export function cardBlocks(f: Fighter) {
+  // found by what each block is, not where it stands, so a twin that adds a block (an answer, a related list) still maps
   const b = cardMd(f).trimEnd().split('\n\n');
   const at = (h: string) => b.indexOf(h);
   const nums = at('## The numbers'), trait = at('## Trait'), moves = at('## Moves');
+  const line = b.findIndex((x) => x.startsWith('Card '));
   return {
-    line: b[2], meta: b[3],
+    line: b[line], meta: b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '',
     facts: b[nums + 1].split('\n'),
     trait: trait >= 0 ? b[trait + 1] : null,
     moves: b[moves + 1].split('\n'),
