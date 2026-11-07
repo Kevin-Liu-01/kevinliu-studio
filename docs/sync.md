@@ -12,6 +12,15 @@ folders is edited by hand: change the rounds, or change a rule or transform in `
 | sound | `r4/sound` | `public/sound` | the player, the gallery boot, two manifests and exactly the Opus and AAC files they name (the kit's own `tools/ship.mjs` list) |
 | battle | `r4/play`, `r3/battle`, `r3/cards` | `public/battle`, `vendor/battle` | the Mat and Arena page, its vendored engine bundle, trainer and figure art, maps, scene media and card pictures |
 
+The cards stage also ships the round page's closure (`pageFiles` in `scripts/sync.mjs`): every sheet and script
+`r4/ex/index.html` loads, the two modules `markup.js` requires beside itself at build (`design/card.js`,
+`design/plan.gen.js`), and every picture, clip or font those files or the round's printed pages name (a sheet's names
+resolve against the sheet). The head itself goes to `vendor/ex/index.html`, and `src/lib/cards.ts` loads exactly that
+list, so a file the round adds to its page ships and loads with no new rule. Before 11-07 the sync named files one by
+one, missed `design/card.js`, `design/plan.gen.js`, `printings.js`, the frames and `styles/breakout`, and the wall
+quietly printed `markup.js`'s plain fallback; the release guard now fails a card without its family (`data-fam`) and a
+Breakout card without `breakout.css`.
+
 Each rule is an allow-list. Scratch folders (`.work`, `shots`, `study`, `src`, `takes` and others) are never listed. A
 missing source folder, a rule that matches nothing, or a named file the round no longer has is a problem, not a quiet
 skip.

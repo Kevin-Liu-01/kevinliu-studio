@@ -53,7 +53,13 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => CARD_MEDIA.test(f) || f === 'media/prototemplate/window@2x.webp') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^(borders\/[\w-]+\/(border|over|trim)\.svg|fx\/[\w-]+\/fx\.svg|design\/(frames|lit|fxcut)\/[\w.-]+\.svg|icons\/frost(@2x)?\.webp)$/.test(f)) },
     { from: `${EX}/og`, to: 'public/og', files: (l) => l.filter((f) => /^[\w-]+\.(jpg|mp4)$/.test(f)) },
-    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/katagami-sans-cards.woff2', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    // everything the round's own page loads and prints: its sheets and scripts, the card families markup.js prints
+    // through at build (design/card.js, design/plan.gen.js), and every file those name (pageFiles below). A file the round
+    // adds to its page ships with no new rule here, so the wall never falls back to plain cards again.
+    { from: EX, to: 'public/ex', files: pageFiles },
+    // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
+    { from: EX, to: 'vendor/ex', files: only('index.html') },
+    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
   ],
   // r4/sound: the kit's own allow-list (tools/ship.mjs): the player, its types, the gallery boot, two manifests, and
   // exactly the Opus and AAC files they name. Never the takes, the ledger or the receipts.
@@ -70,6 +76,33 @@ const STAGES = {
     { from: `${ROUNDS}/r3/cards`, to: 'public/battle/gallery', files: (l) => l.filter((f) => /^(posters|grounds|media)\//.test(f) && !SKIP.test(f) && IMG.test(f)) },
   ],
 };
+
+// The round page's closure: the sheets and scripts r4/ex/index.html loads, the two build-time modules markup.js requires
+// beside itself, and every picture, clip or font any of them (or the round's printed pages) names; a sheet's own names
+// resolve against the sheet. Code ships only by name (the head and the rules above), never because some file mentions
+// it. A name counts only when it is a file the round has outside the scratch folders.
+const PAGE_REF = /(?:\.\.?\/)?(?:[\w@.-]+\/)*[\w@.-]+\.(?:webp|avif|png|jpg|jpeg|svg|mp4|webm|woff2)\b/g;
+function pageHead(html) {
+  const head = html.slice(0, html.indexOf('</head>'));
+  return [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+}
+function pageFiles(list) {
+  const have = new Set(list.filter((f) => !SKIP.test(f) && !/\.(html|md)$/.test(f)));
+  const seeds = [...pageHead(fs.readFileSync(`${EX}/index.html`, 'utf8')), 'design/card.js', 'design/plan.gen.js'];
+  const missing = seeds.filter((f) => !have.has(f));
+  if (missing.length) throw new Error(`the round page names files it does not have: ${missing.join(', ')}`);
+  const out = new Set(), todo = [...seeds];
+  // the printed pages name pictures relative to the round's root; a sheet names them relative to itself
+  const read = (text, dir) => { for (const m of text.matchAll(PAGE_REF)) { const f = path.posix.normalize(path.posix.join(dir, m[0])); if (have.has(f) && !out.has(f)) todo.push(f); } };
+  for (const page of list.filter((f) => f === 'index.html' || /^cards\/[\w-]+\/index\.html$/.test(f))) read(fs.readFileSync(`${EX}/${page}`, 'utf8'), '');
+  while (todo.length) {
+    const f = todo.pop();
+    if (out.has(f)) continue;
+    out.add(f);
+    if (/\.(css|js)$/.test(f) && seeds.includes(f)) read(fs.readFileSync(`${EX}/${f}`, 'utf8'), f.endsWith('.css') ? path.posix.dirname(f) : '');
+  }
+  return [...out].sort();
+}
 
 function soundFiles(list) {
   const out = ['sound.js', 'boot.gallery.js', 'manifest.gallery.json', 'manifest.battle.json'];
@@ -123,6 +156,8 @@ const TILT = "\n      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefin
 const GRAIN = "\n        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }";
 const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }\n      ";
 const TRANSFORMS = {
+  // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
+  'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
   // the battle page lives at /battle and /battle/arena here, and returns to the cards at /
   'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
     // the layout switch renames the tab; it keeps this site's page titles instead
@@ -255,6 +290,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     if (!picked.length) { problems.push(`${where}: matched no files`); continue; }
     for (const f of picked) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
+      if (files[dest]) continue; // two rules may pick the same file
       let buf = fs.readFileSync(src);
       try {
         if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));

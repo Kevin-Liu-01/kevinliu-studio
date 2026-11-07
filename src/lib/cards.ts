@@ -98,6 +98,12 @@ export const battleRoster = (() => {
   return { budget: b.RULES.team.budget as number, cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number> };
 })();
 
+// The round page's own head (vendor/ex/index.html, the sync keeps it): the sheets and scripts a wall loads, in order. A
+// sheet marked data-card-style-sheet is a card style's (Breakout), which styles/breakout/switch.js finds and never adds twice.
+const HEAD = fs.readFileSync(path.join(VX, 'index.html'), 'utf8');
+export const roundSheets = [...HEAD.matchAll(/<link rel="stylesheet" href="([^"]+)"( data-card-style-sheet)?>/g)].map((m) => ({ href: m[1], style: !!m[2] }));
+export const roundScripts = [...HEAD.matchAll(/<script defer src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+
 // The page head's piece the card needs: the neumorphic tokens (the face is public/fonts/katagami-sans-site.woff2, Base.astro)
 export const neuTokens = fs.readFileSync(path.join(VX, 'vendor/neu-tokens.css'), 'utf8').replace(/^\/\*.*\*\/\n/, '');
 
