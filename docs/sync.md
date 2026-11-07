@@ -75,7 +75,7 @@ atoms). The release guard runs the same check on `dist`.
 
 ## The lock
 
-`sync.lock.json` records the rounds' git head, the time, and each file's source path, sha-256 and size. It is rewritten
+`sync.lock.json` records the rounds' git head (marked with the count of shipped files that differ from it; other rounds' uncommitted scratch work does not count), the time, and each file's source path, sha-256 and size. It is rewritten
 only when a file or the rounds' head changed, so a rerun with nothing new leaves no diff. `pnpm sync
 --check` exits 1 when any synced file differs from the rounds and names each one, so CI or a person can see the
 repo is behind and why.

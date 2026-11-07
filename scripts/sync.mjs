@@ -277,7 +277,7 @@ function scan(dest, buf) {
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
 const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : { stages: {} };
-const lock = { rounds: ROUNDS, head: gitHead(ROUNDS), synced: null, stages: {} };
+const lock = { rounds: ROUNDS, head: null, synced: null, stages: {} };
 const problems = [];
 const writes = [], removes = [];
 for (const [stage, rules] of Object.entries(STAGES)) {
@@ -307,6 +307,8 @@ for (const [stage, rules] of Object.entries(STAGES)) {
   for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
+// the rounds' commit, marked only when a file this sync ships differs from it (other rounds' scratch work does not count)
+lock.head = gitHead(ROUNDS, new Set(Object.values(lock.stages).flatMap((s) => Object.values(s.list).map((f) => f.src))));
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB`);
 if (problems.length) {
   console.error(`\n${problems.length} problem(s); nothing was written. Fix them at the source or by a transform:`);
@@ -326,6 +328,13 @@ const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev
 if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
-function gitHead(dir) {
-  try { return execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim() + (execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }).trim() ? ' (with uncommitted changes)' : ''); } catch { return null; }
+function gitHead(dir, shipped) {
+  try {
+    const head = execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    // porcelain paths are relative to the repo's top, which may sit above the rounds folder
+    const prefix = execFileSync('git', ['-C', dir, 'rev-parse', '--show-prefix'], { encoding: 'utf8' }).trim();
+    const dirty = execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no', '-z', '--', '.'], { encoding: 'utf8', maxBuffer: 1 << 28 })
+      .split('\0').filter(Boolean).map((l) => l.slice(3)).filter((f) => f.startsWith(prefix) && shipped.has(f.slice(prefix.length)));
+    return head + (dirty.length ? ` (with ${dirty.length} uncommitted shipped file${dirty.length > 1 ? 's' : ''})` : '');
+  } catch { return null; }
 }
