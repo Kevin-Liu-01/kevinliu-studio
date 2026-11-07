@@ -18,6 +18,7 @@ fallback, motion uses only `transform` and `opacity`, canvases and loops cost no
 | The first press | `src/pages/index.astro`, `docs/sound.md` | A silent `AudioContext` at idle starts the browser's audio service; the sound kit's first press no longer waits on it. |
 | Idle cost | `public/ex/ground.js`, `gallery.js` (rounds) | The living grounds draw only on screen (`IntersectionObserver`), stop in a hidden tab and under Pause or reduced motion. |
 | Battle keys | `scripts/sync.mjs` transforms | A key's raise and colour change at once; only its press moves. |
+| A phone's memory | `scripts/phone-memory.mjs`, `index.astro`, `site.css`, `Release.astro` | On a touch screen the shared WebGL canvas stops at 2048 and the density at 1.5, an off-screen card gives its canvases back, the next pack is cut at the press, wall pictures stay lazy, a card more than a screen away paints no filters, and the wall and the battle give back their GPU memory and pictures when they leave. See Memory below. |
 
 ## Checking it
 
@@ -95,3 +96,63 @@ deal; the page is blank behind its font gate for up to 2 s on entry; the interfa
 and snaps back; the Arena shows both pads and labels for one frame, removes them and adds them back; its team rail
 shows flat squares before the card art; at 390 the move list slides up over the active cards. The lens's Escape drops
 its action bar a frame before the dissolve (`gallery.js`).
+
+## Memory (phones)
+
+Kevin, 2026-11-06: "it crashes on mobile a lot". Safari kills a tab whose WebContent or GPU process passes its limit
+(and shows "A problem repeatedly occurred"), and fails canvases past its canvas budget. Production (0d8fb9d) was
+measured on three phone profiles and fixed on `fix/mobile-memory`.
+
+The budget, per phone profile: canvas backing 64 MB or less, one WebGL context for the grounds (the battle has two),
+nothing rastered ahead of a press, WebContent under 500 MB at its peak, and no growth across a three-minute soak
+beyond the page mix.
+
+What held the memory, measured in WebKit at iPhone 14 (390 x 844 at 3x):
+
+| Cause | Held | Fix |
+| --- | --- | --- |
+| The grounds' shared WebGL canvas grew to 4096 x 4096 to print all 26 cards' first frames at once | 128 MB (two buffers) | 2048 on a touch screen or a small-memory device; a frame that does not fit copies out and reuses it (ground.js already did). Density 1.5 there. |
+| Every card's ground and front-effects canvases kept their backing store while scrolled away | 55 MB | A held print's canvas is 0 x 0 until the frame that draws it; a print is held as it leaves the screen |
+| A device-size filter buffer for every painted card (the cracks' glow covers the whole card) | about 190 MB of WebContent | A wall card more than a screen away paints no filters (`data-far`, `site.css`) |
+| The next pack's three 3D card copies and packet, rastered on the stage at opacity 0.001, plus their well cards | GPU layers | Cut at the press on a touch screen, as under reduced motion |
+| All 26 cards' pictures fetched and decoded at idle | about 30 MB decoded before any scroll | Stay lazy on a touch screen |
+| The battle's media preload kept a detached `<video preload="auto">` per clip | a decoder per clip until a collection | Drops its source once its first frame loads |
+| Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again |
+
+### How it was measured
+
+`scripts/memory/soak.mjs` (Playwright: WebKit for the iPhone profiles, Chromium on the Metal GPU for Pixel 7) serves
+the same two builds (production's bytes, and this branch) and, per profile, scrolls and navigates every page for at
+least three minutes: the wall (scrolled through, a card's lens opened and closed), two card pages, About, the Mat and
+Arena battles (two presses each), two Back steps and the 404, sampling every 2 s. Process numbers are macOS
+`phys_footprint`, the number iOS counts; canvas, WebGL, picture and video numbers come from an init script
+(`scripts/memory/probe.js`). Run WebKit profiles one at a time. This Mac's load average sat between 110 and 155, so
+times are slow; memory is not timing.
+
+Desktop WebKit keeps more in its caches and surface pools than a phone, so the absolute process numbers are high for
+an iPhone and the before and after difference is what counts. Canvas, WebGL and picture numbers are exact.
+
+### Results
+
+Three-minute soaks, before (production, 0d8fb9d) and after (this branch). Peaks over the whole soak; home medians over
+every sample on the wall. No profile crashed in either build.
+
+| Profile | WebContent or renderer peak | GPU process peak | Wall median, WebContent | Wall median, GPU | Canvas peak | Pictures decoded on the wall, peak |
+| --- | --- | --- | --- | --- | --- | --- |
+| iPhone 14, WebKit, 390 x 844 at 3x | 739 → 471 MB | 1,208 → 882 MB | 577 → 362 MB | 931 → 538 MB | 187 → 43 MB | 116 → 86 MB |
+| iPhone SE, WebKit, 375 x 667 at 2x | 379 → 386 MB | 829 → 622 MB | 266 → 284 MB | 667 → 428 MB | 186 → 41 MB | 114 → 82 MB |
+| Pixel 7, Chromium (Metal), 412 x 915 at 2.625x | 505 → 405 MB | 1,064 → 970 MB | 158 → 142 MB | 558 → 436 MB | 188 → 43 MB | 117 → 86 MB |
+
+The shared WebGL canvas: 4096 x 4096 (128 MB with its two buffers) → 2048 x 2048 (32 MB) on every phone profile; live
+card canvases on the wall: 52 → the 2 to 6 on screen. The before iPhone SE soak covered five pages in one loop (no
+404); the after soak covered all six in two, so its WebContent peak is the Arena's, not the wall's. On the Pixel 7
+each soak took about 15 minutes to reach every page on this loaded Mac; its first and last minutes show no growth
+(renderer 155 → 127 MB before, 138 → 98 MB after).
+
+Settled, the wall scrolled halfway and still for 3 s, iPhone 14, medians of 2 to 3 runs: GPU process 820 to 540 MB,
+WebContent 345 to 180 MB.
+
+On the iPhone 14 the wall's WebContent rose with every visit before (368, then 550 to 640, then 540 to 680 MB) and
+levels off after (130 to 180, then 430 to 470 just after the Arena, then 335 to 395 MB). The Arena itself holds about
+400 MB of WebContent and two WebGL contexts (the battle round's board and broadcast kit); that is the next place to
+look, in r4/play.

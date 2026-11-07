@@ -12,3 +12,4 @@ dist/
 /.sync-cache/
 /.claude/
 .vercel
+/scripts/memory/out/

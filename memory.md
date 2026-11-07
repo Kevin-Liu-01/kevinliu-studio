@@ -80,3 +80,22 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   `vendor/ex/fonts/katagami-sans-cards.woff2` is now unused (drop it at a sync only after the Portfolio
   redesign session reports the k6 `r4/ex` install done; no `pnpm sync` before then); not shipped: needs Kevin's yes to
   merge to `main`, which deploys production.
+
+## 2026-11-06: phones' memory (fix/mobile-memory, Claude Code)
+
+- **Type**: fix (perf)
+- **Asked**: Kevin, 2026-11-06: "and then deploying it! also it crashes on mobile a lot".
+- **Base**: production `kevinliu-studio-35wc6c87l` serves exactly a build of `origin/main` 0d8fb9d (home HTML
+  byte-identical, same 13 `?v=` addresses); `perf/no-pops` is the same code plus a memory.md note.
+- **Found** (WebKit at iPhone 14): 189 MB of canvas on the wall (a 4096 shared WebGL canvas plus 52 card canvases kept
+  off screen), about 190 MB of WebContent in filter buffers (the cracks' glow covers each card), the next pack rastered
+  in 3D on the stage, all pictures decoded at idle, the battle's preloaded clips never released, and the wall and the
+  battle kept alive in the back-forward cache.
+- **Changed**: `scripts/phone-memory.mjs` (`PHONE` patches to ground.js, rituals.js, kit.js, applied by the sync after
+  `TRANSFORMS` or on their own, with the lock updated; the guard fails a build without them); `index.astro` (lazy
+  pictures on touch, `data-far` filters); `site.css`; `Release.astro` on the wall and battle; `scripts/memory/` (the
+  soak harness); docs/performance.md Memory, docs/sync.md, AGENTS.md.
+- **Measured**: docs/performance.md, Memory. iPhone 14 WebContent peak 739 → 471 MB, GPU peak 1,208 → 882 MB, canvas
+  187 → 43 MB; settled wall GPU 820 → 540, WebContent 345 → 180 MB. No crash in any soak.
+- **Open**: the Arena holds about 400 MB of WebContent and two WebGL contexts (r4/play board and kit); `pnpm check`
+  fails on main already (astro check does not support TypeScript 7); not pushed or deployed: Kevin's call.
