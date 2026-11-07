@@ -191,6 +191,9 @@ const TRANSFORMS = {
   ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">']]),
+  // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
+  // screen's edge (Agent Machines, release 11-07 ship checks), so the tray stops 8 in from each edge and its rows wrap
+  'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),
   // family K's rule under each power's name is set 4.9cqw down its row, and WebKit sets the row's first text line higher
   // than Chromium does, so in Safari the rule struck through that line (release 11-07 ship checks); the rule is left out
   'public/ex/card.css': (t) => patch('card.css', t, [['background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 4.8cqw) 0.3cqw no-repeat,\n    linear-gradient(', 'background: linear-gradient(']]),
