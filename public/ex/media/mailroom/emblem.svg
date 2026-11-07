@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 -24 64 48" width="128" height="96">
+  <!-- The JEV stamp from the sorter's roof (mailroom@bc389e255 src/components/landing/iso.tsx, Stamp): a perforated tape, 60 x 44, rx 5, dash 2.6, dark theme accent-soft #1e1e1e with a 75% ink edge. The site sets it in its licensed mono; this crest uses the system mono. -->
+  <rect x="-30" y="-22" width="60" height="44" rx="5" fill="#1e1e1e" stroke="#bdbdbd" stroke-width="1.2" stroke-dasharray="2.6 2.6"/>
+  <text x="0" y="1.5" text-anchor="middle" dominant-baseline="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="700" font-size="20" letter-spacing="2" fill="#f4f4f4">JEV</text>
+  <text x="0" y="16.5" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="700" font-size="6.5" letter-spacing="1.8" fill="#f4f4f4">SORTER</text>
+</svg>

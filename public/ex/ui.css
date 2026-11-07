@@ -356,6 +356,13 @@ code { display: block; margin-top: 2px; font: 500 12px/16px var(--sans); color: 
 .addbtn[data-state='remove'] .l-remove, .addbtn[data-state='full'] .l-full, .addbtn[data-state='over'] .l-over { opacity: 1; }
 .addbtn[data-state='remove'] .rot { transform: rotate(45deg); }
 .visit { flex: none; }
+/* art printings (EX.md 24): the lens's plain switch between a card's art, one press per printing, beside Add and Visit */
+.arts { display: flex; gap: 4px; flex: none; }
+/* the lens's Art and Frame controls (EX.md 24, 25): the row wraps rather than run past the sheet */
+.acts { flex-wrap: wrap; }
+.arts[hidden] { display: none; }
+.arts .press { padding: 0 12px; }
+@media (max-width: 1055px) { .arts .press { padding: 0 10px; } }
 @media (max-width: 1055px) {
   .inspect { overflow-y: auto; }
   .ins-card { position: relative; left: auto; top: auto; margin: 16px auto 0; }
