@@ -1024,6 +1024,7 @@
 .card.dz[data-fam="B"] :is(.mn, .mp) { background: var(--pp); padding: 1cqw 1.2cqw; }
 .card.dz[data-fam="B"] .mn { margin-left: 0.2cqw; }
 .card.dz[data-fam="B"] .mp { margin-right: -1.2cqw; }
+.card.dz[data-fam="B"] .move .md { margin-top: 1.2cqw; }
 .card.dz[data-fam="B"] .what::before { border-radius: 2.6cqw; }
 .card.dz[data-fam="B"] :is(.foot, .no)::before { border-radius: 2.8cqw; }
 

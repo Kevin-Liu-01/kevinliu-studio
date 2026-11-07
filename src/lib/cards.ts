@@ -74,7 +74,13 @@ export const GALLERY_SIZES = WALL.sizes();
 export const wallCss: string = WALL.css();
 export const masks = ART.masks();
 
-export const card = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+const framedCard = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+// Frames print on desktop only (Kevin, 11-07). On the wall a phone held about 250 MB more for the frames' SVG layers,
+// so a card prints plain (markup.js's own card) with its framed print waiting in an inert template; FRAMED, run right
+// after the cards, swaps the framed print in on a fine pointer and drops the template everywhere else
+export const card = (f: Fighter, opts: Record<string, unknown> = {}) =>
+  `${M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env)}<template class="framed">${framedCard(f, opts)}</template>`;
+export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){if(d)t.previousElementSibling.replaceWith(t.content);t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.

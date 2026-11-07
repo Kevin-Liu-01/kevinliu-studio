@@ -130,9 +130,14 @@ for (const f of htmls) {
     const abs = new URL(u, `https://x${base}`).pathname;
     if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);
   }
-  // every card prints in its family (design/card.js, data-fam), never as the plain fallback markup.js prints when the
+  // every card prints plain with its framed print in a template beside it (frames on desktop only, src/lib/cards.ts);
+  // the framed print is in its family (design/card.js, data-fam), never the plain fallback markup.js prints when the
   // family modules are missing, and a card printed in a style has that style's sheet (the sync's page closure)
-  for (const m of html.matchAll(/<div class="card\b[^"]*"[^>]*\sdata-id="([\w-]+)"[^>]*>/g)) if (!/\sdata-fam="/.test(m[0])) fail(page, `card ${m[1]} prints without its family (design/card.js)`);
+  const framed = [...html.matchAll(/<template class="framed">([\s\S]*?)<\/template>/g)].map((m) => m[1]);
+  const ids = (h) => [...h.matchAll(/<div class="card\b[^"]*"[^>]*\sdata-id="([\w-]+)"[^>]*>/g)];
+  for (const h of framed) for (const m of ids(h)) if (!/\sdata-fam="/.test(m[0])) fail(page, `card ${m[1]} prints without its family (design/card.js)`);
+  const framedIds = new Set(framed.flatMap((h) => ids(h).map((m) => m[1])));
+  for (const m of ids(html.replace(/<template class="framed">[\s\S]*?<\/template>/g, ''))) if (!framedIds.has(m[1])) fail(page, `card ${m[1]} has no framed print`);
   if (/\sdata-card-style="breakout"/.test(html) && !/href="\/ex\/styles\/breakout\/breakout\.css\?v=/.test(html)) fail(page, 'a Breakout card without breakout.css');
   for (const m of html.matchAll(/\ssrcset="([^"]+)"/g)) {
     for (const part of m[1].split(',')) {

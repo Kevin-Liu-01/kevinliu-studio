@@ -21,17 +21,6 @@ function patch(file, text, pairs) {
 const MARK = 'kevinliu.studio phone memory';
 
 export const PHONE = {
-  // The lit frames (r4/ex design/card.js, design/lit/<id>.svg): each is a 1000 x 1397 SVG whose border is struck by
-  // diffuse and specular lighting filters. In WebKit at iPhone 14 (release 11-07 ship checks) the wall's GPU memory
-  // grew with every visit and was held after leaving (about 1 GB on /about against production's 150 MB). A lit
-  // picture also prints its unlit border as data-unlit: the wall's boot (src/pages/index.astro) swaps to it on a touch
-  // screen or a small-memory device before the first paint, and a card printed there in the browser prints it at once.
-  'public/ex/design/card.js': (t) => patch('card.js', t, [
-    ["    const lit = (k, fl) => (f.lit && f.lit[k] ? `${own(f.lit[k])}${q(k === 'over' ? L.ov : L.bv)}` : fl);",
-      `    // ${MARK} (scripts/phone-memory.mjs)
-    const LEAN = typeof matchMedia === 'function' && (matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4);
-    const lit = (k, fl) => (f.lit && f.lit[k] && !(LEAN && fl) ? \`\${own(f.lit[k])}\${q(k === 'over' ? L.ov : L.bv)}\${fl ? \`" data-unlit="\${fl}\` : ''}\` : fl);`],
-  ]),
   // The card energy (r4/ex ground.js). On a phone, measured in WebKit at iPhone 14 (consolidate/mobile-fix.md), the
   // wall held 189 MB of canvas: the one shared WebGL canvas grew to 4096 x 4096 (128 MB with its two buffers) to print
   // every card's first frame at once, and each of the 26 cards kept two 2D canvases (2.1 MB) while scrolled away.

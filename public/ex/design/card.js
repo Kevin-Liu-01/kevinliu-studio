@@ -95,9 +95,7 @@
     const frame = `${D}frames/${id}.svg${q(c.v)}`, L = f.layers || {};
     const at = (fl) => (fl.includes('/') ? own(fl) : `${R}${f.dir}${fl}`);
     const bd = L.border ? `${at(L.border)}${q(L.bv)}` : null;
-    // kevinliu.studio phone memory (scripts/phone-memory.mjs)
-    const LEAN = typeof matchMedia === 'function' && (matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4);
-    const lit = (k, fl) => (f.lit && f.lit[k] && !(LEAN && fl) ? `${own(f.lit[k])}${q(k === 'over' ? L.ov : L.bv)}${fl ? `" data-unlit="${fl}` : ''}` : fl);
+    const lit = (k, fl) => (f.lit && f.lit[k] ? `${own(f.lit[k])}${q(k === 'over' ? L.ov : L.bv)}` : fl);
     const k = f.kind || 'border';
     if (k === 'solid' || k === 'metal') return { html: `<i class="rim" data-k="${k}" style="${maskOf([frame])}"><i class="fr"></i><i class="fin"></i><i class="spec"></i></i>`, trim: null };
     if (k === 'engraved') return { html: `<i class="rim" data-k="engraved" style="${maskOf([frame])}"><i class="fr"></i><img class="bd" src="${lit('border', bd)}" alt="" draggable="false"><i class="fin"></i><i class="spec"></i></i>`, trim: null };

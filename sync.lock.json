@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "30e69931",
- "synced": "2026-11-07T14:28:40.087Z",
+ "synced": "2026-11-07T16:50:33.601Z",
  "stages": {
   "cards": {
    "files": 1031,
-   "bytes": 107516464,
+   "bytes": 107516280,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -14,8 +14,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "5d40ae93c7a04f26982828e0bd2db5c004bbe89493e1260c0bdce43661509b92",
-     "bytes": 142883
+     "sha256": "a355bc84505bb66f8b39d1aab322b428f55de1f406a2a570c108099713b26582",
+     "bytes": 142940
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",
@@ -3029,8 +3029,8 @@
     },
     "public/ex/design/card.js": {
      "src": "r4/ex/design/card.js",
-     "sha256": "8d5425c2690dfb002f44deadae4fb1f4af7476cd1722f86d0b21b37a396467fa",
-     "bytes": 16223
+     "sha256": "bfb6abae52516788ab2fd4ec8f71e73f325a1eb4fe70bdffa2f8a9505d6b9390",
+     "bytes": 15982
     },
     "public/ex/design/frames.gen.js": {
      "src": "r4/ex/design/frames.gen.js",
