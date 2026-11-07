@@ -1,9 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
+import { graph } from '../lib/schema';
 ---
-<Base seo={{ title: 'Not found', description: 'This page does not exist. Every card is on the home page.', path: '/404', twin: null, noindex: true }}>
+<Base seo={{ title: 'Not found', description: 'This page does not exist. Every card is on the home page, and every project is listed on the cards index.', path: '/404', share: '404', imageAlt: 'Not found', twin: null, noindex: true, jsonld: graph() }}>
   <main class="prose" id="main">
     <h1>Not found</h1>
-    <p>This address holds no card. <a href="/">Every card is on the home page.</a></p>
+    <p>This address holds no card. <a href="/">Every card is on the home page</a>, and every project is on <a href="/cards">the index</a>.</p>
   </main>
 </Base>

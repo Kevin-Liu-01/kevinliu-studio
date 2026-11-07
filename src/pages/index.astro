@@ -3,7 +3,8 @@ import Base from '../layouts/Base.astro';
 import { fighters, rules, card, M, env, battleRoster, whatOf } from '../lib/cards';
 import { cardPath } from '../lib/twins';
 import { versioned } from '../lib/assets';
-import { SITE, NAME, DESCRIPTION, person } from '../lib/site';
+import { graph, page, cardList } from '../lib/schema';
+import { SITE, NAME, DESCRIPTION } from '../lib/site';
 
 const ART_RATIO = 88 / 63;
 // The wall's first screen (two rows of up to seven, the widest the gallery sets) loads with the page and its first
@@ -19,16 +20,7 @@ const wall = fighters.map((f, i) => {
   return `<li class="pocket" style="--n:${i}">${html}<a class="sr" href="${cardPath(f)}" tabindex="-1" aria-hidden="true">${f.title}</a></li>`;
 }).join('\n');
 const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
-const jsonld = [
-  { '@type': 'WebSite', '@id': `${SITE}/#site`, url: `${SITE}/`, name: NAME, description: DESCRIPTION, author: { '@id': person['@id'] }, inLanguage: 'en' },
-  person,
-  {
-    '@type': 'ItemList',
-    name: `${NAME}'s projects`,
-    numberOfItems: fighters.length,
-    itemListElement: fighters.map((f, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}${cardPath(f)}`, name: f.title, description: whatOf(f) })),
-  },
-];
+const jsonld = graph(page({ path: '/', type: 'CollectionPage', name: NAME, description: DESCRIPTION, image: `${SITE}/og/home.jpg`, mainEntity: { '@id': cardList['@id'] } }), cardList);
 ---
 <Base
   seo={{ title: NAME, description: DESCRIPTION, path: '/', og: 'home', imageAlt: `${NAME}'s ${fighters.length} project cards`, jsonld }}
