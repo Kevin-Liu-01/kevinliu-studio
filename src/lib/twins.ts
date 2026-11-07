@@ -11,18 +11,17 @@ export const host = (u?: string) => (u ? u.replace(/^https?:\/\//, '').replace(/
 const roster = battleRoster ? Object.keys(battleRoster.cost) : [];
 const and = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs.join(''));
 
-export const CARDS_LEAD = `Every one of ${NAME}'s ${fighters.length} project cards, with its year, what it is, its live site and its public source.`;
+const years = fighters.map((f) => f.year);
+export const CARDS_LEAD = `${NAME} made these ${fighters.length} projects between ${Math.min(...years)} and ${Math.max(...years)}.`;
 
-// Questions with real answers, asked on /about and answered from site.ts FACTS (no FAQ markup: this is prose)
+// Questions /about asks and answers below Kevin's own words: only those the words above do not already answer, from
+// site.ts FACTS (prose, no FAQ markup)
 export const QA: [string, string][] = [
-  [`Who is ${NAME}?`, BIO],
-  [`What has ${NAME} built?`, `${fighters.length} projects are cards on this site, among them ${and(['claude-of-tanks', 'katagami', 'turboslide', 'loop', 'princeton-td'].map((id) => fighters.find((f) => f.id === id)?.title ?? '').filter(Boolean))}. Each card's numbers come from its own repository.`],
-  [`Where does ${NAME} work and study?`, `${FACTS[0]} ${FACTS[1]}`],
-  [`What did ${NAME} do before?`, `${FACTS[3]} ${FACTS[4]}`],
-  [`How do I reach ${NAME}?`, `Write to ${EMAIL}, or find him on ${and(SOCIAL.map((s) => s.name))}.`],
+  ['What did he do before General Translation?', `${FACTS[3].replace(/^Before General Translation he/, 'He')} ${FACTS[4]}`],
+  ['What else has he done?', FACTS.slice(5).join(' ')],
 ];
 
-const table = () => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f)} | ${f.year} | ${f.disciplines.join(', ')} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[source](${repoOf(f)})` : ''} |`);
+const table = () => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f)} | ${f.year} | ${whatOf(f)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[source](${repoOf(f)})` : ''} |`);
 const links = () => `- Cards: ${SITE}/cards
 - About: ${SITE}/about
 - Battle: ${SITE}/battle
@@ -60,11 +59,9 @@ export function cardsMd() {
 
 ${CARDS_LEAD}
 
-| No. | Card | Year | Disciplines | Live | Source |
+| No. | Card | Year | What | Live | Source |
 | --- | --- | --- | --- | --- | --- |
 ${table().join('\n')}
-
-${fighters.map((f) => `- ${link(f)}: ${answerOf(f)}`).join('\n')}
 
 ## Links
 
@@ -124,8 +121,6 @@ const runMd = (r: Run) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
 export function aboutMd() {
   return `# About ${NAME}
 
-${BIO}
-
 ${ABOUT.map((runs) => runs.map(runMd).join('')).join('\n\n')}
 
 This site shows ${fighters.length} of the projects as collectible cards. Every number on a card has a receipt from the project's repository.
@@ -156,7 +151,7 @@ Every page has a Markdown twin: add .md to its path, or send \`Accept: text/mark
 ## About
 
 ${FACTS.map((f) => `- ${f}`).join('\n')}
-- He also publishes as ${ALSO_KNOWN_AS.join(' and ')}.
+- He is also known as ${and(ALSO_KNOWN_AS)}.
 
 ## Contact
 

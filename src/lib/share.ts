@@ -41,18 +41,19 @@ const kl = (size: number, color: string) => img(`data:image/svg+xml;base64,${Buf
 const CLAY = '#e9e4dc';
 const INK = '#2a2520';
 const NIGHT = '#1d1a17';
-const card = async (id: string, w: number, extra: Record<string, unknown> = {}) => img(await cardArt(id), { width: w, height: Math.round((w * CARD.height) / CARD.width), borderRadius: Math.round(w * 0.045), boxShadow: '0 18px 40px rgba(20,16,12,0.28)', ...extra });
+const card = async (id: string, w: number, extra: Record<string, unknown> = {}) => img(await cardArt(id), { flexShrink: 0, width: w, height: Math.round((w * CARD.height) / CARD.width), borderRadius: Math.round(w * 0.045), boxShadow: '0 18px 40px rgba(20,16,12,0.28)', ...extra });
 const word = (text: string, size: number, color: string, weight = 800) => h('div', { fontSize: size, fontWeight: weight, color, lineHeight: 1, letterSpacing: -size * 0.02 }, text);
 const signed = (color: string) => h('div', { alignItems: 'center', gap: 14 }, kl(44, color), word(NAME, 34, color));
 
 const TEAM = ['claude-of-tanks', 'katagami', 'bday-land'];
 const RIVAL = ['jarhead', 'mailroom', 'cotfly'];
-const fan = async (ids: string[], w: number, tilt: number) => h('div', { alignItems: 'center' }, ...(await Promise.all(ids.map((id, i) => card(id, w, { marginLeft: i ? -w * 0.42 : 0, transform: `rotate(${(i - 1) * tilt}deg) translateY(${i === 1 ? -10 : 8}px)` })))));
+// a fan never shrinks to fit its row (satori shrinks flex children by default), so no card leaves the frame
+const fan = async (ids: string[], w: number, tilt: number) => h('div', { alignItems: 'center', flexShrink: 0, padding: '0 12px' }, ...(await Promise.all(ids.map((id, i) => card(id, w, { marginLeft: i ? -w * 0.42 : 0, transform: `rotate(${(i - 1) * tilt}deg) translateY(${i === 1 ? -10 : 8}px)` })))));
 
 export const SHARES: Record<string, { alt: string; draw: () => Promise<El> }> = {
   about: {
     alt: `${NAME}, with the Claude of Tanks, Katagami and Turboslide cards`,
-    draw: async () => h('div', { width: W, height: H, background: CLAY, alignItems: 'center', justifyContent: 'space-between', padding: '0 96px 0 88px' },
+    draw: async () => h('div', { width: W, height: H, background: CLAY, alignItems: 'center', gap: 64, padding: '0 0 0 88px' },
       h('div', { flexDirection: 'column', gap: 26 }, kl(96, INK), word(NAME, 112, INK), word(`${fighters.length} projects as cards`, 34, '#6b6259', 500)),
       await fan(['katagami', 'claude-of-tanks', 'turboslide'], 212, 7)),
   },

@@ -131,12 +131,13 @@ export function teamFor(lead: string): string[] | null {
 const CLOSED = new Set(['agent-pets', 'bday-land', 'powerlifting', 'elo', 'kevin-wiki', 'sandbox-arena', 'dedalus-terminal']);
 export const repoOf = (f: Fighter): string | undefined => (f.repo && !CLOSED.has(f.id) && !/\(private\)/.test(f.repo) ? f.repo.replace(/ .*$/, '') : undefined);
 
-// The one sentence that answers "what is <card>": the card's own line with its name as the subject.
+// The one sentence that answers "what is <card>": the card's own line with its name as the subject. Only a leading
+// article is lowercased; a line that opens on a name ("General Translation's magazine") keeps its capitals.
 export function answerOf(f: Fighter): string {
   const what = whatOf(f);
-  if (/^(A|An) /.test(what)) return `${f.title} is ${what[0].toLowerCase()}${what.slice(1)}`;
-  if (/^[A-Z][\w.]*'s /.test(what)) return `${f.title} is ${what}`;
-  return `${f.title}: ${what[0].toLowerCase()}${what.slice(1)}`;
+  if (/^(A|An|The) /.test(what)) return `${f.title} is ${what[0].toLowerCase()}${what.slice(1)}`;
+  if (/^[A-Z][\w.]*(?: [A-Z][\w.]*)*'s /.test(what)) return `${f.title} is ${what}`;
+  return `${f.title}: ${what}`;
 }
 
 // Three cards that share the most disciplines with this one (its first discipline counts double), nearest in the

@@ -25,9 +25,9 @@ export const FACTS: readonly string[] = [
   'He co-founded the Online Monmouth Math Competition (OMMC), a 501(c)(3) nonprofit math contest, and leads its technology.', // previous site experience.md; wiki ommc
   'He was lead developer of HackPrinceton\'s websites and built Podium, its judging tool.', // previous site experience.md; wiki hackprinceton
   'He won 13 hackathons in a row; his team\'s RecyclAIble took first place in hardware at PennApps XXIII (2022).', // wiki hackathon-projects; previous site awards.md
-  'He is the author of a paper on speech transcription for Huntington\'s disease (IYRC 2023), which won a Sigma Xi award, and lead author of a paper on heat flow in lithium-ion polymer batteries (IEEE MIT URTC 2024).', // previous site awards.md, certifications.md
+  'He is the author of a paper on speech transcription for Huntington\'s disease (IYRC 2023), which won a Sigma Xi award, and a co-author of a paper on heat flow in lithium-ion polymer batteries (IEEE MIT URTC 2024).', // previous site awards.md, certifications.md; doi.org/10.1109/URTC65039.2024.10937635
 ];
-// Names he has published for himself (previous site llms.txt), so an answer engine can tell him from other Kevin Lius
+// Other names he goes by, as his previous site lists them (llms.txt), so an answer engine can tell him from other Kevin Lius
 export const ALSO_KNOWN_AS = ['Kevin B. Liu', 'Kevin Bowen Liu'];
 export const DESCRIPTION = 'Kevin Liu\'s projects as 26 collectible cards: type, games, shaders, agents and interfaces, each with its real product, its features as moves, and a battle you can play.';
 export const SOCIAL = [

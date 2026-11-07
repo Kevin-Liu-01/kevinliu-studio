@@ -22,9 +22,10 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   negotiation works, the text files, share files and redirects answer, and a miss is a 404. Set
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
 - `vercel.json` uses one `routes` list, because Vercel runs `rewrites` only after a static file misses, which would
-  make `Accept: text/markdown` negotiation unreachable. In order: redirects (trailing slash, `.html`, `/index`,
-  `/cards`, the old site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers, the
-  Markdown negotiation, the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
+  make `Accept: text/markdown` negotiation unreachable. In order: redirects (trailing slash, `.html`, `/index`, the old
+  site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers (each `.md` twin carries
+  `Link: <its page>; rel="canonical"`), the Markdown negotiation (`/`, `/cards`, `/about`, the battle and each card),
+  the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
 - Caching: `_astro/` and `fonts/` are immutable; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
   with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; media under those folders keeps a day
   with a week of stale-while-revalidate; pages revalidate.

@@ -14,8 +14,10 @@ The data every page and agent file reads, computed once at build.
 - `cards.ts`: runs `public/ex/{fighters,markup,art,media.gen}.js` and `vendor/ex/face.gen.js` in `vm` sandboxes with a
   CommonJS shim, because this repo is ESM and the round files are classic scripts with CommonJS exports. Mirrors r4/ex
   `build.mjs`'s `env`, so `card(f)` prints exactly what the rounds print.
-- `twins.ts`: `homeMd`, `cardMd`, `battleMd`, `aboutMd`, `llmsTxt`, `llmsFullTxt`, and `TWINS` (path to twin).
-- `site.ts`: `SITE`, `BIO`, `SOCIAL`, `EMAIL`, `PREVIOUS`, the `person` JSON-LD node.
+- `twins.ts`: `homeMd`, `cardsMd`, `cardMd`, `battleMd`, `aboutMd`, `llmsTxt`, `llmsFullTxt`, `QA`, and `TWINS` (path to twin).
+- `site.ts`: `SITE`, `BIO`, `FACTS` (public, sourced), `ALSO_KNOWN_AS`, `SOCIAL`, `EMAIL`, `PREVIOUS`, the `person` JSON-LD node.
+- `schema.ts`: `graph()`, `page()`, `work()`, `cardList`: one JSON-LD `@graph` per page (`docs/seo.md`).
+- `share.ts`: the share images for pages the rounds draw none for, rendered by `pages/share/[name].jpg.ts`.
 - `battle.ts`: reads `vendor/battle/mat/index.html`, swaps its round-relative paths, splits head and body.
 
 ## Patterns to follow / invariants
