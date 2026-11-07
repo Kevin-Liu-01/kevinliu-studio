@@ -80,6 +80,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   `vendor/ex/fonts/katagami-sans-cards.woff2` is now unused (drop it at a sync only after the Portfolio
   redesign session reports the k6 `r4/ex` install done; no `pnpm sync` before then); not shipped: needs Kevin's yes to
   merge to `main`, which deploys production.
+- **Shipped** (2026-11-06): Kevin said "Yes, ship it". `main` was pushed to 0d8fb9d at 10:02; production deployment
+  `kevinliu-studio-35wc6c87l` is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech, and
+  `node scripts/smoke.mjs https://www.kevinliu.studio` passes (the face and `ui.css?v=` serve immutable). Next: read
+  Speed Insights for real-device INP and LCP once traffic arrives.
 
 ## 2026-11-06: phones' memory (fix/mobile-memory, Claude Code)
 
