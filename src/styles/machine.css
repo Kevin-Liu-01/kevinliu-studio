@@ -63,8 +63,11 @@
    itself on screen to the grounds */
 :root[data-mode='machine'] .wall > .pocket > .card { display: none; }
 :root[data-mode='machine'] .wall > .pocket > .rec { width: var(--card); aspect-ratio: 63 / 88; }
-/* the deck and the pack: the record sits inside the link and the button, which keep working */
-:root[data-mode='machine'] :is(.deck > .pile, .deck > .lead, .pack > .pk) { visibility: hidden; content-visibility: hidden; }
+/* the deck and the pack: the record sits inside the link and the button, which keep working. The pack's fan paints the
+   cards' posters as backgrounds; hidden, they still fetched, and the wall's lazy posters then completed from that cache
+   (12 pictures on an iPhone 14), so in the Machine view the fan paints none */
+:root[data-mode='machine'] :is(.deck > .pile, .deck > .lead, .pack > .pk) { visibility: hidden; }
+:root[data-mode='machine'] .pack > .pk * { background-image: none !important; }
 :root[data-mode='machine'] :is(.deck, .pack) > .rec { position: absolute; inset: 0; }
 
 /* ---------- the dock: the ids the battle address will carry, the gauge's own words, Play's path and seed ---------- */
