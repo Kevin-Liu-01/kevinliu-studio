@@ -727,7 +727,7 @@
   const frameNow = {};
   function setFrames(id) {
     const F = FRS && FRS.of(id);
-    frs.hidden = !F || F.length < 2;
+    frs.hidden = true;
     if (frs.hidden) { frs.replaceChildren(); return; }
     const now = frameNow[id] || F[0].label;
     frs.replaceChildren(...F.map((f) => {

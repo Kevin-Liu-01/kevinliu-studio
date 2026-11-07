@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "30e69931",
- "synced": "2026-11-07T12:54:32.177Z",
+ "synced": "2026-11-07T14:11:45.424Z",
  "stages": {
   "cards": {
    "files": 1031,
-   "bytes": 107516235,
+   "bytes": 107516292,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -14,8 +14,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "19599500deca0cdf90584e534786e8791224893e771bc3723dcbbfaaa70775ea",
-     "bytes": 143053
+     "sha256": "5d40ae93c7a04f26982828e0bd2db5c004bbe89493e1260c0bdce43661509b92",
+     "bytes": 142883
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",
@@ -59,8 +59,8 @@
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "889bab5249fc99008af8d286f0731457fd542e7d6886f6eb760b406fed70cd1c",
-     "bytes": 63924
+     "sha256": "3d28f631b76eefdd96af2d6c64faeca9f0a4a71837110490c3063fb90130d9ca",
+     "bytes": 63910
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
@@ -3029,8 +3029,8 @@
     },
     "public/ex/design/card.js": {
      "src": "r4/ex/design/card.js",
-     "sha256": "bfb6abae52516788ab2fd4ec8f71e73f325a1eb4fe70bdffa2f8a9505d6b9390",
-     "bytes": 15982
+     "sha256": "8d5425c2690dfb002f44deadae4fb1f4af7476cd1722f86d0b21b37a396467fa",
+     "bytes": 16223
     },
     "public/ex/design/frames.gen.js": {
      "src": "r4/ex/design/frames.gen.js",

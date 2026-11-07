@@ -929,8 +929,7 @@
 }
 .card.dz[data-fam="K"] :is(.trait, .move)::before {
   border-radius: 0; box-shadow: none;
-  background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 4.8cqw) 0.3cqw no-repeat,
-    linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)) 2.4cqw 100% / calc(100% - 4.8cqw) 0.2cqw no-repeat;
+  background: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)) 2.4cqw 100% / calc(100% - 4.8cqw) 0.2cqw no-repeat;
 }
 .card.dz[data-fam="K"] :is(.trait, .move)::after { content: none; }
 .card.dz[data-fam="K"] :is(.foot, .no, .what)::before, .card.dz[data-fam="K"] .what::after { border-radius: 0.3cqw; }
