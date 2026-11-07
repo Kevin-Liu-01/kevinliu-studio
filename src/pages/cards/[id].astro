@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import { fighters, card, M, whatOf, factLines, hueOf, type Fighter } from '../../lib/cards';
 import { cardPath } from '../../lib/twins';
 import { SITE, NAME, person } from '../../lib/site';
+import { workType } from '../../lib/schema';
+import { cardRecord, recordHtml, cardBlocks, mdHtml } from '../../lib/machine';
 
 export function getStaticPaths() {
   return fighters.map((f) => ({ params: { id: f.id }, props: { f } }));
@@ -15,19 +17,12 @@ const what = whatOf(f);
 const hue = hueOf(f);
 const repo = f.repo?.replace(/ .*$/, '');
 const pinned = (f as any).pinned as { sha: string; date?: string } | undefined;
-// schema.org type and category: named where a card's discipline tags would mistype it, guessed from the tags otherwise
-const TYPE: Record<string, string> = { katagami: 'CreativeWork', atlas: 'CreativeWork', ommc: 'WebSite', powerlifting: 'WebSite' };
-const CATEGORY: Record<string, string> = {
-  turboslide: 'BusinessApplication', jarhead: 'UtilitiesApplication', mailroom: 'CommunicationApplication', elo: 'BusinessApplication',
-  podium: 'BusinessApplication', sevenfold: 'ReferenceApplication', 'kevin-wiki': 'ReferenceApplication', ariadne: 'EntertainmentApplication',
-  cotfly: 'EntertainmentApplication', 'bday-land': 'EntertainmentApplication',
-};
-const category = CATEGORY[f.id] ?? (f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication');
+const kind = workType(f);
 // sameAs claims identity, so only the card a repository is named for links it; a card built inside another's repo does not
 const sharers = fighters.filter((g) => g.repo?.replace(/ .*$/, '') === repo);
 const ownsRepo = !!repo && (sharers.length === 1 || repo.toLowerCase().endsWith('/' + f.id));
 const work: Record<string, unknown> = {
-  '@type': TYPE[f.id] ?? 'SoftwareApplication',
+  '@type': kind.type,
   '@id': `${SITE}${cardPath(f)}#work`,
   name: f.title,
   description: what,
@@ -39,7 +34,7 @@ const work: Record<string, unknown> = {
   keywords: f.disciplines.join(', '),
   ...(ownsRepo ? { sameAs: [repo] } : {}),
 };
-if (work['@type'] === 'SoftwareApplication') Object.assign(work, { applicationCategory: category, operatingSystem: 'Web' });
+if (kind.category) Object.assign(work, { applicationCategory: kind.category, operatingSystem: 'Web' });
 const jsonld = [
   work,
   person,
@@ -50,6 +45,10 @@ const jsonld = [
 ];
 const description = `${f.title}: ${what}`.slice(0, 158);
 const discIcon = (d: string) => M.icon(d.toLowerCase());
+// the Machine view's forms of this page: the card's whole record on the stand, the twin block by block in the info
+// column (its headings are the human headings, marked by machine.css, so each heading keeps one text)
+const tw = cardBlocks(f);
+const facts = factLines(f);
 ---
 <Base
   seo={{ title: f.title, description, path: cardPath(f), og: f.id, imageAlt: `The ${f.title} card`, jsonld }}
@@ -57,29 +56,32 @@ const discIcon = (d: string) => M.icon(d.toLowerCase());
   html={{ 'data-card': f.id }}
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
-    <div class="stand" set:html={card(f, { id: `c-${f.id}`, focusable: false })} />
+    <div class="stand"><Fragment set:html={card(f, { id: `c-${f.id}`, focusable: false })} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true }))} /></div>
     <article class="info">
       <h1>{f.title}</h1>
       <p class="cp-what">{what}</p>
-      <p class="cp-disc">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</p>
-      <p class="cp-go">
+      <p class="cp-disc sw"><span class="hx">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</span><span class="mx" set:html={mdHtml(tw.line)} /></p>
+      <p class="cp-go sw">
+        <span class="hx">
         {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>Open {f.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span></a>}
         {repo && <a class="press" href={repo} rel="noopener"><span>Source</span></a>}
+        </span>
+        <span class="mx" set:html={mdHtml(tw.meta)} />
       </p>
       <h2>The numbers</h2>
       <ul class="cp-facts">
-        {factLines(f).map((x) => <li><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></li>)}
+        {facts.map((x, k) => <li class="sw"><div class="hx"><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></div><p class="mx" set:html={mdHtml(tw.facts[k])} /></li>)}
       </ul>
-      {f.trait && <Fragment><h2>Trait</h2><div class="cp-trait"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div></Fragment>}
+      {f.trait && <Fragment><h2>Trait</h2><div class="cp-trait sw"><div class="hx"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div><p class="mx" set:html={mdHtml(tw.trait!)} /></div></Fragment>}
       <h2>Moves</h2>
       <ol class="cp-moves">
-        {f.moves.map((mv) => <li><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></li>)}
+        {f.moves.map((mv, k) => <li class="sw"><div class="hx"><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></div><p class="mx" set:html={mdHtml(tw.moves[k])} /></li>)}
       </ol>
-      {pinned && <p class="cp-pin">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</p>}
+      {pinned && <p class="cp-pin sw"><span class="hx">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</span>{tw.pinned && <span class="mx" set:html={mdHtml(tw.pinned)} />}</p>}
     </article>
   </main>
   <nav class="pager" aria-label="Cards">
-    <a href={cardPath(prev)} rel="prev" data-astro-prefetch="viewport"><Fragment set:html={M.icon('prev')} />{prev.title}</a>
-    <a href={cardPath(next)} rel="next" data-astro-prefetch="viewport">{next.title}<Fragment set:html={M.icon('next')} /></a>
+    <a href={cardPath(prev)} rel="prev" data-astro-prefetch="viewport" class="sw"><span class="hx"><Fragment set:html={M.icon('prev')} />{prev.title}</span><span class="mx">{cardPath(prev)}</span></a>
+    <a href={cardPath(next)} rel="next" data-astro-prefetch="viewport" class="sw"><span class="hx">{next.title}<Fragment set:html={M.icon('next')} /></span><span class="mx">{cardPath(next)}</span></a>
   </nav>
 </Base>

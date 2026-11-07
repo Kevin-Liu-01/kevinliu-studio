@@ -4,13 +4,13 @@
 // Every link this site writes is absolute for that reason.
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
-import Machine from '../components/Machine.astro';
 import Analytics from '../components/Analytics.astro';
 import Footer from '../components/Footer.astro';
 import Release from '../components/Release.astro';
 import { neuTokens, masks, sprite } from '../lib/cards';
 import { versioned } from '../lib/assets';
 import '../styles/site.css';
+import '../styles/machine.css';
 
 interface Props {
   seo: Parameters<typeof Seo>[0];
@@ -66,13 +66,12 @@ const fontFace = [
 <div id="behind">
 <Header path={seo.path} />
 <slot />
-<Footer />
+<Footer path={twinPath} />
 </div>
 <slot name="overlay" />
 </div>
-<Machine path={twinPath} />
 <Fragment set:html={sprite} />
 <slot name="foot" />
-<script is:inline>/* Human and Machine on every page (gallery.js does the same on the home page; both write the same state) */document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mode-set]');if(!b)return;var m=b.dataset.modeSet,d=document.documentElement;d.dataset.mode=m;try{localStorage.setItem('ill-mode',m)}catch(_){}document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',m==='machine'?1:0)});var v=[].filter.call(document.querySelectorAll('[data-mode-set]'),function(x){return x.offsetParent!==null}),f=v.find(function(x){return x.dataset.modeSet===m})||v[0];if(f)f.focus()});(function(){var m=document.documentElement.dataset.mode;if(m==='machine'){document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',1)})}})()</script>
+<script is:inline>/* Human and Machine on every page (gallery.js does the same on the home page; both write the same state). Focus stays on the switch the visitor can see: in the Machine view a region's human form keeps its box but is hidden */document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mode-set]');if(!b)return;var m=b.dataset.modeSet,d=document.documentElement;d.dataset.mode=m;try{localStorage.setItem('ill-mode',m)}catch(_){}document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',m==='machine'?1:0)});var v=[].filter.call(document.querySelectorAll('[data-mode-set]'),function(x){return x.checkVisibility?x.checkVisibility({visibilityProperty:true}):x.offsetParent!==null}),f=v.find(function(x){return x.dataset.modeSet===m})||v[0];if(f)f.focus()});(function(){var m=document.documentElement.dataset.mode;if(m==='machine'){document.querySelectorAll('[data-mode-set]').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.modeSet===m))});document.querySelectorAll('.seg').forEach(function(s){s.style.setProperty('--i',1)})}})()</script>
 </body>
 </html>

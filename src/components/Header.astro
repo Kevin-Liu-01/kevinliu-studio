@@ -13,13 +13,16 @@ const NAV = [
 <header class="top site">
   <a class="brand" href="/" aria-label={home ? undefined : 'Kevin Liu, every card'} data-astro-prefetch={home ? undefined : 'viewport'}>
     <svg class="kl" viewBox="8 5 80 80" aria-hidden="true"><path fill="currentColor" d={KL_PATH} /></svg>
+    <span class="mx kl-mx" aria-hidden="true">{home ? '#' : '/'}</span>
     {home ? <h1>Kevin Liu</h1> : <span class="name">Kevin Liu</span>}
   </a>
   <nav class="links" aria-label="Site">
-    {NAV.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined} data-astro-prefetch="viewport">{n.label}</a>)}
+    {NAV.map((n) => <a class="sw" href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined} data-astro-prefetch="viewport"><span class="hx">{n.label}</span><span class="mx">{n.href}</span></a>)}
   </nav>
   <div class="seg" role="group" aria-label="View" style="--i:0">
-    {['Human', 'Machine'].map((v, i) => <button type="button" data-mode-set={v.toLowerCase()} aria-pressed={String(!i)} set:html={M.weights(v)} />)}
+    {/* in the Machine view each half names the type it asks for: every address on the site answers text/markdown with its
+     twin (vercel.json negotiates on Accept), so the links keep their addresses and this switch is the difference */}
+    {[['Human', 'text/html'], ['Machine', 'text/markdown']].map(([v, t], i) => <button type="button" data-mode-set={v.toLowerCase()} aria-pressed={String(!i)} set:html={`${M.weights(v)}<span class="mx">${t}</span>`} />)}
   </div>
   {home && <button type="button" class="press icon" id="sound" aria-pressed="false" aria-label="Sound"><span class="swapi"><svg class="i off" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm13.3.2 1.7 1.7 1.7-1.7a1 1 0 1 1 1.4 1.4L19.4 12.8l1.7 1.7a1 1 0 1 1-1.4 1.4L18 14.2l-1.7 1.7a1 1 0 1 1-1.4-1.4l1.7-1.7-1.7-1.7a1 1 0 1 1 1.4-1.4Z"/></svg><svg class="i on" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm12.8-1.9a1 1 0 0 1 1.4.1 6.6 6.6 0 0 1 0 8.6 1 1 0 1 1-1.5-1.3 4.6 4.6 0 0 0 0-6 1 1 0 0 1 .1-1.4Zm3-2.6a1 1 0 0 1 1.4 0 10.4 10.4 0 0 1 0 14 1 1 0 1 1-1.4-1.4 8.4 8.4 0 0 0 0-11.2 1 1 0 0 1 0-1.4Z"/></svg></span></button>}
   {home && <button type="button" class="press icon" id="pause" aria-pressed="false" aria-label="Pause Motion"><span class="swapi" set:html={`${M.icon('pause', 'off')}${M.icon('play', 'on')}`} /></button>}

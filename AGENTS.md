@@ -13,6 +13,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | `src/lib/site.ts` | name, bio, links, the previous site | yes |
 | `src/lib/battle.ts`, `src/components/BattlePage.astro` | the battle page split into head and body, with its paths pointed here | yes |
 | `src/layouts/Base.astro`, `src/components/` | the frame, SEO head, header, footer, Machine view, analytics | yes |
+| `src/lib/machine.ts`, `src/styles/machine.css` | the Machine view: each region's machine form, nested in the element it describes (`docs/architecture.md`, Machine view) | yes |
 | `vercel.json` | one `routes` list: redirects, headers, Markdown negotiation, files, clean URLs, 404 | yes |
 | `src/styles/site.css` | the site's layer over the card room's `ui.css` | yes |
 | `scripts/sync.mjs` | pulls round material by allow-list, patches, scans; writes only when every check passes | yes, carefully |

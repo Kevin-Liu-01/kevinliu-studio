@@ -1,0 +1,122 @@
+/* The Machine view: the page keeps its room, its boxes and their surfaces, and each region shows what an agent reads
+   there. Every machine form (.mx) is nested in the element it describes and built from the twins' data (lib/machine.ts),
+   so it sits in that element's box at every width with nothing measured. A region that swaps text (.sw) stacks its
+   human form (.hx) and machine form in one grid cell, so the box keeps at least its human size.
+   In the human view the forms are display:none and the wrappers display:contents, both !important, so no rule of the
+   room's (a pill, a tile) can give them a box: the human view paints as if they were not there.
+   The one face carries it, with tabular figures. Keys and values align on a grid column, so the page reads as itself
+   written out. */
+:root:not([data-mode='machine']) .mx { display: none !important; }
+:root:not([data-mode='machine']) .hx { display: contents !important; }
+
+:root[data-mode='machine'] body { background: var(--clay); }
+:root[data-mode='machine'] body .human { display: block; }
+:root[data-mode='machine'] :is(#world, #stage, #inspect) { display: none !important; }
+:root[data-mode='machine'] .mx { font-variant-numeric: tabular-nums; }
+/* Markdown's own marks, quieter than its words */
+:root[data-mode='machine'] .mk { color: var(--ink-3); }
+:root[data-mode='machine'] .mx a { color: inherit; text-decoration-color: var(--ink-3); text-underline-offset: 0.18em; }
+@media (hover: hover) { :root[data-mode='machine'] .mx a:hover { text-decoration-color: currentColor; } }
+
+/* ---------- swaps in place ---------- */
+:root[data-mode='machine'] .sw { display: grid; }
+:root[data-mode='machine'] .sw > :is(.hx, .mx) { grid-area: 1 / 1; min-width: 0; }
+:root[data-mode='machine'] .sw > .hx { display: block; visibility: hidden; }
+:root[data-mode='machine'] .sw > .mx { display: block; }
+
+/* ---------- headings are the page's own, written as their twin writes them ---------- */
+:root[data-mode='machine'] :is(.cardpage, .prose) h1::before { content: '# '; color: var(--ink-3); }
+:root[data-mode='machine'] :is(.cardpage, .prose) h2::before { content: '## '; color: var(--ink-3); }
+
+/* ---------- header: the mark's box holds # (home's h1 is the twin's first line) or / (where the name leads), the nav its
+   addresses, the switch the type each half asks for ---------- */
+:root[data-mode='machine'] header.top .brand .kl { display: none; }
+:root[data-mode='machine'] header.top .kl-mx { display: grid; place-items: center; width: 28px; height: 28px; flex: none; font: 700 26px/1 var(--sans); color: var(--ink-3); }
+/* a link keeps its human label's box (hidden, in flow); its address is laid over it, centred */
+:root[data-mode='machine'] :is(header.top .links, .pager) a.sw { position: relative; display: grid; place-items: center; }
+:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .mx { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 500; white-space: nowrap; }
+:root[data-mode='machine'] header.top .links a.sw[aria-current='page'] > .mx { font-weight: 600; }
+:root[data-mode='machine'] .seg > button > .stack2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:root[data-mode='machine'] .seg > button > .mx { display: block; font: 500 12px/20px var(--sans); color: var(--ink-2); white-space: nowrap; }
+:root[data-mode='machine'] .seg > button[aria-pressed='true'] > .mx { font-weight: 600; color: var(--ink-1); }
+@media (max-width: 639px) { :root[data-mode='machine'] header.top .kl-mx { width: 24px; height: 24px; font-size: 22px; } }
+
+/* ---------- records: a card, the deck and the pack written out on a clay sheet in the card's own box ---------- */
+:root[data-mode='machine'] .rec {
+  --r: max(3px, calc(var(--card) * 0.048));
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-content: start; gap: calc(var(--card) * 0.006) 0.9em;
+  box-sizing: border-box; overflow: hidden;
+  padding: calc(var(--card) * 0.075); border-radius: var(--r); background: var(--clay); box-shadow: var(--raise-s);
+  font: 500 max(11px, calc(var(--card) * 0.045))/1.4 var(--sans); color: var(--ink-1); text-align: left;
+}
+:root[data-mode='machine'] .rec > .t { grid-column: 1 / -1; margin-bottom: calc(var(--card) * 0.05); font: 700 calc(var(--card) * 0.088)/1.08 var(--sans); text-wrap: balance; }
+:root[data-mode='machine'] .rec > .f { display: contents; }
+:root[data-mode='machine'] .rec .k { color: var(--ink-2); }
+/* values break at the <wbr> after a slash, dot or hyphen (lib/machine.ts), and mid-word only when nothing else fits */
+:root[data-mode='machine'] .rec .v { overflow-wrap: break-word; }
+
+/* a wall card: the pocket keeps its well, the card its box, the record takes the card's place. The card is skipped,
+   not only hidden: nothing in it paints, decodes or reports itself on screen to the grounds */
+:root[data-mode='machine'] .wall > .pocket > .card { visibility: hidden; content-visibility: hidden; }
+:root[data-mode='machine'] .wall > .pocket > .rec { position: absolute; inset: 6px; }
+/* the deck and the pack: the record sits inside the link and the button, which keep working */
+:root[data-mode='machine'] :is(.deck > .pile, .deck > .lead, .pack > .pk) { visibility: hidden; content-visibility: hidden; }
+:root[data-mode='machine'] :is(.deck, .pack) > .rec { position: absolute; inset: 0; }
+
+/* ---------- the dock: the ids the battle address will carry, the gauge's own words, Play's path and seed ---------- */
+:root[data-mode='machine'] .dock .well > :not(.mx) { visibility: hidden; }
+:root[data-mode='machine'] .dock .well > .mx {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 3px; box-sizing: border-box;
+  font: 600 10px/1.15 var(--sans); color: var(--ink-1); text-align: center; overflow-wrap: anywhere;
+}
+:root[data-mode='machine'] .dock .gauge { position: relative; }
+:root[data-mode='machine'] .dock .gauge > i { visibility: hidden; }
+:root[data-mode='machine'] .dock .gauge::after {
+  content: attr(aria-label); position: absolute; inset: -4px -12px; display: grid; place-items: center;
+  font: 600 12px/1 var(--sans); color: var(--ink-1); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+:root[data-mode='machine'] .dock .play { position: relative; }
+:root[data-mode='machine'] .dock .play > .stack2 { visibility: hidden; }
+:root[data-mode='machine'] .dock .play > .mx { position: absolute; z-index: 1; inset: 0; display: grid; place-content: center; text-align: center; font: 600 13px/16px var(--sans); }
+:root[data-mode='machine'] .dock .play > .mx > [data-live] { font-weight: 500; font-size: 11px; }
+@media (max-width: 639px) {
+  :root[data-mode='machine'] .dock .gauge::after { font-size: 10px; inset: -4px -6px; }
+  :root[data-mode='machine'] .dock .play > .mx { font-size: 12px; line-height: 14px; }
+}
+
+/* ---------- footer: its links as addresses and the files an agent starts from, in the footer's own row; the last item,
+   the twin's status, type and size, opens the curl commands and the whole twin under it ---------- */
+:root[data-mode='machine'] .foot { display: grid; }
+:root[data-mode='machine'] .foot > * { grid-area: 1 / 1; min-width: 0; }
+:root[data-mode='machine'] .foot > nav { visibility: hidden; }
+:root[data-mode='machine'] .foot > .fm { display: block; color: var(--ink-2); font: 500 13px/20px var(--sans); }
+:root[data-mode='machine'] .fm > nav { visibility: visible; }
+:root[data-mode='machine'] .fm :is(a, button) { font: inherit; }
+:root[data-mode='machine'] .fm .tohuman { display: none; }
+@media (max-width: 639px) { :root[data-mode='machine'] .fm .tohuman { display: inline-grid; } }
+:root[data-mode='machine'] .fm details[open] { flex: 1 0 100%; max-width: 110ch; text-align: center; }
+:root[data-mode='machine'] .fm summary { min-height: 44px; display: inline-grid; place-items: center; padding: 0 10px; cursor: pointer; color: var(--ink-1); font-variant-numeric: tabular-nums; list-style: none; }
+:root[data-mode='machine'] .fm summary::-webkit-details-marker { display: none; }
+:root[data-mode='machine'] .fm pre { margin: 12px 0 0; font: inherit; color: var(--ink-1); white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
+:root[data-mode='machine'] .fm pre a { display: inline; min-height: 0; padding: 0; }
+
+/* ---------- a card's page: the stand holds the record, the info column its twin block by block ---------- */
+:root[data-mode='machine'] .cardpage .stand > .card { grid-area: 1 / 1; visibility: hidden; content-visibility: hidden; }
+:root[data-mode='machine'] .cardpage .stand > .rec { --card: min(440px, 100cqw - 8px); grid-area: 1 / 1; width: var(--card); aspect-ratio: 63 / 88; }
+/* the stand's record carries the whole twin's numbers and the source, five lines more than a wall card's, in the same box */
+:root[data-mode='machine'] .cardpage .stand > .rec { font-size: max(11px, calc(var(--card) * 0.034)); row-gap: 0; }
+:root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: break-word; font: 500 14px/1.5 var(--sans); color: var(--ink-1); }
+:root[data-mode='machine'] .cardpage .info .mx .mk { font: inherit; color: var(--ink-3); }
+:root[data-mode='machine'] .cardpage .cp-disc > .hx { display: flex; flex-wrap: wrap; gap: 8px; }
+:root[data-mode='machine'] .cardpage .cp-go > .hx { display: flex; flex-wrap: wrap; gap: 10px; }
+:root[data-mode='machine'] .cardpage .cp-disc > :is(.hx, .mx) { min-height: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+:root[data-mode='machine'] .cardpage .cp-disc > .mx { align-self: center; font-size: 15px; color: var(--ink-2); }
+:root[data-mode='machine'] .cardpage .cp-go > .mx a { display: inline; min-height: 0; padding: 0; font: inherit; }
+:root[data-mode='machine'] .cardpage :is(.cp-facts, .cp-moves) > li > .mx, :root[data-mode='machine'] .cardpage .cp-trait > .mx { margin: 0; }
+:root[data-mode='machine'] .cardpage .cp-pin > .mx { color: var(--ink-2); }
+:root[data-mode='machine'] .pager a.sw > .hx { display: inline-flex; align-items: center; gap: 10px; }
+
+/* ---------- plain pages: each paragraph and list item holds its twin's source ---------- */
+:root[data-mode='machine'] .prose > .mx { display: block; }
+:root[data-mode='machine'] .prose .mx { white-space: pre-wrap; overflow-wrap: break-word; font: 500 15px/1.55 var(--sans); }
+:root[data-mode='machine'] .prose li.sw::marker { color: transparent; }
