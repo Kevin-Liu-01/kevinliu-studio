@@ -38,6 +38,7 @@
     dim.setAttribute('aria-hidden', 'true');
     $('#world').before(dim);
     const live = () => !!(Ground && Ground.available);
+    const LEAN = matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4;
     // a pour only while it reaches past the trim: an empty pour still copies the whole room
     function pour(key, o) {
       if (!live()) return;
@@ -682,7 +683,7 @@
       idle(() => {
         readying = false;
         if (G.ritual) { ready(); return; }
-        if (packOff() || RM()) {
+        if (packOff() || RM() || LEAN) { // kevinliu.studio phone memory (scripts/phone-memory.mjs)
           if (prepared) { prepared.els.forEach((el) => el && el.remove()); prepared = null; }
           if (G.premini) G.premini(null);
           if (spare) { spare.el.remove(); spare = null; }

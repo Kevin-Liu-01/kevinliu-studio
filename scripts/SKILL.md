@@ -8,6 +8,8 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
 - `sync.mjs`: add a file to the site by widening an allow-list rule, never by copying. A patch to round code must name
   text that occurs once; keep the anchors short and distinctive. After a change, `pnpm sync`, then `git diff --stat`
   on the synced folders to see that only what you meant moved.
+- `phone-memory.mjs`: the patches that keep a phone's tab under its memory limit. Add one as an anchored pair in `PHONE`;
+  restore the patched files from git and run `node scripts/phone-memory.mjs` to re-apply all of them without the rounds.
 - `verify-build.mjs`: a new site-wide rule goes here so it fails the build, not in a checklist.
 - `smoke.mjs`: runs against a deployment; add a route here when a page is added.
 - `icons.mjs`: rewrites the touch, manifest and ico icons from `public/favicon.svg`.

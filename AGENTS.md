@@ -16,6 +16,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | `vercel.json` | one `routes` list: redirects, headers, Markdown negotiation, files, clean URLs, 404 | yes |
 | `src/styles/site.css` | the site's layer over the card room's `ui.css` | yes |
 | `scripts/sync.mjs` | pulls round material by allow-list, patches, scans; writes only when every check passes | yes, carefully |
+| `scripts/phone-memory.mjs` | the phone memory patches to round code, applied by the sync or on their own | yes, carefully |
 | `scripts/verify-build.mjs` | the release guard after every build | yes |
 | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | synced round material | **never by hand**: `pnpm sync` |
 | `docs/` | architecture, sync, content, sound, battle, deploy, performance | yes |
@@ -33,6 +34,9 @@ Read `memory.md` before acting and append to it after every meaningful change.
   under reduced motion.
 - Nothing pops: a page paints whole, keeps the header still, and names its assets by content address
   (`docs/performance.md`). Record a change that touches first paint with `scripts/paint-capture.mjs` before and after.
+- A phone's tab stays under its memory budget (`docs/performance.md`, Memory): one WebGL context a page, canvases only
+  on screen, nothing rastered ahead on a touch screen. Fixes to round code for it go in `PHONE` in
+  `scripts/phone-memory.mjs`; measure before and after on the phone profiles.
 - Every page keeps one h1, a canonical, a share image and loop, JSON-LD and a Markdown twin. `pnpm build` fails
   otherwise.
 - Ask Kevin before creating the GitHub repo, pushing, deploying, touching Vercel domains or DNS, adding a paid service

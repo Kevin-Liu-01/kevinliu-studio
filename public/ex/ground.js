@@ -42,7 +42,9 @@
   const AR = 88 / 63;
   const RING = ['Infra', 'Agent', 'Data', 'Game', 'Shader', 'Type', 'Interface'];
   const WINDOW = [0.034, 0.146, 0.966, 0.646]; // EX.md 5, card widths (0.500W tall since round ex.2)
-  const ATLAS_MAX = 4096;
+  // kevinliu.studio phone memory: the shared canvas and the density on a touch screen or a small-memory device (scripts/phone-memory.mjs)
+  const SMALL = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
+  const ATLAS_MAX = SMALL ? 2048 : 4096;
 
   const HEADER = `#version 300 es
 precision highp float;
@@ -99,7 +101,7 @@ in vec2 aPos; void main() { gl_Position = vec4(aPos, 0., 1.); }`;
   const rgbOf = (h) => { h = String(h).replace('#', ''); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
   const recipes = () => (root.GROUND_RECIPES || {}).RECIPES || {};
   const energy = () => root.GROUND_ENERGY || { cards: {} };
-  const dppx = () => Math.min(root.devicePixelRatio || 1, 2);
+  const dppx = () => Math.min(root.devicePixelRatio || 1, SMALL ? 1.5 : 2);
   const reduced = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
   const hidden = () => typeof document !== 'undefined' && document.visibilityState === 'hidden';
   const even = (v) => 2 * Math.round(v / 2);
@@ -401,8 +403,11 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     const vw = Math.round(cw * k), vh = Math.round(ch * k);
     L.view = !fit && S === 1 && vw > 0 && vw < w * 0.8 ? [vw, vh] : null;
     if (L.view) [w, h] = L.view;
-    if (L.el.width !== w || L.el.height !== h) { L.el.width = w; L.el.height = h; }
+    L.bw = w; L.bh = h;
+    if (L.el.style.display !== 'none') back(L);
   }
+  // kevinliu.studio phone memory: a held print's canvas is 0 x 0; back() sizes it again before it is drawn
+  function back(L) { if (L && L.bw && (L.el.width !== L.bw || L.el.height !== L.bh)) { L.el.width = L.bw; L.el.height = L.bh; } }
   function size(s) {
     if (!s.fit) { s.px = DENSITY * s.S; }
     else {
@@ -441,6 +446,7 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
   function hold(L) {
     if (!L || L.box === L.el || L.el.style.display === 'none') return;
     L.el.style.display = 'none';
+    L.el.width = L.el.height = 0;
     L.painted = false;
     if (L.poster) L.poster.style.visibility = '';
   }
@@ -620,6 +626,7 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     }
   }
   function jobsOf(s, rest, moving) {
+    back(s); if (s.fx) back(s.fx);
     const out = [{ s, layer: s, kind: 'ground', rest, exact: rest || !moving || !s.painted, done: () => { painted(s, s, 'ground'); s.dirty = false; s.draws = (s.draws || 0) + 1; } }];
     if (s.fx && s.fx.el.isConnected) out.push({ s, layer: s.fx, kind: 'fx', rest, exact: rest || !moving || !s.fx.painted, done: () => painted(s, s.fx, 'fx') });
     return out;
@@ -646,7 +653,7 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     const cw = Math.round(innerWidth), ch = Math.round(innerHeight);
     // the world's backing store: the finest of 2, 1.5 and 1 drawing px per css px that this screen has and that keeps a
     // full-screen pass at 6 Mpx or under (1440 x 900 at 2x, 1920 x 1080 at 1.5x), never under half the device's px
-    Wd.k = [2, 1.5, 1].find((k) => k <= Math.max(1, dppx()) && cw * ch * k * k <= 6e6) || 1;
+    Wd.k = [2, 1.5, 1].find((k) => k <= Math.max(1, dppx()) && cw * ch * k * k <= 6e6 && Math.max(cw, ch) * k <= ATLAS_MAX) || 1;
     Wd.cw = cw; Wd.ch = ch;
     if (el.width !== cw * Wd.k || el.height !== ch * Wd.k) { el.width = cw * Wd.k; el.height = ch * Wd.k; }
     Wd.dirty = true;
@@ -852,6 +859,7 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
           if (!s) continue;
           if (en.isIntersecting && !s.seen) wake = true;
           s.seen = en.isIntersecting;
+          if (!s.seen && !s.active && s.box !== s.el) { hold(s); hold(s.fx); }
         }
         if (wake) want();
       }, { rootMargin: '64px' });

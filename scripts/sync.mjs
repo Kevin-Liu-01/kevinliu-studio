@@ -14,6 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { MEDIA, hasLocation } from './location.mjs';
+import { PHONE } from './phone-memory.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS = process.env.ROUNDS ?? path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
@@ -257,6 +258,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
       let buf = fs.readFileSync(src);
       try {
         if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));
+        if (PHONE[dest]) buf = Buffer.from(PHONE[dest](buf.toString('utf8')));
         if (BINARY[dest]) buf = await BINARY[dest](buf);
       } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
       for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);

@@ -3,10 +3,12 @@
 // not. Checks, per HTML page: a closed document, one h1, a title, a description, a canonical on the production host,
 // a share image and loop that exist, JSON-LD that parses, and a Markdown twin. Site-wide: every local address a page
 // references exists in dist (resolved against its <base>), the sitemap, robots.txt and llms files exist, no image
-// carries GPS metadata, no image, video or audio file carries location metadata, and no banned name or route appears.
+// carries GPS metadata, no image, video or audio file carries location metadata, no banned name or route appears, and
+// every round file scripts/phone-memory.mjs patches carries its patches (a phone's tab stays under its memory limit).
 import fs from 'node:fs';
 import path from 'node:path';
 import { MEDIA, hasLocation } from './location.mjs';
+import { PHONE } from './phone-memory.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
 const SITE = 'https://www.kevinliu.studio';
@@ -20,6 +22,12 @@ const exists = (p) => {
   const f = path.join(DIST, clean);
   return fs.existsSync(f) && fs.statSync(f).isFile() || fs.existsSync(f + '.html') || fs.existsSync(path.join(f, 'index.html'));
 };
+
+// a phone's memory: every file scripts/phone-memory.mjs patches ships patched (a sync that dropped them, or a hand copy)
+for (const dest of Object.keys(PHONE)) {
+  const f = path.join(DIST, dest.replace(/^public\//, ''));
+  if (!fs.existsSync(f) || !fs.readFileSync(f, 'utf8').includes('kevinliu.studio phone memory')) fail('/' + dest.replace(/^public\//, ''), 'lacks the phone memory patches (scripts/phone-memory.mjs)');
+}
 
 // Astro publishes any .md under src/pages; agent-docs scaffold writes a SKILL.md there (AGENTS.md)
 if (fs.existsSync(path.join(DIST, '..', 'src/pages/SKILL.md'))) fail('src/pages/SKILL.md', 'Astro publishes this as a page; the routes skill is src/SKILL.md');

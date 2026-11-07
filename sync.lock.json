@@ -5,7 +5,7 @@
  "stages": {
   "cards": {
    "files": 536,
-   "bytes": 64725766,
+   "bytes": 64726695,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -54,8 +54,8 @@
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
-     "sha256": "036d2cefc012c89b99bdb9036e8d4f5643cf43dc6277ceb0f013fa676acf94a2",
-     "bytes": 69794
+     "sha256": "32718d5dff58382b6483beae62117b3017f7b693f9c1cdd29248dd36bebdbd86",
+     "bytes": 69950
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
@@ -64,8 +64,8 @@
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
-     "sha256": "53964527dbe464dc9cdd2bc3e4fdb94119656757121e2e75151018d26ade5ae4",
-     "bytes": 52132
+     "sha256": "cc7740d0654aaa49e71f771a0797f7db1363bc32007dd4115ec280ffe3049a36",
+     "bytes": 52905
     },
     "public/ex/grounds/shell.js": {
      "src": "r4/ex/grounds/shell.js",
@@ -8187,7 +8187,7 @@
   },
   "battle": {
    "files": 754,
-   "bytes": 136502018,
+   "bytes": 136502094,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -8261,8 +8261,8 @@
     },
     "public/battle/vendor/broadcast/kit.js": {
      "src": "r4/play/vendor/broadcast/kit.js",
-     "sha256": "11004a211446d42289c61704132e5830e411a11ad36fccfb6795311cad93510f",
-     "bytes": 626685
+     "sha256": "002ead52fdf0ef9c7205bd2b5ef1c2821bf3aace6c2e2919c3f6d511bb4fa6b5",
+     "bytes": 626761
     },
     "public/battle/vendor/broadcast/media.js": {
      "src": "r4/play/vendor/broadcast/media.js",

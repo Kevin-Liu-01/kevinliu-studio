@@ -28,8 +28,9 @@ wrote is never touched.
 
 ## Transforms
 
-The only edits are in `TRANSFORMS` in `scripts/sync.mjs`. Each patch names the exact text it attaches to and must match
-exactly once, or the sync stops and says which anchor moved.
+The only edits are in `TRANSFORMS` in `scripts/sync.mjs` and `PHONE` in `scripts/phone-memory.mjs` (applied after
+`TRANSFORMS`). Each patch names the exact text it attaches to and must match exactly once, or the sync stops and says
+which anchor moved.
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
@@ -47,6 +48,12 @@ exactly once, or the sync stops and says which anchor moved.
 - `ex/markup.js`: the lens's Visit link carries no placeholder `#`, which `<base>` would turn into `/ex/`.
 - `rituals.js` also resolves the battle page's stylesheets against that page's own `<base>`, and plays the pack reveal
   for a reduced-motion pack.
+- `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and
+  the density at 1.5 on a touch screen or a small-memory device, and gives an off-screen card's canvases back;
+  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `battle/vendor/broadcast/kit.js`
+  lets each preloaded clip drop its source once its first frame loads. When the rounds are not at hand,
+  `node scripts/phone-memory.mjs` applies them to the synced files in place (only to bytes `sync.lock.json` records)
+  and updates the lock; the release guard fails a build whose files lack them.
 - Binary (`BINARY`): the two Elo API captures have their Lifecycle paragraph, which names General Translation's email
   domain, painted out.
 

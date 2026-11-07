@@ -9,6 +9,11 @@
    contentful paints meanwhile, so a visitor arriving from another page keeps seeing it until the whole wall is ready */
 [data-hold] .human { visibility: hidden; }
 
+/* a wall card more than a screen away paints no filters (index.astro): WebKit keeps a buffer the size of each filtered
+   box once painted (the cracks' glow covers the whole card), so 26 cards held about 190 MB on an iPhone. Nothing on
+   screen changes: the card takes them back a screen before it shows (docs/performance.md, Memory) */
+.wall > .pocket[data-far] :is(.card, .card *) { filter: none !important; }
+
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
 .skip:focus-visible { top: 12px; }
 
