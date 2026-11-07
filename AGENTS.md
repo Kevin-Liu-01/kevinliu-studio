@@ -7,10 +7,11 @@ Read `memory.md` before acting and append to it after every meaningful change.
 
 | Path | What | Edit? |
 | --- | --- | --- |
-| `src/pages/` | home (the wall), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404`, the `.md` twins, `llms*.txt`, `robots.txt` | yes |
+| `src/pages/` | home (the wall), `/cards` (the index), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404`, the `.md` twins, `llms*.txt`, `robots.txt`, `/share/<name>.jpg` | yes |
 | `src/lib/cards.ts` | loads the round card code at build in CommonJS sandboxes; `card()`, `fighters`, `whatOf()`, `factLines()`, the battle roster | yes |
 | `src/lib/twins.ts` | the Markdown twin of every page; `.md` endpoints, `llms*.txt` and the Machine view print from it | yes |
-| `src/lib/site.ts` | name, bio, links, the previous site | yes |
+| `src/lib/site.ts` | name, bio, the public facts about Kevin with their sources, links, the previous site | yes |
+| `src/lib/schema.ts`, `src/lib/share.ts` | the JSON-LD graph of every page; the share images built at build time (`docs/seo.md`) | yes |
 | `src/lib/battle.ts`, `src/components/BattlePage.astro` | the battle page split into head and body, with its paths pointed here | yes |
 | `src/layouts/Base.astro`, `src/components/` | the frame, SEO head, header, footer, Machine view, analytics | yes |
 | `src/lib/machine.ts`, `src/styles/machine.css` | the Machine view: each region's machine form, nested in the element it describes (`docs/architecture.md`, Machine view) | yes |
@@ -20,7 +21,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | `scripts/phone-memory.mjs` | the phone memory patches to round code, applied by the sync or on their own | yes, carefully |
 | `scripts/verify-build.mjs` | the release guard after every build | yes |
 | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | synced round material | **never by hand**: `pnpm sync` |
-| `docs/` | architecture, sync, content, sound, battle, deploy, performance | yes |
+| `docs/` | architecture, sync, content, sound, battle, deploy, performance, seo | yes |
 
 ## Rules
 
@@ -51,7 +52,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 
 - `pnpm sync` and `pnpm sync --check`
 - `pnpm dev`, `pnpm build` (runs the guard), `pnpm preview`
-- `node scripts/smoke.mjs <base-url>` against a deployment
+- `node scripts/smoke.mjs <base-url>` and `node scripts/check-seo.mjs <base-url> --external` against a deployment
 - `node scripts/icons.mjs` after the kl mark changes
 
 ## Agent-docs (auto-maintained)

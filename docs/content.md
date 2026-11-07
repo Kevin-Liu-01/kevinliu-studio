@@ -26,13 +26,17 @@ Decided by Kevin on 2026-11-05:
   Kevin sets up mail or forwarding for the domain.
 - Analytics stay Vercel Web Analytics and Speed Insights only. No PostHog.
 
+Added on 2026-11-07 (`docs/seo.md`): `FACTS`, public facts about Kevin with their sources, for the About section of
+the llms files and the questions on `/about`; `ALSO_KNOWN_AS`; Devpost among the profiles. Kevin may strike any line.
+
 ## Rules the content keeps
 
 - Nothing from the franchise the cards are inspired by: no names, marks, fonts, energy icons or trainer sprites.
   The scan in `scripts/sync.mjs` and `scripts/verify-build.mjs` fails on the names.
 - No real people's names or photos. Agent Pets' figures carry no names in any text. The Turboslide hero capture with
   a photographer's credit stays out (docs/sync.md).
-- General Translation appears only on the Atlas card and its records, and in Kevin's own bio on `/about`. Two round
+- General Translation appears only on the Atlas card and its records, the wall and the cards index (which print Atlas's
+  line), and in Kevin's own bio and facts on `/about` and the llms files. Two round
   captures that showed it are dropped or painted out by the sync (docs/sync.md).
 - OMMC participants are minors: nothing here requests or links the OMMC portal's participant routes.
 - The Personal Website's `public/media/art/`, `public/media/curation/` (GPS-tagged) and

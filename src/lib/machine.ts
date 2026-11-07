@@ -1,7 +1,7 @@
 // The Machine view's forms: what an agent reads at each spot of a page, built from the same data as the twins
 // (twins.ts) so a region's machine form and the .md endpoint never disagree. Each form nests in the real element it
 // describes; machine.css swaps them in place, so they share its box at every width.
-import { fighters, rules, type Fighter } from './cards';
+import { fighters, rules, repoOf, type Fighter } from './cards';
 import { cardPath, cardMd } from './twins';
 import { workType } from './schema';
 import { PREVIOUS } from './site';
@@ -19,7 +19,7 @@ export type Field = { k: string; v: string; href?: string; live?: string };
 export function cardRecord(f: Fighter, { full = false } = {}): Field[] {
   const p = cardPath(f);
   const t = workType(f);
-  const repo = f.repo?.replace(/ .*$/, '');
+  const repo = repoOf(f); // a public repository only, as the twin prints it
   return [
     { k: 'no.', v: String(fighters.indexOf(f) + 1).padStart(2, '0') },
     { k: 'id', v: f.id },
@@ -76,6 +76,7 @@ export function cardBlocks(f: Fighter) {
     facts: b[nums + 1].split('\n'),
     trait: trait >= 0 ? b[trait + 1] : null,
     moves: b[moves + 1].split('\n'),
+    related: at('## Related') >= 0 ? b[at('## Related') + 1].split('\n') : [],
     pinned: b.slice(moves + 2).find((x) => x.startsWith('Facts pinned')) ?? null,
   };
 }

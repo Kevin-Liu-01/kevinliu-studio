@@ -4,7 +4,8 @@ import { fighters, rules, card, M, env, battleRoster, whatOf } from '../lib/card
 import { cardPath } from '../lib/twins';
 import { cardRecord, recordHtml, deckRecord, packRecord } from '../lib/machine';
 import { versioned } from '../lib/assets';
-import { SITE, NAME, DESCRIPTION, person } from '../lib/site';
+import { graph, page, cardList } from '../lib/schema';
+import { SITE, NAME, DESCRIPTION } from '../lib/site';
 
 const ART_RATIO = 88 / 63;
 // The wall's first screen (two rows of up to seven, the widest the gallery sets) loads with the page and its first
@@ -27,16 +28,7 @@ const dock = (M.dock([], [], fighters, rules, env) as string)
   .replace(/<span class="hold"><\/span>/g, '$&<span class="mx" data-live="slot"></span>')
   .replace(/(<button type="button" class="play"[^>]*>)/, '$1<span class="mx" aria-hidden="true"><span>/battle</span><span data-live="seed"></span></span>');
 const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
-const jsonld = [
-  { '@type': 'WebSite', '@id': `${SITE}/#site`, url: `${SITE}/`, name: NAME, description: DESCRIPTION, author: { '@id': person['@id'] }, inLanguage: 'en' },
-  person,
-  {
-    '@type': 'ItemList',
-    name: `${NAME}'s projects`,
-    numberOfItems: fighters.length,
-    itemListElement: fighters.map((f, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}${cardPath(f)}`, name: f.title, description: whatOf(f) })),
-  },
-];
+const jsonld = graph(page({ path: '/', type: 'CollectionPage', name: NAME, description: DESCRIPTION, image: `${SITE}/og/home.jpg`, mainEntity: { '@id': cardList['@id'] } }), cardList);
 ---
 <Base
   seo={{ title: NAME, description: DESCRIPTION, path: '/', og: 'home', imageAlt: `${NAME}'s ${fighters.length} project cards`, jsonld }}

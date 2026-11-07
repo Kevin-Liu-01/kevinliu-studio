@@ -160,3 +160,12 @@ rose 307 → 864 MB on the fix and 538 → 1,272 MB before; WebKit's low-memory 
 within 5 s. So a rising soak on desktop WebKit is not a leak by itself: send the warning and see what stays. The Arena itself holds about
 400 MB of WebContent and two WebGL contexts (the battle round's board and broadcast kit); that is the next place to
 look, in r4/play.
+
+### The Machine view (2026-11-07)
+
+The Machine view keeps the page laid out and shows each region's machine form in its box (docs/architecture.md). It
+holds its cost down by loading nothing a card would: in Machine mode the wall's cards are `display: none` (a hidden
+card kept its layout box, so its lazy pictures loaded as the wall scrolled) and the pack's fan paints no posters (its
+hidden backgrounds fetched them, and the wall's lazy posters completed from that cache). iPhone 14, same run, two
+rounds against the view it replaced: pictures 48.5 MB both, canvas equal or lower, WebContent 64 and 68 against 52 and
+56 MB on the wall (the old view hid the whole page). Human mode is unchanged.

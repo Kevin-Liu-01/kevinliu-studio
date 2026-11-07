@@ -57,12 +57,17 @@
 /* values break at the <wbr> after a slash, dot or hyphen (lib/machine.ts), and mid-word only when nothing else fits */
 :root[data-mode='machine'] .rec .v { overflow-wrap: break-word; }
 
-/* a wall card: the pocket keeps its well, the card its box, the record takes the card's place. The card is skipped,
-   not only hidden: nothing in it paints, decodes or reports itself on screen to the grounds */
-:root[data-mode='machine'] .wall > .pocket > .card { visibility: hidden; content-visibility: hidden; }
-:root[data-mode='machine'] .wall > .pocket > .rec { position: absolute; inset: 6px; }
-/* the deck and the pack: the record sits inside the link and the button, which keep working */
-:root[data-mode='machine'] :is(.deck > .pile, .deck > .lead, .pack > .pk) { visibility: hidden; content-visibility: hidden; }
+/* a wall card: the pocket keeps its well and the record takes the card's place at the card's own size (card.css: width
+   --card, 63 by 88). The card is display:none, not only hidden: a hidden card keeps its layout box, so its lazy pictures
+   still loaded as the wall scrolled (16 MB more on an iPhone 14); now nothing in it loads, paints, decodes or reports
+   itself on screen to the grounds */
+:root[data-mode='machine'] .wall > .pocket > .card { display: none; }
+:root[data-mode='machine'] .wall > .pocket > .rec { width: var(--card); aspect-ratio: 63 / 88; }
+/* the deck and the pack: the record sits inside the link and the button, which keep working. The pack's fan paints the
+   cards' posters as backgrounds; hidden, they still fetched, and the wall's lazy posters then completed from that cache
+   (12 pictures on an iPhone 14), so in the Machine view the fan paints none */
+:root[data-mode='machine'] :is(.deck > .pile, .deck > .lead, .pack > .pk) { visibility: hidden; }
+:root[data-mode='machine'] .pack > .pk * { background-image: none !important; }
 :root[data-mode='machine'] :is(.deck, .pack) > .rec { position: absolute; inset: 0; }
 
 /* ---------- the dock: the ids the battle address will carry, the gauge's own words, Play's path and seed ---------- */

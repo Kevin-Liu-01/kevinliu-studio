@@ -113,3 +113,55 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   back-forward cache (Chromium's real cache path passes). Harness: Relay's playwright-core is now 1.63 (needs
   webkit-2359, not installed); use Prototemplate's 1.62.1, and soak.mjs counts other agents' WebKit processes.
 - **Shipped** (2026-11-07): Kevin said "approved all". Rollback target `kevinliu-studio-35wc6c87l` (docs/deploy.md).
+
+## 2026-11-07: search, answers and share cards (seo/aeo, Claude Code)
+
+- **Type**: feature (SEO, AEO, GEO)
+- **Asked**: Kevin, 2026-11-07 02:28: "massively improve my seo and geo and aeo and include more about myself in the
+  llms.txt. also use og:images in all my links. and make more links!"
+- **Changed**: `src/lib/schema.ts` (one JSON-LD `@graph` per page: WebSite, Person, the page, BreadcrumbList, the
+  card's project with SoftwareSourceCode for public repos, the battle's VideoGame); `src/lib/share.ts` and
+  `pages/share/[name].jpg.ts` (share images for /about, /cards, /battle, /battle/arena and the 404, built from the
+  cards' own share images and Katagami Sans via satori and sharp; `src/share/*.ttf` instanced from the site face);
+  `/cards` (a plain index; its old redirect to `/` is gone); card pages open with "<Card> is ...", link the battle
+  with that card leading and three related cards, and link only repositories a visitor can open (`CLOSED` in
+  `cards.ts`); `site.ts` `FACTS` and `ALSO_KNOWN_AS` with sources for llms.txt's About section; `/about` asks two
+  questions its own words do not answer; footer links `/cards`, the page's twin and llms.txt; `.md` twins carry a
+  canonical `Link` header; sitemap `lastmod` from git, left out where a shallow clone cannot date a page;
+  `scripts/check-seo.mjs`; the guard checks share image size and alt and the graph. `docs/seo.md`.
+- **Checked**: build and guard; `smoke.mjs` and `check-seo.mjs --external` against a local serve of dist that applies
+  vercel.json's routes; Lighthouse SEO 100 on `/`, `/about`, `/cards/claude-of-tanks`, `/cards/atlas`, `/cards`;
+  a card's battle link starts that team; an eight-agent adversarial review (wf_aacfd7cb-5f4), every confirmed finding
+  fixed.
+- **Open**: seven card repositories are private (Agent Pets, bday.land, Powerlifting, Elo, Kevin Wiki, Sandbox
+  Arena, 050525) and the card face (r4/ex markup.js `NOLINK`) still links their commits, a 404 for visitors: fix in
+  the rounds; Kevin to strike any `FACTS` line; Search Console and Bing submission; set `VERCEL_DEEP_CLONE` if every
+  page should carry a `lastmod`.
+
+## 2026-11-07: the Machine view aligned to the page (machine/aligned, Claude Code)
+
+- **Type**: feature
+- **Asked**: Kevin, 2026-11-07 02:28: "make a whole new custom machine view with aligned ui to actual ui areas like the
+  human | machine button".
+- **Designed**: three directions built and screenshotted, then scored by three independent judges (wf_1c1252f9-c2b):
+  Source in place (the room written out) won 2 of 3 over Wireframe CRT and Response mapped; grafts from both.
+- **Changed**: `src/lib/machine.ts` (records and twin blocks, from twins.ts, cards.ts and site.ts), `src/styles/
+  machine.css`, `workType` in `src/lib/schema.ts` (the records and the JSON-LD read one type and category), the
+  header, footer, home, card, about, cards and 404 pages; `Machine.astro` removed. docs/architecture.md, Machine view.
+- **How**: each machine form is nested in the element it describes and built at build time, so it keeps the real grid
+  at every width with nothing measured. Human mode hides the forms with `!important`, so its first paint is unchanged.
+  Links keep their addresses; the switch shows the `Accept` each half asks for.
+- **Checked** (WebKit, local serves, origin/main ae3cc56 against this branch; the merge also against seo/aeo 8a068df):
+  the human view is pixel-identical at 1440, 730, 390 and 320 on home, a card, about and 404 (a card's own sparkles
+  differ between runs at most); switching shifts nothing (CLS 0, input shifts included), no horizontal scroll; the
+  header, seg, pockets, dock and footer keep their boxes on home at every width; keyboard switch, aria-pressed and the
+  stored mode work; screen readers read each record as text. build, guard, check-seo pass; smoke differs only on
+  Vercel's own headers and redirects, as origin/main does on the same server.
+- **Memory** (iPhone 14, WebKit, same run, two rounds): Human mode equal (wall WebContent 215 to 224 against 217 to
+  243 MB, pictures 85.7 MB both). Machine mode: pictures equal (48.5 MB) after two fixes (cards out of layout, the
+  pack's fan paints no posters; before them 64.7 MB), canvas equal or lower, WebContent 64 and 68 against 52 and 56 MB
+  on the wall and 23 against 18 on a card page: the old Machine view hid the whole page.
+- **Open**: the battle pages have no Machine view (needs a key in r4/play's rail and engine state outside `?debug`);
+  text blocks on card and about pages grow where their Markdown is longer, so blocks below them move; the footer's
+  addresses take more rows on phones; on phones the way back to Human is the footer's button; the Machine view's
+  12 MB of WebContent over the old one.

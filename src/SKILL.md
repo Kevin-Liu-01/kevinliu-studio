@@ -25,7 +25,8 @@ in `src/`, not `pages/`, because Astro publishes any `.md` file under `pages/` a
 
 ## Common tasks → first action
 <!-- agent-docs:fill:tasks -->
-- Add a route: page, twin endpoint, `TWINS` entry, smoke route in `scripts/smoke.mjs`.
+- Add a route: page, twin endpoint, `TWINS` entry, a share image (`og` or `share`), a `graph(page(...))`, the
+  Accept route and canonical `Link` in `vercel.json`, smoke route in `scripts/smoke.mjs`.
 
 ## Gotchas
 <!-- agent-docs:fill:gotchas -->

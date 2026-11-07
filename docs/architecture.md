@@ -19,7 +19,7 @@ generator for metadata.
 | Round material (cards, battle, sound) | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | `scripts/sync.mjs`, never edited by hand |
 | Build-time card loader | `src/lib/cards.ts` | loads `markup.js`, `fighters.js`, `face.gen.js` and the rest in CommonJS sandboxes |
 | Twins and agent files | `src/lib/twins.ts`, `src/lib/machine.ts` | every `.md` endpoint, `llms.txt`, `llms-full.txt` and the Machine view's forms |
-| Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro` | title, canonical, Open Graph image and loop, JSON-LD |
+| Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro`, `src/lib/schema.ts`, `src/lib/share.ts` | title, canonical, share image (and loop), one JSON-LD graph; `docs/seo.md` |
 | Pages | `src/pages/` | home (the wall), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404` |
 | Release guard | `scripts/verify-build.mjs` | runs after every build; see `docs/deploy.md` |
 
@@ -44,10 +44,10 @@ agent reads there, so flipping the switch lines the two up one to one:
 | --- | --- |
 | Human and Machine switch | `text/html` and `text/markdown`: the `Accept` each half asks for. Every address answers `text/markdown` with its twin (`vercel.json`), so the links keep their addresses and this switch is the difference |
 | Brand, nav, pager | `# Kevin Liu` (the twin's first line) on home, `/` elsewhere; each link's address |
-| A wall card | its record: number, id, page, Markdown twin, JSON-LD `@type` and category (`src/lib/schema.ts`, shared with the card page's JSON-LD), and its row of `/index.md` |
+| A wall card | its record: number, id, page, Markdown twin, JSON-LD `@type` and category (`workType` in `src/lib/schema.ts`, which the JSON-LD graph reads too), and its row of `/index.md` |
 | Deck, pack, dock | where the deck goes; what the pack fills, its budget and seed; the ids each well holds, the gauge's words, Play's path and seed, live from `gallery.js`'s `__table` |
-| A card page | the whole record on the stand; the card's twin block by block where the page shows each block, headings marked `#` and `##` |
-| About, 404 | each paragraph and list item holds its twin's source |
+| A card page | the whole record on the stand; the card's twin block by block where the page shows each block (its links, numbers, trait, moves and related cards), headings marked `#` and `##` |
+| About, `/cards`, 404 | each paragraph, list item, question and index row holds its twin's source |
 | Footer | its links as addresses, `/llms.txt`, `/llms-full.txt`, the sitemap; one line (status, type, size) opens the curl commands and the page's whole twin |
 
 How it holds:
@@ -57,7 +57,7 @@ How it holds:
   measured, so it keeps the real grid at every width, and the cards' redesigns move it with them (it keys to
   `.pocket`, `.card` and the card's id, never to the art).
 - In Human mode the forms are `display: none !important` and the wrappers `display: contents !important`: the human view
-  paints as if they were not there (`check.mjs` in the session notes compares it pixel for pixel with the build before).
+  paints as if they were not there (`scripts/machine-check.mjs` compares it pixel for pixel with another build, and every region's box between the modes).
 - In Machine mode a card is `content-visibility: hidden`: it keeps its box and paints, decodes and fetches nothing. The
   wall's first-paint hold waits on no picture and fetches none ahead. The world canvas, stage and lens are hidden.
 - Headings keep one text: `#` and `##` come from CSS, so every page still has one h1 and crawlers read one title.
@@ -69,6 +69,7 @@ How it holds:
 | Path | What | Twin |
 | --- | --- | --- |
 | `/` | the 26-card wall, the pack, the dock (Pick Three), the face-down deck to the previous site | `/index.md` |
+| `/cards` | every card as a plain index with live sites and public sources | `/cards.md` |
 | `/cards/<id>` | one card at full size with its numbers, trait, moves and receipts | `/cards/<id>.md` |
 | `/battle`, `/battle/arena` | the Mat and Arena battle (r4/play) | `/battle.md` |
 | `/about` | the bio, every project and links | `/about.md` |

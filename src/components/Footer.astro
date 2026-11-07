@@ -3,8 +3,8 @@
 // starts from, and behind one line (its status, type and size) the commands that fetch this page and its whole twin.
 import { SOCIAL, EMAIL, SITE } from '../lib/site';
 import { TWINS } from '../lib/twins';
-interface Props { path: string }
-const { path } = Astro.props;
+interface Props { path: string; twin?: string | null }
+const { path, twin: twinLink } = Astro.props;
 const twin = TWINS[path] ? (path === '/' ? '/index.md' : `${path}.md`) : null;
 const md = twin ? TWINS[path]() : '';
 const cmds = [
@@ -18,6 +18,8 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
   <nav aria-label="Elsewhere">
     {SOCIAL.map((s) => <a href={s.url} rel="me">{s.name}</a>)}
     <a href={`mailto:${EMAIL}`}>Email</a>
+    <a href="/cards">Cards</a>
+    {twinLink && <a href={twinLink} type="text/markdown">Markdown</a>}
     <a href="/llms.txt">llms.txt</a>
     <button type="button" class="tomachine" data-mode-set="machine" aria-pressed="false">Machine</button>
   </nav>
@@ -25,6 +27,8 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
     <nav aria-label="Elsewhere">
       {SOCIAL.map((s) => <a href={s.url} rel="me">{bare(s.url)}</a>)}
       <a href={`mailto:${EMAIL}`}>mailto:{EMAIL}</a>
+      <a href="/cards">/cards</a>
+      {twinLink && <a href={twinLink} type="text/markdown">{twinLink}</a>}
       <a href="/llms.txt">/llms.txt</a>
       <a href="/llms-full.txt">/llms-full.txt</a>
       <a href="/sitemap-index.xml">/sitemap-index.xml</a>
@@ -32,7 +36,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
       <details>
         <summary>{twin ? `HTTP 200 · text/markdown · ${Buffer.byteLength(md).toLocaleString('en-US')} bytes` : 'HTTP 404 · no twin'}</summary>
         <pre class="cmds">{cmds.map((c) => `$ ${c}`).join('\n')}</pre>
-        {twin && <pre class="twin"><a href={twin}>{twin}</a>{'\n\n'}{md}</pre>}
+        {twin && <pre class="twin">{md}</pre>}
       </details>
     </nav>
   </div>
