@@ -165,3 +165,30 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   text blocks on card and about pages grow where their Markdown is longer, so blocks below them move; the footer's
   addresses take more rows on phones; on phones the way back to Human is the footer's button; the Machine view's
   12 MB of WebContent over the old one.
+
+## 2026-11-07: the 11-07 release held at the ship checks (release/11-07, Claude Code)
+
+- **Type**: release (not shipped)
+- **Asked**: Kevin, 2026-11-07 02:28: "get all our work assembled and get it out tomorrow morning". Approval to push
+  `main` was conditional on no ship check finding a blocking problem.
+- **Assembled** on release/11-07 from origin/main ae3cc56: b4f6ac5 (the sync ships the round page's whole closure, so
+  the wall prints every card in its family frame; the guard fails a card without data-fam), the seo/aeo merge 71ff418,
+  card syncs e20dac4 (rounds a2fbdac5) and d08e221 (Breakout, rounds 30e69931), the machine/aligned merges 5062ab2 and
+  d75be4a, e553832 (the lock's head is marked dirty only for shipped files). Battle and sound unchanged: battle-r4b
+  stalled, so the 26-card battle goes to the next release.
+- **Checks on d08e221** (wf_fb58adf9-a39): battle, review, SEO pass; Machine minor only. Blocking: iPhone 14 wall
+  memory (GPU grew each visit and stayed held, lit frame SVGs), the lens's frame row ran off a phone and showed
+  design-lane working names, and family K's rule struck through power text in WebKit.
+- **Fixed** in the sync config: ae535dd (phones print unlit borders via data-unlit, phone-memory.mjs and the wall's
+  boot; the frame row hidden; the K rule dropped), 8ea1bfb (the phone tray caps at the screen and its art row wraps).
+- **Recheck on 8ea1bfb** (wf_858f2a41-0a3): GPU is given back again and every tray control is whole at 320 to 1440.
+  Still blocking: (1) iPhone 14 wall WebContent stays about 250 MB over production and passes 600 MB by the 2nd visit
+  (release 682 against 405 at the 3rd); the blank-frames diagnostic puts it on the unlit border and fxcut frame SVGs,
+  the frames themselves. (2) In WebKit the five family B cards (Claude of Tanks, Glyphfield, Princeton TD,
+  Prototemplate, Ariadne) clip the bottom of their power names on the wall (5.35 px overlap against production's 2.02);
+  it came in with the card sync and is a rounds card.css matter.
+- **Open**: production stays ae3cc56 (deployment kevinliu-studio-80cvqzld0). Kevin decides how phones print frames
+  (desktop-only frames, frames baked to display-size WebP in the rounds, or accept the memory), and the rounds fix
+  family B's names in Safari. Minor: phones still fetch 14 lit SVGs before the swap; card pages keep lit frames on
+  phones; the phone tray sits 4 px from the edge, not 8. Previews: ogc2ob923 (d08e221), 3pfmvpkrz (8ea1bfb).
+  Evidence under ~/k7-rescue/release-11-07/checks/.
