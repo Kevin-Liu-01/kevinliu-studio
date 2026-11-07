@@ -9,16 +9,17 @@ export const cardPath = (f: Fighter) => `/cards/${f.id}`;
 const link = (f: Fighter) => `[${f.title}](${SITE}${cardPath(f)})`;
 export const host = (u?: string) => (u ? u.replace(/^https?:\/\//, '').replace(/\/$/, '') : '');
 const roster = battleRoster ? Object.keys(battleRoster.cost) : [];
+const and = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs.join(''));
 
 export const CARDS_LEAD = `Every one of ${NAME}'s ${fighters.length} project cards, with its year, what it is, its live site and its public source.`;
 
-// Questions with real answers, asked on /about and answered from the facts above (no FAQ markup: this is prose)
+// Questions with real answers, asked on /about and answered from site.ts FACTS (no FAQ markup: this is prose)
 export const QA: [string, string][] = [
   [`Who is ${NAME}?`, BIO],
-  [`What has ${NAME} built?`, `${fighters.length} projects are cards on this site, among them ${['claude-of-tanks', 'katagami', 'turboslide', 'loop', 'princeton-td'].map((id) => fighters.find((f) => f.id === id)?.title).filter(Boolean).join(', ')}. Each card's numbers come from its own repository.`],
+  [`What has ${NAME} built?`, `${fighters.length} projects are cards on this site, among them ${and(['claude-of-tanks', 'katagami', 'turboslide', 'loop', 'princeton-td'].map((id) => fighters.find((f) => f.id === id)?.title ?? '').filter(Boolean))}. Each card's numbers come from its own repository.`],
   [`Where does ${NAME} work and study?`, `${FACTS[0]} ${FACTS[1]}`],
   [`What did ${NAME} do before?`, `${FACTS[3]} ${FACTS[4]}`],
-  [`How do I reach ${NAME}?`, `Write to ${EMAIL}, or find him on ${SOCIAL.map((s) => s.name).join(', ')}.`],
+  [`How do I reach ${NAME}?`, `Write to ${EMAIL}, or find him on ${and(SOCIAL.map((s) => s.name))}.`],
 ];
 
 const table = () => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f)} | ${f.year} | ${f.disciplines.join(', ')} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[source](${repoOf(f)})` : ''} |`);

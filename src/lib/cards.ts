@@ -139,11 +139,11 @@ export function answerOf(f: Fighter): string {
   return `${f.title}: ${what[0].toLowerCase()}${what.slice(1)}`;
 }
 
-// Three cards that share the most disciplines with this one (the first discipline counts double), nearest in the
+// Three cards that share the most disciplines with this one (its first discipline counts double), nearest in the
 // wall's order on a tie, so every card page links to its neighbours in kind rather than only in number.
 export function relatedOf(f: Fighter, n = 3): Fighter[] {
   const i = FIGHTERS.indexOf(f);
-  const score = (g: Fighter) => g.disciplines.reduce((s, d, k) => s + (f.disciplines.includes(d) ? (k === 0 || d === f.disciplines[0] ? 2 : 1) : 0), 0);
+  const score = (g: Fighter) => g.disciplines.reduce((s, d) => s + (d === f.disciplines[0] ? 2 : f.disciplines.includes(d) ? 1 : 0), 0);
   return FIGHTERS.filter((g) => g !== f)
     .map((g) => ({ g, s: score(g), d: Math.abs(FIGHTERS.indexOf(g) - i) }))
     .sort((a, b) => b.s - a.s || a.d - b.d)
