@@ -108,12 +108,16 @@
 :root[data-mode='machine'] .fm pre a { display: inline; min-height: 0; padding: 0; }
 
 /* ---------- a card's page: the stand holds the record, the info column its twin block by block ---------- */
-:root[data-mode='machine'] .cardpage .stand > .card { grid-area: 1 / 1; visibility: hidden; content-visibility: hidden; }
+/* the stand's card is out of layout as on the wall: hidden, its glare and gloss layers still reached past the screen's
+   edge at 390 and scrolled the page sideways; the record takes its size from the same rules */
+:root[data-mode='machine'] .cardpage .stand > .card { display: none; }
 :root[data-mode='machine'] .cardpage .stand > .rec { --card: min(440px, 100cqw - 8px); grid-area: 1 / 1; width: var(--card); aspect-ratio: 63 / 88; }
 /* the stand's record carries the whole twin's numbers and the source, five lines more than a wall card's, in the same box;
    on the narrowest stand (320) its 11 px floor needs a few pixels more, so it grows rather than cut a line */
 :root[data-mode='machine'] .cardpage .stand > .rec { font-size: max(11px, calc(var(--card) * 0.034)); row-gap: 0; overflow: visible; }
-:root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: break-word; font: 500 14px/1.5 var(--sans); color: var(--ink-1); }
+:root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 14px/1.5 var(--sans); color: var(--ink-1); }
+/* an address inside a twin line is text, not the tile its human link is (.cp-related a is a padded grid that cannot wrap) */
+:root[data-mode='machine'] .cardpage .info .mx a { display: inline; min-height: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; font: inherit; }
 :root[data-mode='machine'] .cardpage .info .mx .mk { font: inherit; color: var(--ink-3); }
 :root[data-mode='machine'] .cardpage .cp-disc > .hx { display: flex; flex-wrap: wrap; gap: 8px; }
 :root[data-mode='machine'] .cardpage .cp-go > .hx { display: flex; flex-wrap: wrap; gap: 10px; }
