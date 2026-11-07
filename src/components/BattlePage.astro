@@ -1,6 +1,7 @@
 ---
 import Seo from './Seo.astro';
 import Analytics from './Analytics.astro';
+import Release from './Release.astro';
 import { battlePage } from '../lib/battle';
 import { SITE, NAME, person } from '../lib/site';
 interface Props { mode: 'mat' | 'arena' }
@@ -29,6 +30,7 @@ const jsonld = [
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>
+<Release />
 <Fragment set:html={battlePage.head} />
 <Analytics />
 </head>

@@ -7,6 +7,7 @@ import Header from '../components/Header.astro';
 import Machine from '../components/Machine.astro';
 import Analytics from '../components/Analytics.astro';
 import Footer from '../components/Footer.astro';
+import Release from '../components/Release.astro';
 import { neuTokens, masks, sprite } from '../lib/cards';
 import { versioned } from '../lib/assets';
 import '../styles/site.css';
@@ -18,8 +19,9 @@ interface Props {
   html?: Record<string, string | boolean>;
   twinPath?: string;
   main?: string; // the id the skip link lands on
+  heavy?: boolean; // gives back its GPU memory and pictures when it leaves on a touch screen (Release.astro)
 }
-const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main' } = Astro.props;
+const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main', heavy = false } = Astro.props;
 // One face for every page, preloaded first and cached for a year. It blocks text rather than swapping (the cards'
 // titles are fitted to its advances at build, markup.js ADV), and the fallback is Arial scaled to its width and line,
 // so a page that ever paints before it arrives keeps every line where it was.
@@ -46,6 +48,7 @@ const fontFace = [
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);try{if(localStorage.getItem('ill-mode')==='machine')d.dataset.mode='machine'}catch(e){}var t=q.get('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=t;try{if(localStorage.getItem('ill-pause')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)d.dataset.paused=''}catch(e){}})()</script>
+{heavy && <Release />}
 <style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
 <link rel="stylesheet" href={versioned('/ex/ui.css')} />
 {room && <link rel="stylesheet" href={versioned('/ex/card.css')} />}

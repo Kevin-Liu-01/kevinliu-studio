@@ -1,0 +1,7 @@
+---
+// A heavy page (the wall, the battle) on a touch screen gives back what it holds when it leaves into the back-forward
+// cache: its WebGL contexts, canvases, clips and decoded pictures, and a return to it loads it again. Safari keeps
+// several pages of a tab alive in one process, and each of these holds hundreds of MB there (docs/performance.md,
+// Memory). It runs before the page's own scripts, so it sees every WebGL context they make.
+---
+<script is:inline>(function(){if(!matchMedia("(pointer: coarse)").matches)return;var P=HTMLCanvasElement.prototype,g=P.getContext,gl=[];P.getContext=function(t){var c=g.apply(this,arguments);if(c&&/webgl/.test(t)&&gl.indexOf(c)<0)gl.push(c);return c};addEventListener("pagehide",function(e){if(!e.persisted)return;gl.forEach(function(c){var x=c.getExtension("WEBGL_lose_context");if(x)x.loseContext()});document.querySelectorAll("canvas").forEach(function(c){c.width=c.height=0});document.querySelectorAll("video").forEach(function(v){v.pause();v.removeAttribute("src");v.load()});document.querySelectorAll("img").forEach(function(i){i.removeAttribute("srcset");i.removeAttribute("src")})});addEventListener("pageshow",function(e){if(e.persisted)location.reload()})})()</script>
