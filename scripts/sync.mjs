@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { MEDIA, hasLocation } from './location.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS = process.env.ROUNDS ?? path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
@@ -155,6 +156,9 @@ const SND = "\n  const SND = () => globalThis.Sound || null;\n  const snd = (id,
 const TILT = "\n      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefined) { const v = ((e.clientX - c.tx) / Math.max(1, t - c.tt)) * 1000 / w; if (c.tdir && Math.sign(v) && Math.sign(v) !== c.tdir && Math.abs(v) > 0.6) snd('card.tilt', { key: el.dataset.id, pan: pan(el) }); if (Math.abs(v) > 0.05) c.tdir = Math.sign(v); } c.tx = e.clientX; c.tt = t; }";
 const GRAIN = "\n        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }";
 const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }\n      ";
+// a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on the wall's
+// card faces and the battle's
+const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
 const TRANSFORMS = {
   // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
   'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
@@ -190,7 +194,11 @@ const TRANSFORMS = {
     [KEY_EASE, KEY_MOVE],
   ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
-  'public/ex/markup.js': (t) => patch('markup.js', t, [['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">']]),
+  'public/ex/markup.js': (t) => patch('markup.js', t, [
+    ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
+    nolink(t),
+  ]),
+  'public/battle/vendor/cards/markup.js': (t) => patch('markup.js', t, [nolink(t)]),
   // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
   // screen's edge (Agent Machines, release 11-07 ship checks), so the tray stops 8 in from each edge and its rows wrap
   'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),

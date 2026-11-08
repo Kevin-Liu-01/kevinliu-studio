@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { CLOSED as CLOSED_IDS } from './closed-repos.mjs';
 
 const ROOT = process.cwd();
 const EX = path.join(ROOT, 'public/ex');
@@ -137,10 +138,8 @@ export function teamFor(lead: string): string[] | null {
   return null;
 }
 
-// Repositories a visitor cannot open (GitHub answers 404 without a sign-in, checked 2026-11-07). The rounds still list
-// them, so the card pages, twins and JSON-LD link only the rest; scripts/check-seo.mjs fails when one of the rest stops
-// answering 200. Change this when a repository goes public, and in the rounds' roster.
-const CLOSED = new Set(['agent-pets', 'bday-land', 'powerlifting', 'elo', 'kevin-wiki', 'sandbox-arena', 'dedalus-terminal']);
+// the repositories a visitor cannot open, shared with the card faces' sync patch
+const CLOSED = new Set(CLOSED_IDS);
 export const repoOf = (f: Fighter): string | undefined => (f.repo && !CLOSED.has(f.id) && !/\(private\)/.test(f.repo) ? f.repo.replace(/ .*$/, '') : undefined);
 
 // The one sentence that answers "what is <card>": the card's own line with its name as the subject. Only a leading
