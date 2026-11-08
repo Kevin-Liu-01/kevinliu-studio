@@ -192,3 +192,19 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   family B's names in Safari. Minor: phones still fetch 14 lit SVGs before the swap; card pages keep lit frames on
   phones; the phone tray sits 4 px from the edge, not 8. Previews: ogc2ob923 (d08e221), 3pfmvpkrz (8ea1bfb).
   Evidence under ~/k7-rescue/release-11-07/checks/.
+
+## 2026-11-08 · fix · Private-repo commit links on the card faces, and a comma inside a Machine link
+
+- **Changed**: `src/lib/closed-repos.mjs` (new), `src/lib/cards.ts`, `scripts/sync.mjs`, `public/ex/markup.js`,
+  `public/battle/vendor/cards/markup.js`, `sync.lock.json`, `src/lib/machine.ts`, `docs/seo.md`.
+- **Why**: the card faces' pinned-commit links pointed into 7 repositories GitHub answers 404 for without a sign-in
+  (Agent Pets, bday.land, Princeton Powerlifting, Elo, Kevin Wiki, Sandbox Arena, 050525); the rounds' `NOLINK` named
+  only loop, bday-land and kevin-wiki. Loop's repository and pinned commit are public now (200, checked 2026-11-08).
+  The Machine view's address linker also took a following comma into the Atlas receipt's live URL, a 404.
+- **Decisions**: one list, `CLOSED` in `src/lib/closed-repos.mjs`, read by `repoOf` and by a sync transform that
+  rewrites each synced `markup.js` `NOLINK`. The two synced files were patched once by that same rewrite with their
+  sync.lock.json records updated (the rounds had moved on, so a full `pnpm sync` would have pulled unrelated changes);
+  `pnpm sync --check` does not list either markup.js. The linker now ends an address before trailing `.,;:!?`.
+- **Checked**: `pnpm build`, verify-build (32 pages), smoke and `check-seo.mjs --external` (134 links) against a local
+  serve of dist.
+- **Open**: when a private repository goes public, remove it from `CLOSED` and run the sync.

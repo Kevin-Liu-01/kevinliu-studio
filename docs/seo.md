@@ -20,7 +20,7 @@ og:images in all my links. and make more links!"
   (`relatedOf()`, shared disciplines), previous and next.
 - `/cards`: every card with its year, line, live site and public source.
 - Footer: profiles, email, `/cards`, the page's twin, `llms.txt`, the sitemap.
-- Repositories GitHub answers 404 for without a sign-in are listed in `CLOSED` (`src/lib/cards.ts`) and never linked.
+- Repositories GitHub answers 404 for without a sign-in are listed in `src/lib/closed-repos.mjs` and never linked: not by the card pages, twins and JSON-LD (`repoOf` in `src/lib/cards.ts`), nor by the pinned commit on the wall's and the battle's card faces (`scripts/sync.mjs` rewrites each `markup.js` `NOLINK` from the same list).
 
 ## Facts about Kevin
 

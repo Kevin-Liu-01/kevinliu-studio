@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "30e69931",
- "synced": "2026-11-08T18:18:41.334Z",
+ "synced": "2026-11-08T18:20:22.366Z",
  "stages": {
   "cards": {
    "files": 1031,
-   "bytes": 107516253,
+   "bytes": 107516313,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -49,8 +49,8 @@
     },
     "public/ex/markup.js": {
      "src": "r4/ex/markup.js",
-     "sha256": "da73cb75913c55328a93803d8a667311e71ddc1765fb1d7e0ec8a4368e1b7f8b",
-     "bytes": 52266
+     "sha256": "03d6406f0b112e6881dd44dc2e4131c144b8ede4edd72dbda04aecabbc40f4c4",
+     "bytes": 52326
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
@@ -10662,7 +10662,7 @@
   },
   "battle": {
    "files": 754,
-   "bytes": 136502094,
+   "bytes": 136502154,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -10806,8 +10806,8 @@
     },
     "public/battle/vendor/cards/markup.js": {
      "src": "r4/play/vendor/cards/markup.js",
-     "sha256": "243e3fc944b2ef71c73eead84fa9343416ef6df7feb49e59eacfae265c09dc21",
-     "bytes": 19713
+     "sha256": "854b56f3c57f7b750fc0b3574a1881382bf601addf6432da7837a565373219d2",
+     "bytes": 19773
     },
     "public/battle/vendor/cards/media.gen.js": {
      "src": "r4/play/vendor/cards/media.gen.js",
