@@ -208,3 +208,26 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Checked**: `pnpm build`, verify-build (32 pages), smoke and `check-seo.mjs --external` (134 links) against a local
   serve of dist.
 - **Open**: when a private repository goes public, remove it from `CLOSED` and run the sync.
+
+## 2026-11-08: the 11-07 release promoted (release/11-07, Claude Code)
+
+- **Type**: release
+- **Decisions**: Kevin, 2026-11-08: "Desktop-only frames" (phones keep plain cards; fix family B names in Safari,
+  recheck, promote if it passes). Kevin, 2026-11-08, on the Agent Pets art: "optimus prime and kratos stay, they are
+  great"; it is not a release issue.
+- **Since the hold**: 018faee prints each card plain with its framed print in an inert `<template class="framed">`;
+  the inline FRAMED script swaps it in on a fine pointer with deviceMemory above 4 and drops it elsewhere (the
+  data-unlit path is gone). 768a8b3 fixes the Safari text crowding at its cause: WebKit resolves cqw inside grid track
+  sizes against half the card, so trait and move rows are `auto auto` and the foot's columns are percentages of the
+  86.4 cqw foot (production's Safari foot overflowed 13 to 48 px and drew "×1.5" over the resist icons). 907a0c8 merges
+  243f448 (no commit links into private repositories). The card syncs came from an export of rounds 30e69931 with
+  `ROUNDS=`, because a plain `pnpm sync` pulled 102 post-cutoff rounds files; those went to Trash unreviewed.
+- **Recheck3 on 907a0c8** (wf_de5811d0-356, preview nnslah504): memory, layout, cards and review pass with nothing
+  blocking. iPhone 14 wall WebContent peaks below production (324 against 392 MB); phones print 26 plain cards with no
+  frame SVG requests.
+- **Rollback**: production deployment kevinliu-studio-80cvqzld0 (main ae3cc56), docs/deploy.md.
+- **Open (next release)**: phones still load frames.gen.js, frames.js and printings.js (77 KB, unused there); desktop
+  fetches the plain -fx.webp posters before the swap; the HTML carries every card twice (49 KB gzipped against 40);
+  Glyphfield's "Motion Study" y loses about 1 px under its band in Chromium; family Y's last move panel touches the
+  foot by 0.6 px; the guard's framed-twin check is page-wide, not per card; sync should pin a rounds commit; the
+  card page's hidden .tohuman has aria-pressed=false. The 26-card battle and new sound still wait on battle-r4b.
