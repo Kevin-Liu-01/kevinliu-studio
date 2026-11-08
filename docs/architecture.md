@@ -37,16 +37,17 @@ performance bar are in `docs/performance.md`, with how to measure them.
 
 ## Machine view
 
-Human and Machine show the same page. In Machine mode every real region keeps its place and its box and shows what an
-agent reads there, so flipping the switch lines the two up one to one:
+Human and Machine show the same page. In Machine mode the page is a terminal: the dark CRT ground, Katagami Mono, boxes
+drawn in box-drawing characters, controls in [ brackets ] with the one in force in inverse video. Every real region
+keeps its place and its box and shows what an agent reads there, so flipping the switch lines the two up one to one:
 
 | Region | Machine form |
 | --- | --- |
-| Human and Machine switch | `text/html` and `text/markdown`: the `Accept` each half asks for. Every address answers `text/markdown` with its twin (`vercel.json`), so the links keep their addresses and this switch is the difference |
+| Human and Machine switch, sound, pause | `text/html` and `text/markdown`: the `Accept` each half asks for; `snd`, and `\|\|` or `>`. Every address answers `text/markdown` with its twin (`vercel.json`), so the links keep their addresses and this switch is the difference |
 | Brand, nav, pager | `# Kevin Liu` (the twin's first line) on home, `/` elsewhere; each link's address |
-| A wall card | its record: number, id, page, Markdown twin, JSON-LD `@type` and category (`workType` in `src/lib/schema.ts`, which the JSON-LD graph reads too), and its row of `/index.md` |
-| Deck, pack, dock | where the deck goes; what the pack fills, its budget and seed; the ids each well holds, the gauge's words, Play's path and seed, live from `gallery.js`'s `__table` |
-| A card page | the whole record on the stand; the card's twin block by block where the page shows each block (its links, numbers, trait, moves and related cards), headings marked `#` and `##` |
+| A wall card | a frame labelled with its number and id; its art as text in the card's colour (`src/lib/ascii.ts` reads the card's own `media/<id>/pop.webp` at build); its record: page, Markdown twin, JSON-LD `@type` and category (`workType` in `src/lib/schema.ts`, which the JSON-LD graph reads too), and its row of `/index.md` |
+| Deck, pack, dock | where the deck goes; what the pack fills, its budget and seed; the ids each well holds, the gauge as `#` and `.`, Play's path and seed, live from `gallery.js`'s `__table` |
+| A card page | the whole record and art on the stand; the card's twin block by block where the page shows each block: its headings, lead line and links, then one framed panel each for its numbers, trait, moves and related cards |
 | About, `/cards`, 404 | each paragraph, list item, question and index row holds its twin's source |
 | Footer | its links as addresses, `/llms.txt`, `/llms-full.txt`, the sitemap; one line (status, type, size) opens the curl commands and the page's whole twin |
 
@@ -68,8 +69,13 @@ How it holds:
 - In Machine mode a card is `display: none` and its record takes the card's size from the card's own rules: nothing in
   it loads, paints or decodes. The pack's fan paints no posters. The wall's first-paint hold waits on no picture and
   fetches none ahead. The world canvas, stage and lens are hidden.
-- Headings keep one text: `#` and `##` come from CSS and hang in the margin, so every page still has one h1, crawlers
-  read one title, and a heading wraps as in Human mode.
+- Headings keep one text: a heading's twin line is laid over the heading's own box (`.hw`), so every page still has
+  one h1 and crawlers read one title. A card page's lists are one framed panel each (`.sl`), so their lines share the
+  room their tiles take.
+- Frames are characters, not borders: a `.bx` element's top and bottom are long rows of `─` cut to the box, its sides
+  columns of `│` under their corners. Nothing is measured; the box sets the frame.
+- Katagami Mono (`public/fonts/katagami-mono-site.woff2`, 21.7 KB) is fetched at idle after a Human page loads and
+  preloaded when a page opens in Machine mode; it blocks rather than swaps, so no text reflows when it lands.
 - On a phone the header has no room for the switch, so the footer holds it, and a skip link for the other view is the
   second Tab stop.
 - The battle pages have no Machine view: their switch would be a new key in r4/play's rail. The engine's state is

@@ -165,3 +165,30 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   text blocks on card and about pages grow where their Markdown is longer, so blocks below them move; the footer's
   addresses take more rows on phones; on phones the way back to Human is the footer's button; the Machine view's
   12 MB of WebContent over the old one.
+
+## 2026-11-08: the Machine view as a terminal (machine/next, Claude Code)
+
+- **Type**: fix + feature
+- **Asked**: Kevin, 2026-11-08: "continue everything", then "nno the machine view should literally look like a terminal
+  where everything is ascii ified".
+- **Correction** to the 2026-11-07 entry: "switching shifts nothing (CLS 0, input shifts included)" was measured in
+  WebKit, which reports no layout-shift entries, so it was never measured. The release check (wf_fb58adf9-a39) measured
+  it in Chromium: 0.01 to 0.18 on desktop and 0.12 to 0.97 on phones on card, About and /cards pages, all of it
+  input-flagged. `scripts/machine-check.mjs` now measures shifts only in Chromium (`ENGINE=chromium`, without WebGL)
+  and prints "not measured" in WebKit.
+- **Changed** (9bf3dea): a swapped region keeps its human layout, hidden, and lays its machine form over the same box;
+  `fit()` in Base.astro uses the room below up to the next element and shrinks the text (10 px, 9 under 640) until it
+  fits, siblings of one kind sharing the smallest size. An address stops before a comma (the Atlas 404, the same regex
+  as seo's 243f448). A skip link to the other view on phones. The check script's stored-mode and fixed-dock mistakes.
+- **Changed** (ac86230): the terminal. Katagami Mono subset (21.7 KB, from ~/repos/Katagami 0fae3a0, OFL), fetched at
+  idle after a Human page loads and preloaded on a Machine load, `font-display: block`; frames in box-drawing
+  characters (`.bx`); bracketed controls and inverse video; each card's art as text in its colour from
+  `media/<id>/pop.webp` at build (`src/lib/ascii.ts`, sharp); headings, lead lines and the brand laid over their own
+  boxes (`.hw`); a card page's lists as one framed panel each (`.sl`).
+- **Checked** against the released build 4071fa6, local serves: Chromium layout shift 0 while switching on home, a card,
+  About, /cards and 404 at 1440, 730, 390 and 320, no box moving, nothing overflowing or scrolling sideways; the human
+  view pixel-identical in WebKit and Chromium on all 20 pairs; build, guard, check-seo pass. iPhone 14 memory, same
+  run, two rounds: wall WebContent Human 244/244 against 247/218 MB, Machine 68/71 against 69/61; card page Human
+  38/37 against 36/34, Machine 26/26 against 22/22; pictures and canvas equal. HTML: home 43.5 to 50.6 KB gzip.
+- **Open**: the battle pages' Machine view (a switch in r4/play's rail; engine state is readable without `?debug`
+  through `window.showdown` and the address); Kevin to look at the terminal; not merged into a release.

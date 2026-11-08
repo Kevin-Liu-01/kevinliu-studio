@@ -169,3 +169,7 @@ card kept its layout box, so its lazy pictures loaded as the wall scrolled) and 
 hidden backgrounds fetched them, and the wall's lazy posters completed from that cache). iPhone 14, same run, two
 rounds against the view it replaced: pictures 48.5 MB both, canvas equal or lower, WebContent 64 and 68 against 52 and
 56 MB on the wall (the old view hid the whole page). Human mode is unchanged.
+
+The terminal (2026-11-08) adds Katagami Mono, 21.7 KB, fetched at idle after a Human page has loaded (cached a year,
+like the site face), and each card's art as text: home HTML 43.5 to 50.6 KB gzip, a card page 15.1 to 16.6, About
+14.0 to 15.2. The art is built from the cards' own pictures at build, so no picture is decoded for it.
