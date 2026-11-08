@@ -56,10 +56,11 @@ export function recordHtml(title: string, fields: Field[], { links = true } = {}
   return `<span class="mx rec"><span class="t">${esc(title)}</span>${fields.map(line).join('')}</span>`;
 }
 
-/** Markdown source as markup: its marks (#, -, **, `) quieter than its words, its bare addresses as links. */
+/** Markdown source as markup: its marks (#, -, **, `) quieter than its words, its bare addresses as links (a comma or
+ * full stop after an address ends the sentence, not the address). */
 export function mdHtml(s: string) {
   return esc(s)
-    .replace(/https?:\/\/[^\s)<`]+/g, (u) => `<a href="${u}" rel="noopener">${u}</a>`)
+    .replace(/https?:\/\/[^\s)<`]*[^\s)<`.,;:!?]/g, (u) => `<a href="${u}" rel="noopener">${u}</a>`)
     .replace(/^(#{1,3} |- |\| )/gm, '<span class="mk">$1</span>')
     .replace(/\*\*|`/g, '<span class="mk">$&</span>');
 }
@@ -72,7 +73,9 @@ export function cardBlocks(f: Fighter) {
   const nums = at('## The numbers'), trait = at('## Trait'), moves = at('## Moves');
   const line = b.findIndex((x) => x.startsWith('Card '));
   return {
-    line: b[line], meta: b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '',
+    line: b[line],
+    // the twin's link lines (Live, Source, Battle) are the page's link row; its inks and stats are on the stand's record
+    links: (b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '').split('\n').filter((x) => /^- (Live|Source|Battle):/.test(x)).join('\n'),
     facts: b[nums + 1].split('\n'),
     trait: trait >= 0 ? b[trait + 1] : null,
     moves: b[moves + 1].split('\n'),

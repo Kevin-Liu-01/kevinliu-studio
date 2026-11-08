@@ -14,15 +14,20 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const WIDTHS = [[1440, 900, 1], [730, 900, 2], [390, 844, 3], [320, 640, 2]];
 const PAGES = (process.env.PAGES ?? '/,/cards/claude-of-tanks,/about,/nope').split(',');
 const REGIONS = ['header.top .brand', 'header.top .links a', 'header.top .seg', 'header.top .seg > button', '#sound', '#pause', '.wall > .pocket', '.dock', '.dock .well', '.dock .gauge', '#play', 'footer.foot', '.cardpage .stand', '.cardpage .stand > .card', '.cardpage h1', '.cardpage .cp-facts > li', '.cardpage .cp-moves > li', '.pager a', '.prose h1', '.prose li'];
-const browser = await pw[process.env.ENGINE ?? 'webkit'].launch({ headless: true });
+// layout shifts are measured only in Chromium (WebKit reports no layout-shift entries); its WebGL stalls a loaded Mac's
+// headless run for over 30 s on the wall, and a shift is layout, so it runs without WebGL
+const ENGINE = process.env.ENGINE ?? 'webkit';
+const browser = await pw[ENGINE].launch({ headless: true, ...(ENGINE === 'chromium' ? { args: ['--disable-3d-apis', '--disable-webgl'] } : {}) });
 const report = { human: [], boxes: [], toggle: [], overflow: [], a11y: {} };
 
 async function open(base, path, [w, h, dpr], mode, extra = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr, reducedMotion: 'reduce', isMobile: w < 640, hasTouch: w < 640, ...extra });
   await ctx.addInitScript((m) => {
-    try { localStorage.setItem('ill-mode', m); localStorage.setItem('ill-pause', '1'); } catch {}
+    // the mode is set once per context, so a reload reads what the page stored, not this script's value
+    try { if (!sessionStorage.getItem('mc-set')) { localStorage.setItem('ill-mode', m); localStorage.setItem('ill-pause', '1'); sessionStorage.setItem('mc-set', '1'); } } catch {}
     window.__shifts = [];
-    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__shifts.push({ v: e.value, input: e.hadRecentInput, t: Math.round(e.startTime) }); }).observe({ type: 'layout-shift', buffered: true });
+    window.__shiftsMeasured = PerformanceObserver.supportedEntryTypes.includes('layout-shift');
+    if (window.__shiftsMeasured) new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__shifts.push({ v: e.value, input: e.hadRecentInput, t: Math.round(e.startTime) }); }).observe({ type: 'layout-shift', buffered: true });
   }, mode);
   const page = await ctx.newPage();
   page.setDefaultTimeout(180000);
@@ -34,7 +39,10 @@ async function open(base, path, [w, h, dpr], mode, extra = {}) {
 }
 const rects = (page) => page.evaluate((sels) => {
   const o = {};
-  for (const s of sels) document.querySelectorAll(s).forEach((e, i) => { const r = e.getBoundingClientRect(); o[`${s}[${i}]`] = [r.x + scrollX, r.y + scrollY, r.width, r.height].map((n) => Math.round(n * 100) / 100); });
+  // a fixed box (the dock) is measured in the viewport, a page box in the document, so a scroll between the two
+  // measurements (focus moving to the footer's switch on a phone) moves neither
+  const fixed = (e) => { for (; e; e = e.parentElement) if (getComputedStyle(e).position === 'fixed') return true; return false; };
+  for (const s of sels) document.querySelectorAll(s).forEach((e, i) => { const r = e.getBoundingClientRect(), f = fixed(e); o[`${s}[${i}]`] = [r.x + (f ? 0 : scrollX), r.y + (f ? 0 : scrollY), r.width, r.height].map((n) => Math.round(n * 100) / 100); });
   return o;
 }, REGIONS);
 const diffPixels = async (a, b) => {
@@ -66,7 +74,7 @@ for (const path of PAGES) {
     fs.writeFileSync(`${OUT}/${t}-human-main.png`, sm); fs.writeFileSync(`${OUT}/${t}-human.png`, sb);
     const rm = await rects(m.page), rb = await rects(b.page);
     const boxDiff = Object.keys({ ...rm, ...rb }).filter((k) => JSON.stringify(rm[k]) !== JSON.stringify(rb[k]));
-    report.human.push({ page: t, pixels: await diffPixels(sm, sb), boxesThatDiffer: boxDiff.slice(0, 8), shiftsMain: await m.page.evaluate(() => window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0)), shifts: await b.page.evaluate(() => window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0)) });
+    report.human.push({ page: t, pixels: await diffPixels(sm, sb), boxesThatDiffer: boxDiff.slice(0, 8), shiftsMain: await m.page.evaluate(() => window.__shiftsMeasured ? window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0) : 'not measured'), shifts: await b.page.evaluate(() => window.__shiftsMeasured ? window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0) : 'not measured') });
     await m.ctx.close();
     // 2 and 3. switch to Machine by keyboard where the switch shows (the header's from 640 up, the footer's below)
     const page = b.page;
@@ -79,7 +87,7 @@ for (const path of PAGES) {
       mode: document.documentElement.dataset.mode, stored: localStorage.getItem('ill-mode'),
       pressed: [...document.querySelectorAll('[data-mode-set]')].map((x) => `${x.dataset.modeSet}:${x.getAttribute('aria-pressed')}`).join(' '),
       focus: document.activeElement && (document.activeElement.dataset.modeSet ?? document.activeElement.tagName),
-      shiftsAll: window.__shifts.reduce((a, s) => a + s.v, 0), shiftsNoInput: window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0),
+      shiftsAll: window.__shiftsMeasured ? window.__shifts.reduce((a, s) => a + s.v, 0) : 'not measured', shiftsNoInput: window.__shiftsMeasured ? window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0) : 'not measured',
       hscroll: document.scrollingElement.scrollWidth - innerWidth,
       overflowing: [...document.querySelectorAll('.rec, .mx')].filter((e) => e.checkVisibility() && (e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1) && getComputedStyle(e).overflow !== 'visible').map((e) => (e.closest('.pocket')?.querySelector('[data-id]')?.dataset.id ?? e.closest('[id]')?.id ?? e.className) + ' ' + e.scrollHeight + '/' + e.clientHeight),
     }));

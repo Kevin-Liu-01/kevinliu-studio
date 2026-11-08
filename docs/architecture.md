@@ -53,16 +53,31 @@ agent reads there, so flipping the switch lines the two up one to one:
 How it holds:
 
 - Each machine form (`.mx`) is built at build time from `twins.ts`, `cards.ts` and `site.ts` (`src/lib/machine.ts`) and
-  nested in the element it describes, or stacked with the human form (`.hx`) in one grid cell (`.sw`). Nothing is
-  measured, so it keeps the real grid at every width, and the cards' redesigns move it with them (it keys to
-  `.pocket`, `.card` and the card's id, never to the art).
+  nested in the element it describes, so it keys to `.pocket`, `.card` and the card's id, never to the art, and a card
+  redesign moves it with the card.
+- A region that swaps text (`.sw`) keeps its human form (`.hx`) laid out exactly as in Human mode, only hidden
+  (`display: contents`, `visibility: hidden`), and lays the machine form over the same box. Base.astro's `fit()` lets
+  the form use the empty room below the box, up to the next element, then shrinks its text half a pixel at a time
+  (10 px at the least) until it fits; what still does not fit scrolls inside its box. It runs on a switch, on a Machine
+  load once the face is ready, and after a resize. So no box changes size and switching moves nothing.
+- Each region shows the twin lines about it: a card page's link row its Live, Source and Battle lines (the inks and
+  numbers are on the stand's record), About's "Find me on" its four addresses. A twin line with no place of its own on
+  the page is in the footer's whole twin.
 - In Human mode the forms are `display: none !important` and the wrappers `display: contents !important`: the human view
-  paints as if they were not there (`scripts/machine-check.mjs` compares it pixel for pixel with another build, and every region's box between the modes).
-- In Machine mode a card is `content-visibility: hidden`: it keeps its box and paints, decodes and fetches nothing. The
-  wall's first-paint hold waits on no picture and fetches none ahead. The world canvas, stage and lens are hidden.
-- Headings keep one text: `#` and `##` come from CSS, so every page still has one h1 and crawlers read one title.
-- The battle pages have no Machine view: their switch would be a new key in r4/play's rail, and the engine's state is
-  only readable under `?debug` there. Both are changes for the battle round.
+  paints as if they were not there.
+- In Machine mode a card is `display: none` and its record takes the card's size from the card's own rules: nothing in
+  it loads, paints or decodes. The pack's fan paints no posters. The wall's first-paint hold waits on no picture and
+  fetches none ahead. The world canvas, stage and lens are hidden.
+- Headings keep one text: `#` and `##` come from CSS and hang in the margin, so every page still has one h1, crawlers
+  read one title, and a heading wraps as in Human mode.
+- On a phone the header has no room for the switch, so the footer holds it, and a skip link for the other view is the
+  second Tab stop.
+- The battle pages have no Machine view: their switch would be a new key in r4/play's rail. The engine's state is
+  readable without `?debug` through `window.showdown` (`parseHash`, `replay`, `Match`) and the address, which holds
+  the team, rival, seed and move log after every turn.
+
+Check a change with `scripts/machine-check.mjs`: WebKit compares the human view pixel for pixel with another build and
+every region's box between the modes; `ENGINE=chromium` adds layout shifts while switching (WebKit reports none).
 
 ## Routes
 

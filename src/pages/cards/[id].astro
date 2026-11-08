@@ -48,7 +48,7 @@ const facts = factLines(f);
         {repo && <a class="press" href={repo} rel="noopener"><span>Source</span></a>}
         {team && <a class="press" href={`/battle#team=${team.join(',')}`}><span>Battle</span></a>}
         </span>
-        <span class="mx" set:html={mdHtml(tw.meta)} />
+        <span class="mx" set:html={mdHtml(tw.links)} />
       </p>
       <h2>The numbers</h2>
       <ul class="cp-facts">

@@ -1,13 +1,18 @@
 /* The Machine view: the page keeps its room, its boxes and their surfaces, and each region shows what an agent reads
    there. Every machine form (.mx) is nested in the element it describes and built from the twins' data (lib/machine.ts),
-   so it sits in that element's box at every width with nothing measured. A region that swaps text (.sw) stacks its
-   human form (.hx) and machine form in one grid cell, so the box keeps at least its human size.
+   so it sits in that element's box at every width. A region that swaps text (.sw) keeps its human form (.hx) laid out
+   exactly as in the human view, only hidden, and lays the machine form over the same box; Base.astro's fit step
+   shrinks a machine form's text until it fits that box, so switching never moves anything.
    In the human view the forms are display:none and the wrappers display:contents, both !important, so no rule of the
    room's (a pill, a tile) can give them a box: the human view paints as if they were not there.
    The one face carries it, with tabular figures. Keys and values align on a grid column, so the page reads as itself
    written out. */
 :root:not([data-mode='machine']) .mx { display: none !important; }
 :root:not([data-mode='machine']) .hx { display: contents !important; }
+/* the phone's second skip stop names the other view; above 640 the header's switch is a few stops in */
+.skipmode { border: 0; cursor: pointer; }
+:root:not([data-mode='machine']) .skipmode[data-mode-set='human'], :root[data-mode='machine'] .skipmode[data-mode-set='machine'] { display: none; }
+@media (min-width: 640px) { .skipmode { display: none; } }
 
 :root[data-mode='machine'] body { background: var(--clay); }
 :root[data-mode='machine'] body .human { display: block; }
@@ -19,24 +24,25 @@
 @media (hover: hover) { :root[data-mode='machine'] .mx a:hover { text-decoration-color: currentColor; } }
 
 /* ---------- swaps in place ---------- */
-:root[data-mode='machine'] .sw { display: grid; }
-:root[data-mode='machine'] .sw > :is(.hx, .mx) { grid-area: 1 / 1; min-width: 0; }
-:root[data-mode='machine'] .sw > .hx { display: block; visibility: hidden; }
-:root[data-mode='machine'] .sw > .mx { display: block; }
+:root[data-mode='machine'] .sw { position: relative; }
+:root[data-mode='machine'] .sw > .hx { display: contents; visibility: hidden; }
+:root[data-mode='machine'] .sw > .mx { display: block; position: absolute; inset: 0; padding: inherit; box-sizing: border-box; overflow: hidden; }
+/* what still does not fit at the fit step's smallest size scrolls inside its box rather than being cut */
+:root[data-mode='machine'] [data-over] { overflow: auto; }
 
-/* ---------- headings are the page's own, written as their twin writes them ---------- */
-:root[data-mode='machine'] :is(.cardpage, .prose) h1::before { content: '# '; color: var(--ink-3); }
-:root[data-mode='machine'] :is(.cardpage, .prose) h2::before { content: '## '; color: var(--ink-3); }
+/* ---------- headings are the page's own, written as their twin writes them. The marks hang in the margin, so a heading
+   wraps exactly as it does in the human view ---------- */
+:root[data-mode='machine'] :is(.cardpage, .prose) :is(h1, h2) { position: relative; }
+:root[data-mode='machine'] :is(.cardpage, .prose) :is(h1, h2)::before { position: absolute; right: 100%; top: 0; padding-right: 0.3em; color: var(--ink-3); white-space: nowrap; }
+:root[data-mode='machine'] :is(.cardpage, .prose) h1::before { content: '#'; font-size: 0.5em; line-height: 2.1; }
+:root[data-mode='machine'] :is(.cardpage, .prose) h2::before { content: '##'; font-size: 0.8em; }
 
 /* ---------- header: the mark's box holds # (home's h1 is the twin's first line) or / (where the name leads), the nav its
    addresses, the switch the type each half asks for ---------- */
 :root[data-mode='machine'] header.top .brand .kl { display: none; }
 :root[data-mode='machine'] header.top .kl-mx { display: grid; place-items: center; width: 28px; height: 28px; flex: none; font: 700 26px/1 var(--sans); color: var(--ink-3); }
-/* a link keeps its human label's box (hidden, in flow); its address is laid over it, centred */
-:root[data-mode='machine'] :is(header.top .links, .pager) a.sw { position: relative; display: grid; place-items: center; }
-/* the label keeps its own width where the header is tight (730): the grid's min-width:0 would let it shrink */
-:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .hx { min-width: auto; }
-:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .mx { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 500; white-space: nowrap; }
+/* a link's address is laid over its label's box, centred, on one line */
+:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .mx { display: grid; place-items: center; padding-block: 0; font-weight: 500; white-space: nowrap; }
 :root[data-mode='machine'] header.top .links a.sw[aria-current='page'] > .mx { font-weight: 600; }
 :root[data-mode='machine'] .seg > button > .stack2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 :root[data-mode='machine'] .seg > button > .mx { display: block; font: 500 12px/20px var(--sans); color: var(--ink-2); white-space: nowrap; }
@@ -91,18 +97,21 @@
   :root[data-mode='machine'] .dock .play > .mx { font-size: 12px; line-height: 14px; }
 }
 
-/* ---------- footer: its links as addresses and the files an agent starts from, in the footer's own row; the last item,
-   the twin's status, type and size, opens the curl commands and the whole twin under it ---------- */
-:root[data-mode='machine'] .foot { display: grid; }
-:root[data-mode='machine'] .foot > * { grid-area: 1 / 1; min-width: 0; }
+/* ---------- footer: its links as addresses and the files an agent starts from, laid over the footer's own box (clear of
+   the fixed dock); the last item, the twin's status, type and size, opens the curl commands and the whole twin, which
+   then runs on below the footer ---------- */
+:root[data-mode='machine'] .foot { position: relative; }
 :root[data-mode='machine'] .foot > nav { visibility: hidden; }
-:root[data-mode='machine'] .foot > .fm { display: block; color: var(--ink-2); font: 500 13px/20px var(--sans); }
-:root[data-mode='machine'] .fm > nav { visibility: visible; }
-:root[data-mode='machine'] .fm :is(a, button) { font: inherit; }
+:root[data-mode='machine'] .foot > .fm { display: block; position: absolute; inset: 0; padding: 6px var(--g); box-sizing: border-box; overflow: hidden; color: var(--ink-2); font: 500 13px/1.5 var(--sans); }
+:root[data-mode='machine']:has(.dock) .foot > .fm { bottom: calc(var(--dock) + 16px); }
+:root[data-mode='machine'] .foot > .fm:has(details[open]) { bottom: auto; overflow: visible; }
+:root[data-mode='machine'] .fm > nav { visibility: visible; row-gap: 0; }
+/* the addresses' rows scale with the text the fit step sets, never under the 24 px a target needs */
+:root[data-mode='machine'] .fm :is(a, button) { min-height: max(24px, 2.2em); padding: 0 0.6em; font: inherit; }
 :root[data-mode='machine'] .fm .tohuman { display: none; }
 @media (max-width: 639px) { :root[data-mode='machine'] .fm .tohuman { display: inline-grid; } }
 :root[data-mode='machine'] .fm details[open] { flex: 1 0 100%; max-width: 110ch; text-align: center; }
-:root[data-mode='machine'] .fm summary { min-height: 44px; display: inline-grid; place-items: center; padding: 0 10px; cursor: pointer; color: var(--ink-1); font-variant-numeric: tabular-nums; list-style: none; }
+:root[data-mode='machine'] .fm summary { min-height: max(24px, 2.2em); display: inline-grid; place-items: center; padding: 0 10px; cursor: pointer; color: var(--ink-1); font-variant-numeric: tabular-nums; list-style: none; }
 :root[data-mode='machine'] .fm summary::-webkit-details-marker { display: none; }
 :root[data-mode='machine'] .fm pre { margin: 12px 0 0; font: inherit; color: var(--ink-1); white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
 :root[data-mode='machine'] .fm pre a { display: inline; min-height: 0; padding: 0; }
@@ -112,23 +121,19 @@
    edge at 390 and scrolled the page sideways; the record takes its size from the same rules */
 :root[data-mode='machine'] .cardpage .stand > .card { display: none; }
 :root[data-mode='machine'] .cardpage .stand > .rec { --card: min(440px, 100cqw - 8px); grid-area: 1 / 1; width: var(--card); aspect-ratio: 63 / 88; }
-/* the stand's record carries the whole twin's numbers and the source, five lines more than a wall card's, in the same box;
-   on the narrowest stand (320) its 11 px floor needs a few pixels more, so it grows rather than cut a line */
-:root[data-mode='machine'] .cardpage .stand > .rec { font-size: max(11px, calc(var(--card) * 0.034)); row-gap: 0; overflow: visible; }
+/* the stand's record carries the whole twin's numbers and the source, five lines more than a wall card's, in the same box
+   (at 320 the fit step takes it under its 11 px floor) */
+:root[data-mode='machine'] .cardpage .stand > .rec { font-size: max(11px, calc(var(--card) * 0.034)); row-gap: 0; }
 :root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 14px/1.5 var(--sans); color: var(--ink-1); }
 /* an address inside a twin line is text, not the tile its human link is (.cp-related a is a padded grid that cannot wrap) */
 :root[data-mode='machine'] .cardpage .info .mx a { display: inline; min-height: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; font: inherit; }
 :root[data-mode='machine'] .cardpage .info .mx .mk { font: inherit; color: var(--ink-3); }
-:root[data-mode='machine'] .cardpage .cp-disc > .hx { display: flex; flex-wrap: wrap; gap: 8px; }
-:root[data-mode='machine'] .cardpage .cp-go > .hx { display: flex; flex-wrap: wrap; gap: 10px; }
-:root[data-mode='machine'] .cardpage .cp-disc > :is(.hx, .mx) { min-height: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; }
-:root[data-mode='machine'] .cardpage .cp-disc > .mx { align-self: center; font-size: 15px; color: var(--ink-2); }
+/* the discipline pills' rule (.cp-disc span) reaches the machine form too; it is text, not a pill */
+:root[data-mode='machine'] .cardpage .cp-disc > .mx { display: flex; align-items: center; min-height: 0; border-radius: 0; background: none; box-shadow: none; font-size: 14px; color: var(--ink-2); }
 :root[data-mode='machine'] .cardpage .cp-go > .mx a { display: inline; min-height: 0; padding: 0; font: inherit; }
 :root[data-mode='machine'] .cardpage :is(.cp-facts, .cp-moves) > li > .mx, :root[data-mode='machine'] .cardpage .cp-trait > .mx { margin: 0; }
 :root[data-mode='machine'] .cardpage .cp-pin > .mx { color: var(--ink-2); }
-:root[data-mode='machine'] .pager a.sw > .hx { display: inline-flex; align-items: center; gap: 10px; }
 
-/* ---------- plain pages: each paragraph and list item holds its twin's source ---------- */
-:root[data-mode='machine'] .prose > .mx { display: block; }
-:root[data-mode='machine'] .prose .mx { white-space: pre-wrap; overflow-wrap: break-word; font: 500 15px/1.55 var(--sans); }
+/* ---------- plain pages: each paragraph, list item and index row holds its twin's source ---------- */
+:root[data-mode='machine'] .prose .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 15px/1.5 var(--sans); }
 :root[data-mode='machine'] .prose li.sw::marker { color: transparent; }
