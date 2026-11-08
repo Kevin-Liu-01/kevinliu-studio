@@ -12,8 +12,8 @@ const jsonld = graph(page({ path: '/cards', type: 'CollectionPage', name: `${NAM
 ---
 <Base seo={{ title: 'Cards', description: CARDS_LEAD, path: '/cards', share: 'cards', imageAlt: `All ${fighters.length} of ${NAME}'s project cards`, jsonld }}>
   <main class="prose" id="main">
-    <h1>Cards</h1>
-    <p class="lede">{CARDS_LEAD}</p>
+    <div class="sw hw"><h1>Cards</h1><p class="mx" set:html={mdHtml('# Cards')} /></div>
+    <p class="lede sw"><span class="hx">{CARDS_LEAD}</span><span class="mx">{CARDS_LEAD}</span></p>
     <ol class="index">
       {fighters.map((f, i) => {
         const repo = repoOf(f);

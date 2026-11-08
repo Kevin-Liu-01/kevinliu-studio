@@ -1,12 +1,19 @@
-/* The Machine view: the page keeps its room, its boxes and their surfaces, and each region shows what an agent reads
-   there. Every machine form (.mx) is nested in the element it describes and built from the twins' data (lib/machine.ts),
-   so it sits in that element's box at every width. A region that swaps text (.sw) keeps its human form (.hx) laid out
-   exactly as in the human view, only hidden, and lays the machine form over the same box; Base.astro's fit step
-   shrinks a machine form's text until it fits that box, so switching never moves anything.
+/* The Machine view is a terminal laid over the page. Every region keeps its place and its box and shows, in Katagami
+   Mono on the dark ground, what an agent reads there: records, twin lines, addresses, the request each half of the
+   switch makes. Boxes are drawn in box-drawing characters, controls are [ bracketed ] and a pressed one is in inverse
+   video, and each card's art is its own picture as text (lib/ascii.ts).
+   Every machine form (.mx) is nested in the element it describes and built from the twins' data (lib/machine.ts). A
+   region that swaps text (.sw) keeps its human form (.hx) laid out exactly as in the human view, only hidden, and lays
+   the machine form over the same box; Base.astro's fit step lets it use the room below and shrinks its text until it
+   fits, so switching never moves anything. A heading is its twin line laid over the heading's own box (.hw), so the
+   page keeps its one h1.
    In the human view the forms are display:none and the wrappers display:contents, both !important, so no rule of the
-   room's (a pill, a tile) can give them a box: the human view paints as if they were not there.
-   The one face carries it, with tabular figures. Keys and values align on a grid column, so the page reads as itself
-   written out. */
+   room's (a pill, a tile) can give them a box: the human view paints as if they were not there. The face is fetched at
+   idle after the human view has loaded (or preloaded when a page opens in the Machine view), so the human view's first
+   paint is unchanged and a switch finds it ready; it blocks rather than swaps, so no text reflows when it lands. */
+@font-face { font-family: 'Katagami Mono'; src: url(/fonts/katagami-mono-site.woff2) format('woff2'); font-weight: 100 700; font-display: block; }
+:root { --mono: 'Katagami Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
+
 :root:not([data-mode='machine']) .mx { display: none !important; }
 :root:not([data-mode='machine']) .hx { display: contents !important; }
 /* the phone's second skip stop names the other view; above 640 the header's switch is a few stops in */
@@ -14,14 +21,26 @@
 :root:not([data-mode='machine']) .skipmode[data-mode-set='human'], :root[data-mode='machine'] .skipmode[data-mode-set='machine'] { display: none; }
 @media (min-width: 640px) { .skipmode { display: none; } }
 
-:root[data-mode='machine'] body { background: var(--clay); }
+/* ---------- the terminal: the room's tokens turn to the dark ground, so every rule that names them follows ---------- */
+html:root[data-mode='machine'] {
+  --t-bg: #060807; --t-fg: #c9dccd; --t-hi: #effff1; --t-dim: #7d9282; --t-line: #3f5045; --t-link: #8fb6ff;
+  --clay: var(--t-bg); --ink-1: var(--t-fg); --ink-2: var(--t-dim); --ink-3: var(--t-line);
+  color-scheme: dark; background: var(--t-bg);
+}
+:root[data-mode='machine'] body { background: var(--t-bg); }
 :root[data-mode='machine'] body .human { display: block; }
 :root[data-mode='machine'] :is(#world, #stage, #inspect) { display: none !important; }
-:root[data-mode='machine'] .mx { font-variant-numeric: tabular-nums; }
-/* Markdown's own marks, quieter than its words */
-:root[data-mode='machine'] .mk { color: var(--ink-3); }
-:root[data-mode='machine'] .mx a { color: inherit; text-decoration-color: var(--ink-3); text-underline-offset: 0.18em; }
-@media (hover: hover) { :root[data-mode='machine'] .mx a:hover { text-decoration-color: currentColor; } }
+:root[data-mode='machine'] .mx, :root[data-mode='machine'] .mx * { font-family: var(--mono) !important; font-variant-ligatures: none; }
+:root[data-mode='machine'] .mx { font-variant-numeric: tabular-nums; color: var(--t-fg); text-shadow: 0 0 6px rgb(201 220 205 / 0.16); }
+:root[data-mode='machine'] .mk { color: var(--t-dim); }
+:root[data-mode='machine'] .mx a { color: var(--t-link); text-decoration: none; }
+@media (hover: hover) { :root[data-mode='machine'] .mx a:hover { text-decoration: underline; } }
+:root[data-mode='machine'] :focus-visible { outline: 1px solid var(--t-hi); outline-offset: 2px; }
+/* the room's surfaces keep their boxes and lose their clay: no fills, no raised or sunk light */
+:root[data-mode='machine'] :is(.press, .play)::before, :root[data-mode='machine'] :is(.press, .play)::after { display: none; }
+:root[data-mode='machine'] header.top .links a { box-shadow: none; }
+:root[data-mode='machine'] :is(.pocket, .deck, .pack, .dock .well, .seg, .press, .play, .pager a, .skip, .cardpage .stand, .cardpage .cp-facts > li, .cardpage .cp-moves > li, .cardpage .cp-trait, .cardpage .cp-related a) { background: none; box-shadow: none; }
+:root[data-mode='machine'] .skip { background: var(--t-fg); color: var(--t-bg); border-radius: 0; font-family: var(--mono); }
 
 /* ---------- swaps in place ---------- */
 :root[data-mode='machine'] .sw { position: relative; }
@@ -29,38 +48,80 @@
 :root[data-mode='machine'] .sw > .mx { display: block; position: absolute; inset: 0; padding: inherit; box-sizing: border-box; overflow: hidden; }
 /* what still does not fit at the fit step's smallest size scrolls inside its box rather than being cut */
 :root[data-mode='machine'] [data-over] { overflow: auto; }
+:root[data-mode='machine'] .hw > :not(.mx) { visibility: hidden; }
+/* a list (.sl) keeps its items laid out, hidden, and lays one framed panel of its twin lines over the whole list */
+:root[data-mode='machine'] .sl { position: relative; }
+:root[data-mode='machine'] .sl > li:not(.mx) { visibility: hidden; }
+:root[data-mode='machine'] .sl > li.mx { display: block; position: absolute; inset: 0; padding: 16px 14px; box-sizing: border-box; overflow: hidden; list-style: none; background: none; box-shadow: none; }
+:root[data-mode='machine'] .hw > .mx { margin: 0; padding: 0; color: var(--t-hi); white-space: pre-wrap; overflow-wrap: anywhere; }
+:root[data-mode='machine'] :is(.cardpage .info, .prose) .hw:has(> h1) > .mx { font: 700 48px/1.08 var(--mono); }
+:root[data-mode='machine'] :is(.cardpage .info, .prose) .hw:has(> h2) > .mx { font: 700 15px/1.35 var(--mono); }
 
-/* ---------- headings are the page's own, written as their twin writes them. The marks hang in the margin, so a heading
-   wraps exactly as it does in the human view ---------- */
-:root[data-mode='machine'] :is(.cardpage, .prose) :is(h1, h2) { position: relative; }
-:root[data-mode='machine'] :is(.cardpage, .prose) :is(h1, h2)::before { position: absolute; right: 100%; top: 0; padding-right: 0.3em; color: var(--ink-3); white-space: nowrap; }
-:root[data-mode='machine'] :is(.cardpage, .prose) h1::before { content: '#'; font-size: 0.5em; line-height: 2.1; }
-:root[data-mode='machine'] :is(.cardpage, .prose) h2::before { content: '##'; font-size: 0.8em; }
-
-/* ---------- header: the mark's box holds # (home's h1 is the twin's first line) or / (where the name leads), the nav its
-   addresses, the switch the type each half asks for ---------- */
-:root[data-mode='machine'] header.top .brand .kl { display: none; }
-:root[data-mode='machine'] header.top .kl-mx { display: grid; place-items: center; width: 28px; height: 28px; flex: none; font: 700 26px/1 var(--sans); color: var(--ink-3); }
-/* a link's address is laid over its label's box, centred, on one line */
-:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .mx { display: grid; place-items: center; padding-block: 0; font-weight: 500; white-space: nowrap; }
-:root[data-mode='machine'] header.top .links a.sw[aria-current='page'] > .mx { font-weight: 600; }
-:root[data-mode='machine'] .seg > button > .stack2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-:root[data-mode='machine'] .seg > button > .mx { display: block; font: 500 12px/20px var(--sans); color: var(--ink-2); white-space: nowrap; }
-:root[data-mode='machine'] .seg > button[aria-pressed='true'] > .mx { font-weight: 600; color: var(--ink-1); }
-@media (max-width: 639px) { :root[data-mode='machine'] header.top .kl-mx { width: 24px; height: 24px; font-size: 22px; } }
-
-/* ---------- records: a card, the deck and the pack written out on a clay sheet in the card's own box ---------- */
-:root[data-mode='machine'] .rec {
-  --r: max(3px, calc(var(--card) * 0.048));
-  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-content: start; gap: calc(var(--card) * 0.006) 0.9em;
-  box-sizing: border-box; overflow: hidden;
-  padding: calc(var(--card) * 0.075); border-radius: var(--r); background: var(--clay); box-shadow: var(--raise-s);
-  font: 500 max(11px, calc(var(--card) * 0.045))/1.4 var(--sans); color: var(--ink-1); text-align: left;
+/* ---------- frames: drawn in box-drawing characters at the size of the box they sit in. The top and bottom edges are
+   long rows of ─ cut to the box; each side is a column of │ under its top corner, and its bottom corner covers the
+   column's last cell. Nothing is measured: the box sets the frame ---------- */
+:root[data-mode='machine'] .bx {
+  display: block; position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  font: 400 12px/1 var(--mono); font-style: normal; color: var(--t-line); text-shadow: none;
 }
-:root[data-mode='machine'] .rec > .t { grid-column: 1 / -1; margin-bottom: calc(var(--card) * 0.05); font: 700 calc(var(--card) * 0.088)/1.08 var(--sans); text-wrap: balance; }
+:root[data-mode='machine'] .bx::before, :root[data-mode='machine'] .bx::after { content: '────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────'; position: absolute; left: 1ch; right: 1ch; white-space: pre; overflow: hidden; }
+:root[data-mode='machine'] .bx::before { top: 0; }
+:root[data-mode='machine'] .bx::after { bottom: 0; }
+:root[data-mode='machine'] .bx > i { font-style: normal; position: absolute; top: 0; bottom: 0; width: 1ch; overflow: hidden; }
+:root[data-mode='machine'] .bx > i:first-child { left: 0; }
+:root[data-mode='machine'] .bx > i:last-child { right: 0; }
+:root[data-mode='machine'] .bx > i::before { position: absolute; top: 0; left: 0; white-space: pre; }
+:root[data-mode='machine'] .bx > i:first-child::before { content: '┌\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│'; }
+:root[data-mode='machine'] .bx > i:last-child::before { content: '┐\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│'; }
+:root[data-mode='machine'] .bx > i::after { position: absolute; bottom: 0; left: 0; background: var(--t-bg); }
+:root[data-mode='machine'] .bx > i:first-child::after { content: '└'; }
+:root[data-mode='machine'] .bx > i:last-child::after { content: '┘'; }
+
+/* ---------- header: # Kevin Liu, the addresses of the nav, the type each half asks for, the keys' states ---------- */
+:root[data-mode='machine'] header.top .brand { color: var(--t-hi); }
+:root[data-mode='machine'] header.top .nm > .mx { display: flex; align-items: center; white-space: nowrap; font: 700 20px/1 var(--mono); color: var(--t-hi); }
+@media (max-width: 639px) { :root[data-mode='machine'] header.top .nm > .mx { font-size: 17px; } }
+/* under 380 the name is read but not shown (site.css): its wrapper leaves the brand's row, as the name did, and its
+   machine form goes with it */
+@media (max-width: 379px) { header.top .nm { display: contents; } :root[data-mode='machine'] header.top .nm > .mx { display: none; } }
+:root[data-mode='machine'] header.top .brand .kl { display: none; }
+:root[data-mode='machine'] header.top .kl-mx { display: grid; place-items: center; width: 28px; height: 28px; flex: none; font: 700 22px/1 var(--mono); color: var(--t-dim); }
+@media (max-width: 639px) { :root[data-mode='machine'] header.top .kl-mx { width: 24px; height: 24px; font-size: 18px; } }
+/* a link's address is laid over its label's box, centred, on one line */
+:root[data-mode='machine'] :is(header.top .links, .pager) a.sw > .mx { display: grid; place-items: center; padding: 0; white-space: nowrap; }
+:root[data-mode='machine'] header.top .links a.sw[aria-current='page'] > .mx { color: var(--t-hi); text-decoration: underline; text-underline-offset: 4px; }
+:root[data-mode='machine'] header.top .links a.sw > .mx, :root[data-mode='machine'] .pager a.sw > .mx { color: var(--t-link); }
+/* the switch: [text/html][text/markdown], the view in force in inverse video */
+:root[data-mode='machine'] .seg::before { display: none; }
+:root[data-mode='machine'] .seg > button > .stack2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:root[data-mode='machine'] .seg > button > .mx { display: block; padding: 2px 0.5ch; font: 500 11px/16px var(--mono); color: var(--t-dim); white-space: nowrap; }
+:root[data-mode='machine'] .seg > button[aria-pressed='true'] > .mx { background: var(--t-fg); color: var(--t-bg); text-shadow: none; }
+/* sound and pause: snd, and || or > ; on, or paused, in inverse video */
+:root[data-mode='machine'] .press.icon { position: relative; border-color: transparent; }
+:root[data-mode='machine'] .press.icon > .swapi { visibility: hidden; }
+:root[data-mode='machine'] .press.icon > .mx { position: absolute; inset: 6px 2px; display: grid; place-items: center; font: 600 12px/1 var(--mono); color: var(--t-dim); }
+:root[data-mode='machine'] #sound[aria-pressed='true'] > .mx { background: var(--t-fg); color: var(--t-bg); text-shadow: none; }
+:root[data-mode='machine'] #pause > .mx > .on, :root[data-mode='machine'] #pause[aria-pressed='true'] > .mx > .off { display: none; }
+:root[data-mode='machine'] #pause[aria-pressed='true'] > .mx > .on { display: inline; }
+
+/* ---------- records: a card, the deck and the pack, framed in the card's own box: the art as text in the card's
+   colour, the title, then key: value lines ---------- */
+:root[data-mode='machine'] .rec {
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); align-content: start; gap: 0 1ch;
+  position: relative; box-sizing: border-box; overflow: hidden; container-type: inline-size;
+  padding: max(18px, calc(var(--card) * 0.075)) max(14px, calc(var(--card) * 0.06)); background: var(--t-bg);
+  font: 500 max(10px, calc(var(--card) * 0.042))/1.4 var(--mono); text-align: left;
+}
+:root[data-mode='machine'] .rec > .lb { position: absolute; z-index: 1; top: 0; left: 24px; padding: 0 1ch; background: var(--t-bg); font: 500 12px/1 var(--mono); color: var(--t-fg); }
+:root[data-mode='machine'] .rec > .art {
+  grid-column: 1 / -1; display: block; margin: 0 0 0.9em; white-space: pre; overflow: hidden;
+  font: 700 calc(100cqw / var(--w, 25))/1 var(--mono); color: var(--c, var(--t-fg)); text-shadow: 0 0 6px color-mix(in srgb, var(--c, var(--t-fg)) 35%, transparent);
+}
+:root[data-mode='machine'] .rec > .t { grid-column: 1 / -1; margin-bottom: 0.5em; font: 700 calc(var(--card) * 0.068)/1.1 var(--mono); color: var(--t-hi); }
 :root[data-mode='machine'] .rec > .f { display: contents; }
-:root[data-mode='machine'] .rec .k { color: var(--ink-2); }
-/* values break at the <wbr> after a slash, dot or hyphen (lib/machine.ts), and mid-word only when nothing else fits */
+:root[data-mode='machine'] .rec .k { color: var(--t-dim); }
+/* values break at the <wbr> after a slash or hyphen and before a dot (lib/machine.ts), and mid-word only when nothing
+   else fits */
 :root[data-mode='machine'] .rec .v { overflow-wrap: break-word; }
 
 /* a wall card: the pocket keeps its well and the record takes the card's place at the card's own size (card.css: width
@@ -76,25 +137,27 @@
 :root[data-mode='machine'] .pack > .pk * { background-image: none !important; }
 :root[data-mode='machine'] :is(.deck, .pack) > .rec { position: absolute; inset: 0; }
 
-/* ---------- the dock: the ids the battle address will carry, the gauge's own words, Play's path and seed ---------- */
+/* ---------- the dock: framed; each well framed with the id the battle address will carry; the gauge's squares as
+   # and . ; Play's path and seed, in inverse video once both teams can play ---------- */
+:root[data-mode='machine'] .dock { background: var(--t-bg); box-shadow: none; border-radius: 0; }
+:root[data-mode='machine'] .dock .well { position: relative; border-radius: 0; }
 :root[data-mode='machine'] .dock .well > :not(.mx) { visibility: hidden; }
-:root[data-mode='machine'] .dock .well > .mx {
-  position: absolute; inset: 0; display: grid; place-items: center; padding: 3px; box-sizing: border-box;
-  font: 600 10px/1.15 var(--sans); color: var(--ink-1); text-align: center; overflow-wrap: anywhere;
+:root[data-mode='machine'] .dock .well > .mx:not(.bx) {
+  position: absolute; inset: 0; display: grid; place-items: center; padding: 12px 8px; box-sizing: border-box;
+  font: 600 10px/1.15 var(--mono); color: var(--t-fg); text-align: center; overflow-wrap: anywhere;
 }
-:root[data-mode='machine'] .dock .gauge { position: relative; }
-:root[data-mode='machine'] .dock .gauge > i { visibility: hidden; }
-:root[data-mode='machine'] .dock .gauge::after {
-  content: attr(aria-label); position: absolute; inset: -4px -12px; display: grid; place-items: center;
-  font: 600 12px/1 var(--sans); color: var(--ink-1); white-space: nowrap; font-variant-numeric: tabular-nums;
-}
-:root[data-mode='machine'] .dock .play { position: relative; }
+:root[data-mode='machine'] .dock .gauge > i { position: relative; background: none; border-color: transparent; box-shadow: none; }
+:root[data-mode='machine'] .dock .gauge > i::before { content: '.'; position: absolute; inset: 0; display: grid; place-items: center; font: 700 12px/1 var(--mono); color: var(--t-dim); }
+:root[data-mode='machine'] .dock .gauge > i.on::before { content: '#'; color: var(--t-fg); }
+:root[data-mode='machine'] .dock .play { position: relative; color: var(--t-fg); }
 :root[data-mode='machine'] .dock .play > .stack2 { visibility: hidden; }
-:root[data-mode='machine'] .dock .play > .mx { position: absolute; z-index: 1; inset: 0; display: grid; place-content: center; text-align: center; font: 600 13px/16px var(--sans); }
-:root[data-mode='machine'] .dock .play > .mx > [data-live] { font-weight: 500; font-size: 11px; }
+:root[data-mode='machine'] .dock .play > .mx { position: absolute; z-index: 1; inset: 2px; display: grid; place-content: center; text-align: center; font: 600 13px/16px var(--mono); }
+:root[data-mode='machine'] .dock .play[data-state='go'] > .mx { background: var(--t-fg); color: var(--t-bg); text-shadow: none; }
+:root[data-mode='machine'] .dock .play > .mx > [data-live] { font-weight: 500; font-size: 11px; color: var(--t-dim); }
+:root[data-mode='machine'] .dock .play[data-state='go'] > .mx > [data-live] { color: var(--t-bg); }
 @media (max-width: 639px) {
-  :root[data-mode='machine'] .dock .gauge::after { font-size: 10px; inset: -4px -6px; }
-  :root[data-mode='machine'] .dock .play > .mx { font-size: 12px; line-height: 14px; }
+  :root[data-mode='machine'] .dock .play > .mx { font-size: 10px; line-height: 13px; white-space: nowrap; }
+  :root[data-mode='machine'] .dock .play > .mx > [data-live] { font-size: 9px; }
 }
 
 /* ---------- footer: its links as addresses and the files an agent starts from, laid over the footer's own box (clear of
@@ -102,38 +165,41 @@
    then runs on below the footer ---------- */
 :root[data-mode='machine'] .foot { position: relative; }
 :root[data-mode='machine'] .foot > nav { visibility: hidden; }
-:root[data-mode='machine'] .foot > .fm { display: block; position: absolute; inset: 0; padding: 6px var(--g); box-sizing: border-box; overflow: hidden; color: var(--ink-2); font: 500 13px/1.5 var(--sans); }
-:root[data-mode='machine']:has(.dock) .foot > .fm { bottom: calc(var(--dock) + 16px); }
+:root[data-mode='machine'] .foot > .fm { display: block; position: absolute; inset: 0; padding: 2px var(--g); box-sizing: border-box; overflow: hidden; color: var(--t-dim); font: 500 13px/1.5 var(--mono); }
+:root[data-mode='machine']:has(.dock) .foot > .fm { bottom: calc(var(--dock) + 8px); }
 :root[data-mode='machine'] .foot > .fm:has(details[open]) { bottom: auto; overflow: visible; }
-:root[data-mode='machine'] .fm > nav { visibility: visible; row-gap: 0; }
+:root[data-mode='machine'] .fm > nav { visibility: visible; gap: 0; }
 /* the addresses' rows scale with the text the fit step sets, never under the 24 px a target needs */
-:root[data-mode='machine'] .fm :is(a, button) { min-height: max(24px, 2.2em); padding: 0 0.6em; font: inherit; }
+:root[data-mode='machine'] .fm :is(a, button) { min-height: max(24px, 2.2em); padding: 0 0.5em; font: inherit; color: var(--t-link); }
+:root[data-mode='machine'] .fm button { color: var(--t-fg); }
 :root[data-mode='machine'] .fm .tohuman { display: none; }
 @media (max-width: 639px) { :root[data-mode='machine'] .fm .tohuman { display: inline-grid; } }
-:root[data-mode='machine'] .fm details[open] { flex: 1 0 100%; max-width: 110ch; text-align: center; }
-:root[data-mode='machine'] .fm summary { min-height: max(24px, 2.2em); display: inline-grid; place-items: center; padding: 0 10px; cursor: pointer; color: var(--ink-1); font-variant-numeric: tabular-nums; list-style: none; }
+:root[data-mode='machine'] .fm details { display: flex; flex-direction: column; align-items: center; }
+:root[data-mode='machine'] .fm details[open] { flex: 1 0 100%; max-width: 110ch; }
+:root[data-mode='machine'] .fm summary { min-height: max(24px, 2.2em); display: inline-flex; align-items: center; white-space: nowrap; padding: 0 0.6em; cursor: pointer; color: var(--t-hi); font-variant-numeric: tabular-nums; list-style: none; }
 :root[data-mode='machine'] .fm summary::-webkit-details-marker { display: none; }
-:root[data-mode='machine'] .fm pre { margin: 12px 0 0; font: inherit; color: var(--ink-1); white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
+:root[data-mode='machine'] .fm summary::before { content: '['; color: var(--t-dim); }
+:root[data-mode='machine'] .fm summary::after { content: ']'; color: var(--t-dim); }
+:root[data-mode='machine'] .fm pre { align-self: stretch; margin: 12px 0 0; font: inherit; color: var(--t-fg); white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; }
 :root[data-mode='machine'] .fm pre a { display: inline; min-height: 0; padding: 0; }
 
-/* ---------- a card's page: the stand holds the record, the info column its twin block by block ---------- */
+/* ---------- a card's page: the stand holds the record, the info column its twin block by block, each tile framed ---------- */
 /* the stand's card is out of layout as on the wall: hidden, its glare and gloss layers still reached past the screen's
    edge at 390 and scrolled the page sideways; the record takes its size from the same rules */
 :root[data-mode='machine'] .cardpage .stand > .card { display: none; }
-:root[data-mode='machine'] .cardpage .stand > .rec { --card: min(440px, 100cqw - 8px); grid-area: 1 / 1; width: var(--card); aspect-ratio: 63 / 88; }
-/* the stand's record carries the whole twin's numbers and the source, five lines more than a wall card's, in the same box
-   (at 320 the fit step takes it under its 11 px floor) */
-:root[data-mode='machine'] .cardpage .stand > .rec { font-size: max(11px, calc(var(--card) * 0.034)); row-gap: 0; }
-:root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 14px/1.5 var(--sans); color: var(--ink-1); }
+:root[data-mode='machine'] .cardpage .stand > .rec { --card: min(440px, 100cqw - 8px); grid-area: 1 / 1; width: var(--card); aspect-ratio: 63 / 88; font-size: max(10px, calc(var(--card) * 0.034)); }
+:root[data-mode='machine'] .cardpage .info .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 14px/1.5 var(--mono); }
 /* an address inside a twin line is text, not the tile its human link is (.cp-related a is a padded grid that cannot wrap) */
 :root[data-mode='machine'] .cardpage .info .mx a { display: inline; min-height: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; font: inherit; }
-:root[data-mode='machine'] .cardpage .info .mx .mk { font: inherit; color: var(--ink-3); }
+:root[data-mode='machine'] .cardpage .info .mx .mk { font: inherit; color: var(--t-dim); }
+:root[data-mode='machine'] .cardpage .cp-what > .mx { font-size: 17px; line-height: 1.45; color: var(--t-hi); }
 /* the discipline pills' rule (.cp-disc span) reaches the machine form too; it is text, not a pill */
-:root[data-mode='machine'] .cardpage .cp-disc > .mx { display: flex; align-items: center; min-height: 0; border-radius: 0; background: none; box-shadow: none; font-size: 14px; color: var(--ink-2); }
-:root[data-mode='machine'] .cardpage .cp-go > .mx a { display: inline; min-height: 0; padding: 0; font: inherit; }
-:root[data-mode='machine'] .cardpage :is(.cp-facts, .cp-moves) > li > .mx, :root[data-mode='machine'] .cardpage .cp-trait > .mx { margin: 0; }
-:root[data-mode='machine'] .cardpage .cp-pin > .mx { color: var(--ink-2); }
+:root[data-mode='machine'] .cardpage .cp-disc > .mx { display: flex; align-items: center; min-height: 0; border-radius: 0; background: none; box-shadow: none; font-size: 14px; color: var(--t-dim); }
+:root[data-mode='machine'] .cardpage .cp-trait > .mx { margin: 0; }
+:root[data-mode='machine'] .cardpage .cp-pin > .mx { color: var(--t-dim); }
 
 /* ---------- plain pages: each paragraph, list item and index row holds its twin's source ---------- */
-:root[data-mode='machine'] .prose .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 15px/1.5 var(--sans); }
+:root[data-mode='machine'] .prose .mx { white-space: pre-wrap; overflow-wrap: anywhere; font: 500 15px/1.5 var(--mono); }
+:root[data-mode='machine'] .prose .lede > .mx { font-size: 17px; color: var(--t-hi); }
 :root[data-mode='machine'] .prose li.sw::marker { color: transparent; }
+:root[data-mode='machine'] .index > li { border-top-color: var(--t-line); }

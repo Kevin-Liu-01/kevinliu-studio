@@ -21,16 +21,16 @@ const jsonld = [website, kevin, ...page({ path: '/about', type: 'ProfilePage', n
 ---
 <Base seo={{ title: 'About', fullTitle: `About ${NAME}`, description: BIO, path: '/about', type: 'profile', share: 'about', imageAlt: `${NAME}, with the Claude of Tanks, Katagami and Turboslide cards`, jsonld }}>
   <main class="prose" id="main">
-    <h1>About {NAME}</h1>
+    <div class="sw hw"><h1>About {NAME}</h1><p class="mx" set:html={mdHtml(tw[0])} /></div>
     {ABOUT.map((runs, i) => (
       <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runs.map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
     ))}
     <p class="sw"><span class="hx">Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>
-    <h2>Projects</h2>
+    <div class="sw hw"><h2>Projects</h2><p class="mx" set:html={mdHtml('## Projects')} /></div>
     <ul>
       {fighters.map((f, i) => <li class="sw"><span class="hx"><a href={cardPath(f)}>{f.title}</a>. {whatOf(f)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>)}
     </ul>
-    <h2>Questions</h2>
+    <div class="sw hw"><h2>Questions</h2><p class="mx" set:html={mdHtml('## Questions')} /></div>
     <dl>
       {/* each question and answer is one paragraph of the twin, "**question** answer", split across its dt and dd */}
       {QA.map(([q, a], i) => <Fragment><dt class="sw"><span class="hx">{q}</span><span class="mx" set:html={mdHtml(questions[i].slice(0, questions[i].indexOf('** ') + 2))} /></dt><dd class="sw"><span class="hx">{a}</span><span class="mx" set:html={mdHtml(questions[i].slice(questions[i].indexOf('** ') + 3))} /></dd></Fragment>)}

@@ -14,15 +14,19 @@ const breaks = (s: string) => esc(s).replace(/([/-])(?=.)/g, '$1<wbr>').replace(
 
 export type Field = { k: string; v: string; href?: string; live?: string };
 
-/** A card's record: its place, addresses, schema type and its row of the home twin's table; `full` adds the rest of
- *  the twin's numbers and the source, for the card's own page. */
+/** A terminal frame drawn in box-drawing characters at the size of the box it sits in (machine.css .bx). */
+export const BX = '<i class="mx bx" aria-hidden="true"><i></i><i></i></i>';
+
+/** A card's number and id, the label its frame carries */
+export const cardLabel = (f: Fighter) => `${String(fighters.indexOf(f) + 1).padStart(2, '0')} ${f.id}`;
+
+/** A card's record: its place, addresses, schema type and its row of the home twin's table (its number and id are on
+ *  the frame); `full` adds the rest of the twin's numbers and the source, for the card's own page. */
 export function cardRecord(f: Fighter, { full = false } = {}): Field[] {
   const p = cardPath(f);
   const t = workType(f);
   const repo = repoOf(f); // a public repository only, as the twin prints it
   return [
-    { k: 'no.', v: String(fighters.indexOf(f) + 1).padStart(2, '0') },
-    { k: 'id', v: f.id },
     { k: 'page', v: p, href: p },
     { k: 'markdown', v: `${p}.md`, href: `${p}.md` },
     { k: '@type', v: t.type },
@@ -47,13 +51,16 @@ export const packRecord = (): Field[] => [
   { k: 'keys', v: 'Enter, Space' },
 ];
 
-/** A record as markup: a large title over key: value lines. Links only where the host is not itself a control. */
-export function recordHtml(title: string, fields: Field[], { links = true } = {}) {
+/** A record as markup: a frame with its label, the art as text in the card's colour (`cols` characters wide, set to
+ *  the record's width: machine.css --w, at Katagami Mono's 0.625 em advance), a large title over key: value lines.
+ *  Links only where the host is not itself a control. */
+export function recordHtml(title: string, fields: Field[], { links = true, label = '', art = '', cols = 40, color = '' } = {}) {
   const line = (x: Field) => {
     const v = links && x.href ? `<a href="${esc(x.href)}"${/^https?:/.test(x.href) ? ' rel="noopener"' : ''}>${breaks(x.v)}</a>` : breaks(x.v);
     return `<span class="f"><span class="k">${esc(x.k)}:</span> <span class="v"${x.live ? ` data-live="${x.live}"` : ''}>${v}</span></span>`;
   };
-  return `<span class="mx rec"><span class="t">${esc(title)}</span>${fields.map(line).join('')}</span>`;
+  const head = `${BX}${label ? `<span class="lb">${esc(label)}</span>` : ''}${art ? `<span class="art" aria-hidden="true" style="--w:${cols * 0.625}${color ? `;--c:${esc(color)}` : ''}">${esc(art)}</span>` : ''}`;
+  return `<span class="mx rec">${head}<span class="t">${esc(title)}</span>${fields.map(line).join('')}</span>`;
 }
 
 /** Markdown source as markup: its marks (#, -, **, `) quieter than its words, its bare addresses as links (a comma or

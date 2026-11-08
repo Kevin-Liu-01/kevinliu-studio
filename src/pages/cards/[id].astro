@@ -3,7 +3,8 @@ import Base from '../../layouts/Base.astro';
 import { fighters, card, M, answerOf, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../../lib/cards';
 import { cardPath } from '../../lib/twins';
 import { graph, page, work } from '../../lib/schema';
-import { cardRecord, recordHtml, cardBlocks, mdHtml } from '../../lib/machine';
+import { cardRecord, cardLabel, recordHtml, cardBlocks, mdHtml, BX } from '../../lib/machine';
+import { asciiArt } from '../../lib/ascii';
 import { SITE } from '../../lib/site';
 
 export function getStaticPaths() {
@@ -29,6 +30,10 @@ const discIcon = (d: string) => M.icon(d.toLowerCase());
 // the Machine view's forms of this page: the card's whole record on the stand, the twin block by block in the info
 // column (its headings are the human headings, marked by machine.css, so each heading keeps one text)
 const tw = cardBlocks(f);
+const art = await asciiArt(f.id, 48);
+// a heading in the Machine view is its twin line laid over the heading's own box, so it keeps the page's one h1; a list
+// (.sl) is one panel of its twin lines laid over the whole list, so its lines share the room its tiles take
+const hd = (md: string) => `<p class="mx">${mdHtml(md)}</p>`;
 const facts = factLines(f);
 ---
 <Base
@@ -37,10 +42,10 @@ const facts = factLines(f);
   html={{ 'data-card': f.id }}
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
-    <div class="stand"><Fragment set:html={card(f, { id: `c-${f.id}`, focusable: false })} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true }))} /></div>
+    <div class="stand"><Fragment set:html={card(f, { id: `c-${f.id}`, focusable: false })} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
     <article class="info">
-      <h1>{f.title}</h1>
-      <p class="cp-what">{answer}</p>
+      <div class="sw hw"><h1>{f.title}</h1><Fragment set:html={hd(`# ${f.title}`)} /></div>
+      <p class="cp-what sw"><span class="hx">{answer}</span><span class="mx">{answer}</span></p>
       <p class="cp-disc sw"><span class="hx">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{d}</span>)}</span><span class="mx" set:html={mdHtml(tw.line)} /></p>
       <p class="cp-go sw">
         <span class="hx">
@@ -50,18 +55,21 @@ const facts = factLines(f);
         </span>
         <span class="mx" set:html={mdHtml(tw.links)} />
       </p>
-      <h2>The numbers</h2>
-      <ul class="cp-facts">
-        {facts.map((x, k) => <li class="sw"><div class="hx"><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></div><p class="mx" set:html={mdHtml(tw.facts[k])} /></li>)}
+      <div class="sw hw"><h2>The numbers</h2><Fragment set:html={hd('## The numbers')} /></div>
+      <ul class="cp-facts sl">
+        {facts.map((x) => <li><b>{x.value}</b><span>{x.unit}</span><code>{x.receipt}</code></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.facts.join('\n'))} />
       </ul>
-      {f.trait && <Fragment><h2>Trait</h2><div class="cp-trait sw"><div class="hx"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div><p class="mx" set:html={mdHtml(tw.trait!)} /></div></Fragment>}
-      <h2>Moves</h2>
-      <ol class="cp-moves">
-        {f.moves.map((mv, k) => <li class="sw"><div class="hx"><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></div><p class="mx" set:html={mdHtml(tw.moves[k])} /></li>)}
+      {f.trait && <Fragment><div class="sw hw"><h2>Trait</h2><Fragment set:html={hd('## Trait')} /></div><div class="cp-trait sw"><div class="hx"><p><b>{f.trait.name}</b> {f.trait.rule}</p><code>{f.trait.receipt}</code></div><p class="mx" set:html={BX + mdHtml(tw.trait!)} /></div></Fragment>}
+      <div class="sw hw"><h2>Moves</h2><Fragment set:html={hd('## Moves')} /></div>
+      <ol class="cp-moves sl">
+        {f.moves.map((mv) => <li><p set:html={M.moveText(mv)} /><code>{mv.receipt}</code></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.moves.join('\n'))} />
       </ol>
-      <h2>Related</h2>
-      <ul class="cp-related">
-        {related.map((g, k) => <li class="sw"><span class="hx"><a href={cardPath(g)}><b>{g.title}</b><span>{g.disciplines.join(', ')}</span></a></span><span class="mx" set:html={mdHtml(tw.related[k] ?? '')} /></li>)}
+      <div class="sw hw"><h2>Related</h2><Fragment set:html={hd('## Related')} /></div>
+      <ul class="cp-related sl">
+        {related.map((g) => <li><a href={cardPath(g)}><b>{g.title}</b><span>{g.disciplines.join(', ')}</span></a></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.related.join('\n'))} />
       </ul>
       {pinned && <p class="cp-pin sw"><span class="hx">Numbers pinned at {repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinned.date ? `, ${pinned.date}` : ''}.</span>{tw.pinned && <span class="mx" set:html={mdHtml(tw.pinned)} />}</p>}
     </article>

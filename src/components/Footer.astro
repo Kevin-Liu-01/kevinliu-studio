@@ -34,7 +34,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
       <a href="/sitemap-index.xml">/sitemap-index.xml</a>
       <button type="button" class="tohuman" data-mode-set="human" aria-pressed="false">Human</button>
       <details>
-        <summary>{twin ? `HTTP 200 · text/markdown · ${Buffer.byteLength(md).toLocaleString('en-US')} bytes` : 'HTTP 404 · no twin'}</summary>
+        <summary>{twin ? `200 · text/markdown · ${Buffer.byteLength(md).toLocaleString('en-US')} B` : '404 · no twin'}</summary>
         <pre class="cmds">{cmds.map((c) => `$ ${c}`).join('\n')}</pre>
         {twin && <pre class="twin">{md}</pre>}
       </details>

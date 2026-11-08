@@ -1,8 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { fighters, rules, card, M, env, battleRoster, whatOf } from '../lib/cards';
+import { fighters, rules, card, M, env, battleRoster, whatOf, hueOf } from '../lib/cards';
 import { cardPath } from '../lib/twins';
-import { cardRecord, recordHtml, deckRecord, packRecord } from '../lib/machine';
+import { cardRecord, cardLabel, recordHtml, deckRecord, packRecord, BX } from '../lib/machine';
+import { asciiArt } from '../lib/ascii';
 import { versioned } from '../lib/assets';
 import { graph, page, cardList } from '../lib/schema';
 import { SITE, NAME, DESCRIPTION } from '../lib/site';
@@ -14,19 +15,22 @@ const ART_RATIO = 88 / 63;
 // On a touch screen the rest stay lazy: a phone decodes only the cards it has scrolled to (docs/performance.md, Memory).
 const FIRST_SCREEN = 14;
 const lazy = (html: string) => html.replace(/<img /g, '<img loading="lazy" ');
+// the Machine view's art: each card's subject as text, 40 characters wide (lib/ascii.ts)
+const arts = await Promise.all(fighters.map((f) => asciiArt(f.id, 40)));
 const wall = fighters.map((f, i) => {
   const c = card(f);
   const html = i === 0 ? c.replace('<img class="poster" ', '<img class="poster" fetchpriority="high" ') : i < FIRST_SCREEN ? c : lazy(c);
   // the card is the lens's button; its page is a plain link beside it, for crawlers, agents and pages without scripts
-  return `<li class="pocket" style="--n:${i}">${html}<a class="sr" href="${cardPath(f)}" tabindex="-1" aria-hidden="true">${f.title}</a>${recordHtml(f.title, cardRecord(f))}</li>`;
+  return `<li class="pocket" style="--n:${i}">${html}<a class="sr" href="${cardPath(f)}" tabindex="-1" aria-hidden="true">${f.title}</a>${recordHtml(f.title, cardRecord(f), { label: cardLabel(f), art: arts[i], color: hueOf(f).energy })}</li>`;
 }).join('\n');
 // The Machine view's forms of the deck, the pack and the dock, nested in the real controls: where the deck goes, what
 // the pack fills, and the team, rival and seed the dock holds (filled from gallery.js's __table by the script below)
 const deck = M.deck().replace(/<\/a>\s*$/, `${recordHtml('Previous site', deckRecord(), { links: false })}</a>`);
 const pack = M.pack(fighters, ART_RATIO, env).replace(/<\/button>\s*$/, `${recordHtml('Open Pack', packRecord(), { links: false })}</button>`);
 const dock = (M.dock([], [], fighters, rules, env) as string)
-  .replace(/<span class="hold"><\/span>/g, '$&<span class="mx" data-live="slot"></span>')
-  .replace(/(<button type="button" class="play"[^>]*>)/, '$1<span class="mx" aria-hidden="true"><span>/battle</span><span data-live="seed"></span></span>');
+  .replace(/<span class="hold"><\/span>/g, `$&${BX}<span class="mx" data-live="slot"></span>`)
+  .replace(/(<nav class="dock"[^>]*>)/, `$1${BX}`)
+  .replace(/(<button type="button" class="play"[^>]*>)/, '$1<span class="mx" aria-hidden="true"><span>[ /battle ]</span><span data-live="seed"></span></span>');
 const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
 const jsonld = graph(page({ path: '/', type: 'CollectionPage', name: NAME, description: DESCRIPTION, image: `${SITE}/og/home.jpg`, mainEntity: { '@id': cardList['@id'] } }), cardList);
 ---
