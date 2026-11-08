@@ -166,6 +166,72 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   addresses take more rows on phones; on phones the way back to Human is the footer's button; the Machine view's
   12 MB of WebContent over the old one.
 
+## 2026-11-07: the 11-07 release held at the ship checks (release/11-07, Claude Code)
+
+- **Type**: release (not shipped)
+- **Asked**: Kevin, 2026-11-07 02:28: "get all our work assembled and get it out tomorrow morning". Approval to push
+  `main` was conditional on no ship check finding a blocking problem.
+- **Assembled** on release/11-07 from origin/main ae3cc56: b4f6ac5 (the sync ships the round page's whole closure, so
+  the wall prints every card in its family frame; the guard fails a card without data-fam), the seo/aeo merge 71ff418,
+  card syncs e20dac4 (rounds a2fbdac5) and d08e221 (Breakout, rounds 30e69931), the machine/aligned merges 5062ab2 and
+  d75be4a, e553832 (the lock's head is marked dirty only for shipped files). Battle and sound unchanged: battle-r4b
+  stalled, so the 26-card battle goes to the next release.
+- **Checks on d08e221** (wf_fb58adf9-a39): battle, review, SEO pass; Machine minor only. Blocking: iPhone 14 wall
+  memory (GPU grew each visit and stayed held, lit frame SVGs), the lens's frame row ran off a phone and showed
+  design-lane working names, and family K's rule struck through power text in WebKit.
+- **Fixed** in the sync config: ae535dd (phones print unlit borders via data-unlit, phone-memory.mjs and the wall's
+  boot; the frame row hidden; the K rule dropped), 8ea1bfb (the phone tray caps at the screen and its art row wraps).
+- **Recheck on 8ea1bfb** (wf_858f2a41-0a3): GPU is given back again and every tray control is whole at 320 to 1440.
+  Still blocking: (1) iPhone 14 wall WebContent stays about 250 MB over production and passes 600 MB by the 2nd visit
+  (release 682 against 405 at the 3rd); the blank-frames diagnostic puts it on the unlit border and fxcut frame SVGs,
+  the frames themselves. (2) In WebKit the five family B cards (Claude of Tanks, Glyphfield, Princeton TD,
+  Prototemplate, Ariadne) clip the bottom of their power names on the wall (5.35 px overlap against production's 2.02);
+  it came in with the card sync and is a rounds card.css matter.
+- **Open**: production stays ae3cc56 (deployment kevinliu-studio-80cvqzld0). Kevin decides how phones print frames
+  (desktop-only frames, frames baked to display-size WebP in the rounds, or accept the memory), and the rounds fix
+  family B's names in Safari. Minor: phones still fetch 14 lit SVGs before the swap; card pages keep lit frames on
+  phones; the phone tray sits 4 px from the edge, not 8. Previews: ogc2ob923 (d08e221), 3pfmvpkrz (8ea1bfb).
+  Evidence under ~/k7-rescue/release-11-07/checks/.
+
+## 2026-11-08 · fix · Private-repo commit links on the card faces, and a comma inside a Machine link
+
+- **Changed**: `src/lib/closed-repos.mjs` (new), `src/lib/cards.ts`, `scripts/sync.mjs`, `public/ex/markup.js`,
+  `public/battle/vendor/cards/markup.js`, `sync.lock.json`, `src/lib/machine.ts`, `docs/seo.md`.
+- **Why**: the card faces' pinned-commit links pointed into 7 repositories GitHub answers 404 for without a sign-in
+  (Agent Pets, bday.land, Princeton Powerlifting, Elo, Kevin Wiki, Sandbox Arena, 050525); the rounds' `NOLINK` named
+  only loop, bday-land and kevin-wiki. Loop's repository and pinned commit are public now (200, checked 2026-11-08).
+  The Machine view's address linker also took a following comma into the Atlas receipt's live URL, a 404.
+- **Decisions**: one list, `CLOSED` in `src/lib/closed-repos.mjs`, read by `repoOf` and by a sync transform that
+  rewrites each synced `markup.js` `NOLINK`. The two synced files were patched once by that same rewrite with their
+  sync.lock.json records updated (the rounds had moved on, so a full `pnpm sync` would have pulled unrelated changes);
+  `pnpm sync --check` does not list either markup.js. The linker now ends an address before trailing `.,;:!?`.
+- **Checked**: `pnpm build`, verify-build (32 pages), smoke and `check-seo.mjs --external` (134 links) against a local
+  serve of dist.
+- **Open**: when a private repository goes public, remove it from `CLOSED` and run the sync.
+
+## 2026-11-08: the 11-07 release promoted (release/11-07, Claude Code)
+
+- **Type**: release
+- **Decisions**: Kevin, 2026-11-08: "Desktop-only frames" (phones keep plain cards; fix family B names in Safari,
+  recheck, promote if it passes). Kevin, 2026-11-08, on the Agent Pets art: "optimus prime and kratos stay, they are
+  great"; it is not a release issue.
+- **Since the hold**: 018faee prints each card plain with its framed print in an inert `<template class="framed">`;
+  the inline FRAMED script swaps it in on a fine pointer with deviceMemory above 4 and drops it elsewhere (the
+  data-unlit path is gone). 768a8b3 fixes the Safari text crowding at its cause: WebKit resolves cqw inside grid track
+  sizes against half the card, so trait and move rows are `auto auto` and the foot's columns are percentages of the
+  86.4 cqw foot (production's Safari foot overflowed 13 to 48 px and drew "×1.5" over the resist icons). 907a0c8 merges
+  243f448 (no commit links into private repositories). The card syncs came from an export of rounds 30e69931 with
+  `ROUNDS=`, because a plain `pnpm sync` pulled 102 post-cutoff rounds files; those went to Trash unreviewed.
+- **Recheck3 on 907a0c8** (wf_de5811d0-356, preview nnslah504): memory, layout, cards and review pass with nothing
+  blocking. iPhone 14 wall WebContent peaks below production (324 against 392 MB); phones print 26 plain cards with no
+  frame SVG requests.
+- **Rollback**: production deployment kevinliu-studio-80cvqzld0 (main ae3cc56), docs/deploy.md.
+- **Open (next release)**: phones still load frames.gen.js, frames.js and printings.js (77 KB, unused there); desktop
+  fetches the plain -fx.webp posters before the swap; the HTML carries every card twice (49 KB gzipped against 40);
+  Glyphfield's "Motion Study" y loses about 1 px under its band in Chromium; family Y's last move panel touches the
+  foot by 0.6 px; the guard's framed-twin check is page-wide, not per card; sync should pin a rounds commit; the
+  card page's hidden .tohuman has aria-pressed=false. The 26-card battle and new sound still wait on battle-r4b.
+
 ## 2026-11-08: the Machine view as a terminal (machine/next, Claude Code)
 
 - **Type**: fix + feature

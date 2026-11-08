@@ -672,6 +672,89 @@
   // A lens copy's print starts on the frame after the copy is written into the lens (live: false, G.lensLive), so its
   // surface reads the copy's box from a layout the browser already did, never forcing one in the frame that wrote it
   let lensLive = null;
+  // Art printings (EX.md 24, k6 install 11-05): a card with alternate art (media.gen.js printings, printings.js) shows a
+  // plain control in the lens, one button per printing. A press prints that art on the lens card, on its wall card and
+  // on every later copy of it (prints[id]) for this visit. Style (data-card-style) and art are independent; the battle
+  // prints the primary only.
+  const PR = globalThis.PRINTINGS || null;
+  const arts = document.createElement('div');
+  arts.className = 'arts';
+  arts.setAttribute('role', 'group');
+  arts.setAttribute('aria-label', 'Art');
+  arts.hidden = true;
+  $('.acts', ins).append(arts);
+  const artNow = {};
+  function setArts(id) {
+    const P = PR && PR.of(id);
+    arts.hidden = !P;
+    if (!P) { arts.replaceChildren(); return; }
+    const now = artNow[id] || P[0].label;
+    arts.replaceChildren(...P.map((p) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'press';
+      b.dataset.art = p.label;
+      b.setAttribute('aria-pressed', String(p.label === now));
+      const s = document.createElement('span');
+      s.textContent = p.name;
+      b.append(s);
+      return b;
+    }));
+  }
+  function art(id, label) {
+    const P = PR && PR.of(id);
+    if (!P) return null;
+    const want = (P.find((p) => p.label === label) || P[0]).label;
+    artNow[id] = want;
+    PR.apply(prints[id], id, want);
+    if (cards[id]) PR.apply(cards[id].el, id, want);
+    const lens = I.id === id ? $('#lifted', insCard) : null;
+    if (lens) { PR.apply(lens, id, want); toHi(lens, id, lensRect().w, true); }
+    if (I.id === id) setArts(id);
+    return want;
+  }
+  arts.addEventListener('click', (e) => { const b = e.target.closest('button[data-art]'); if (b && I.id) art(I.id, b.dataset.art); });
+  // Frame printings (EX.md 25, Kevin 11-06): a card with alternate frames (design/frames.gen.js, frames.js) shows a second
+  // plain control beside the art's, one button per frame. A press prints that frame on the lens card, its wall card and
+  // every later copy for this visit, independent of the art printing and of the style; the battle prints the primary.
+  const FRS = globalThis.FRAMES || null;
+  const frs = document.createElement('div');
+  frs.className = 'arts frs';
+  frs.setAttribute('role', 'group');
+  frs.setAttribute('aria-label', 'Frame');
+  frs.hidden = true;
+  $('.acts', ins).append(frs);
+  const frameNow = {};
+  function setFrames(id) {
+    const F = FRS && FRS.of(id);
+    frs.hidden = true;
+    if (frs.hidden) { frs.replaceChildren(); return; }
+    const now = frameNow[id] || F[0].label;
+    frs.replaceChildren(...F.map((f) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'press';
+      b.dataset.frame = f.label;
+      b.setAttribute('aria-pressed', String(f.label === now));
+      const s = document.createElement('span');
+      s.textContent = f.name;
+      b.append(s);
+      return b;
+    }));
+  }
+  function frame(id, label) {
+    const F = FRS && FRS.of(id);
+    if (!F) return null;
+    const want = (F.find((f) => f.label === label) || F[0]).label;
+    frameNow[id] = want;
+    FRS.apply(prints[id], id, want);
+    if (cards[id]) FRS.apply(cards[id].el, id, want);
+    const lens = I.id === id ? $('#lifted', insCard) : null;
+    if (lens) FRS.apply(lens, id, want);
+    if (I.id === id) setFrames(id);
+    return want;
+  }
+  frs.addEventListener('click', (e) => { const b = e.target.closest('button[data-frame]'); if (b && I.id) frame(I.id, b.dataset.frame); });
   function fill(id, { hi = true, live = true } = {}) {
     const el = copyOf(id);
     el.id = 'lifted';
@@ -734,6 +817,8 @@
     I.print = p;
     I.id = id;
     updateAdd();
+    setArts(id);
+    setFrames(id);
     $$('.stat', el).forEach((s) => {
       s.addEventListener('pointerenter', (e) => litRow(e, true));
       s.addEventListener('pointerleave', (e) => litRow(e, false));
@@ -987,9 +1072,22 @@
     get budget() { return { size: SIZE, inks: BUDGET, spent: spent() }; },
     get battleUrl() { return battleUrl(); },
   });
+  // a card's default style (data-style-default, from design/assign.json style; k7 install) prints until the viewer picks
+  // a style on the page's switch (styles/breakout/switch.js fires cardstyle): from then every defaulted card, and every
+  // later copy of one, takes the pick
+  let stylePick = null;
+  const takeStyle = (root) => { if (stylePick) for (const c of root.querySelectorAll('.card[data-style-default]')) c.dataset.cardStyle = stylePick; };
+  addEventListener('cardstyle', (e) => { stylePick = e.detail === 'breakout' ? 'breakout' : 'ex'; takeStyle(document); });
+  new MutationObserver((rs) => { if (stylePick) for (const r of rs) for (const n of r.addedNodes) if (n.nodeType === 1) { if (n.matches('.card[data-style-default]')) n.dataset.cardStyle = stylePick; takeStyle(n); } }).observe(document.body, { childList: true, subtree: true });
   globalThis.Gallery = {
     get state() { return { you: S.you.slice(), rival: S.rival.slice(), seed: S.seed, inspected: I.id, ritual: !!G.ritual, battle: battleUrl() }; },
     openPack, openInspect, closeInspect, play, toggle, completions, finish() { if (G.ritual) G.ritual.finish(); },
+    // a card's art printings (EX.md 24): the list, and the one to print (the lens, its wall card and later copies)
+    printings(id) { return (PR && PR.of(id)) || null; },
+    art,
+    // a card's frame printings (EX.md 25): the list, and the one to print, independent of the art
+    frames(id) { return (FRS && FRS.of(id)) || null; },
+    frame,
     // ms until the running pack's climax (every card turned and printed, before the first leaves), or null
     climaxIn() { const r = G.ritual; return r && r.climax != null ? Math.max(0, r.climax - r.t) : null; },
   };

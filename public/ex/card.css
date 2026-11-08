@@ -367,7 +367,7 @@
 }
 .card :is(.trait, .move) { position: relative; display: none; padding: 0 2.2cqw 0 1.8cqw; column-gap: 0; margin: 0; }
 .card :is(.trait, .move) > * { position: relative; z-index: 7; }
-.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto; align-items: center; }
+.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto; align-items: center; }
 /* the trait and cost chips: ink plates 0.076W wide with a 0.015W slanted end like a stroke terminal (frame C), so every
    name after one starts on 0.156W. The trait's plate carries its name too, light on the ink, like the wall's ability
    label: a subject that steps over the foot passes behind the plate and never under the name's own ink */
@@ -397,7 +397,7 @@
    column's width, and filled, its first line ran under the subjects that cross the window's foot (E6b, 24 cards in
    context with subject pixels on that line's keep-out, 0 balanced)) */
 .card .tr { text-wrap: balance; }
-.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto; align-items: center; }
+.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; align-items: center; }
 /* a block's last words, kept together (markup.js kept()) */
 .card .kw { white-space: nowrap; }
 .card .mc svg.i { width: 4.7cqw; height: 4.7cqw; } /* 0.047W: 9 px from 192, where the row shows */
@@ -408,7 +408,7 @@
 /* ---------- the footer: weak, resist and cost on a smoked strip, 1.214W to 1.271W; the first icon on 0.066W, the cost
    pips ending on 0.930W ---------- */
 .card .foot { position: absolute; left: 3.4cqw; right: 3.4cqw; top: 121.4cqw; height: 5.7cqw; box-sizing: border-box; padding: 0 3.6cqw 0 3.2cqw;
-  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }
+  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }
 .card .foot::before, .card .no::before { border-radius: 1.2cqw; }
 .card .foot > * { position: relative; z-index: 7; display: flex; align-items: center; gap: 0.4cqw; color: var(--white); white-space: nowrap; }
 .card .foot svg.i { width: 4.5cqw; height: 4.5cqw; }
@@ -913,7 +913,8 @@
 /* K, the specimen sheet: one thin paper sheet (near-white paper, 78 to 84% white in the panel's hue at 27 to 29%, so it reads
    paler and cooler than any other family's text: collector, studio-2, the lower halves of one hue matched across families;
    the matter still reads through it) from the window's foot to the
-   bottom line, square at its head, every row standing on its header's baseline rule and closed by a hairline, a double margin rule where the rail runs; no slips */
+   bottom line, square at its head, every row standing on its header's baseline rule and closed by a hairline, a double margin rule down each side
+   (one side, where the rail ran, until Kevin's 11-06 "card stuff ... needs to be centered"); no slips */
 .card.dz[data-fam="K"] { --dz-pa: 26%;
   --dz-tint: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 84%) 29%, transparent),
     color-mix(in oklab, color-mix(in oklab, var(--p), white 78%) 27%, transparent) 40%, color-mix(in oklab, color-mix(in oklab, var(--p), white 78%) 28%, transparent)); }
@@ -921,20 +922,21 @@
   content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: 0 0 1.4cqw 1.4cqw;
   background:
     linear-gradient(90deg, transparent 1.5cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 1.5cqw 1.85cqw, transparent 1.85cqw 2.3cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 2.3cqw 2.5cqw, transparent 2.5cqw),
+    linear-gradient(270deg, transparent 1.5cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 1.5cqw 1.85cqw, transparent 1.85cqw 2.3cqw, color-mix(in oklab, var(--e) 55%, var(--d)) 2.3cqw 2.5cqw, transparent 2.5cqw),
     var(--dz-tint);
-  background-blend-mode: normal, soft-light, normal;
+  background-blend-mode: normal, normal, soft-light, normal;
   box-shadow: inset 0 0.4cqw 0 color-mix(in oklab, var(--d) 80%, transparent), inset 0 0 0 0.16cqw rgb(255 255 255 / 0.3), 0.3cqw 0.6cqw 1.2cqw -0.3cqw color-mix(in oklab, var(--d) 50%, transparent);
 }
 .card.dz[data-fam="K"] :is(.trait, .move)::before {
   border-radius: 0; box-shadow: none;
-  background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 2.4cqw) 0.3cqw no-repeat,
-    linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)) 2.4cqw 100% / calc(100% - 2.4cqw) 0.2cqw no-repeat;
+  background: linear-gradient(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.55)) 2.4cqw 100% / calc(100% - 4.8cqw) 0.2cqw no-repeat;
 }
 .card.dz[data-fam="K"] :is(.trait, .move)::after { content: none; }
 .card.dz[data-fam="K"] :is(.foot, .no, .what)::before, .card.dz[data-fam="K"] .what::after { border-radius: 0.3cqw; }
 /* S, the drafting sheet: one sheet of the plate's graph paper from the window's foot to the bottom line, its lines in
-   the card's deep tone (a fine grid under a coarse one), the rows its ruled cells, and the parts rail carried down the right as the
-   title block's column (0.784W to 0.952W), where every power sits in its own cell; keylined in the deep tone */
+   the card's deep tone (a fine grid under a coarse one), the rows its ruled cells, every power on its own pale cell; keylined
+   in the deep tone. (Until 11-06 the parts rail ran down the right as the title block's column, 0.784W to 0.952W; with
+   the rail gone, Kevin: "card stuff ... needs to be centered") */
 .card.dz[data-fam="S"] .band::before {
   content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
   --gl: color-mix(in oklab, var(--d) 24%, transparent); --gm: color-mix(in oklab, var(--d) 40%, transparent); --gk: color-mix(in oklab, var(--d) 75%, transparent);
@@ -947,14 +949,8 @@
   background-blend-mode: normal, normal, normal, normal, soft-light, normal;
   box-shadow: inset 0 0 0 0.4cqw color-mix(in oklab, var(--d) 75%, transparent), 0.4cqw 0.8cqw 1.2cqw -0.4cqw color-mix(in oklab, var(--d) 50%, transparent);
 }
-/* the title block's column (0.784W to 0.952W: its double rule and a lighter cell) prints only in each row's head line,
-   beside the head and the power, never through a description (craft, studio-2: the rule at 0.784W ran through the
-   descriptions, which set out to 0.80 to 0.915W); a power wider than the cell sits on its own pale plate over the rule.
-   In the row's own box (0.048W to 0.952W): the rules at 73.61 to 73.96cqw and 74.51 to 74.71cqw, the cell to the end */
-.card.dz[data-fam="S"] :is(.trait, .move)::before { border-radius: 0; box-shadow: inset 0 -0.3cqw 0 color-mix(in oklab, var(--d) 60%, transparent);
-  --gk: color-mix(in oklab, var(--d) 75%, transparent);
-  background:
-    linear-gradient(90deg, transparent 73.61cqw, var(--gk) 73.61cqw 73.96cqw, transparent 73.96cqw 74.51cqw, var(--gk) 74.51cqw 74.71cqw, rgb(255 255 255 / 0.3) 74.71cqw) 0 0 / 100% 4.9cqw no-repeat; }
+/* each row of the drafting sheet stands on its own ruled line, across the whole row */
+.card.dz[data-fam="S"] :is(.trait, .move)::before { border-radius: 0; box-shadow: inset 0 -0.3cqw 0 color-mix(in oklab, var(--d) 60%, transparent); background: none; }
 .card.dz[data-fam="S"] .mp { background: color-mix(in oklab, color-mix(in oklab, var(--p), white 58%) 94%, transparent); box-shadow: -0.8cqw 0 0 color-mix(in oklab, color-mix(in oklab, var(--p), white 58%) 94%, transparent); }
 .card.dz[data-fam="S"] :is(.trait, .move)::after { content: none; }
 .card.dz[data-fam="S"] :is(.what)::before, .card.dz[data-fam="S"] :is(.what)::after, .card.dz[data-fam="S"] :is(.foot, .no)::before { border-radius: 0; }
@@ -1064,4 +1060,48 @@
 /* the seal and the name are card.css's own (markup.js icon kl in .no; .nm): the kl signature in the collector chip
    before the number, 0.042W from 300 px, and every title on one line in a 0.42W slot, centred on the bar's centre line
    (NOTES.md 'Seal, 11-02' and 'Names, 11-02'). No family moves either. */
+
+/* ---------- the frame printings' generic kinds (EX.md 25, Kevin 11-06): design/card.js rimOf marks the rim with its kind
+   (.rim[data-k]); a border lane's drawing (border, clean) prints as above. Each kind fills the family's frame only, so
+   none puts a band down the card's sides. No hatch on a plain kind: the etched cut aliased into a fence on a flat band */
+.card.dz .rim[data-k] > .fr { position: absolute; inset: 0; display: block; pointer-events: none; }
+.card.dz .rim:is([data-k="solid"], [data-k="metal"], [data-k="engraved"]) > .fin::after { content: none; }
+/* solid: the card's own energy colour, lit from the top */
+.card.dz .rim[data-k="solid"] > .fr { background: linear-gradient(172deg, color-mix(in oklab, var(--e) 72%, white) 0%, var(--e) 16%, var(--e) 64%, color-mix(in oklab, var(--e) 74%, var(--d)) 100%); }
+/* engraved: today's drawing struck tone on tone (its light and shade only) into the card's deep tone */
+.card.dz .rim[data-k="engraved"] > .fr { background: linear-gradient(172deg, color-mix(in oklab, var(--d) 62%, var(--e)) 0%, var(--d) 30%, color-mix(in oklab, var(--d) 82%, black) 100%); }
+.card.dz[data-finish] .rim[data-k="engraved"] > .bd { filter: grayscale(1) contrast(0.7); mix-blend-mode: soft-light; opacity: 0.85; }
+/* metal: the polished rim of rounds ex.1 to ex.5 in the family's frame, prism at cost 4 */
+.card.dz .rim[data-k="metal"] > .fr { background: var(--polish) 50% 50% / 200% 200% no-repeat; }
+.card.dz[data-cost="4"] .rim[data-k="metal"] > .fr { background: linear-gradient(153deg, oklch(0.8 0.19 var(--hue)), oklch(0.86 0.18 calc(var(--hue) + 60)), oklch(0.88 0.18 calc(var(--hue) + 120)),
+  oklch(0.84 0.16 calc(var(--hue) + 180)), oklch(0.76 0.19 calc(var(--hue) + 240)), oklch(0.8 0.2 calc(var(--hue) + 300)), oklch(0.8 0.19 calc(var(--hue) + 360))) 50% 50% / 200% 200% no-repeat; }
+
+/* ---------- with the sides gone (Kevin, 11-06), the Rail, the Schematic and the Tower tell their windows apart across the
+   top and the foot (design/families.js FULL): plates in the card's own tones, over the frame, under the subject.
+   The Rail: its tool's rail laid across the window's top, a deep strip ruled every 2.5cqw with a long tick every fifth.
+   The Schematic: the window ends on a dimension sill of its drafting paper, a dimension line across it with its ends.
+   The Tower: a stone lintel over the window and a sill under it, each with its incised joint ---------- */
+.card.dz:is([data-fam="K"], [data-fam="T"]) .pane::before { content: ''; position: absolute; inset: auto 0 100% 0; border: 0; border-radius: 0; box-shadow: none; opacity: 1; pointer-events: none; }
+.card.dz[data-fam="K"] .pane::before { height: 6.6cqw;
+  background:
+    linear-gradient(var(--g), var(--g)) 0 0 / 100% 0.35cqw no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--g) 85%, transparent) 0 0.3cqw, transparent 0.3cqw 12.5cqw) 0 100% / 100% 3.2cqw no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--g) 60%, transparent) 0 0.25cqw, transparent 0.25cqw 2.5cqw) 0 100% / 100% 1.6cqw no-repeat,
+    linear-gradient(180deg, color-mix(in oklab, var(--d) 80%, var(--e)), var(--d)); }
+.card.dz[data-fam="T"] .pane::before { height: 8cqw;
+  background: linear-gradient(var(--g), var(--g)) 0 0 / 100% 0.35cqw no-repeat, linear-gradient(color-mix(in oklab, var(--d) 70%, black), color-mix(in oklab, var(--d) 70%, black)) 0 100% / 100% 0.4cqw no-repeat,
+    linear-gradient(90deg, transparent 49.8%, color-mix(in oklab, var(--d) 60%, black) 49.8% 50.2%, transparent 50.2%),
+    linear-gradient(180deg, color-mix(in oklab, var(--e) 55%, var(--d)), var(--d)); }
+.card.dz:is([data-fam="S"], [data-fam="T"]) .sill { display: block; left: 0; right: 0; box-shadow: none; background-blend-mode: normal; }
+.card.dz[data-fam="S"] .sill { top: 58cqw; height: 6.6cqw;
+  background:
+    linear-gradient(var(--d), var(--d)) 50% 50% / 100% 0.3cqw no-repeat,
+    linear-gradient(var(--d), var(--d)) 3cqw 50% / 0.3cqw 2.6cqw no-repeat, linear-gradient(var(--d), var(--d)) calc(100% - 3cqw) 50% / 0.3cqw 2.6cqw no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in oklab, var(--d) 28%, transparent) 0 0.15cqw, transparent 0.15cqw 1.5cqw),
+    repeating-linear-gradient(0deg, color-mix(in oklab, var(--d) 28%, transparent) 0 0.15cqw, transparent 0.15cqw 1.5cqw),
+    color-mix(in oklab, var(--p) 70%, var(--e)); }
+.card.dz[data-fam="T"] .sill { top: 56.6cqw; height: 8cqw;
+  background: linear-gradient(color-mix(in oklab, var(--d) 70%, black), color-mix(in oklab, var(--d) 70%, black)) 0 0 / 100% 0.4cqw no-repeat, linear-gradient(var(--g), var(--g)) 0 100% / 100% 0.35cqw no-repeat,
+    linear-gradient(90deg, transparent 24.8%, color-mix(in oklab, var(--d) 60%, black) 24.8% 25.2%, transparent 25.2% 74.8%, color-mix(in oklab, var(--d) 60%, black) 74.8% 75.2%, transparent 75.2%),
+    linear-gradient(180deg, var(--d), color-mix(in oklab, var(--e) 45%, var(--d))); }
 /* ===== end of the families ===== */

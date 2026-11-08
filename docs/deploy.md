@@ -61,6 +61,11 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The 11-07 release (`release/11-07`, promoted 2026-11-08) replaced production deployment
+`kevinliu-studio-80cvqzld0-kl01s-projects.vercel.app` (dpl_6WT67u9PqnCA8vfu3EzucqQCvTtg, main ae3cc56). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then reset `main`
+to ae3cc56 with a revert commit.
+
 The phone-memory release (`fix/mobile-memory`, 2026-11-07) replaced production deployment
 `kevinliu-studio-35wc6c87l-kl01s-projects.vercel.app` (main 0d8fb9d). To undo it, promote that deployment again
 (Instant Rollback in the `kevinliu-studio` project, or `vercel promote <url> --scope kl01s-projects`), then revert

@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { MEDIA, hasLocation } from './location.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS = process.env.ROUNDS ?? path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
@@ -53,7 +54,13 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => CARD_MEDIA.test(f) || f === 'media/prototemplate/window@2x.webp') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^(borders\/[\w-]+\/(border|over|trim)\.svg|fx\/[\w-]+\/fx\.svg|design\/(frames|lit|fxcut)\/[\w.-]+\.svg|icons\/frost(@2x)?\.webp)$/.test(f)) },
     { from: `${EX}/og`, to: 'public/og', files: (l) => l.filter((f) => /^[\w-]+\.(jpg|mp4)$/.test(f)) },
-    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/katagami-sans-cards.woff2', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    // everything the round's own page loads and prints: its sheets and scripts, the card families markup.js prints
+    // through at build (design/card.js, design/plan.gen.js), and every file those name (pageFiles below). A file the round
+    // adds to its page ships with no new rule here, so the wall never falls back to plain cards again.
+    { from: EX, to: 'public/ex', files: pageFiles },
+    // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
+    { from: EX, to: 'vendor/ex', files: only('index.html') },
+    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
   ],
   // r4/sound: the kit's own allow-list (tools/ship.mjs): the player, its types, the gallery boot, two manifests, and
   // exactly the Opus and AAC files they name. Never the takes, the ledger or the receipts.
@@ -70,6 +77,33 @@ const STAGES = {
     { from: `${ROUNDS}/r3/cards`, to: 'public/battle/gallery', files: (l) => l.filter((f) => /^(posters|grounds|media)\//.test(f) && !SKIP.test(f) && IMG.test(f)) },
   ],
 };
+
+// The round page's closure: the sheets and scripts r4/ex/index.html loads, the two build-time modules markup.js requires
+// beside itself, and every picture, clip or font any of them (or the round's printed pages) names; a sheet's own names
+// resolve against the sheet. Code ships only by name (the head and the rules above), never because some file mentions
+// it. A name counts only when it is a file the round has outside the scratch folders.
+const PAGE_REF = /(?:\.\.?\/)?(?:[\w@.-]+\/)*[\w@.-]+\.(?:webp|avif|png|jpg|jpeg|svg|mp4|webm|woff2)\b/g;
+function pageHead(html) {
+  const head = html.slice(0, html.indexOf('</head>'));
+  return [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+}
+function pageFiles(list) {
+  const have = new Set(list.filter((f) => !SKIP.test(f) && !/\.(html|md)$/.test(f)));
+  const seeds = [...pageHead(fs.readFileSync(`${EX}/index.html`, 'utf8')), 'design/card.js', 'design/plan.gen.js'];
+  const missing = seeds.filter((f) => !have.has(f));
+  if (missing.length) throw new Error(`the round page names files it does not have: ${missing.join(', ')}`);
+  const out = new Set(), todo = [...seeds];
+  // the printed pages name pictures relative to the round's root; a sheet names them relative to itself
+  const read = (text, dir) => { for (const m of text.matchAll(PAGE_REF)) { const f = path.posix.normalize(path.posix.join(dir, m[0])); if (have.has(f) && !out.has(f)) todo.push(f); } };
+  for (const page of list.filter((f) => f === 'index.html' || /^cards\/[\w-]+\/index\.html$/.test(f))) read(fs.readFileSync(`${EX}/${page}`, 'utf8'), '');
+  while (todo.length) {
+    const f = todo.pop();
+    if (out.has(f)) continue;
+    out.add(f);
+    if (/\.(css|js)$/.test(f) && seeds.includes(f)) read(fs.readFileSync(`${EX}/${f}`, 'utf8'), f.endsWith('.css') ? path.posix.dirname(f) : '');
+  }
+  return [...out].sort();
+}
 
 function soundFiles(list) {
   const out = ['sound.js', 'boot.gallery.js', 'manifest.gallery.json', 'manifest.battle.json'];
@@ -122,7 +156,12 @@ const SND = "\n  const SND = () => globalThis.Sound || null;\n  const snd = (id,
 const TILT = "\n      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefined) { const v = ((e.clientX - c.tx) / Math.max(1, t - c.tt)) * 1000 / w; if (c.tdir && Math.sign(v) && Math.sign(v) !== c.tdir && Math.abs(v) > 0.6) snd('card.tilt', { key: el.dataset.id, pan: pan(el) }); if (Math.abs(v) > 0.05) c.tdir = Math.sign(v); } c.tx = e.clientX; c.tt = t; }";
 const GRAIN = "\n        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }";
 const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }\n      ";
+// a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on the wall's
+// card faces and the battle's
+const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
 const TRANSFORMS = {
+  // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
+  'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
   // the battle page lives at /battle and /battle/arena here, and returns to the cards at /
   'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
     // the layout switch renames the tab; it keeps this site's page titles instead
@@ -155,7 +194,28 @@ const TRANSFORMS = {
     [KEY_EASE, KEY_MOVE],
   ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
-  'public/ex/markup.js': (t) => patch('markup.js', t, [['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">']]),
+  'public/ex/markup.js': (t) => patch('markup.js', t, [
+    ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
+    nolink(t),
+  ]),
+  'public/battle/vendor/cards/markup.js': (t) => patch('markup.js', t, [nolink(t)]),
+  // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
+  // screen's edge (Agent Machines, release 11-07 ship checks), so the tray stops 8 in from each edge and its rows wrap
+  'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),
+  // family K's rule under each power's name is set 4.9cqw down its row, and WebKit sets the row's first text line higher
+  // than Chromium does, so in Safari the rule struck through that line (release 11-07 ship checks); the rule is left out.
+  // A trait's and a move's head row was `grid-template-rows: 4.9cqw auto`, and WebKit resolves cqw in a grid track
+  // against half the card's width (6 px for 12 at 244 px), so every description started 6 px up into its name; family
+  // B's opaque line bands then hid the names' lower half in Safari. An auto head row takes the name's own 4.9cqw height
+  // (which WebKit resolves correctly): Chromium's rows are unchanged and Safari's match them (release 11-07 ship checks).
+  // The foot row's `31cqw 28cqw 1fr` columns met the same bug, so Safari printed "x1.5" over the resistance icons on
+  // every card; they are the same widths as shares of the foot's content box (100cqw less 6.8 of inset and 6.8 of padding)
+  'public/ex/card.css': (t) => patch('card.css', t, [
+    ['background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 4.8cqw) 0.3cqw no-repeat,\n    linear-gradient(', 'background: linear-gradient('],
+    ['.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto;', '.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto;'],
+    ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
+    ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
+  ]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
@@ -177,6 +237,10 @@ const TRANSFORMS = {
     ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`);"],
     ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else history.replaceState(null, '', '/' + location.search + location.hash);"],
     ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
+    // the lens's frame row stays in the rounds: its buttons carry the design lanes' working names ("studio border lane,
+    // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
+    // every card prints its primary frame
+    ['    frs.hidden = !F || F.length < 2;', '    frs.hidden = true;'],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
@@ -242,7 +306,7 @@ function scan(dest, buf) {
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
 const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : { stages: {} };
-const lock = { rounds: ROUNDS, head: gitHead(ROUNDS), synced: null, stages: {} };
+const lock = { rounds: ROUNDS, head: null, synced: null, stages: {} };
 const problems = [];
 const writes = [], removes = [];
 for (const [stage, rules] of Object.entries(STAGES)) {
@@ -255,6 +319,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     if (!picked.length) { problems.push(`${where}: matched no files`); continue; }
     for (const f of picked) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
+      if (files[dest]) continue; // two rules may pick the same file
       let buf = fs.readFileSync(src);
       try {
         if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));
@@ -271,6 +336,8 @@ for (const [stage, rules] of Object.entries(STAGES)) {
   for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
+// the rounds' commit, marked only when a file this sync ships differs from it (other rounds' scratch work does not count)
+lock.head = gitHead(ROUNDS, new Set(Object.values(lock.stages).flatMap((s) => Object.values(s.list).map((f) => f.src))));
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB`);
 if (problems.length) {
   console.error(`\n${problems.length} problem(s); nothing was written. Fix them at the source or by a transform:`);
@@ -290,6 +357,13 @@ const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev
 if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
-function gitHead(dir) {
-  try { return execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim() + (execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no'], { encoding: 'utf8' }).trim() ? ' (with uncommitted changes)' : ''); } catch { return null; }
+function gitHead(dir, shipped) {
+  try {
+    const head = execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+    // porcelain paths are relative to the repo's top, which may sit above the rounds folder
+    const prefix = execFileSync('git', ['-C', dir, 'rev-parse', '--show-prefix'], { encoding: 'utf8' }).trim();
+    const dirty = execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no', '-z', '--', '.'], { encoding: 'utf8', maxBuffer: 1 << 28 })
+      .split('\0').filter(Boolean).map((l) => l.slice(3)).filter((f) => f.startsWith(prefix) && shipped.has(f.slice(prefix.length)));
+    return head + (dirty.length ? ` (with ${dirty.length} uncommitted shipped file${dirty.length > 1 ? 's' : ''})` : '');
+  } catch { return null; }
 }

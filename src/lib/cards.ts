@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { CLOSED as CLOSED_IDS } from './closed-repos.mjs';
 
 const ROOT = process.cwd();
 const EX = path.join(ROOT, 'public/ex');
@@ -74,7 +75,13 @@ export const GALLERY_SIZES = WALL.sizes();
 export const wallCss: string = WALL.css();
 export const masks = ART.masks();
 
-export const card = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+const framedCard = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+// Frames print on desktop only (Kevin, 11-07). On the wall a phone held about 250 MB more for the frames' SVG layers,
+// so a card prints plain (markup.js's own card) with its framed print waiting in an inert template; FRAMED, run right
+// after the cards, swaps the framed print in on a fine pointer and drops the template everywhere else
+export const card = (f: Fighter, opts: Record<string, unknown> = {}) =>
+  `${M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env)}<template class="framed">${framedCard(f, opts)}</template>`;
+export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){if(d)t.previousElementSibling.replaceWith(t.content);t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.
@@ -97,6 +104,12 @@ export const battleRoster = (() => {
   const b = require(file) as { RULES: any; FIGHTERS: Fighter[] };
   return { budget: b.RULES.team.budget as number, cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number> };
 })();
+
+// The round page's own head (vendor/ex/index.html, the sync keeps it): the sheets and scripts a wall loads, in order. A
+// sheet marked data-card-style-sheet is a card style's (Breakout), which styles/breakout/switch.js finds and never adds twice.
+const HEAD = fs.readFileSync(path.join(VX, 'index.html'), 'utf8');
+export const roundSheets = [...HEAD.matchAll(/<link rel="stylesheet" href="([^"]+)"( data-card-style-sheet)?>/g)].map((m) => ({ href: m[1], style: !!m[2] }));
+export const roundScripts = [...HEAD.matchAll(/<script defer src="([^"]+)"><\/script>/g)].map((m) => m[1]);
 
 // The page head's piece the card needs: the neumorphic tokens (the face is public/fonts/katagami-sans-site.woff2, Base.astro)
 export const neuTokens = fs.readFileSync(path.join(VX, 'vendor/neu-tokens.css'), 'utf8').replace(/^\/\*.*\*\/\n/, '');
@@ -125,10 +138,8 @@ export function teamFor(lead: string): string[] | null {
   return null;
 }
 
-// Repositories a visitor cannot open (GitHub answers 404 without a sign-in, checked 2026-11-07). The rounds still list
-// them, so the card pages, twins and JSON-LD link only the rest; scripts/check-seo.mjs fails when one of the rest stops
-// answering 200. Change this when a repository goes public, and in the rounds' roster.
-const CLOSED = new Set(['agent-pets', 'bday-land', 'powerlifting', 'elo', 'kevin-wiki', 'sandbox-arena', 'dedalus-terminal']);
+// the repositories a visitor cannot open, shared with the card faces' sync patch
+const CLOSED = new Set(CLOSED_IDS);
 export const repoOf = (f: Fighter): string | undefined => (f.repo && !CLOSED.has(f.id) && !/\(private\)/.test(f.repo) ? f.repo.replace(/ .*$/, '') : undefined);
 
 // The one sentence that answers "what is <card>": the card's own line with its name as the subject. Only a leading

@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { fighters, card, M, answerOf, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../../lib/cards';
+import { fighters, card, FRAMED, M, answerOf, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../../lib/cards';
 import { cardPath } from '../../lib/twins';
 import { graph, page, work } from '../../lib/schema';
 import { cardRecord, cardLabel, recordHtml, cardBlocks, mdHtml, BX } from '../../lib/machine';
@@ -43,6 +43,7 @@ const facts = factLines(f);
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
     <div class="stand"><Fragment set:html={card(f, { id: `c-${f.id}`, focusable: false })} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
+    <script is:inline set:html={FRAMED} />
     <article class="info">
       <div class="sw hw"><h1>{f.title}</h1><Fragment set:html={hd(`# ${f.title}`)} /></div>
       <p class="cp-what sw"><span class="hx">{answer}</span><span class="mx">{answer}</span></p>

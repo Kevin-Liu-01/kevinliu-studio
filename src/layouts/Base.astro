@@ -7,7 +7,7 @@ import Header from '../components/Header.astro';
 import Analytics from '../components/Analytics.astro';
 import Footer from '../components/Footer.astro';
 import Release from '../components/Release.astro';
-import { neuTokens, masks, sprite } from '../lib/cards';
+import { neuTokens, masks, sprite, roundSheets } from '../lib/cards';
 import { versioned } from '../lib/assets';
 import '../styles/site.css';
 import '../styles/machine.css';
@@ -55,6 +55,8 @@ const fontFace = [
 {/* only a page that runs the rituals takes their sheet: it opts the page into cross-document View Transitions, which on
    a card page crossfaded every return to the wall through a pale frame */}
 {scripts.includes('rituals.js') && <link rel="stylesheet" href={versioned('/ex/rituals.css')} />}
+{/* the round page's other sheets (a card style's, Breakout), so a card printed in that style paints in it */}
+{room && roundSheets.filter((s) => !['ui.css', 'card.css', 'rituals.css'].includes(s.href)).map((s) => <link rel="stylesheet" href={versioned(`/ex/${s.href}`)} data-card-style-sheet={s.style ? '' : undefined} />)}
 {scripts.map((s) => <script is:inline defer src={versioned(`/ex/${s}`)}></script>)}
 <slot name="head" />
 <Analytics />

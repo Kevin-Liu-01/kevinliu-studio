@@ -41,7 +41,7 @@
   const BACK = `<div class="back" aria-hidden="true"><i class="tint"></i>${icon('kl', 'emb')}</div>`;
 
   const PREVIOUS = 'https://portfoliomon.kevinliu.studio';
-  const NOLINK = new Set(['loop', 'bday-land', 'kevin-wiki']); // private or unpushed: receipts print as text
+  const NOLINK = new Set(["agent-pets","bday-land","powerlifting","elo","kevin-wiki","sandbox-arena","dedalus-terminal"]); // private or unpushed: receipts print as text
   const STAT = [['hp', 'Health'], ['atk', 'Reach'], ['def', 'Proof'], ['spd', 'Pace']];
   const FACT = { hp: 'build', atk: 'reach', def: 'proof', spd: 'pace' };
 

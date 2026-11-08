@@ -34,108 +34,137 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/turboslide/pop.webp",
     "hi": "media/turboslide/pop@2x.webp",
-    "w": 2380,
-    "h": 1180,
-    "lw": 1190,
+    "w": 2400,
+    "h": 1399,
+    "lw": 1200,
     "box": [
-     -0.0841,
-     0.1767,
-     1.0841,
-     0.7559
+     0.0903,
+     0.152,
+     0.9096,
+     0.6296
     ],
     "cross": {
-     "foot": [
-      [
-       0.4942,
-       0.7359
-      ],
-      [
-       0.8061,
-       0.966
-      ]
-     ],
-     "left": [
-      [
-       0.2129,
-       0.3217
-      ],
-      [
-       0.4117,
-       0.6272
-      ]
-     ],
-     "right": [
-      [
-       0.2046,
-       0.2883
-      ],
-      [
-       0.3782,
-       0.3845
-      ],
-      [
-       0.3929,
-       0.4096
-      ],
-      [
-       0.4159,
-       0.4242
-      ],
-      [
-       0.4305,
-       0.4368
-      ],
-      [
-       0.4473,
-       0.4598
-      ],
-      [
-       0.4724,
-       0.5037
-      ],
-      [
-       0.5142,
-       0.5288
-      ],
-      [
-       0.5351,
-       0.5456
-      ],
-      [
-       0.5623,
-       0.646
-      ]
-     ]
+     "foot": [],
+     "left": [],
+     "right": []
     },
     "prov": null,
     "cuts": [
      [
       0.25,
       "media/turboslide/pop@0.25x.webp",
-      298
+      300
      ],
      [
       0.5,
       "media/turboslide/pop@0.5x.webp",
-      595
+      600
      ]
     ],
     "cast": {
      "src": "media/turboslide/cast.webp",
      "box": [
-      -0.0962,
-      0.1721,
-      1.1112,
-      0.7905
+      0.0787,
+      0.1479,
+      0.9362,
+      0.664
      ],
-     "w": 615,
-     "h": 315
+     "w": 628,
+     "h": 378
     }
    },
    "logo": {
     "src": "media/turboslide/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "round2-final",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "final",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/turboslide/alt/final/pop.webp",
+      "hi": "media/turboslide/alt/final/pop@2x.webp",
+      "w": 2400,
+      "h": 1399,
+      "lw": 1200,
+      "box": [
+       0.006,
+       0.134,
+       0.9931,
+       0.7094
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.8763,
+         0.9309
+        ]
+       ],
+       "left": [
+        [
+         0.2171,
+         0.2213
+        ],
+        [
+         0.3364,
+         0.3908
+        ],
+        [
+         0.4452,
+         0.487
+        ],
+        [
+         0.5205,
+         0.5268
+        ]
+       ],
+       "right": [
+        [
+         0.3364,
+         0.3887
+        ],
+        [
+         0.4493,
+         0.4891
+        ],
+        [
+         0.5644,
+         0.5811
+        ]
+       ]
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/turboslide/alt/final/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/turboslide/alt/final/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/turboslide/alt/final/cast.webp",
+       "box": [
+        -0.0046,
+        0.1309,
+        1.0187,
+        0.7429
+       ],
+       "w": 622,
+       "h": 372
+      }
+     }
+    }
+   ]
   },
   "glyphfield": {
    "window": {
@@ -219,7 +248,151 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/glyphfield/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "h9",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "d4",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/glyphfield/alt/d4/pop.webp",
+      "hi": "media/glyphfield/alt/d4/pop@2x.webp",
+      "w": 2150,
+      "h": 1062,
+      "lw": 1075,
+      "box": [
+       -0.022,
+       0.1445,
+       1.0082,
+       0.6534
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7164,
+         0.7749
+        ]
+       ],
+       "left": [
+        [
+         0.1983,
+         0.2485
+        ],
+        [
+         0.328,
+         0.4054
+        ],
+        [
+         0.4724,
+         0.6167
+        ]
+       ],
+       "right": [
+        [
+         0.3322,
+         0.3343
+        ],
+        [
+         0.3468,
+         0.4514
+        ],
+        [
+         0.6042,
+         0.6355
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/glyphfield/alt/d4/pop@0.25x.webp",
+        269
+       ],
+       [
+        0.5,
+        "media/glyphfield/alt/d4/pop@0.5x.webp",
+        538
+       ]
+      ],
+      "cast": {
+       "src": "media/glyphfield/alt/d4/cast.webp",
+       "box": [
+        -0.0336,
+        0.1404,
+        1.0348,
+        0.688
+       ],
+       "w": 558,
+       "h": 286
+      }
+     }
+    },
+    {
+     "label": "f4",
+     "name": "Alt art 2",
+     "pop": {
+      "src": "media/glyphfield/alt/f4/pop.webp",
+      "hi": "media/glyphfield/alt/f4/pop@2x.webp",
+      "w": 2117,
+      "h": 1185,
+      "lw": 1058,
+      "box": [
+       0.056,
+       0.144,
+       0.9769,
+       0.6595
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7866,
+         0.8217
+        ]
+       ],
+       "left": [],
+       "right": [
+        [
+         0.2966,
+         0.3029
+        ],
+        [
+         0.395,
+         0.4096
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/glyphfield/alt/f4/pop@0.25x.webp",
+        264
+       ],
+       [
+        0.5,
+        "media/glyphfield/alt/f4/pop@0.5x.webp",
+        529
+       ]
+      ],
+      "cast": {
+       "src": "media/glyphfield/alt/f4/cast.webp",
+       "box": [
+        0.0444,
+        0.1398,
+        1.0035,
+        0.6933
+       ],
+       "w": 551,
+       "h": 318
+      }
+     }
+    }
+   ]
   },
   "jarhead": {
    "window": {
@@ -323,7 +496,83 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/jarhead/logo.webp",
     "kind": "app-icon"
-   }
+   },
+   "printings": [
+    {
+     "label": "fix3",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "fix1",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/jarhead/alt/fix1/pop.webp",
+      "hi": "media/jarhead/alt/fix1/pop@2x.webp",
+      "w": 2400,
+      "h": 1272,
+      "lw": 1200,
+      "box": [
+       0.002,
+       0.15,
+       0.9982,
+       0.678
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.8139,
+         0.966
+        ]
+       ],
+       "left": [
+        [
+         0.2548,
+         0.3343
+        ],
+        [
+         0.3887,
+         0.4724
+        ]
+       ],
+       "right": [
+        [
+         0.4012,
+         0.441
+        ],
+        [
+         0.5519,
+         0.646
+        ]
+       ]
+      },
+      "prov": 0.565,
+      "cuts": [
+       [
+        0.25,
+        "media/jarhead/alt/fix1/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/jarhead/alt/fix1/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/jarhead/alt/fix1/cast.webp",
+       "box": [
+        -0.0088,
+        0.1467,
+        1.024,
+        0.7113
+       ],
+       "w": 622,
+       "h": 340
+      }
+     }
+    }
+   ]
   },
   "katagami": {
    "window": {
@@ -436,73 +685,53 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/claude-of-tanks/pop.webp",
     "hi": "media/claude-of-tanks/pop@2x.webp",
-    "w": 2322,
-    "h": 1137,
-    "lw": 1161,
+    "w": 2246,
+    "h": 1296,
+    "lw": 1123,
     "box": [
-     -0.0765,
-     0.111,
-     1.0845,
-     0.6795
+     -0.008,
+     0.106,
+     1.0364,
+     0.7086
     ],
     "cross": {
-     "foot": [],
-     "left": [
+     "foot": [
       [
-       0.2841,
-       0.3698
-      ],
-      [
-       0.3761,
-       0.3782
-      ],
-      [
-       0.4159,
-       0.4828
+       0.385,
+       0.4591
       ]
      ],
-     "right": [
+     "left": [
       [
-       0.4054,
-       0.4786
-      ],
-      [
-       0.4954,
-       0.4996
-      ],
-      [
-       0.5393,
-       0.5456
-      ],
-      [
-       0.5686,
-       0.6188
+       0.1795,
+       0.2673
       ]
-     ]
+     ],
+     "right": []
     },
-    "prov": null,
+    "prov": 0.156,
     "cuts": [
      [
       0.25,
       "media/claude-of-tanks/pop@0.25x.webp",
-      290
+      281
      ],
      [
       0.5,
       "media/claude-of-tanks/pop@0.5x.webp",
-      580
+      562
      ]
     ],
     "cast": {
      "src": "media/claude-of-tanks/cast.webp",
      "box": [
-      -0.087,
-      0.108,
-      1.11,
-      0.7125
+      -0.0191,
+      0.1024,
+      1.0625,
+      0.7417
      ],
-     "w": 598,
-     "h": 302
+     "w": 582,
+     "h": 344
     },
     "glow": {
      "src": "media/claude-of-tanks/glow.webp",
@@ -512,7 +741,160 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/claude-of-tanks/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "v14",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "b4",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/claude-of-tanks/alt/b4/pop.webp",
+      "hi": "media/claude-of-tanks/alt/b4/pop@2x.webp",
+      "w": 2275,
+      "h": 1174,
+      "lw": 1138,
+      "box": [
+       -0.084,
+       0.122,
+       1.0535,
+       0.709
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.4747,
+         0.6657
+        ]
+       ],
+       "left": [
+        [
+         0.1774,
+         0.1837
+        ],
+        [
+         0.2109,
+         0.2297
+        ],
+        [
+         0.2715,
+         0.3803
+        ]
+       ],
+       "right": [
+        [
+         0.3782,
+         0.487
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/claude-of-tanks/alt/b4/pop@0.25x.webp",
+        284
+       ],
+       [
+        0.5,
+        "media/claude-of-tanks/alt/b4/pop@0.5x.webp",
+        569
+       ]
+      ],
+      "cast": {
+       "src": "media/claude-of-tanks/alt/b4/cast.webp",
+       "box": [
+        -0.0965,
+        0.117,
+        1.081,
+        0.7447
+       ],
+       "w": 589,
+       "h": 314
+      },
+      "glow": {
+       "src": "media/claude-of-tanks/alt/b4/glow.webp",
+       "hi": "media/claude-of-tanks/alt/b4/glow@2x.webp"
+      }
+     }
+    },
+    {
+     "label": "v8",
+     "name": "Alt art 2",
+     "pop": {
+      "src": "media/claude-of-tanks/alt/v8/pop.webp",
+      "hi": "media/claude-of-tanks/alt/v8/pop@2x.webp",
+      "w": 2211,
+      "h": 1279,
+      "lw": 1106,
+      "box": [
+       -0.026,
+       0.114,
+       1.0132,
+       0.7151
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.4591,
+         0.6189
+        ]
+       ],
+       "left": [
+        [
+         0.192,
+         0.1983
+        ]
+       ],
+       "right": [
+        [
+         0.1481,
+         0.1669
+        ],
+        [
+         0.2255,
+         0.2569
+        ],
+        [
+         0.4933,
+         0.5623
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/claude-of-tanks/alt/v8/pop@0.25x.webp",
+        276
+       ],
+       [
+        0.5,
+        "media/claude-of-tanks/alt/v8/pop@0.5x.webp",
+        553
+       ]
+      ],
+      "cast": {
+       "src": "media/claude-of-tanks/alt/v8/cast.webp",
+       "box": [
+        -0.0373,
+        0.1102,
+        1.0395,
+        0.7491
+       ],
+       "w": 573,
+       "h": 340
+      },
+      "glow": {
+       "src": "media/claude-of-tanks/alt/v8/glow.webp",
+       "hi": "media/claude-of-tanks/alt/v8/glow@2x.webp"
+      }
+     }
+    }
+   ]
   },
   "mailroom": {
    "window": {
@@ -547,22 +929,17 @@ globalThis.MEDIA = {
     "h": 1272,
     "lw": 1200,
     "box": [
-     -0.066,
-     0.146,
-     1.066,
-     0.746
+     0.0738,
+     0.152,
+     1.0088,
+     0.6476
     ],
     "cross": {
-     "foot": [
-      [
-       0.8217,
-       0.9348
-      ]
-     ],
+     "foot": [],
      "left": [],
      "right": []
     },
-    "prov": 0.156,
+    "prov": null,
     "cuts": [
      [
       0.25,
@@ -578,19 +955,77 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/mailroom/cast.webp",
      "box": [
-      -0.0774,
-      0.1421,
-      1.0924,
-      0.7798
+      0.0626,
+      0.1483,
+      1.035,
+      0.6812
      ],
-     "w": 620,
-     "h": 338
+     "w": 624,
+     "h": 342
     }
    },
    "logo": {
     "src": "media/mailroom/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "c-diorama",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "final",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/mailroom/alt/final/pop.webp",
+      "hi": "media/mailroom/alt/final/pop@2x.webp",
+      "w": 2400,
+      "h": 1399,
+      "lw": 1200,
+      "box": [
+       0.0431,
+       0.152,
+       0.9501,
+       0.6807
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.8061,
+         0.8607
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/mailroom/alt/final/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/mailroom/alt/final/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/mailroom/alt/final/cast.webp",
+       "box": [
+        0.0325,
+        0.1489,
+        0.9757,
+        0.7142
+       ],
+       "w": 624,
+       "h": 374
+      }
+     }
+    }
+   ]
   },
   "local-search": {
    "window": {
@@ -625,9 +1060,9 @@ globalThis.MEDIA = {
     "h": 1144,
     "lw": 850,
     "box": [
-     0.079,
+     0.0792,
      0.127,
-     0.929,
+     0.9293,
      0.699
     ],
     "cross": {
@@ -656,10 +1091,10 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/local-search/cast.webp",
      "box": [
-      0.0685,
+      0.0687,
       0.124,
-      0.9545,
-      0.732
+      0.9548,
+      0.7321
      ],
      "w": 443,
      "h": 304
@@ -669,7 +1104,69 @@ globalThis.MEDIA = {
     "src": "media/local-search/logo.svg",
     "kind": "logo",
     "ground": "#151515"
-   }
+   },
+   "printings": [
+    {
+     "label": "exploded",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "c6",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/local-search/alt/c6/pop.webp",
+      "hi": "media/local-search/alt/c6/pop@2x.webp",
+      "w": 2200,
+      "h": 1033,
+      "lw": 1100,
+      "box": [
+       0.3069,
+       0.3866,
+       0.9098,
+       0.6697
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.4591,
+         0.4669
+        ],
+        [
+         0.7593,
+         0.9075
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/local-search/alt/c6/pop@0.25x.webp",
+        275
+       ],
+       [
+        0.5,
+        "media/local-search/alt/c6/pop@0.5x.webp",
+        550
+       ]
+      ],
+      "cast": {
+       "src": "media/local-search/alt/c6/cast.webp",
+       "box": [
+        0.2958,
+        0.3829,
+        0.9359,
+        0.7029
+       ],
+       "w": 584,
+       "h": 292
+      }
+     }
+    }
+   ]
   },
   "agent-pets": {
    "window": {
@@ -754,7 +1251,76 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/agent-pets/logo.svg",
     "kind": "favicon"
-   }
+   },
+   "printings": [
+    {
+     "label": "studio-d",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "layout-k",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/agent-pets/alt/layout-k/pop.webp",
+      "hi": "media/agent-pets/alt/layout-k/pop@2x.webp",
+      "w": 2190,
+      "h": 1006,
+      "lw": 1095,
+      "box": [
+       -0.03,
+       0.15,
+       1.065,
+       0.653
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.693,
+         0.7398
+        ]
+       ],
+       "left": [
+        [
+         0.2841,
+         0.2924
+        ],
+        [
+         0.3636,
+         0.4054
+        ],
+        [
+         0.4159,
+         0.4535
+        ]
+       ],
+       "right": [
+        [
+         0.2109,
+         0.259
+        ],
+        [
+         0.4033,
+         0.5163
+        ]
+       ]
+      },
+      "prov": null,
+      "pixel": true,
+      "cast": {
+       "src": "media/agent-pets/alt/layout-k/cast.webp",
+       "box": [
+        -0.0405,
+        0.147,
+        1.0905,
+        0.6865
+       ],
+       "w": 566,
+       "h": 270
+      }
+     }
+    }
+   ]
   },
   "loop": {
    "window": {
@@ -783,52 +1349,64 @@ globalThis.MEDIA = {
     "h": 1399,
     "lw": 1200,
     "box": [
-     -0.066,
-     0.086,
-     1.066,
-     0.7459
+     0.0058,
+     0.11,
+     0.9929,
+     0.6854
     ],
     "cross": {
      "foot": [
       [
-       0.5058,
-       0.966
+       0.6384,
+       0.6813
+      ],
+      [
+       0.7203,
+       0.7359
+      ],
+      [
+       0.8178,
+       0.849
       ]
      ],
      "left": [
       [
-       0.146,
-       0.3489
+       0.1586,
+       0.1816
       ],
       [
-       0.3615,
-       0.4389
+       0.2694,
+       0.3238
       ],
       [
-       0.4619,
-       0.4891
+       0.3447,
+       0.4075
+      ],
+      [
+       0.4577,
+       0.4807
       ]
      ],
      "right": [
       [
-       0.3175,
-       0.3427
+       0.3008,
+       0.3238
       ],
       [
        0.3719,
-       0.4933
+       0.4368
       ],
       [
-       0.5163,
-       0.5288
+       0.4975,
+       0.5079
       ],
       [
-       0.5435,
-       0.646
+       0.5288,
+       0.6334
       ]
      ]
     },
-    "prov": null,
+    "prov": 0.68,
     "cuts": [
      [
       0.25,
@@ -844,13 +1422,13 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/loop/cast.webp",
      "box": [
-      -0.0774,
-      0.0821,
-      1.0924,
-      0.7802
+      -0.0048,
+      0.1069,
+      1.0185,
+      0.7189
      ],
-     "w": 620,
-     "h": 370
+     "w": 622,
+     "h": 372
     }
    },
    "logo": {
@@ -887,54 +1465,218 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/agent-machines/pop.webp",
     "hi": "media/agent-machines/pop@2x.webp",
-    "w": 2400,
+    "w": 2234,
     "h": 1272,
-    "lw": 1200,
+    "lw": 1117,
     "box": [
-     -0.066,
-     0.146,
-     1.066,
-     0.746
+     0.013,
+     0.136,
+     1.0365,
+     0.7188
     ],
     "cross": {
      "foot": [
       [
-       0.6618,
-       0.771
+       0.7827,
+       0.8724
       ]
      ],
      "left": [],
      "right": []
     },
-    "prov": 0.06,
+    "prov": null,
     "cuts": [
      [
       0.25,
       "media/agent-machines/pop@0.25x.webp",
-      300
+      279
      ],
      [
       0.5,
       "media/agent-machines/pop@0.5x.webp",
-      600
+      558
      ]
     ],
     "cast": {
      "src": "media/agent-machines/cast.webp",
      "box": [
-      -0.0774,
-      0.1421,
-      1.0924,
-      0.7798
+      0.0022,
+      0.1327,
+      1.0623,
+      0.7526
      ],
-     "w": 620,
+     "w": 578,
      "h": 338
     }
    },
    "logo": {
     "src": "media/agent-machines/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "k4-v1",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "final",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/agent-machines/alt/final/pop.webp",
+      "hi": "media/agent-machines/alt/final/pop@2x.webp",
+      "w": 2400,
+      "h": 1272,
+      "lw": 1200,
+      "box": [
+       -0.0345,
+       0.226,
+       0.9005,
+       0.7216
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.5799,
+         0.5877
+        ],
+        [
+         0.5955,
+         0.7866
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/agent-machines/alt/final/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/agent-machines/alt/final/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/agent-machines/alt/final/cast.webp",
+       "box": [
+        -0.0457,
+        0.2223,
+        0.9267,
+        0.7552
+       ],
+       "w": 624,
+       "h": 342
+      }
+     }
+    },
+    {
+     "label": "k4-v2",
+     "name": "Alt art 2",
+     "pop": {
+      "src": "media/agent-machines/alt/k4-v2/pop.webp",
+      "hi": "media/agent-machines/alt/k4-v2/pop@2x.webp",
+      "w": 2280,
+      "h": 1272,
+      "lw": 1140,
+      "box": [
+       -0.0027,
+       0.174,
+       0.9744,
+       0.7191
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.8334,
+         0.9114
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.4475,
+      "cuts": [
+       [
+        0.25,
+        "media/agent-machines/alt/k4-v2/pop@0.25x.webp",
+        285
+       ],
+       [
+        0.5,
+        "media/agent-machines/alt/k4-v2/pop@0.5x.webp",
+        570
+       ]
+      ],
+      "cast": {
+       "src": "media/agent-machines/alt/k4-v2/cast.webp",
+       "box": [
+        -0.0141,
+        0.1701,
+        1.0008,
+        0.753
+       ],
+       "w": 592,
+       "h": 340
+      }
+     }
+    },
+    {
+     "label": "ex1",
+     "name": "Alt art 3",
+     "pop": {
+      "src": "media/agent-machines/alt/ex1/pop.webp",
+      "hi": "media/agent-machines/alt/ex1/pop@2x.webp",
+      "w": 1786,
+      "h": 1039,
+      "lw": 893,
+      "box": [
+       0.0825,
+       0.184,
+       0.9175,
+       0.6698
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.6111,
+         0.7281
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.285,
+      "cuts": [
+       [
+        0.25,
+        "media/agent-machines/alt/ex1/pop@0.25x.webp",
+        223
+       ],
+       [
+        0.5,
+        "media/agent-machines/alt/ex1/pop@0.5x.webp",
+        446
+       ]
+      ],
+      "cast": {
+       "src": "media/agent-machines/alt/ex1/cast.webp",
+       "box": [
+        0.0713,
+        0.1803,
+        0.9437,
+        0.7045
+       ],
+       "w": 466,
+       "h": 280
+      }
+     }
+    }
+   ]
   },
   "prototemplate": {
    "window": {
@@ -965,58 +1707,107 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/prototemplate/pop.webp",
     "hi": "media/prototemplate/pop@2x.webp",
-    "w": 2400,
+    "w": 2320,
     "h": 1272,
-    "lw": 1200,
+    "lw": 1160,
     "box": [
-     -0.048,
-     0.146,
-     1.084,
-     0.746
+     0.046,
+     0.154,
+     0.924,
+     0.6354
     ],
     "cross": {
-     "foot": [
-      [
-       0.6033,
-       0.6462
-      ],
-      [
-       0.7749,
-       0.8295
-      ]
-     ],
+     "foot": [],
      "left": [],
      "right": []
     },
-    "prov": 0.33,
+    "prov": null,
     "cuts": [
      [
       0.25,
       "media/prototemplate/pop@0.25x.webp",
-      300
+      290
      ],
      [
       0.5,
       "media/prototemplate/pop@0.5x.webp",
-      600
+      580
      ]
     ],
     "cast": {
      "src": "media/prototemplate/cast.webp",
      "box": [
-      -0.0594,
-      0.1421,
-      1.1104,
-      0.7798
+      0.0353,
+      0.1508,
+      0.9497,
+      0.6686
      ],
-     "w": 620,
-     "h": 338
+     "w": 604,
+     "h": 342
     }
    },
    "logo": {
     "src": "media/prototemplate/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "vortex",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "final",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/prototemplate/alt/final/pop.webp",
+      "hi": "media/prototemplate/alt/final/pop@2x.webp",
+      "w": 2400,
+      "h": 1399,
+      "lw": 1200,
+      "box": [
+       -0.038,
+       0.088,
+       1.0392,
+       0.7159
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7554,
+         0.8958
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.655,
+      "cuts": [
+       [
+        0.25,
+        "media/prototemplate/alt/final/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/prototemplate/alt/final/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/prototemplate/alt/final/cast.webp",
+       "box": [
+        -0.0502,
+        0.0833,
+        1.0664,
+        0.7511
+       ],
+       "w": 622,
+       "h": 372
+      }
+     }
+    }
+   ]
   },
   "bday-land": {
    "window": {
@@ -1112,7 +1903,79 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/bday-land/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "studio",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "ex-1103",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/bday-land/alt/ex-1103/pop.webp",
+      "hi": "media/bday-land/alt/ex-1103/pop@2x.webp",
+      "w": 2241,
+      "h": 1153,
+      "lw": 1120,
+      "box": [
+       0.004,
+       0.154,
+       1.0206,
+       0.677
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7827,
+         0.8685
+        ],
+        [
+         0.8802,
+         0.9153
+        ]
+       ],
+       "left": [
+        [
+         0.4368,
+         0.5268
+        ]
+       ],
+       "right": [
+        [
+         0.2422,
+         0.3531
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/bday-land/alt/ex-1103/pop@0.25x.webp",
+        280
+       ],
+       [
+        0.5,
+        "media/bday-land/alt/ex-1103/pop@0.5x.webp",
+        560
+       ]
+      ],
+      "cast": {
+       "src": "media/bday-land/alt/ex-1103/cast.webp",
+       "box": [
+        -0.0067,
+        0.1508,
+        1.0463,
+        0.71
+       ],
+       "w": 580,
+       "h": 308
+      }
+     }
+    }
+   ]
   },
   "powerlifting": {
    "window": {
@@ -1147,32 +2010,30 @@ globalThis.MEDIA = {
     "h": 1399,
     "lw": 1200,
     "box": [
-     -0.066,
-     0.086,
-     1.066,
-     0.7459
+     0.04,
+     0.09,
+     0.9909,
+     0.6443
     ],
     "cross": {
-     "foot": [
-      [
-       0.8412,
-       0.966
-      ]
-     ],
-     "left": [
-      [
-       0.3698,
-       0.6042
-      ]
-     ],
+     "foot": [],
+     "left": [],
      "right": [
       [
-       0.441,
-       0.646
+       0.2422,
+       0.2632
+      ],
+      [
+       0.4996,
+       0.5268
+      ],
+      [
+       0.5602,
+       0.5728
       ]
      ]
     },
-    "prov": null,
+    "prov": 0.2575,
     "cuts": [
      [
       0.25,
@@ -1188,19 +2049,90 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/powerlifting/cast.webp",
      "box": [
-      -0.0774,
-      0.0821,
-      1.0924,
-      0.7802
+      0.0285,
+      0.086,
+      1.0174,
+      0.6787
      ],
-     "w": 620,
-     "h": 370
+     "w": 624,
+     "h": 374
     }
    },
    "logo": {
     "src": "media/powerlifting/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "c",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "b-final",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/powerlifting/alt/b-final/pop.webp",
+      "hi": "media/powerlifting/alt/b-final/pop@2x.webp",
+      "w": 2400,
+      "h": 1399,
+      "lw": 1200,
+      "box": [
+       -0.052,
+       0.0745,
+       1.0347,
+       0.708
+      ],
+      "cross": {
+       "foot": [],
+       "left": [
+        [
+         0.1586,
+         0.3719
+        ],
+        [
+         0.3866,
+         0.6272
+        ]
+       ],
+       "right": [
+        [
+         0.1753,
+         0.3678
+        ],
+        [
+         0.3908,
+         0.6188
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/powerlifting/alt/b-final/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/powerlifting/alt/b-final/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/powerlifting/alt/b-final/cast.webp",
+       "box": [
+        -0.0626,
+        0.0714,
+        1.0603,
+        0.7415
+       ],
+       "w": 620,
+       "h": 370
+      }
+     }
+    }
+   ]
   },
   "elo": {
    "window": {
@@ -1229,22 +2161,22 @@ globalThis.MEDIA = {
     "h": 1272,
     "lw": 1200,
     "box": [
-     -0.066,
-     0.146,
-     1.066,
-     0.746
+     -0.008,
+     0.156,
+     1.0184,
+     0.7
     ],
     "cross": {
      "foot": [
       [
-       0.3889,
-       0.9114
+       0.7008,
+       0.8763
       ]
      ],
      "left": [],
      "right": []
     },
-    "prov": 0.36,
+    "prov": 0.3775,
     "cuts": [
      [
       0.25,
@@ -1260,13 +2192,13 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/elo/cast.webp",
      "box": [
-      -0.0774,
-      0.1421,
-      1.0924,
-      0.7798
+      -0.0193,
+      0.1522,
+      1.0447,
+      0.7338
      ],
-     "w": 620,
-     "h": 338
+     "w": 622,
+     "h": 340
     },
     "set": {
      "src": "media/elo/set@2x.webp",
@@ -1277,7 +2209,79 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/elo/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "ex5",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "ex3",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/elo/alt/ex3/pop.webp",
+      "hi": "media/elo/alt/ex3/pop@2x.webp",
+      "w": 2272,
+      "h": 1174,
+      "lw": 1136,
+      "box": [
+       -0.084,
+       0.146,
+       1.085,
+       0.7501
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.9036,
+         0.966
+        ]
+       ],
+       "left": [
+        [
+         0.1837,
+         0.6167
+        ]
+       ],
+       "right": [
+        [
+         0.2485,
+         0.6334
+        ],
+        [
+         0.6397,
+         0.646
+        ]
+       ]
+      },
+      "prov": 0.2425,
+      "cuts": [
+       [
+        0.25,
+        "media/elo/alt/ex3/pop@0.25x.webp",
+        284
+       ],
+       [
+        0.5,
+        "media/elo/alt/ex3/pop@0.5x.webp",
+        568
+       ]
+      ],
+      "cast": {
+       "src": "media/elo/alt/ex3/cast.webp",
+       "box": [
+        -0.095,
+        0.1425,
+        1.111,
+        0.7846
+       ],
+       "w": 586,
+       "h": 312
+      }
+     }
+    }
+   ]
   },
   "cotfly": {
    "window": {
@@ -1308,59 +2312,116 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/cotfly/pop.webp",
     "hi": "media/cotfly/pop@2x.webp",
-    "w": 2364,
-    "h": 1529,
-    "lw": 1182,
+    "w": 2400,
+    "h": 1272,
+    "lw": 1200,
     "box": [
-     0.1451,
-     0.1583,
-     1.0643,
-     0.7528
+     -0.072,
+     0.13,
+     1.06,
+     0.73
     ],
     "cross": {
-     "foot": [
+     "foot": [],
+     "left": [
       [
-       0.5526,
-       0.966
-      ]
-     ],
-     "left": [],
-     "right": [
-      [
-       0.5456,
+       0.4493,
        0.646
       ]
-     ]
+     ],
+     "right": []
     },
     "prov": 0.156,
     "cuts": [
      [
       0.25,
       "media/cotfly/pop@0.25x.webp",
-      296
+      300
      ],
      [
       0.5,
       "media/cotfly/pop@0.5x.webp",
-      591
+      600
      ]
     ],
     "cast": {
      "src": "media/cotfly/cast.webp",
      "box": [
-      0.1339,
-      0.1546,
-      1.0905,
-      0.7861
+      -0.0834,
+      0.1261,
+      1.0864,
+      0.7638
      ],
-     "w": 615,
-     "h": 406
+     "w": 620,
+     "h": 338
+    },
+    "glow": {
+     "src": "media/cotfly/glow.webp",
+     "hi": "media/cotfly/glow@2x.webp"
     }
    },
    "logo": {
     "src": "media/cotfly/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "c-turret",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "ex-console",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/cotfly/alt/ex-console/pop.webp",
+      "hi": "media/cotfly/alt/ex-console/pop@2x.webp",
+      "w": 2364,
+      "h": 1529,
+      "lw": 1182,
+      "box": [
+       0.152,
+       0.152,
+       0.9611,
+       0.6753
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.6033,
+         0.732
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/cotfly/alt/ex-console/pop@0.25x.webp",
+        296
+       ],
+       [
+        0.5,
+        "media/cotfly/alt/ex-console/pop@0.5x.webp",
+        591
+       ]
+      ],
+      "cast": {
+       "src": "media/cotfly/alt/ex-console/cast.webp",
+       "box": [
+        0.1403,
+        0.1478,
+        0.9878,
+        0.7091
+       ],
+       "w": 619,
+       "h": 410
+      }
+     }
+    }
+   ]
   },
   "relay": {
    "window": {
@@ -1391,54 +2452,107 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/relay/pop.webp",
     "hi": "media/relay/pop@2x.webp",
-    "w": 1641,
-    "h": 1057,
-    "lw": 820,
+    "w": 1632,
+    "h": 1104,
+    "lw": 816,
     "box": [
-     0.0895,
-     0.1405,
-     0.91,
-     0.669
+     0.095,
+     0.129,
+     0.911,
+     0.681
     ],
     "cross": {
      "foot": [
       [
-       0.5955,
+       0.5994,
        0.7983
       ]
      ],
      "left": [],
      "right": []
     },
-    "prov": null,
+    "prov": 0.06,
     "cuts": [
      [
       0.25,
       "media/relay/pop@0.25x.webp",
-      205
+      204
      ],
      [
       0.5,
       "media/relay/pop@0.5x.webp",
-      410
+      408
      ]
     ],
     "cast": {
      "src": "media/relay/cast.webp",
      "box": [
-      0.079,
-      0.1375,
-      0.9355,
-      0.7018
+      0.0845,
+      0.126,
+      0.9365,
+      0.714
      ],
-     "w": 428,
-     "h": 282
+     "w": 426,
+     "h": 294
     }
    },
    "logo": {
     "src": "media/relay/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "1103-pm",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "r9-r17",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/relay/alt/r9-r17/pop.webp",
+      "hi": "media/relay/alt/r9-r17/pop@2x.webp",
+      "w": 1704,
+      "h": 1052,
+      "lw": 852,
+      "box": [
+       0.096,
+       0.154,
+       0.8798,
+       0.6379
+      ],
+      "cross": {
+       "foot": [],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.2625,
+      "cuts": [
+       [
+        0.25,
+        "media/relay/alt/r9-r17/pop@0.25x.webp",
+        213
+       ],
+       [
+        0.5,
+        "media/relay/alt/r9-r17/pop@0.5x.webp",
+        426
+       ]
+      ],
+      "cast": {
+       "src": "media/relay/alt/r9-r17/cast.webp",
+       "box": [
+        0.0851,
+        0.1506,
+        0.9057,
+        0.6713
+       ],
+       "w": 446,
+       "h": 283
+      }
+     }
+    }
+   ]
   },
   "princeton-td": {
    "window": {
@@ -1473,40 +2587,27 @@ globalThis.MEDIA = {
     "h": 1204,
     "lw": 992,
     "box": [
-     0.019,
-     0.118,
-     1.011,
-     0.72
+     0.102,
+     0.134,
+     0.9948,
+     0.6758
     ],
     "cross": {
      "foot": [
       [
-       0.6189,
-       0.6228
+       0.6384,
+       0.7281
       ],
       [
-       0.6306,
-       0.7008
-      ],
-      [
-       0.771,
-       0.9036
+       0.7944,
+       0.8841
       ]
      ],
-     "left": [
-      [
-       0.5184,
-       0.533
-      ],
-      [
-       0.5749,
-       0.6083
-      ]
-     ],
+     "left": [],
      "right": [
       [
-       0.4263,
-       0.5163
+       0.3908,
+       0.487
       ]
      ]
     },
@@ -1526,10 +2627,10 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/princeton-td/cast.webp",
      "box": [
-      0.0065,
-      0.113,
-      1.0385,
-      0.755
+      0.0915,
+      0.131,
+      1.0203,
+      0.7088
      ],
      "w": 516,
      "h": 321
@@ -1547,7 +2648,86 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/princeton-td/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "final",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "a3",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/princeton-td/alt/a3/pop.webp",
+      "hi": "media/princeton-td/alt/a3/pop@2x.webp",
+      "w": 2258,
+      "h": 1069,
+      "lw": 1129,
+      "box": [
+       -0.036,
+       0.15,
+       1.052,
+       0.6651
+      ],
+      "cross": {
+       "foot": [],
+       "left": [
+        [
+         0.1983,
+         0.2192
+        ],
+        [
+         0.3698,
+         0.4389
+        ],
+        [
+         0.5016,
+         0.5665
+        ]
+       ],
+       "right": [
+        [
+         0.215,
+         0.2632
+        ],
+        [
+         0.3071,
+         0.4368
+        ],
+        [
+         0.464,
+         0.646
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/princeton-td/alt/a3/pop@0.25x.webp",
+        282
+       ],
+       [
+        0.5,
+        "media/princeton-td/alt/a3/pop@0.5x.webp",
+        564
+       ]
+      ],
+      "cast": {
+       "src": "media/princeton-td/alt/a3/cast.webp",
+       "box": [
+        -0.0478,
+        0.1457,
+        1.0788,
+        0.6994
+       ],
+       "w": 584,
+       "h": 287
+      }
+     }
+    }
+   ]
   },
   "kevin-wiki": {
    "window": {
@@ -1578,72 +2758,140 @@ globalThis.MEDIA = {
    "pop": {
     "src": "media/kevin-wiki/pop.webp",
     "hi": "media/kevin-wiki/pop@2x.webp",
-    "w": 2400,
-    "h": 1312,
-    "lw": 1200,
+    "w": 2021,
+    "h": 1111,
+    "lw": 1010,
     "box": [
-     -0.052,
-     0.146,
-     1.052,
-     0.7495
+     0.0157,
+     0.15,
+     0.9858,
+     0.6833
     ],
     "cross": {
      "foot": [
       [
-       0.7749,
-       0.8802
+       0.7086,
+       0.7632
       ]
      ],
      "left": [
       [
-       0.1857,
-       0.2904
-      ],
-      [
-       0.3636,
-       0.5372
+       0.3134,
+       0.5205
       ]
      ],
      "right": [
       [
-       0.2025,
-       0.3217
-      ],
-      [
-       0.4075,
-       0.5498
+       0.305,
+       0.3364
       ]
      ]
     },
-    "prov": null,
+    "prov": 0.156,
     "cuts": [
      [
       0.25,
       "media/kevin-wiki/pop@0.25x.webp",
-      300
+      252
      ],
      [
       0.5,
       "media/kevin-wiki/pop@0.5x.webp",
-      600
+      505
      ]
     ],
     "cast": {
      "src": "media/kevin-wiki/cast.webp",
      "box": [
-      -0.0629,
-      0.1426,
-      1.0779,
-      0.7829
+      0.004,
+      0.1458,
+      1.0125,
+      0.7182
      ],
-     "w": 620,
-     "h": 348
+     "w": 525,
+     "h": 298
     }
    },
    "logo": {
     "src": "media/kevin-wiki/logo.svg",
     "kind": "emblem"
-   }
+   },
+   "printings": [
+    {
+     "label": "ex5",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "studio",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/kevin-wiki/alt/studio/pop.webp",
+      "hi": "media/kevin-wiki/alt/studio/pop@2x.webp",
+      "w": 2400,
+      "h": 1312,
+      "lw": 1200,
+      "box": [
+       -0.052,
+       0.144,
+       1.052,
+       0.7475
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7749,
+         0.8724
+        ]
+       ],
+       "left": [
+        [
+         0.1837,
+         0.2883
+        ],
+        [
+         0.3615,
+         0.5351
+        ]
+       ],
+       "right": [
+        [
+         0.2004,
+         0.3196
+        ],
+        [
+         0.4054,
+         0.5477
+        ]
+       ]
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/kevin-wiki/alt/studio/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/kevin-wiki/alt/studio/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/kevin-wiki/alt/studio/cast.webp",
+       "box": [
+        -0.0629,
+        0.1406,
+        1.0779,
+        0.7809
+       ],
+       "w": 620,
+       "h": 348
+      }
+     }
+    }
+   ]
   },
   "ariadne": {
    "pop": {
@@ -1765,7 +3013,74 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/atlas/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "live",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "11-02-pm",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/atlas/alt/11-02-pm/pop.webp",
+      "hi": "media/atlas/alt/11-02-pm/pop@2x.webp",
+      "w": 2288,
+      "h": 1247,
+      "lw": 1144,
+      "box": [
+       0.052,
+       0.15,
+       1.0263,
+       0.681
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.8334,
+         0.966
+        ]
+       ],
+       "left": [],
+       "right": [
+        [
+         0.3092,
+         0.4598
+        ],
+        [
+         0.4933,
+         0.646
+        ]
+       ]
+      },
+      "prov": 0.3075,
+      "cuts": [
+       [
+        0.25,
+        "media/atlas/alt/11-02-pm/pop@0.25x.webp",
+        286
+       ],
+       [
+        0.5,
+        "media/atlas/alt/11-02-pm/pop@0.5x.webp",
+        572
+       ]
+      ],
+      "cast": {
+       "src": "media/atlas/alt/11-02-pm/cast.webp",
+       "box": [
+        0.0408,
+        0.1463,
+        1.0525,
+        0.7152
+       ],
+       "w": 594,
+       "h": 334
+      }
+     }
+    }
+   ]
   },
   "dedalus-terminal": {
    "pop": {
@@ -1775,27 +3090,22 @@ globalThis.MEDIA = {
     "h": 1022,
     "lw": 841,
     "box": [
-     0.152,
-     0.193,
-     0.993,
-     0.704
+     0.08,
+     0.182,
+     0.921,
+     0.693
     ],
     "cross": {
      "foot": [
       [
-       0.8685,
-       0.9621
+       0.7944,
+       0.8919
       ]
      ],
      "left": [],
-     "right": [
-      [
-       0.4326,
-       0.556
-      ]
-     ]
+     "right": []
     },
-    "prov": 0.156,
+    "prov": 0.1725,
     "cuts": [
      [
       0.25,
@@ -1811,10 +3121,10 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/dedalus-terminal/cast.webp",
      "box": [
-      0.1415,
-      0.19,
-      1.0185,
-      0.7386
+      0.0695,
+      0.179,
+      0.9465,
+      0.7276
      ],
      "w": 438,
      "h": 274
@@ -1829,7 +3139,60 @@ globalThis.MEDIA = {
     "src": "media/dedalus-terminal/logo.svg",
     "kind": "logo",
     "ground": "#0a1418"
-   }
+   },
+   "printings": [
+    {
+     "label": "studio",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "ex2",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/dedalus-terminal/alt/ex2/pop.webp",
+      "hi": "media/dedalus-terminal/alt/ex2/pop@2x.webp",
+      "w": 2097,
+      "h": 1240,
+      "lw": 1048,
+      "box": [
+       0.054,
+       0.15,
+       0.9484,
+       0.6789
+      ],
+      "cross": {
+       "foot": [],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.4325,
+      "cuts": [
+       [
+        0.25,
+        "media/dedalus-terminal/alt/ex2/pop@0.25x.webp",
+        262
+       ],
+       [
+        0.5,
+        "media/dedalus-terminal/alt/ex2/pop@0.5x.webp",
+        524
+       ]
+      ],
+      "cast": {
+       "src": "media/dedalus-terminal/alt/ex2/cast.webp",
+       "box": [
+        0.0427,
+        0.1462,
+        0.9747,
+        0.7129
+       ],
+       "w": 546,
+       "h": 332
+      }
+     }
+    }
+   ]
   },
   "ommc": {
    "pop": {
@@ -1882,73 +3245,170 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/ommc/logo.webp",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "live",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "11-03-am",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/ommc/alt/11-03-am/pop.webp",
+      "hi": "media/ommc/alt/11-03-am/pop@2x.webp",
+      "w": 2322,
+      "h": 1208,
+      "lw": 1161,
+      "box": [
+       0.118,
+       0.222,
+       0.9137,
+       0.6359
+      ],
+      "cross": {
+       "foot": [],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/ommc/alt/11-03-am/pop@0.25x.webp",
+        290
+       ],
+       [
+        0.5,
+        "media/ommc/alt/11-03-am/pop@0.5x.webp",
+        580
+       ]
+      ],
+      "cast": {
+       "src": "media/ommc/alt/11-03-am/cast.webp",
+       "box": [
+        0.1063,
+        0.2178,
+        0.9404,
+        0.6705
+       ],
+       "w": 608,
+       "h": 330
+      }
+     }
+    }
+   ]
   },
   "podium": {
    "pop": {
     "src": "media/podium/pop.webp",
     "hi": "media/podium/pop@2x.webp",
-    "w": 2400,
-    "h": 1692,
-    "lw": 1200,
+    "w": 1973,
+    "h": 1189,
+    "lw": 987,
     "box": [
-     -0.052,
-     0.09,
-     0.884,
-     0.7499
+     0.116,
+     0.184,
+     0.8698,
+     0.6383
     ],
     "cross": {
-     "foot": [
-      [
-       0.7593,
-       0.8217
-      ]
-     ],
-     "left": [
-      [
-       0.3155,
-       0.3468
-      ],
-      [
-       0.3698,
-       0.3803
-      ],
-      [
-       0.4242,
-       0.4724
-      ]
-     ],
+     "foot": [],
+     "left": [],
      "right": []
     },
-    "prov": null,
+    "prov": 0.06,
     "cuts": [
      [
       0.25,
       "media/podium/pop@0.25x.webp",
-      300
+      247
      ],
      [
       0.5,
       "media/podium/pop@0.5x.webp",
-      600
+      494
      ]
     ],
     "cast": {
      "src": "media/podium/cast.webp",
      "box": [
-      -0.0632,
-      0.0863,
-      0.9102,
-      0.7836
+      0.1052,
+      0.1806,
+      0.8956,
+      0.6704
      ],
-     "w": 624,
-     "h": 447
+     "w": 518,
+     "h": 321
     }
    },
    "logo": {
     "src": "media/podium/logo.webp",
     "kind": "favicon"
-   }
+   },
+   "printings": [
+    {
+     "label": "ex5",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "studio",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/podium/alt/studio/pop.webp",
+      "hi": "media/podium/alt/studio/pop@2x.webp",
+      "w": 2400,
+      "h": 1692,
+      "lw": 1200,
+      "box": [
+       0.064,
+       0.12,
+       0.9532,
+       0.7469
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7866,
+         0.7905
+        ],
+        [
+         0.8334,
+         0.8958
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/podium/alt/studio/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/podium/alt/studio/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/podium/alt/studio/cast.webp",
+       "box": [
+        0.0522,
+        0.1157,
+        0.98,
+        0.7812
+       ],
+       "w": 626,
+       "h": 449
+      }
+     }
+    }
+   ]
   },
   "sandbox-arena": {
    "pop": {
@@ -1958,40 +3418,27 @@ globalThis.MEDIA = {
     "h": 1115,
     "lw": 1131,
     "box": [
-     -0.0655,
-     0.17,
-     1.0655,
-     0.7275
+     -0.02,
+     0.138,
+     0.9932,
+     0.6374
     ],
     "cross": {
-     "foot": [
-      [
-       0.2056,
-       0.2446
-      ],
-      [
-       0.3733,
-       0.966
-      ]
-     ],
+     "foot": [],
      "left": [
       [
-       0.3552,
-       0.4305
+       0.3427,
+       0.3636
       ],
       [
-       0.5707,
-       0.6167
+       0.4954,
+       0.5351
       ]
      ],
      "right": [
       [
-       0.4159,
-       0.4954
-      ],
-      [
-       0.6355,
-       0.646
+       0.5602,
+       0.6
       ]
      ]
     },
@@ -2011,19 +3458,77 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/sandbox-arena/cast.webp",
      "box": [
-      -0.078,
-      0.165,
-      1.093,
-      0.7625
+      -0.0322,
+      0.1333,
+      1.0204,
+      0.6721
      ],
-     "w": 586,
-     "h": 299
+     "w": 588,
+     "h": 301
     }
    },
    "logo": {
     "src": "media/sandbox-arena/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "11-05",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "11-02-pm",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/sandbox-arena/alt/11-02-pm/pop.webp",
+      "hi": "media/sandbox-arena/alt/11-02-pm/pop@2x.webp",
+      "w": 1697,
+      "h": 999,
+      "lw": 848,
+      "box": [
+       0.086,
+       0.148,
+       0.9574,
+       0.661
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7398,
+         0.81
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": null,
+      "cuts": [
+       [
+        0.25,
+        "media/sandbox-arena/alt/11-02-pm/pop@0.25x.webp",
+        212
+       ],
+       [
+        0.5,
+        "media/sandbox-arena/alt/11-02-pm/pop@0.5x.webp",
+        424
+       ]
+      ],
+      "cast": {
+       "src": "media/sandbox-arena/alt/11-02-pm/cast.webp",
+       "box": [
+        0.075,
+        0.1445,
+        0.9834,
+        0.6953
+       ],
+       "w": 442,
+       "h": 268
+      }
+     }
+    }
+   ]
   },
   "sevenfold": {
    "pop": {
@@ -2033,23 +3538,23 @@ globalThis.MEDIA = {
     "h": 664,
     "lw": 380,
     "box": [
-     0.655,
-     0.382,
-     1.0345,
-     0.714
+     0.656,
+     0.364,
+     1.0355,
+     0.696
     ],
     "cross": {
      "foot": [
       [
-       0.6852,
-       0.966
+       0.7515,
+       0.8841
       ]
      ],
      "left": [],
      "right": [
       [
-       0.4201,
-       0.646
+       0.4912,
+       0.6146
       ]
      ]
     },
@@ -2069,10 +3574,10 @@ globalThis.MEDIA = {
     "cast": {
      "src": "media/sevenfold/cast.webp",
      "box": [
-      0.6425,
-      0.377,
-      1.062,
-      0.7486
+      0.6435,
+      0.359,
+      1.063,
+      0.7306
      ],
      "w": 210,
      "h": 186
@@ -2086,60 +3591,198 @@ globalThis.MEDIA = {
    "logo": {
     "src": "media/sevenfold/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "d-final",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "tile",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/sevenfold/alt/tile/pop.webp",
+      "hi": "media/sevenfold/alt/tile/pop@2x.webp",
+      "w": 759,
+      "h": 664,
+      "lw": 380,
+      "box": [
+       0.656,
+       0.38,
+       1.0355,
+       0.712
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.6891,
+         0.966
+        ]
+       ],
+       "left": [],
+       "right": [
+        [
+         0.4201,
+         0.646
+        ]
+       ]
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/sevenfold/alt/tile/pop@0.25x.webp",
+        95
+       ],
+       [
+        0.5,
+        "media/sevenfold/alt/tile/pop@0.5x.webp",
+        190
+       ]
+      ],
+      "cast": {
+       "src": "media/sevenfold/alt/tile/cast.webp",
+       "box": [
+        0.6435,
+        0.375,
+        1.063,
+        0.7466
+       ],
+       "w": 210,
+       "h": 186
+      },
+      "set": {
+       "src": "media/sevenfold/set@2x.webp",
+       "pos": "50% 0%",
+       "size": "100% auto"
+      }
+     }
+    }
+   ]
   },
   "sigil-ui": {
    "pop": {
     "src": "media/sigil-ui/pop.webp",
     "hi": "media/sigil-ui/pop@2x.webp",
-    "w": 1372,
-    "h": 1118,
-    "lw": 686,
+    "w": 2400,
+    "h": 1399,
+    "lw": 1200,
     "box": [
-     0.169,
-     0.1185,
-     0.855,
-     0.6775
+     0.045,
+     0.148,
+     0.952,
+     0.6767
     ],
     "cross": {
      "foot": [
       [
-       0.5682,
-       0.6696
+       0.7905,
+       0.8724
       ]
      ],
      "left": [],
      "right": []
     },
-    "prov": null,
+    "prov": 0.156,
     "cuts": [
      [
       0.25,
       "media/sigil-ui/pop@0.25x.webp",
-      172
+      300
      ],
      [
       0.5,
       "media/sigil-ui/pop@0.5x.webp",
-      343
+      600
      ]
     ],
     "cast": {
      "src": "media/sigil-ui/cast.webp",
      "box": [
-      0.1565,
-      0.1135,
-      0.8825,
-      0.7135
+      0.0344,
+      0.1449,
+      0.9776,
+      0.7102
      ],
-     "w": 363,
-     "h": 300
+     "w": 624,
+     "h": 374
+    },
+    "glow": {
+     "src": "media/sigil-ui/glow.webp",
+     "hi": "media/sigil-ui/glow@2x.webp"
     }
    },
    "logo": {
     "src": "media/sigil-ui/logo.svg",
     "kind": "logo"
-   }
+   },
+   "printings": [
+    {
+     "label": "final",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "a-burst",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/sigil-ui/alt/a-burst/pop.webp",
+      "hi": "media/sigil-ui/alt/a-burst/pop@2x.webp",
+      "w": 2400,
+      "h": 1399,
+      "lw": 1200,
+      "box": [
+       0.0325,
+       0.176,
+       0.9675,
+       0.721
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.5604,
+         0.6774
+        ],
+        [
+         0.7203,
+         0.7827
+        ],
+        [
+         0.7905,
+         0.8724
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.156,
+      "cuts": [
+       [
+        0.25,
+        "media/sigil-ui/alt/a-burst/pop@0.25x.webp",
+        300
+       ],
+       [
+        0.5,
+        "media/sigil-ui/alt/a-burst/pop@0.5x.webp",
+        600
+       ]
+      ],
+      "cast": {
+       "src": "media/sigil-ui/alt/a-burst/cast.webp",
+       "box": [
+        0.0213,
+        0.1723,
+        0.9937,
+        0.7551
+       ],
+       "w": 624,
+       "h": 374
+      }
+     }
+    }
+   ]
   },
   "previous-site": {
    "name": "Previous site",
