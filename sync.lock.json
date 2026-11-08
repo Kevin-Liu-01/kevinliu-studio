@@ -1,11 +1,11 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
  "head": "30e69931",
- "synced": "2026-11-07T16:50:33.601Z",
+ "synced": "2026-11-08T18:18:41.334Z",
  "stages": {
   "cards": {
    "files": 1031,
-   "bytes": 107516280,
+   "bytes": 107516253,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -14,8 +14,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "a355bc84505bb66f8b39d1aab322b428f55de1f406a2a570c108099713b26582",
-     "bytes": 142940
+     "sha256": "dc4a53a807940ba60fd64ae1b5b53c82b8cac65af2ffea8e50b0112c1610c944",
+     "bytes": 142913
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",

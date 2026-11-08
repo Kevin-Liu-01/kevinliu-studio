@@ -367,7 +367,7 @@
 }
 .card :is(.trait, .move) { position: relative; display: none; padding: 0 2.2cqw 0 1.8cqw; column-gap: 0; margin: 0; }
 .card :is(.trait, .move) > * { position: relative; z-index: 7; }
-.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto; align-items: center; }
+.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto; align-items: center; }
 /* the trait and cost chips: ink plates 0.076W wide with a 0.015W slanted end like a stroke terminal (frame C), so every
    name after one starts on 0.156W. The trait's plate carries its name too, light on the ink, like the wall's ability
    label: a subject that steps over the foot passes behind the plate and never under the name's own ink */
@@ -397,7 +397,7 @@
    column's width, and filled, its first line ran under the subjects that cross the window's foot (E6b, 24 cards in
    context with subject pixels on that line's keep-out, 0 balanced)) */
 .card .tr { text-wrap: balance; }
-.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto; align-items: center; }
+.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; align-items: center; }
 /* a block's last words, kept together (markup.js kept()) */
 .card .kw { white-space: nowrap; }
 .card .mc svg.i { width: 4.7cqw; height: 4.7cqw; } /* 0.047W: 9 px from 192, where the row shows */
@@ -408,7 +408,7 @@
 /* ---------- the footer: weak, resist and cost on a smoked strip, 1.214W to 1.271W; the first icon on 0.066W, the cost
    pips ending on 0.930W ---------- */
 .card .foot { position: absolute; left: 3.4cqw; right: 3.4cqw; top: 121.4cqw; height: 5.7cqw; box-sizing: border-box; padding: 0 3.6cqw 0 3.2cqw;
-  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }
+  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }
 .card .foot::before, .card .no::before { border-radius: 1.2cqw; }
 .card .foot > * { position: relative; z-index: 7; display: flex; align-items: center; gap: 0.4cqw; color: var(--white); white-space: nowrap; }
 .card .foot svg.i { width: 4.5cqw; height: 4.5cqw; }
@@ -1024,7 +1024,6 @@
 .card.dz[data-fam="B"] :is(.mn, .mp) { background: var(--pp); padding: 1cqw 1.2cqw; }
 .card.dz[data-fam="B"] .mn { margin-left: 0.2cqw; }
 .card.dz[data-fam="B"] .mp { margin-right: -1.2cqw; }
-.card.dz[data-fam="B"] .move .md { margin-top: 1.2cqw; }
 .card.dz[data-fam="B"] .what::before { border-radius: 2.6cqw; }
 .card.dz[data-fam="B"] :is(.foot, .no)::before { border-radius: 2.8cqw; }
 

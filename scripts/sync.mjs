@@ -196,11 +196,17 @@ const TRANSFORMS = {
   'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),
   // family K's rule under each power's name is set 4.9cqw down its row, and WebKit sets the row's first text line higher
   // than Chromium does, so in Safari the rule struck through that line (release 11-07 ship checks); the rule is left out.
-  // Family B bands each description line, and in WebKit the first line's band rose 4 px over the bottom of the power's
-  // name and points above it (Claude of Tanks' "Sabot Round"); the description sits 1.2cqw lower, the row grows to fit
+  // A trait's and a move's head row was `grid-template-rows: 4.9cqw auto`, and WebKit resolves cqw in a grid track
+  // against half the card's width (6 px for 12 at 244 px), so every description started 6 px up into its name; family
+  // B's opaque line bands then hid the names' lower half in Safari. An auto head row takes the name's own 4.9cqw height
+  // (which WebKit resolves correctly): Chromium's rows are unchanged and Safari's match them (release 11-07 ship checks).
+  // The foot row's `31cqw 28cqw 1fr` columns met the same bug, so Safari printed "x1.5" over the resistance icons on
+  // every card; they are the same widths as shares of the foot's content box (100cqw less 6.8 of inset and 6.8 of padding)
   'public/ex/card.css': (t) => patch('card.css', t, [
     ['background: linear-gradient(color-mix(in oklab, var(--k) 82%, transparent), color-mix(in oklab, var(--k) 82%, transparent)) 2.4cqw 4.9cqw / calc(100% - 4.8cqw) 0.3cqw no-repeat,\n    linear-gradient(', 'background: linear-gradient('],
-    ['.card.dz[data-fam="B"] .mp { margin-right: -1.2cqw; }\n', after('.card.dz[data-fam="B"] .move .md { margin-top: 1.2cqw; }\n')],
+    ['.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto;', '.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto;'],
+    ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
+    ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
   ]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
