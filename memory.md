@@ -258,3 +258,34 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   38/37 against 36/34, Machine 26/26 against 22/22; pictures and canvas equal. HTML: home 43.5 to 50.6 KB gzip.
 - **Open**: the battle pages' Machine view (a switch in r4/play's rail; engine state is readable without `?debug`
   through `window.showdown` and the address); Kevin to look at the terminal; not merged into a release.
+
+## 2026-11-09: the next release assembled and checked (release/next, Claude Code)
+
+- **Type**: release (candidate, not pushed)
+- **Asked**: the release session (from Kevin's 11-08 queue): battle round 5 with sound, the Machine view as a terminal
+  (Kevin, 11-09, on the look: "Looks right"), the cleanups listed under "Open (next release)" above.
+- **Assembled** on release/next from origin/main cc54526: aa2fa26 (machine/next, a fast-forward), 0a225f9 (battle round 5
+  from rounds 42ff51c7, r4/play only; sync pins per stage; the guard pairs each card with its own template), 9308b05
+  (card cleanups), 84ccb1c and 1eb1c0f (ship-check fixes). Synced from ~/k7-rescue/release-next/rounds-42ff51c7 (the
+  11-07 export of 30e69931 with r4/play from git archive 42ff51c7); the lock records the checkout, head and pins.
+- **Cleanups**: the framed template now holds only what the framed print adds and points at the rest (`<b data-same>`
+  paths, rebuilt and compared at build; home 455 to 338 KB raw, about 2 KB less gzipped, 117 KB less HTML parsed on a
+  phone); frames.gen.js and frames.js no longer load anywhere (the frame row is hidden on every device; printings.js
+  stays, phones' art row uses it, so the 11-08 note's 77 KB was 70); desktop fetches no -fx.webp (data-plainfx; lazy
+  alone did not stop Chromium); the guard's template check is per card; the sync pins a rounds commit per stage and a
+  file the pin lacks ships only as the lock records it (`--admit-unpinned`).
+- **Ship-check fixes**: the battle rail under 360 px (Leave ran 15 px off at 320); sound.js's unlock() before any gesture
+  no longer fetches the kit (~240 files, 2.3 MB on /battle, a round bug the round's own page shares); FRAMED keeps the
+  plain print if a path fails; fit()'s checkVisibility guard.
+- **Checked** (Agent checks, every finding adversarially verified; evidence ~/k7-rescue/release-next/checks/, log
+  STATUS.md there): memory, layout, cards, battle, review on 9308b05, then a recheck and a memory recheck on 1eb1c0f.
+  Nothing blocking. Desktop framed and phone walls 0 px from production; CLS 0; the Machine switch moves nothing; all
+  26 lenses whole at 320 to 1440; auto matches finish in Mat and Arena at 1440 and 390; iPhone 14 wall WebContent within
+  1.5% of production, GPU spikes noise (5 pairs, p 0.62); battle WebContent -1% to +20% of production with no tap, about
+  +100 to 150 MB once a tap loads the sound kit (under 600 MB), GPU at or below production. Not real: "the speed setting
+  does nothing" (the harness timed with pace.js's patched performance.now; 2x is 1.9x faster in real time).
+- **Preview**: kevinliu-studio-doha0b2ro (dpl_Hb8Nt8pWpz2puvDdkKLYh8rFvdzt), git archive of 1eb1c0f; smoke and
+  check-seo pass. Rollback target: kevinliu-studio-ai52pppxd (cc54526).
+- **Open**: pushing main needs Kevin's yes. Minor, not blocking: the battle defines 17 icon ids twice (identical
+  copies); with ?auto=1 and no gesture the battle still fetches each scene's cues (34 files, 216 KB in 20 s); the
+  rounds should take the sound.js and 320 px rail fixes upstream; the 26-card battle still waits on the kit rebuild.
