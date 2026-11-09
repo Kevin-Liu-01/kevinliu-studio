@@ -1,0 +1,623 @@
+/* The battle's information layer (round 5, shared/hud.js): the plates, the battle log, the multiplier call-out, the
+   tooltip and the console's richer rows. Both rooms: the Mat's light clay and the Arena's dark clay come from the
+   room tokens (--room-clay, --ink, ...), so one sheet serves both. Green is better for the card it sits on, red is
+   worse; every coloured chip also carries an arrow and its number, so the meaning never rests on colour alone. */
+:root {
+  --up: oklch(52% 0.15 150); --up-ink: oklch(42% 0.13 150); --up-soft: oklch(52% 0.15 150 / .13);
+  --down: oklch(54% 0.2 27); --down-ink: oklch(47% 0.19 27); --down-soft: oklch(54% 0.2 27 / .12);
+  --crit: oklch(70% 0.16 80); --crit-ink: oklch(45% 0.11 75);
+  --you: oklch(55% 0.15 255);
+  --hp-ok: oklch(66% 0.17 150); --hp-mid: oklch(78% 0.15 85); --hp-low: oklch(60% 0.21 27);
+  --hud-shadow: var(--room-raise-m);
+}
+:root[data-theme="dark"] {
+  --up: oklch(60% 0.15 150); --up-ink: oklch(80% 0.16 150); --up-soft: oklch(70% 0.16 150 / .16);
+  --down: oklch(58% 0.19 27); --down-ink: oklch(76% 0.15 27); --down-soft: oklch(65% 0.19 27 / .17);
+  --crit-ink: oklch(84% 0.14 85);
+  --you: oklch(70% 0.13 255);
+}
+.bi { width: 16px; height: 16px; flex: none; display: block; }
+.hud { position: absolute; inset: 0; z-index: 22; pointer-events: none; }
+.hud, .hud *, .tip, .tip * { box-sizing: border-box; }
+.hud > * { pointer-events: auto; }
+.hud [data-tip] { cursor: help; }
+.hud [data-tip]:focus-visible { outline: 2px solid var(--you); outline-offset: 1px; border-radius: 6px; }
+/* while a full scene holds the screen the board's information steps back (the scene's own HUD rides the top matte) */
+#app[data-scene]:not([data-band]) .hud :is(.plate, .blog) { opacity: 0; transition: opacity .12s; pointer-events: none; }
+#app[data-scene][data-band] .hud .plate { opacity: .92; }
+.hud :is(.plate, .blog) { transition: opacity .2s .1s; }
+
+/* ============================================================ the multiplier chip, everywhere a multiplier applies */
+.hx { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px 2px 4px; border-radius: 6px; font: 800 12px/1.1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; vertical-align: 1px; }
+.hx .bi { width: 12px; height: 12px; }
+.hx i { font: 600 11.5px/1.1 var(--sans); font-style: normal; opacity: .9; }
+.hx[data-tone="up"] { background: var(--up-soft); color: var(--up-ink); }
+.hx[data-tone="down"] { background: var(--down-soft); color: var(--down-ink); }
+.hx[data-tone="even"] { background: var(--room-fill); color: var(--ink-2); }
+.hx[data-tone="crit"] { background: oklch(80% 0.15 85 / .2); color: var(--crit-ink); }
+
+/* ============================================================ the plates: the card in play, its numbers and its changes */
+.plate {
+  position: absolute; left: 0; top: 0; width: 272px; display: grid; gap: 7px; padding: 10px 12px 10px; border-radius: 14px;
+  background: var(--room-clay); color: var(--ink); box-shadow: var(--hud-shadow); font: 500 13px/1.2 var(--sans);
+}
+.plate::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c, var(--ink-3)); }
+.plate[data-side="rival"]::before { left: auto; right: 0; border-radius: 3px 0 0 3px; }
+.plate[data-at="corner"][data-side="rival"] { translate: 16px calc(var(--rail-h, 64px) + 8px); }
+.plate[data-at="corner"][data-side="player"] { left: auto; right: 16px; top: auto; bottom: calc(var(--console-h, 128px) + 30px); }
+.pl-head { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.pl-side { flex: none; padding: 3px 6px; border-radius: 5px; font: 800 10.5px/1 var(--sans); letter-spacing: .02em; color: #fff; background: var(--you); }
+.plate[data-side="rival"] .pl-side { background: var(--rival); }
+.pl-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 16px/1.1 var(--sans); }
+.pl-disc { margin-left: auto; display: flex; gap: 3px; flex: none; }
+.pd { display: inline-grid; place-items: center; width: 24px; height: 24px; padding: 0; border-radius: 999px; background: color-mix(in oklch, var(--d) 22%, transparent); color: var(--ink); font: 700 11px/1 var(--sans); }
+.pd .i { width: 14px; height: 14px; color: var(--d); }
+.plate[data-compact="true"] .pd i { display: none; }
+.plate[data-compact="true"] .pd { padding: 2px; }
+.pl-hp { position: relative; height: 22px; border-radius: 7px; overflow: hidden; background: oklch(30% 0.01 75 / .16); box-shadow: inset 0 1px 2px oklch(0% 0 0 / .18); }
+:root[data-theme="dark"] .pl-hp { background: oklch(10% 0.01 75 / .6); }
+.pl-hp > i { position: absolute; inset: 0; transform-origin: 0 50%; }
+.pl-ghost { background: oklch(88% 0.09 60); }
+:root[data-theme="dark"] .pl-ghost { background: oklch(70% 0.1 50); }
+.pl-fill { background: var(--hp-ok); transition: background-color .2s; }
+.pl-hp[data-band="mid"] .pl-fill { background: var(--hp-mid); }
+.pl-hp[data-band="low"] .pl-fill { background: var(--hp-low); }
+.pl-hpnum { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 8px; gap: 2px; font: 800 14px/1 var(--sans); font-variant-numeric: tabular-nums; color: oklch(14% 0.01 75); white-space: pre; }
+.pl-hpnum small { font: 700 11.5px/1 var(--sans); opacity: .78; }
+.pl-chips { display: flex; flex-wrap: wrap; gap: 4px; min-height: 24px; }
+.pc { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 7px 0 5px; border-radius: 7px; font: 800 12px/1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pc .i, .pc .bi { width: 14px; height: 14px; }
+.pc i { font: 700 11px/1 var(--sans); font-style: normal; opacity: .85; }
+.pc[data-tone="up"] { background: var(--up-soft); color: var(--up-ink); }
+.pc[data-tone="down"] { background: var(--down-soft); color: var(--down-ink); }
+.pc[data-tone="status"] { background: var(--s); color: #fff; }
+.pc[data-tone="stat"] { background: var(--room-fill); color: var(--ink); }
+.pc[data-tone="stat"] .i { color: var(--ink-2); }
+.pl-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.pt { display: inline-flex; align-items: center; gap: 4px; min-width: 0; color: var(--ink-2); font: 700 12px/1 var(--sans); }
+.pt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl-team { display: flex; gap: 4px; flex: none; }
+.tp { position: relative; width: 16px; height: 16px; border-radius: 50%; display: grid; place-items: center; box-shadow: inset 0 0 0 2px var(--c); }
+.tp i { width: 8px; height: 8px; border-radius: 50%; background: var(--hp-ok); }
+.tp[data-band="mid"] i { background: var(--hp-mid); }
+.tp[data-band="low"] i { background: var(--hp-low); }
+.tp[data-band="out"] { box-shadow: inset 0 0 0 2px var(--ink-3); color: var(--ink-3); }
+.tp[data-band="out"] .bi { width: 14px; height: 14px; }
+.tp[data-on="true"] { outline: 2px solid var(--ink); outline-offset: 1px; }
+.tp em { position: absolute; right: -2px; top: -2px; width: 7px; height: 7px; border-radius: 50%; background: var(--s); box-shadow: 0 0 0 1.5px var(--room-clay); }
+.pl-kit { display: flex; align-items: center; gap: 2px; padding-top: 6px; border-top: 1px solid oklch(42% 0.035 70 / .14); }
+:root[data-theme="dark"] .pl-kit { border-top-color: oklch(100% 0 0 / .08); }
+.pk-left { white-space: nowrap; display: inline-flex; align-items: center; gap: 3px; margin-right: 4px; font: 800 12px/1 var(--sans); }
+.pk-left i { font: 600 11px/1 var(--sans); font-style: normal; color: var(--ink-2); }
+.pk { width: 18px; height: 20px; display: grid; place-items: center; border-radius: 5px; color: var(--ink-2); }
+.pk .bi { width: 14px; height: 14px; }
+.pk[data-used="true"] { opacity: .3; }
+.plate[data-compact="true"] .pl-kit .pk { display: none; }
+.plate[data-compact="true"] { gap: 6px; padding: 9px 10px; }
+.plate[data-compact="true"] .pl-hpnum small { display: none; }
+
+/* ============================================================ the battle log */
+.blog { position: absolute; left: 0; top: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); border-radius: 16px; background: var(--room-clay); color: var(--ink); box-shadow: var(--hud-shadow); overflow: hidden; }
+.blog-head { display: flex; align-items: center; gap: 7px; padding: 11px 14px 9px; font: 800 14px/1 var(--sans); border-bottom: 1px solid oklch(42% 0.035 70 / .14); }
+:root[data-theme="dark"] .blog-head { border-bottom-color: oklch(100% 0 0 / .08); }
+.blog-turn { margin-left: auto; font: 700 12px/1 var(--sans); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.blog-list, dialog#log ol { list-style: none; margin: 0; padding: 6px 8px 12px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; display: grid; align-content: start; gap: 2px; }
+.lg-turn { display: flex; align-items: center; gap: 6px; margin: 8px 0 3px; padding: 0 6px; font: 800 11.5px/1 var(--sans); color: var(--ink-2); }
+.lg-turn::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .25; }
+.lg-turn:first-child { margin-top: 2px; }
+.lg { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 2px 7px; align-items: start; padding: 4px 6px; border-radius: 8px; font: 500 12.5px/1.35 var(--sans); }
+.lg[data-side="rival"] { background: oklch(52% 0.19 30 / .06); }
+.lg-i { color: var(--ink-2); padding-top: 1px; }
+.lg-i .i, .lg-i .bi { width: 15px; height: 15px; }
+.lg-t { min-width: 0; }
+.lg-t small { color: var(--ink-2); font-weight: 600; }
+.lg-side { font: 800 10px/1 var(--sans); font-style: normal; padding: 2px 4px; margin-right: 4px; border-radius: 4px; color: #fff; background: var(--you); vertical-align: 1px; }
+.lg-side[data-side="rival"] { background: var(--rival); }
+.lg-mv { color: var(--ink); box-shadow: inset 0 -3px 0 color-mix(in oklch, var(--d) 55%, transparent); }
+.lg-dmg { color: var(--down-ink); font-variant-numeric: tabular-nums; }
+.lg-heal-n { color: var(--up-ink); }
+.lg-x { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.lg-st { color: var(--s); }
+.lg-ko .lg-t, .lg-result .lg-t { font-weight: 700; }
+.lg-r { grid-column: 2; display: block; font: 500 10.5px/1.3 "Katagami Mono", ui-monospace, monospace; color: var(--ink-3); white-space: normal; overflow-wrap: anywhere; }
+dialog#log .lg-r { font-size: 11.5px; }
+
+/* ============================================================ the multiplier call-out at the contact */
+.mcall { position: absolute; left: 0; top: 0; z-index: 40; display: grid; justify-items: center; gap: 6px; pointer-events: none; opacity: 0; transform: translate(-50%, -50%); }
+.mcall[data-on="true"] { opacity: 1; }
+.mcall[data-on="false"] { opacity: 0; transition: opacity .25s; }
+.mcx { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px 8px 10px; border-radius: 10px; font: 900 30px/1 var(--sans); font-variant-numeric: tabular-nums; color: #fff; box-shadow: 0 8px 24px oklch(0% 0 0 / .35), inset 0 1px 0 oklch(100% 0 0 / .25); }
+.mcx .bi { width: 26px; height: 26px; }
+.mcx i { font: 800 15px/1 var(--sans); font-style: normal; }
+.mcx[data-tone="up"] { background: var(--up); }
+.mcx[data-tone="down"] { background: var(--down); }
+.mcx[data-tone="crit"] { background: oklch(76% 0.16 80); color: oklch(18% 0.03 70); font-size: 22px; }
+
+/* ============================================================ the tooltip */
+.tip { position: fixed; left: 0; top: 0; z-index: 60; max-width: min(380px, calc(100vw - 16px)); padding: 0; border-radius: 14px; background: var(--room-clay); color: var(--ink); box-shadow: var(--room-raise-l), 0 18px 40px oklch(0% 0 0 / .22); font: 500 13px/1.35 var(--sans); pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s, visibility 0s .12s; }
+.tip[data-on="true"] { opacity: 1; visibility: visible; transition: opacity .12s; }
+/* a move's tooltip has one width whatever its words, so it is placed at the size it is drawn at */
+.tip:has(.tp-move) { width: min(380px, calc(100vw - 16px)); }
+.tip .i { width: 16px; height: 16px; }
+.tip header { display: flex; align-items: center; gap: 7px; }
+.tip header b { font: 800 16px/1.1 var(--sans); }
+.tp-cat { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; font: 700 11.5px/1 var(--sans); color: var(--ink-2); }
+.tp-small { display: grid; gap: 7px; padding: 11px 13px 12px; }
+.tp-move { display: grid; grid-template-columns: 1fr; }
+.tp-move[data-novid] .tp-vid { display: none; }
+/* a window whose move tooltips fit nowhere at full size drops their preview (hud.js moveSpot) */
+.tip[data-compact="true"] .tp-vid { display: none; }
+.tp-vid { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px 14px 0 0; background: oklch(14% 0.01 75); }
+.tp-body { display: grid; gap: 8px; padding: 11px 13px 12px; }
+.tp-d { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px 3px 4px; border-radius: 999px; background: color-mix(in oklch, var(--d) 24%, transparent); font: 700 11.5px/1 var(--sans); }
+.tp-d .i { color: var(--d); width: 15px; height: 15px; }
+.tp-d i { font-style: normal; }
+.tp-st { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; background: var(--s); color: #fff; }
+.tp-nums { display: flex; gap: 14px; }
+.tp-nums span { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); }
+.tp-nums b { color: var(--ink); font: 800 15px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.tp-nums i { font-style: normal; font: 600 11.5px/1 var(--sans); }
+.tp-nums [data-low="true"] b { color: var(--down-ink); }
+.tp-vs, .tp-fx, .tp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; }
+.tp-dmg { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.tp-dmg em { display: inline-flex; align-items: center; gap: 3px; font: 800 11.5px/1 var(--sans); font-style: normal; padding: 3px 6px; border-radius: 6px; background: var(--down-soft); color: var(--down-ink); }
+.tc { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px 3px 5px; border-radius: 6px; background: var(--room-fill); font: 700 11.5px/1.1 var(--sans); }
+.tc .bi { width: 13px; height: 13px; color: var(--s, currentColor); }
+.tc[data-tone="up"] { background: var(--up-soft); color: var(--up-ink); }
+.tc[data-tone="down"] { background: var(--down-soft); color: var(--down-ink); }
+.tp-desc, .tp-note { margin: 0; color: var(--ink-2); }
+.tp-about { margin: 0; color: var(--ink); text-wrap: pretty; }
+.tp-note { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+
+/* ============================================================ the console's rows (both rooms) */
+#app .cmove { position: relative; }
+#app .move-head .move-name { font-weight: 800; }
+#app .move-ring { width: auto; min-width: 3.4em; display: inline-flex; align-items: center; justify-content: center; gap: 2px; padding: 4px 6px; border-radius: 7px; font: 900 12.5px/1 var(--sans); box-shadow: none; }
+#app .move-ring .bi { width: 12px; height: 12px; }
+#app .cmove[data-ring="up"] .move-ring { background: var(--up); color: #fff; }
+#app .cmove[data-ring="down"] .move-ring { background: var(--down); color: #fff; box-shadow: none; }
+#app .cmove[data-ring="even"] .move-ring { background: var(--room-fill); color: var(--ink-2); }
+#app .cmove[data-ring="support"] .move-ring { background: none; color: var(--ink-3); min-width: 0; }
+#app .cmove[data-ring="up"] { box-shadow: var(--room-raise-s), inset 0 -3px 0 var(--up); }
+#app .cmove[data-ring="down"] { box-shadow: var(--room-raise-s), inset 0 -3px 0 var(--down); }
+.move-stats { display: flex; align-items: center; gap: 10px; font: 700 13px/1 var(--sans); font-variant-numeric: tabular-nums; min-width: 0; }
+.move-stats > span { display: inline-flex; align-items: center; gap: 3px; }
+.move-stats .bi { width: 14px; height: 14px; color: var(--ink-2); }
+.ms-pow[data-none="true"] { color: var(--ink-3); }
+.ms-flags { margin-left: auto; display: inline-flex; gap: 3px; color: var(--ink-2); }
+.ms-flags .bi { width: 14px; height: 14px; }
+.move-pp { display: flex; align-items: center; gap: 7px; font: 700 11.5px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.pp-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--room-fill); overflow: hidden; }
+.pp-bar i { display: block; height: 100%; background: var(--ink-2); transform-origin: 0 50%; }
+.move-pp[data-low="true"] { color: var(--down-ink); }
+.move-pp[data-low="true"] .pp-bar i { background: var(--down); }
+.move-dmg { position: absolute; right: 12px; bottom: 9px; font: 700 11px/1 var(--sans); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.move-dmg[data-ko="sure"], .move-dmg[data-ko="maybe"] { color: var(--down-ink); }
+.move-pp { padding-right: 88px; }
+.move-key { position: absolute; left: -1px; top: -1px; display: none; }
+#app[data-busy="true"] .move-dmg { visibility: hidden; }
+/* the bench and Kit rows */
+#app .panel .key.bench { display: grid; gap: 6px; min-width: 210px; align-items: stretch; }
+.bn-head { display: flex; align-items: center; gap: 5px; }
+.bn-head b { font: 800 14px/1 var(--sans); margin-right: 2px; }
+.bn-d .i { width: 15px; height: 15px; color: var(--d); }
+.bn-st { display: inline-flex; align-items: center; gap: 3px; padding: 2px 5px; border-radius: 5px; background: var(--s); color: #fff; font: 800 10.5px/1 var(--sans); }
+.bn-st .bi { width: 12px; height: 12px; }
+.bn-hp { display: block; height: 7px; border-radius: 4px; background: var(--room-fill); overflow: hidden; }
+.bn-hp i { display: block; height: 100%; background: var(--hp-ok); transform-origin: 0 50%; }
+.bn-hp[data-band="mid"] i { background: var(--hp-mid); }
+.bn-hp[data-band="low"] i { background: var(--hp-low); }
+.bn-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 700 12px/1 var(--sans); color: var(--ink-2); }
+#app .panel .key.item { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 9px; min-width: 200px; padding: 9px 12px; }
+.it-i { width: 22px; height: 22px; }
+.it-t { display: grid; gap: 3px; text-align: left; }
+.it-t b { font: 800 14px/1 var(--sans); }
+.it-t span { font: 600 12px/1 var(--sans); color: var(--ink-2); }
+.it-t em { font: 600 11px/1.2 var(--sans); font-style: normal; color: var(--down-ink); }
+.it-n { font: 800 12px/1 var(--sans); padding: 3px 6px; border-radius: 6px; background: var(--room-fill); }
+.panel-uses { display: inline-flex; align-items: center; gap: 4px; font: 700 12px/1 var(--sans); color: var(--ink-2); margin-right: auto; margin-left: 10px; }
+
+/* ============================================================ the turn tab, on the console's top edge */
+.ttab { position: absolute; left: calc(var(--console-x, 24px) + 14px); top: calc(var(--console-y, 760px) - 30px); height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px 2px 10px; border-radius: 10px 10px 0 0; background: var(--room-clay); color: var(--ink); font: 800 13px/1 var(--sans); box-shadow: 0 -2px 6px oklch(0% 0 0 / .08); white-space: nowrap; }
+.ttab .bi { width: 15px; height: 15px; color: var(--ink-2); }
+.tt-phase { padding: 3px 7px; border-radius: 6px; background: var(--you); color: #fff; font: 800 11.5px/1 var(--sans); }
+.tt-phase[data-busy="true"] { background: var(--room-fill); color: var(--ink-2); }
+.ttab[data-phase="over"] .tt-phase { background: var(--ink); color: var(--room-clay); }
+.ttab[data-phase="you"] .tt-phase { animation: tt-pulse 1.6s ease-in-out infinite; }
+@keyframes tt-pulse { 50% { box-shadow: 0 0 0 4px oklch(55% 0.15 255 / .22); } }
+.tt-first { display: inline-flex; align-items: center; gap: 4px; font: 700 12px/1 var(--sans); }
+.tt-first[data-tone="up"] { color: var(--up-ink); }
+.tt-first[data-tone="down"] { color: var(--down-ink); }
+.tt-first i { font-style: normal; color: var(--ink-2); font-weight: 600; }
+#app[data-scene] .hud .ttab { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .ttab .tt-phase { animation: none !important; } }
+:root[data-reduced="true"] .ttab .tt-phase { animation: none !important; }
+
+/* ============================================================ speed and skip */
+.speed { display: flex; align-items: center; gap: 2px; }
+.speed .key { min-width: 46px; padding: 0 9px; font-variant-numeric: tabular-nums; }
+.speed .bi { width: 16px; height: 16px; margin: 0 4px 0 6px; color: var(--ink-2); }
+.skiphint { position: absolute; z-index: 41; right: 16px; bottom: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; background: oklch(12% 0.01 75 / .72); color: #fbf7ee; font: 700 12px/1 var(--sans); pointer-events: none; opacity: 0; transition: opacity .2s; }
+.skiphint kbd { font: 800 11px/1 var(--sans); padding: 2px 5px; border-radius: 4px; background: oklch(100% 0 0 / .18); }
+#app[data-scene] .skiphint { opacity: 1; transition-delay: .4s; }
+
+/* a phone's one-line plate: side, name, the HP bar with its number, then only the chips that changed and the team */
+.plate[data-strip="true"] { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "head hp chips"; align-items: center; gap: 7px; height: 36px; padding: 0 8px 0 7px; border-radius: 10px; }
+.plate[data-strip="true"]::before { top: 8px; bottom: 8px; }
+.plate[data-strip="true"] .pl-head { grid-area: head; max-width: 128px; gap: 5px; }
+.plate[data-strip="true"] .pl-side { font-size: 9.5px; padding: 2px 4px; }
+.plate[data-strip="true"] .pl-name { font-size: 13px; }
+.plate[data-strip="true"] .pl-disc, .plate[data-strip="true"] .pl-kit, .plate[data-strip="true"] .pt { display: none; }
+.plate[data-strip="true"] .pl-hp { grid-area: hp; height: 18px; border-radius: 6px; }
+.plate[data-strip="true"] .pl-hpnum { font-size: 12px; padding: 0 6px; }
+.plate[data-strip="true"] .pl-hpnum small { font-size: 10.5px; }
+.plate[data-strip="true"] .pl-chips { grid-area: chips; min-height: 0; flex-wrap: nowrap; gap: 3px; }
+.plate[data-strip="true"] .pc[data-tone="stat"] { display: none; }
+.plate[data-strip="true"] .pc { height: 20px; padding: 0 5px 0 3px; font-size: 10.5px; }
+.plate[data-strip="true"] .pc i { display: none; }
+.plate[data-strip="true"] .pl-foot { position: absolute; right: 8px; top: -7px; }
+.plate[data-strip="true"] .tp { width: 11px; height: 11px; box-shadow: inset 0 0 0 1.5px var(--c); background: var(--room-clay); }
+.plate[data-strip="true"] .tp i { width: 5px; height: 5px; }
+.plate[data-strip="true"] .tp .bi { width: 10px; height: 10px; }
+.plate[data-strip="true"] .tp[data-on="true"] { outline-width: 1.5px; }
+@media (max-width: 719px) {
+  .speed .key:not([aria-pressed="true"]), .speed .bi { display: none; }
+  .speed .key { min-width: 44px; padding: 0 8px; }
+  .plate { width: auto; padding: 7px 9px; gap: 5px; border-radius: 11px; font-size: 12px; }
+  .pl-name { font-size: 14px; }
+  .pl-hp { height: 18px; }
+  .pl-hpnum { font-size: 12.5px; }
+  .pl-kit, .pl-foot .pt { display: none; }
+  .pc { height: 21px; font-size: 11px; }
+  .mcx { font-size: 22px; padding: 5px 10px 6px 8px; }
+  .mcx .bi { width: 20px; height: 20px; }
+  .move-stats { gap: 8px; font-size: 12px; }
+  .move-pp { padding-right: 0; }
+  .move-dmg { display: none; }
+  .skiphint { display: none; }
+  /* a phone's plate strip sits where the tab would: the turn is on the disc, the phase in the console */
+  .ttab { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .hud *, .tip, .mcall { transition: none !important; } }
+:root[data-reduced="true"] :is(.hud *, .tip, .mcall) { transition: none !important; }
+
+/* the board's damage number: its ring tag in the same green and red as everywhere else */
+#app .num-tag[data-kind="ring"] { background: var(--up); color: #fff; }
+#app .num-tag[data-kind="weak"] { background: var(--down); color: #fff; }
+#app .num-tag[data-kind="crit"] { background: oklch(76% 0.16 80); color: oklch(18% 0.03 70); }
+
+/* an open panel (Switch, Send In, Kit) rises over the plates, and the turn tab steps aside for it */
+#app .console:has(.panel:not([hidden])) { z-index: 24; }
+#app:has(.panel:not([hidden])) .hud .ttab { opacity: 0; pointer-events: none; }
+.hud .ttab { transition: opacity .2s .1s; }
+
+/* a long press opens a tooltip on a phone: no text selection or callout menu on what carries one */
+#app [data-tip] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
+/* the Arena's flags keep their pole and name as the in-world label; the plate is the one HP readout */
+#app[data-hudlog] .flag-hp { display: none; }
+
+/* ============================================================ fix round 1 (the owner and game-UI judges, 11-05) */
+/* the plate: name, disciplines, HP, only what changed, the trait (labelled) and the Kit's uses */
+.plate[data-quiet="true"] .pl-chips { display: none; }
+.pl-foot { gap: 10px; }
+.pt i { font: 700 10.5px/1 var(--sans); font-style: normal; color: var(--ink-3); text-transform: none; margin-right: 1px; }
+.pl-kit { display: inline-flex; padding: 0; border: 0; gap: 0; flex: none; }
+:root[data-theme="dark"] .pl-kit { border: 0; }
+.pk-left { margin: 0; gap: 4px; padding: 3px 7px 3px 5px; border-radius: 7px; background: var(--room-fill); }
+.pk-left i { color: var(--ink-2); font-weight: 700; }
+.pk-left[data-none="true"] { color: var(--ink-3); }
+.plate[data-side="player"] .pk-left { cursor: pointer; }
+.plate[data-strip="true"] .pl-foot { display: none; }
+/* the move button's damage preview: readable, KO in green (good for you) */
+#app .move-dmg { right: 12px; bottom: 8px; display: inline-flex; align-items: center; gap: 5px; font: 800 13px/1 var(--sans); color: var(--ink); }
+#app .move-dmg em { font: 900 11px/1 var(--sans); font-style: normal; padding: 3px 5px; border-radius: 5px; background: var(--up); color: #fff; }
+#app .move-dmg[data-ko="maybe"] em { background: var(--up-soft); color: var(--up-ink); }
+#app .move-dmg[data-ko] { color: var(--ink); }
+/* the bench rows: full width, names in full ink, both directions of the matchup */
+#app .panel .key.bench { flex: 1 1 250px; }
+#app .panel .key.bench .bn-head b { color: var(--ink); }
+.bn-mx { display: inline-flex; gap: 4px; }
+/* the Kit's icons by kind: restores green, the cure violet, boosts blue, the revive gold */
+.it-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--room-fill); }
+.it-ic[data-kind="heal"] { color: var(--up); background: var(--up-soft); }
+.it-ic[data-kind="cure"] { color: oklch(55% 0.17 310); background: oklch(55% 0.17 310 / .13); }
+.it-ic[data-kind="boost"] { color: var(--you); background: oklch(55% 0.15 255 / .13); }
+.it-ic[data-kind="revive"] { color: oklch(62% 0.14 75); background: oklch(70% 0.14 80 / .16); }
+#app .panel .key.item { grid-template-columns: 30px minmax(0, 1fr) auto; }
+#app .panel .key.item[aria-disabled="true"] .it-ic { filter: grayscale(1); opacity: .55; }
+/* skip: a key on a wide screen, a tap on a phone */
+.sk-tap { display: none; }
+@media (max-width: 719px) {
+  #app .move-pp { padding-right: 70px; }
+  #app .move-dmg { display: inline-flex; right: 10px; bottom: 7px; font-size: 11.5px; }
+  #app .move-dmg em { font-size: 10px; padding: 2px 4px; }
+  #app .move-head { align-items: flex-start; }
+  #app .move-name { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; line-height: 1.1; }
+  #app .move-ring .bi { display: none; }
+  #app .move-ring { min-width: 0; padding: 3px 5px; font-size: 11.5px; }
+  .speed .bi { display: block; margin: 0 2px 0 4px; }
+  .skiphint { display: inline-flex; right: 50%; translate: 50% 0; bottom: 12px; }
+  .sk-key { display: none; } .sk-tap { display: inline; }
+  /* the turn tab rides the console's first line, at its right */
+  .ttab { display: flex; left: auto; right: calc(100vw - var(--console-x, 8px) - var(--console-w, 374px) + 12px); top: calc(var(--console-y, 560px) + 9px); height: 24px; padding: 0 8px; gap: 6px; border-radius: 7px; background: var(--room-fill); box-shadow: none; font-size: 11.5px; }
+  .ttab > .bi, .ttab > b, .tt-first i { display: none; }
+  #app .say { padding-right: 168px; }
+}
+
+/* the log: lineups first, plain move names, no second Log key while the rail shows */
+.lg-lineup { display: grid; grid-template-columns: auto 1fr; gap: 4px 8px; align-items: start; padding: 6px 6px 8px; margin-bottom: 2px; border-bottom: 1px solid oklch(42% 0.035 70 / .14); }
+:root[data-theme="dark"] .lg-lineup { border-bottom-color: oklch(100% 0 0 / .08); }
+.lg-lineup .lg-side { grid-column: 1; align-self: start; margin-top: 2px; }
+.lg-lineup .lg-side + .lg-card, .lg-lineup .lg-card { grid-column: 2; display: flex; align-items: center; gap: 3px; font: 700 12px/1.25 var(--sans); }
+.lg-card .i { width: 13px; height: 13px; color: var(--ink-2); }
+.lg-card b { margin-left: 2px; }
+.lg-card small { margin-left: auto; color: var(--ink-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lg-mv { box-shadow: none; color: var(--ink); }
+#app[data-hudlog="on"] #logb { display: none; }
+.lg-lineup .lg-side[data-side="rival"] { grid-row: 4; }
+
+/* the bench row's card: its poster at the left, the row's text beside it */
+#app .panel .key.bench { grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto auto; column-gap: 10px; padding-left: 9px; }
+#app .panel .key.bench .bn-art { grid-row: 1 / 4; width: 40px; height: 56px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px oklch(0% 0 0 / .25); }
+#app .panel .key.bench > :not(.bn-art) { grid-column: 2; }
+
+/* hidden means hidden to focus too: while a full scene holds the screen, or a panel covers the turn tab */
+#app[data-scene]:not([data-band]) .hud :is(.plate, .blog, .ttab) { visibility: hidden; transition: opacity .12s, visibility 0s .12s; }
+#app:has(.panel:not([hidden])) .hud .ttab { visibility: hidden; }
+button.pk-left { border: 0; font: inherit; color: inherit; cursor: pointer; }
+
+/* the Arena's flags step back: each plate names its card and carries its HP */
+#app[data-hudlog] .flag { display: none; }
+.tt-short { display: none; }
+@media (max-width: 719px) {
+  .tt-long { display: none; } .tt-short { display: inline; }
+  #app .say { padding-right: 172px; }
+}
+
+/* the log's icons by kind, so a row reads before its words: damage red, recovery and raises green, switches blue,
+   traits violet, items by their kind, knockouts in ink */
+.lg-hit .lg-i, .lg-miss .lg-i { color: var(--down-ink); }
+.lg-heal .lg-i, .lg-up .lg-i { color: var(--up-ink); }
+.lg-switch .lg-i, .lg-move .lg-i { color: var(--you); }
+.lg[data-side="rival"].lg-switch .lg-i, .lg[data-side="rival"].lg-move .lg-i { color: var(--rival); }
+.lg-trait .lg-i { color: oklch(55% 0.17 310); }
+.lg-item .lg-i { color: oklch(62% 0.14 75); }
+.lg-ko .lg-i, .lg-result .lg-i { color: var(--ink); }
+
+/* ============================================================ fix round 2 (owner 77, game UI 82, engineer 84) */
+/* green has one meaning, good for you: full HP is teal, the home bonus gold */
+:root { --hp-ok: oklch(68% 0.12 190); }
+:root[data-theme="dark"] { --hp-ok: oklch(72% 0.12 190); }
+.hx[data-tone="home"] { background: oklch(78% 0.13 85 / .2); color: oklch(48% 0.1 75); }
+:root[data-theme="dark"] .hx[data-tone="home"] { color: oklch(84% 0.12 85); }
+.tp-nums s { color: var(--ink-3); font: 700 12px/1 var(--sans); margin-right: 2px; }
+/* the move button's areas (its grid is set once, with its description, below) */
+#app .cmove { display: grid; }
+#app .move-head { grid-area: head; }
+#app .move-stats { grid-area: stats; }
+#app .move-pp { grid-area: pp; padding-right: 0; align-self: center; }
+#app .move-dmg { grid-area: dmg; position: static; align-self: center; justify-self: end; }
+.ms-flags { display: inline-flex; gap: 4px; min-width: 0; overflow: hidden; }
+.mf { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px 2px 4px; border-radius: 5px; background: var(--room-fill); font: 700 11px/1.1 var(--sans); color: var(--ink-2); white-space: nowrap; }
+.mf .bi { width: 12px; height: 12px; }
+#app .cmove[data-ring="support"] .move-ring { background: var(--room-fill); color: var(--ink-2); font: 800 11px/1 var(--sans); padding: 4px 7px; min-width: 0; }
+/* the rival's moves you have seen, on its plate */
+.pl-seen { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding-top: 6px; border-top: 1px solid oklch(42% 0.035 70 / .14); }
+:root[data-theme="dark"] .pl-seen { border-top-color: oklch(100% 0 0 / .08); }
+.ps-label { font: 700 10.5px/1 var(--sans); font-style: normal; color: var(--ink-3); margin-right: 2px; }
+.ps { display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px 2px 3px; border-radius: 6px; background: var(--room-fill); font: 700 11px/1.1 var(--sans); }
+.ps .i { width: 13px; height: 13px; }
+.ps em { font: 900 10.5px/1 var(--sans); font-style: normal; padding: 2px 4px; border-radius: 4px; }
+.ps[data-tone="down"] em { background: var(--down); color: #fff; }
+.ps[data-tone="up"] em { background: var(--up); color: #fff; }
+.plate[data-strip="true"] .pl-seen { display: none; }
+/* the turn tab: T2 on a phone */
+.tt-t { display: none; }
+@media (max-width: 719px) {
+  .ttab > b.tt-turn { display: inline; }
+  .tt-word { display: none; } .tt-t { display: inline; }
+  .mf { display: none; }
+}
+/* the switch row's card: its own art on its colour */
+#app .panel .key.bench .bn-art { display: grid; place-items: center; overflow: hidden; background: color-mix(in oklch, var(--c) 30%, var(--room-clay)); width: 40px; height: 56px; border-radius: 5px; box-shadow: 0 1px 3px oklch(0% 0 0 / .25); grid-row: 1 / 4; }
+#app .panel .key.bench .bn-art img { width: 100%; height: 100%; object-fit: contain; }
+/* a band scene keeps the eye on its contact: the log steps back (no cut-out rectangle in the dim); every scene hides
+   the turn tab from focus too; the result has no plates */
+#app[data-band] .hud .blog, #app[data-scene] .hud .ttab { opacity: 0; visibility: hidden; transition: opacity .12s, visibility 0s .12s; }
+#app[data-phase="result"] .hud .plate { opacity: 0; visibility: hidden; }
+
+/* ============================================================ fix round 3 (owner 82, game UI 87, engineer 80) */
+/* the aim: corner ticks on the card across while a move is chosen, its multiplier and the share it would take */
+.aim { position: absolute; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .12s; }
+.aim[data-on="true"] { opacity: 1; }
+.aim > i { position: absolute; width: 18px; height: 18px; border: 3px solid var(--ink); }
+.aim > i:nth-child(1) { left: -8px; top: -8px; border-right: 0; border-bottom: 0; border-radius: 6px 0 0 0; }
+.aim > i:nth-child(2) { right: -8px; top: -8px; border-left: 0; border-bottom: 0; border-radius: 0 6px 0 0; }
+.aim > i:nth-child(3) { left: -8px; bottom: -8px; border-right: 0; border-top: 0; border-radius: 0 0 0 6px; }
+.aim > i:nth-child(4) { right: -8px; bottom: -8px; border-left: 0; border-top: 0; border-radius: 0 0 6px 0; }
+.aim[data-ko="sure"] > i, .aim[data-ko="maybe"] > i { border-color: var(--up); }
+.aim-chip { position: absolute; left: 50%; bottom: -16px; translate: -50% 0; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 8px; border-radius: 9px; font: 900 15px/1 var(--sans); font-variant-numeric: tabular-nums; color: #fff; background: var(--ink); box-shadow: 0 6px 16px oklch(0% 0 0 / .3); white-space: nowrap; }
+.aim-chip .bi { width: 15px; height: 15px; }
+.aim-chip em { font: 800 12px/1 var(--sans); font-style: normal; opacity: .92; }
+.aim-chip[data-tone="up"] { background: var(--up); }
+.aim-chip[data-tone="down"] { background: var(--down); }
+.aim-chip[data-tone="even"] { background: var(--ink); color: var(--room-clay); }
+@media (prefers-reduced-motion: no-preference) { :root:not([data-reduced="true"]) .aim[data-on="true"] > i { animation: aim-in .22s cubic-bezier(.2,.9,.1,1); } }
+@keyframes aim-in { from { scale: 1.25; opacity: 0; } }
+/* what the aimed move would take from the rival's HP: the sure part solid, the possible part hatched */
+.pl-aim { position: absolute; top: 0; bottom: 0; z-index: 1; background: linear-gradient(to right, transparent calc(100% - var(--sure, 0%)), oklch(30% 0.02 75 / .45) 0), repeating-linear-gradient(135deg, oklch(30% 0.02 75 / .38) 0 4px, transparent 4px 8px); }
+.pl-aim[data-ko="sure"], .pl-aim[data-ko="maybe"] { box-shadow: inset 0 0 0 2px var(--up); }
+/* an item reaching a card: its icon and name pop over the plate */
+.pl-beat { position: absolute; left: 50%; top: -6px; z-index: 3; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px 5px 7px; border-radius: 9px; font: 800 13px/1 var(--sans); color: #fff; background: var(--up); box-shadow: 0 8px 20px oklch(0% 0 0 / .3); pointer-events: none; white-space: nowrap; }
+.pl-beat .bi { width: 16px; height: 16px; }
+.pl-beat[data-kind="cure"] { background: oklch(55% 0.17 310); }
+.pl-beat[data-kind="boost"] { background: var(--you); }
+.pl-beat[data-kind="revive"] { background: oklch(62% 0.14 75); }
+/* the Kit: what helps now as tiles, the rest folded into one row */
+#app .panel .key.item { min-width: 220px; flex: 0 1 240px; }
+.kit-none { margin: 4px; font: 600 13px/1.3 var(--sans); color: var(--ink-2); }
+.kit-rest { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 6px 2px; border-top: 1px solid oklch(42% 0.035 70 / .14); font: 700 12px/1 var(--sans); color: var(--ink-2); }
+:root[data-theme="dark"] .kit-rest { border-top-color: oklch(100% 0 0 / .08); }
+.kit-rest > span { margin-right: 4px; }
+.it-chip { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; background: var(--room-fill); color: var(--ink-2); }
+.it-chip .bi { width: 16px; height: 16px; }
+.it-chip[data-used="true"] { opacity: .35; }
+/* the move's poster peeks over its button on hover or focus (a fine pointer, a wide screen) */
+.move-thumb { position: absolute; right: 10px; bottom: calc(100% + 8px); width: 128px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; box-shadow: 0 10px 24px oklch(0% 0 0 / .3); opacity: 0; transform: translateY(6px); transition: opacity .14s, transform .14s; pointer-events: none; }
+@media (hover: hover) and (min-width: 720px) { #app .cmove:is(:hover, [data-keyed]:focus):not([aria-disabled="true"]) .move-thumb { opacity: 1; transform: none; } }
+body:has(.tip[data-on="true"]) #app .cmove .move-thumb { opacity: 0 !important; }
+/* the flags drop whole when they do not fit */
+.ms-flags { flex-wrap: wrap; max-height: 21px; overflow: hidden; }
+/* the turn tab sits at the console's right end, clear of your leader's name */
+.ttab { left: auto; right: calc(100vw - var(--console-x, 24px) - var(--console-w, 1100px) + 14px); }
+/* the receipt under the scene's number reads after the number: smaller and lighter */
+#app #stage .sd-receipt { filter: opacity(.62); font-size: .86em; }
+@media (max-width: 719px) {
+  /* a phone: the Kit and Switch sheets stay under the rail and scroll inside */
+  #app .panel { max-height: calc(var(--console-y, 560px) - 76px); overflow-y: auto; overscroll-behavior: contain; }
+  /* the description line goes (a long press shows a move's tooltip); the turn tab takes its row */
+  /* the line stays a polite live region for screen readers (a leader's line, a move's text); the turn tab takes its row */
+  #app .say { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #app .console .moves { grid-row: 2; } #app .console .acts { grid-row: 3; }
+  .ttab { left: calc(var(--console-x, 8px) + 8px); right: auto; top: calc(var(--console-y, 560px) + 8px); }
+  #app .console { grid-template-rows: 30px minmax(0, 1fr) 48px; }
+  /* skip: the top corner, clear of the console's keys and the attacker's name */
+  .skiphint { top: 10px; bottom: auto; right: 10px; translate: none; }
+}
+
+/* on the Mat the rival's card faces yours across the centre line: its aim chip sits inside its top edge */
+.aim[data-mode="mat"] .aim-chip { top: 10px; bottom: auto; }
+
+/* ============================================================ fix round 4 (owner 86, game UI 89, engineer 86) */
+/* the Mat: the plate is a card's one HP readout, so the card in play hides its tab (the bench keeps theirs) */
+#app[data-hudlog] .slot[data-zone="active"] .tab { opacity: 0; }
+/* the Mat's turn tab rides the top rail, clear of every card and name */
+@media (min-width: 720px) {
+  .hud[data-mode="mat"] .ttab { top: 14px; left: 150px; right: auto; height: 34px; border-radius: 10px; box-shadow: var(--room-raise-s); }
+}
+/* the Kit's icons in their kind's colour (the room's own rule greys every span in a panel key) */
+#app .panel .key .it-ic[data-kind="heal"] { color: var(--up); }
+#app .panel .key .it-ic[data-kind="cure"] { color: oklch(55% 0.17 310); }
+#app .panel .key .it-ic[data-kind="boost"] { color: var(--you); }
+#app .panel .key .it-ic[data-kind="revive"] { color: oklch(62% 0.14 75); }
+.it-chip[data-kind="heal"] { color: var(--up); } .it-chip[data-kind="cure"] { color: oklch(55% 0.17 310); }
+.it-chip[data-kind="boost"] { color: var(--you); } .it-chip[data-kind="revive"] { color: oklch(62% 0.14 75); }
+.it-chip { width: 32px; height: 32px; } .it-chip .bi { width: 18px; height: 18px; }
+/* the seen row before the rival has moved */
+.ps-none { font: 600 11px/1 var(--sans); color: var(--ink-3); }
+/* the Arena's two hand cards: their HP tabs on alternate corners, so the fan never stacks them */
+#app .hcard[data-fan="1"] .hcard-hp { left: auto; right: 7%; }
+
+/* the Mat: a card's one damage disc sits in its art's top corner, clear of the subject */
+#app .token[data-fold] { right: 2%; left: auto; top: 0; translate: none; width: calc(var(--aw) * .27); font-size: calc(var(--aw) * .09); }
+
+/* ============================================================ fix round 5 (owner 88, game UI 91, engineer 79) */
+/* the move's poster docks to its button's top edge, as a tab of the button */
+.move-thumb { bottom: 100%; right: 12px; width: 120px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 14px oklch(0% 0 0 / .18); transform: translateY(8px); }
+/* PP: amber at half, red at a quarter */
+.move-pp[data-mid="true"] { color: oklch(52% 0.12 70); }
+.move-pp[data-mid="true"] .pp-bar i { background: var(--hp-mid); }
+/* the seen row stays one line; what does not fit is clipped, and every move is in its tooltip and the log */
+.pl-seen { flex-wrap: nowrap; overflow: hidden; }
+.ps { flex: none; }
+.ps[data-tone="even"] em { background: var(--room-fill); color: var(--ink-2); }
+/* names wrap to two lines before they cut */
+.pl-name { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; line-height: 1.05; }
+.plate[data-compact="true"] .pl-hpnum small { display: inline; }
+/* a phone's rival strip shows the moves it has seen as icons with their multiplier */
+.plate[data-strip="true"][data-side="rival"] .pl-seen { display: flex; grid-area: seen; padding: 0; border: 0; gap: 2px; }
+.plate[data-strip="true"][data-side="rival"] { grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "head hp chips seen"; }
+.plate[data-strip="true"] .ps-label, .plate[data-strip="true"] .ps b, .plate[data-strip="true"] .ps-none { display: none; }
+.plate[data-strip="true"] .ps { padding: 2px 3px; } .plate[data-strip="true"] .ps em { font-size: 9.5px; padding: 1px 3px; }
+/* the Mat's turn tab between 720 and 1180: back over the console, its short labels (the rail has no room for it) */
+@media (min-width: 720px) and (max-width: 1179px) {
+  .hud[data-mode="mat"] .ttab { top: calc(var(--console-y, 640px) - 30px); left: auto; right: calc(100vw - var(--console-x, 24px) - var(--console-w, 900px) + 14px); height: 30px; border-radius: 10px 10px 0 0; box-shadow: 0 -2px 6px oklch(0% 0 0 / .08); }
+  .hud[data-mode="mat"] .tt-long, .hud[data-mode="mat"] .tt-first i { display: none; } .hud[data-mode="mat"] .tt-short { display: inline; }
+}
+/* under 1180 the turn tab sits over the console and the buttons are narrow: the poster peek and the flag chips step
+   back (the move's tooltip carries both) */
+@media (max-width: 1179px) { #app .cmove .move-thumb { display: none; } }
+
+/* fix round 6: a tooltip never stands over a scene (a keyboard-opened one closes on the command, and hides here too) */
+body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
+
+/* fix round 7: one cursor ring (while the pointer aims a move, the ring on another steps back); names over chips under
+   1180 (the even x1 chip goes, the name may wrap); the far leader's title readable on the dither */
+#moves:has(.cmove:hover) .cmove:focus-visible:not(:hover) { outline-color: transparent; }
+/* (names over chips: the move bar's container query below decides) */
+.ps-more { font: 800 11px/1 var(--sans); color: var(--ink-2); }
+
+/* under 1180 a support move's chip is its icon alone, so the move's name keeps the room */
+#app .cmove[data-ring="support"] .move-ring .bi { display: none; }
+@media (max-width: 1179px) { #app .cmove[data-ring="support"] .move-ring b { display: none; } #app .cmove[data-ring="support"] .move-ring .bi { display: block; } }
+
+/* fix round 8: the move bar's own width decides (the log rail narrows it at 1280 as much as 1024 does) */
+#app .moves { container-type: inline-size; container-name: moves; }
+/* (the mode's sheet loads after this one, so each rule carries #app to win) */
+@container moves (max-width: 900px) {
+  #app .cmove[data-ring="even"] .move-ring { display: none; }
+  #app .cmove .move-name { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; line-height: 1.05; }
+  #app .cmove .move-stats > .ms-flags { display: none; }
+}
+/* Support is its icon at every width (the name keeps the room) */
+#app .cmove[data-ring="support"] .move-ring b { display: none; }
+#app .cmove[data-ring="support"] .move-ring .bi { display: block; }
+/* two or more seen moves: icons and multipliers (each name is in its tooltip) */
+.pl-seen[data-many="true"] .ps b { display: none; }
+
+/* a usable Kit item reads in full ink (only the folded ones are dimmed) */
+#app .panel .key.item:not([aria-disabled="true"]) .it-t b { color: var(--ink); }
+#app .panel .key.item:not([aria-disabled="true"]) .it-t span { color: var(--ink-2); }
+
+/* a plate keeps its changes to one row (so it never grows into the leader under it); what does not fit is in the log */
+.plate:not([data-strip="true"]) .pl-chips { flex-wrap: nowrap; overflow: hidden; }
+.plate .pc { flex: none; }
+
+/* ============================================================ the move button (Kevin, 11-06: "the move areas should
+   have the descriptions too"): three rows, its name and ring, the card's own words, its numbers. The words take up to
+   three lines on a wide move bar and two under 900 px, and the move's tooltip prints them whole; a phone prints them
+   whole in one column and its 268 px console scrolls. The flags (priority, hits, status) are in the tooltip only. */
+#app .cmove { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "head head head" "about about about" "stats pp dmg"; row-gap: 5px; column-gap: 8px; align-content: start; }
+#app .cmove .ms-flags { display: none; }
+#app .cmove .move-stats { white-space: nowrap; }
+#app .cmove .move-pp { min-width: 0; padding-right: 0; }
+.move-about { grid-area: about; display: block; font: 500 11.5px/1.3 var(--sans); color: var(--ink-2); text-align: left; white-space: normal; overflow-wrap: break-word; }
+#app .cmove[aria-disabled="true"] .move-about { color: var(--ink-3); }
+#app .cmove .move-about { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+/* a narrow move bar (720 to about 1200 px): two lines of words, the numbers on two rows, and the PP bar goes (its
+   count stays) */
+@container moves (max-width: 900px) {
+  #app .cmove { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head head" "about about" "stats stats" "pp dmg"; row-gap: 4px; }
+  #app .cmove .move-about { -webkit-line-clamp: 2; line-clamp: 2; }
+  #app .cmove .pp-bar { display: none; }
+}
+@media (max-width: 719px) {
+  /* a phone: the four moves in one column, each full width and whole (max-content rows never shrink a button), and
+     the list scrolls inside the console */
+  #app .console .moves { grid-template-columns: 1fr; grid-template-rows: repeat(4, max-content); gap: 5px; align-content: start; overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+  #app .cmove { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "head head head" "about about about" "stats pp dmg"; padding: 7px 10px; height: auto; }
+  #app .cmove .move-about { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; line-height: 1.28; }
+  #app .move-pp { min-width: 92px; }
+  /* more moves wait below: the list's foot fades until the last move is in view */
+  #app .console .moves[data-more="true"] { mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); }
+}
+/* a card's live HP tab sits just above the card, so the card's own name and printed HP stay readable */
+#app .slot .tab { translate: 0 calc(-100% - 3px); }
+
+/* ============================================================ the sound toggle (r4/sound bindToggle sets aria-pressed) */
+#app .key.snd { min-width: 44px; padding: 0 11px; display: inline-grid; place-items: center; }
+#app .key.snd .bi { width: 20px; height: 20px; grid-area: 1 / 1; }
+#app .key.snd[aria-pressed="true"] .off, #app .key.snd:not([aria-pressed="true"]) .on { visibility: hidden; }
+@media (max-width: 719px) {
+  /* a phone's rail holds the speaker too: the speed keeps its number without the gauge, and the speaker narrows */
+  #app .speed .bi { display: none; }
+  #app .key.snd { min-width: 40px; padding: 0 9px; }
+}
+@media (max-width: 389px) {
+  /* the narrowest phones: the rail's trays, gaps and keys tighten so Leave stays on screen */
+  #app .rail-keys { gap: 4px; }
+  #app .rail-keys .tray { padding: 3px; gap: 3px; }
+  #app .rail-keys .key { padding: 0 10px; }
+  #app .rail-keys .seg .key { min-width: 0; }
+}

@@ -8,6 +8,15 @@ The engine is deterministic: teams, a seed and the commands always replay the sa
   eight original trainer figures from the round, each map calibrated so figures stand on the floor.
 - The home page's Play button opens it with the dock's teams. Leave returns to `/` with `#you=` so the dock keeps them.
 
+## Round 5 (shipped with the release after 11-08)
+
+Round 5 (r4/play at 42ff51c7, r4/play `SPEC.md`) prints the wall's own card (`shared/excard.js` hands `markup.js`'s
+card to the kit; plain on phones, framed on desktop, as on the wall), adds one clock with a 1x, 1.5x and 2x speed
+setting (`shared/pace.js`, X), the HUD (`shared/hud.js`: plates, the log rail, multiplier call-outs, tooltips with each
+move's preview loop from `/battle/previews/`), and sound: `shared/battle.js` imports `/sound/sound.js` and plays r4/sound's
+battle slice, following the stage's clock (`SPEC.md` section 10). The rail's speaker key (N) is the site's sound
+setting (`kevin-liu-studio:sound`). The roster is still the engine's 18 cards (`vendor/battle/vendor/engine.js`).
+
 ## State on 2026-11-05
 
 - The battle holds 18 of the 26 cards. The eight added on 11-01 have staged scenes in

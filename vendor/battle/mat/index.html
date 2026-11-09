@@ -19,14 +19,20 @@ html[data-fonts] body{visibility:hidden}
 (function (d) {
   d.dataset.fonts = '';
   Promise.race([document.fonts.load('800 1em "Katagami Sans"'), new Promise(function (r) { setTimeout(r, 2000); })]).catch(function () {}).then(function () { delete d.dataset.fonts; });
-  /* the battle's scene media (r3/battle, read-only) and the card code copied into vendor/cards */
+  /* the battle's scene media (r3/battle, read-only); the cards are r4/ex's own (markup.js card(), through shared/excard.js) */
   window.MAT_BATTLE_BASE = new URL('../../../r3/battle/', location.href).href;
-  window.MAT_CARD_CODE = new URL('../vendor/cards/', location.href).href;
+  // the cards' live prints (ground.js and its programs) come from the home page's card code, as the cards themselves do
+  window.MAT_CARD_CODE = new URL('../../../r4/ex/', location.href).href;
 })(document.documentElement);
 </script>
-<link rel="stylesheet" href="../vendor/cards/card.gen.css">
+<!-- the battle's one clock and speed setting, before any code reads time (round 5) -->
+<script src="../shared/pace.js"></script>
+<link rel="stylesheet" href="../shared/room.css">
+<!-- the card: the home page's own stylesheet (one card renderer, shared/excard.js) -->
+<link rel="stylesheet" href="../../../r4/ex/card.css">
 <link rel="stylesheet" href="../vendor/broadcast/stage.css">
 <link rel="stylesheet" href="../shared/battle.css">
+<link rel="stylesheet" href="../shared/hud.css">
 <script>
 /* one page, two stage layouts: the address picks the mode (&mode=), else the folder. Only that layout's sheet and code
    load now; the other's load once the battle is under way (shared/battle.js) */
@@ -53,7 +59,9 @@ html[data-fonts] body{visibility:hidden}
         <button type="button" class="key" id="mode-mat" aria-pressed="false" aria-keyshortcuts="M">Mat</button>
         <button type="button" class="key" id="mode-arena" aria-pressed="false" aria-keyshortcuts="M">Arena</button>
       </div>
+      <div class="speed tray" role="group" aria-label="Battle speed" data-tip="speed" id="speed"></div>
       <div class="keys tray">
+        <button type="button" class="key snd" id="sound" aria-pressed="false" aria-label="Sound" aria-keyshortcuts="N"><svg class="bi on" viewBox="0 0 24 24" aria-hidden="true"><use href="#bi-sound-on"/></svg><svg class="bi off" viewBox="0 0 24 24" aria-hidden="true"><use href="#bi-sound-off"/></svg></button>
         <button type="button" class="key" id="replay" aria-keyshortcuts="R">Replay</button>
         <button type="button" class="key" id="logb" aria-keyshortcuts="L">Log</button>
         <a class="key" id="leave" href="../../../r3/cards/index.html">Leave</a>
@@ -78,12 +86,20 @@ html[data-fonts] body{visibility:hidden}
     <div class="panel" id="panel" hidden></div>
   </nav>
 
+  <p class="skiphint" aria-hidden="true"><span class="sk-key"><kbd>Space</kbd> skips</span><span class="sk-tap">Tap to skip</span></p>
   <section class="result" id="result" hidden aria-live="polite"></section>
   <p class="error" id="error" role="alert"></p>
   <dialog id="log" aria-label="Log"><div class="log-head"><b>Log</b><button type="button" class="key" id="log-close">Close</button></div><ol></ol></dialog>
   <p class="sr" id="live" aria-live="polite"></p>
 </main>
-<script src="../vendor/cards/markup.js"></script>
+<!-- the home page's card: its data, its families and its card(), read from r4/ex; then the battle hands that card() to the kit -->
+<script src="../../../r4/ex/fighters.js"></script>
+<script src="../../../r4/ex/media.gen.js"></script>
+<script src="../../../r4/ex/face.gen.js"></script>
+<script src="../../../r4/ex/design/card.js"></script>
+<script src="../../../r4/ex/design/plan.gen.js"></script>
+<script src="../../../r4/ex/markup.js"></script>
+<script src="../shared/excard.js"></script>
 <script src="../vendor/cards/art.js"></script>
 <script src="../vendor/cards/card-env.gen.js"></script>
 <script src="../vendor/cards/card-sprite.gen.js"></script>

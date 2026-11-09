@@ -149,8 +149,10 @@ export const NUMBER_HOLD = 600;
 export function hitTags(hit, out = false) {
   const t = [];
   if (hit?.crit) t.push({ text: 'Critical', kind: 'crit' });
-  if (hit?.effectiveness > 1) t.push({ text: '×1.5', kind: 'ring' });
-  else if (hit?.effectiveness > 0 && hit.effectiveness < 1) t.push({ text: '×0.67', kind: 'weak' });
+  // the ring's real multiplier (a dual discipline makes ×2.25 or ×0.45), green when it helps the hit, red when it does not
+  const m = Math.round((hit?.effectiveness ?? 1) * 100) / 100;
+  if (m > 1) t.push({ text: `↑ ×${m}`, kind: 'ring' });
+  else if (m > 0 && m < 1) t.push({ text: `↓ ×${m}`, kind: 'weak' });
   if (out) t.push({ text: 'Out', kind: 'out' });
   return t;
 }

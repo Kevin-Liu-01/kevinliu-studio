@@ -10,7 +10,7 @@ folders is edited by hand: change the rounds, or change a rule or transform in `
 | --- | --- | --- | --- |
 | cards | `r4/ex` | `public/ex`, `public/og`, `vendor/ex` | the card code and stylesheets, posters, grounds, pop-out cuts, logos, borders, front effects, frames, share images and loops; build-only data in `vendor/ex` |
 | sound | `r4/sound` | `public/sound` | the player, the gallery boot, two manifests and exactly the Opus and AAC files they name (the kit's own `tools/ship.mjs` list) |
-| battle | `r4/play`, `r3/battle`, `r3/cards` | `public/battle`, `vendor/battle` | the Mat and Arena page, its vendored engine bundle, trainer and figure art, maps, scene media and card pictures |
+| battle | `r4/play`, `r3/battle`, `r3/cards` | `public/battle`, `vendor/battle` | the Mat and Arena page, its vendored kit, trainer and figure art, maps, move previews, scene media and card pictures; the engine bundle (build-only, the roster) |
 
 The cards stage also ships the round page's closure (`pageFiles` in `scripts/sync.mjs`): every sheet and script
 `r4/ex/index.html` loads, the two modules `markup.js` requires beside itself at build (`design/card.js`,
@@ -46,6 +46,9 @@ which anchor moved.
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
+- `battle/shared/excard.js`: the battle prints the wall's card from `/ex/` (the rounds' `../../../r4/ex/`), and a phone
+  prints it plain, as the wall does. `src/lib/battle.ts` maps the page's own `../../../r4/ex/` sheet and scripts to
+  `/ex/` by content address; the cards stage ships `face.gen.js` and the icon set to `public/ex` for it.
 - `battle/mat/mat.css`, `battle/arena/arena.css`: the wordmark h1 is visually hidden on phones, not removed.
 - `battle/mat/mat.css`, `battle/arena/arena.css`: a key transitions only its press (`transform`); its raise and colour
   change at once.
@@ -73,15 +76,29 @@ and API-key shapes, and on General Translation anywhere except the Atlas card's 
 (`scripts/location.mjs`: GPS in EXIF for JPEG, AVIF, WebP and PNG, GPS in XMP, and the MP4 and QuickTime location
 atoms). The release guard runs the same check on `dist`.
 
+## Pins
+
+Each stage ships the rounds as they were at one commit (`PIN` in `scripts/sync.mjs`): today cards and sound at
+30e69931 (the 11-07 release's Breakout final) and the battle at 42ff51c7 (round 5 with its sound). Every shipped file
+git tracks is compared with its stage's pin, and a file that differs stops the sync, so a plain `pnpm sync` never ships
+round work after the cutoff. The 78 frame SVGs under `r4/ex/design/{lit,fxcut}` are generated and git-ignored, so
+they cannot be checked; the sync counts them and the lock records their bytes. A release moves a pin in the same commit
+as the files it brings.
+
+The working tree usually has moved past the pins, so a release syncs from an export: `git archive <pin>` of each
+stage's folders plus the git-ignored frame SVGs, then `ROUNDS=<export> pnpm sync`. The pins are read from the rounds'
+own checkout either way.
+
 ## The lock
 
-`sync.lock.json` records the rounds' git head (marked with the count of shipped files that differ from it; other rounds' uncommitted scratch work does not count), the time, and each file's source path, sha-256 and size. It is rewritten
-only when a file or the rounds' head changed, so a rerun with nothing new leaves no diff. `pnpm sync
---check` exits 1 when any synced file differs from the rounds and names each one, so CI or a person can see the
-repo is behind and why.
+`sync.lock.json` records the rounds' checkout (`rounds`), the pinned commits (`head`, and `pins` by stage), the time,
+and each file's source path, sha-256 and size. It is rewritten only when a file or a pin changed, so a rerun with
+nothing new leaves no diff. `pnpm sync --check` exits 1 when any synced file differs from the rounds and names each one,
+so CI or a person can see the repo is behind and why.
 
 ## When a round finishes
 
-1. `pnpm sync`, read the summary and the problems list.
+1. Move the stage's pin to the round's commit, then `pnpm sync` (or `ROUNDS=<export> pnpm sync`), and read the summary
+   and the problems list.
 2. `pnpm build` (the guard runs after it).
 3. Look at the changed pages, then commit `sync.lock.json` with the files.

@@ -1,9 +1,9 @@
 // The Mat: the stage layout of the card mode. Six cards lie in wells cut into one clay tray; the cards are the HUD (an
 // HP tab on each card's top edge, damage tokens on its art, chips under the tab); each side's KO stack, Kit tray and
-// leader sit at its end; the turn disc is embossed on the centre line. The page calls it only through the seam
+// leader sit at its end; the turn tab (shared/hud.js) carries the turn. The page calls it only through the seam
 // (MODES.md section 2): prepare, mount, set, land, flush, cue, anchor, skip, hold, unmount, layout.
 // Every motion writes transform and opacity only, so the page never shifts (CLS 0).
-import { Leader, loadLeaders, wholeScale, finalePoses } from '../shared/leaders.js';
+import { Leader, loadLeaders, tallOf, finalePoses } from '../shared/leaders.js';
 import { Layout, el, wait, clamp, lerp, R, SIDES, EASE, perHit, chipsHtml, setChips, countTo, numeral, hitTags, NUMBER_HOLD, frameOn, inkOn } from '../shared/fx.js';
 import { specials } from './specials.js';
 
@@ -20,73 +20,153 @@ const MASK = Array.from({ length: 16 }, (_, L) => {
 
 // ============================================================ geometry: the zones (MODES.md section 3), in viewport px
 const box = (cx, top, w, h) => ({ x: cx - w / 2, y: top, w, h });
-export function geometry(W, H, turn = false) {
+/** Kevin, 2026-11-05: "your avatar guy should be on left and the enemy guy should be on right". Every zone of both
+ *  rows and the plates turn about the vertical centre line, so your leader stands at the left end of
+ *  the near row and the rival's at the right end of the far row, on a phone too. Everything placed from the zones (the
+ *  cards, wells, KO piles, plates, cut-ins, the deal, the finale) follows. */
+export function geometry(W, H, turn = false) { return mirror(rawGeometry(W, H, turn)); }
+function mirror(g) {
+  const c = g.phone ? g.W / 2 : g.cx;
+  const f = (b) => (b ? { ...b, x: 2 * c - (b.x + b.w) } : b);
+  for (const z of Object.values(g.zones)) for (const k of Object.keys(z)) z[k] = Array.isArray(z[k]) ? z[k].map(f) : f(z[k]);
+  g.mirrored = true;
+  return g;
+}
+function rawGeometry(W, H, turn = false) {
   if (W < 720) return phoneGeometry(W, H, turn);
   const t = clamp((W - 1024) / (1440 - 1024));
-  const rail = R(lerp(48, 56, t)), consoleH = R(lerp(104, 128, t)), bottom = R(lerp(12, 16, t));
-  const matW = Math.min(1296, W - 48), matX = R((W - matW) / 2), matY = rail + 8;
-  const matH = Math.max(360, H - matY - consoleH - 12 - bottom);
+  const rail = R(lerp(48, 56, t)), consoleH = R(lerp(128, 146, t)) /* round 5: name, description, numbers */, bottom = R(lerp(12, 16, t));
+  // round 5: from 1280 up, the battle log stands as a rail at the right, as tall as the mat and the console together
+  const logW = W >= 1280 ? R(lerp(256, 288, clamp((W - 1280) / 320))) : 0;
+  const matW = Math.min(1296, W - 48 - (logW ? logW + 12 : 0)), matX = R((W - matW - (logW ? logW + 12 : 0)) / 2), matY = rail + 8;
+  // from 720 to 1179 the turn tab sits over the console's right end: the mat leaves it a 30 px band
+  const tabRoom = W < 1180 ? 30 : 0;
+  const matH = Math.max(360 - tabRoom, H - matY - consoleH - 12 - bottom - tabRoom);
   const cx = matX + matW / 2, cy = matY + matH / 2;
-  // the active card is 264 of 680 at 1440 and 224 of 584 at 1024; never so tall the row leaves the mat
-  let aH = matH * lerp(224 / 584, 264 / 680, t);
-  const rowW = (h) => { const aW = (h * 63) / 88, bW = h * 0.652 * 63 / 88; return aW + 2 * h * lerp(28 / 224, 36 / 264, t) + 3 * bW + 4 * h * lerp(16 / 224, 20 / 264, t) + 40 + h * lerp(176 / 224, 224 / 264, t) * 0.75; };
-  while (rowW(aH) > matW * 0.92 && aH > 120) aH -= 2;
+  // each side's row, outer end to centre: the KO pile, two bench wells, the active card, its plate, its leader
+  // round 5: the active cards take more of the mat (0.43 of its height at 1440), the KO pile and leaders less
+  let aH = Math.min((matH - 52) / 2, matH * lerp(256 / 584, 330 / 680, t));
+  const plateW = (h) => Math.max(212, Math.min(248, h * 0.86));
+  const parts = (h) => {
+    const aW = (h * 63) / 88, bH = h * 0.52, bW = (bH * 63) / 88, kH = bH * 0.66, kW = (kH * 63) / 88;
+    const gapA = h * lerp(22 / 224, 28 / 264, t), gapB = h * lerp(14 / 224, 18 / 264, t), tH = h * lerp(140 / 224, 162 / 264, t), tW = tH * 0.75;
+    return { aW, bH, bW, kH, kW, gapA, gapB, tH, tW, pW: plateW(h) };
+  };
+  const left = (q) => q.aW / 2 + q.gapA + 2 * q.bW + q.gapB + q.gapB + q.kW;
+  // a leader stands under its plate (the mat's lower half less the plate: matH / 2 - 186); only where that is really
+  // short (under 90 px) does the row keep room beside the plate for it, less on a narrow mat so its cards keep their size
+  const besideRoom = matH / 2 - 186 < (W < 900 ? 90 : 120);
+  const reserve = besideRoom ? (W < 900 ? 60 : 84) : 0;
+  const right = (q) => q.aW / 2 + q.gapA + Math.max(q.pW, q.tW) + reserve;
+  while (Math.max(left(parts(aH)), right(parts(aH))) * 2 > matW * 0.96 && aH > 120) aH -= 2;
   aH = R(aH);
-  const aW = (aH * 63) / 88, bH = R(aH * 0.652), bW = (bH * 63) / 88;
-  const gapA = aH * lerp(28 / 224, 36 / 264, t), gapB = aH * lerp(16 / 224, 20 / 264, t), tH = R(aH * lerp(176 / 224, 224 / 264, t)), tW = tH * 0.75;
+  const q = parts(aH), { aW, bH, bW, kH, kW, gapA, gapB, tH, tW } = q;
   const pBase = cy + 18 + aH;
+  const b0 = cx - aW / 2 - gapA - bW / 2;
   const P = {
     active: box(cx, cy + 18, aW, aH),
-    bench: [box(cx - aW / 2 - gapA - bW / 2, pBase - bH, bW, bH), box(cx - aW / 2 - gapA - bW - gapB - bW / 2, pBase - bH, bW, bH)],
-    ko: box(cx + aW / 2 + gapA + bW / 2, pBase - bH, bW, bH),
-    leader: box(cx + aW / 2 + gapA + bW + 2 * gapB + 40 + tW / 2, pBase - tH, tW, tH),
+    bench: [box(b0, pBase - bH, bW, bH), box(b0 - bW - gapB, pBase - bH, bW, bH)],
+    ko: box(b0 - bW - gapB - bW / 2 - gapB - kW / 2, pBase - kH, kW, kH),
+    plate: { x: cx + aW / 2 + gapA, y: cy + 18, w: q.pW, h: aH },
+    leader: null,
   };
+  // your leader stands under your plate (about 118 px tall), its name (about 26 px under its feet) still on the mat:
+  // sized to the room between, never below 0.55 of its height
+  // your leader stands under your plate (up to about 145 px tall with a chip row), its feet as low as the mat allows with its name (about
+  // 26 px under its feet) still on it. When that leaves under 0.8 of its height and there is room beside the plate on
+  // the table's outer side (its half-width plus half its name plate), it stands there; else under, shrunk to fit
+  // (never below 0.55). The row is built for the right-hand side and mirrored, so the outer side here is the right.
+  // Both placements are measured and the larger leader wins, so a taller window never shrinks one:
+  // under: feet as low as the mat allows (its name, about 26 px, still on it), head clear of the plate (about 120 px
+  // plain; a chip row adds 24, so 132 is budgeted), never below 0.55; beside: on the table's outer side (the row is
+  // built for the right-hand side and mirrored, so the outer side here is the right), as tall as the plate's column
+  // and as wide as the outer room allows, its name clear of the plate.
+  let beside = false, besideBox = null;
+  {
+    const foot = matY + matH - 30, plateH = 144; // the plate with its one chip row
+    // the height each placement offers: under the plate, or beside it (as tall as the plate's column, as wide as the
+    // outer room); the leader takes the larger
+    const under = foot - (P.plate.y + plateH + 6);
+    const x0 = P.plate.x + q.pW, outer = matX + matW - 8 - x0;
+    const side = Math.max(0, Math.min(foot - P.plate.y, ((outer - 12) * tH) / tW));
+    // the spot that draws the larger leader wins (both draw a full one above about 120 px, and then it stays under)
+    beside = side > 0 && Math.min(side, 120) > Math.min(under, 120) + 4;
+    besideBox = side > 0 ? (() => { const kS = Math.min(1, side / tH), xB = x0 + Math.max(gapB + (tW * kS) / 2, 64); return box(Math.min(xB, matX + matW - 8 - Math.max((tW * kS) / 2, 58)), foot - tH * kS, tW * kS, tH * kS); })() : null;
+    // no floor: a leader is drawn smaller rather than in its plate
+    const k = Math.min(1, Math.max(0.2, (beside ? side : under) / tH));
+    if (beside) {
+      // its name plate (about 120 px wide) clear of the plate beside it
+      const xB = x0 + Math.max(gapB + (tW * k) / 2, 64);
+      P.leader = box(Math.min(xB, matX + matW - 8 - Math.max((tW * k) / 2, 58)), foot - tH * k, tW * k, tH * k);
+    } else P.leader = box(cx + aW / 2 + gapA + q.pW / 2, foot - tH * k, tW * k, tH * k);
+  }
   const rot = (b) => ({ x: 2 * cx - (b.x + b.w), y: 2 * cy - (b.y + b.h), w: b.w, h: b.h });
-  const Rv = { active: rot(P.active), bench: P.bench.map(rot), ko: rot(P.ko), leader: rot(P.leader) };
-  // the rival's leader stands across the table, a little smaller (0.86), from the same top
-  Rv.leader = { x: Rv.leader.x + Rv.leader.w / 2 - (Rv.leader.w * 0.86) / 2, y: Rv.leader.y, w: Rv.leader.w * 0.86, h: Rv.leader.h * 0.86 };
-  // the Kit tray at each side's end of the mat, where there is room for its 3x3 chips
-  const kitW = R(lerp(96, 120, t)), endRoom = matX + matW - (P.leader.x + P.leader.w);
-  const kit = endRoom >= kitW + 24 ? { x: P.leader.x + P.leader.w + (endRoom - kitW) / 2, y: pBase - kitW, w: kitW, h: kitW } : null;
-  P.kit = kit; Rv.kit = kit ? rot(kit) : null;
-  const d = R(lerp(56, 64, t));
+  const Rv = { active: rot(P.active), bench: P.bench.map(rot), ko: rot(P.ko), leader: rot(P.leader), plate: rot(P.plate) };
+  // the plates stand level with the top of their own card
+  Rv.plate.foot = true;
+  // the rival's leader stands above its plate: its feet and name (about 34 px) clear of the plate at its tallest
+  // (about 158 px with the seen row), shrunk to the room there is
+  // beside its plate the rival stands as large as yours (the mirrored box), its name clear of the plate's top
+  if (beside) Rv.leader = { ...Rv.leader };
+  else {
+    // as large as yours where the room above its plate allows (no depth step: it rounded the far leader down a size)
+    const lw = Rv.leader.w, lh = Rv.leader.h, room = Rv.active.y + Rv.active.h - 150 - 34 - (matY + 2);
+    const k = Math.min(1, Math.max(0.55, room / lh));
+    Rv.leader = { x: Rv.leader.x + Rv.leader.w / 2 - (lw * k) / 2, y: matY + 2 + Math.max(0, room - lh * k), w: lw * k, h: lh * k };
+    // when the room above its plate leaves it smaller than yours, it stands beside its plate instead (if that is larger)
+    // (never larger than yours)
+    if (besideBox && Rv.leader.h < P.leader.h - 4 && besideBox.h > Rv.leader.h + 4) {
+      const c = Math.min(besideBox.h, P.leader.h) / besideBox.h, bb = { x: besideBox.x + (besideBox.w * (1 - c)) / 2, y: besideBox.y + besideBox.h * (1 - c), w: besideBox.w * c, h: besideBox.h * c };
+      Rv.leader = rot(bb);
+    }
+  }
+  // the Kit is the plate's own row now (shared/hud.js): no tray on the mat
+  P.kit = null; Rv.kit = null;
   return {
     phone: false, W, H, rail, tilt: 8,
     mat: { x: matX, y: matY, w: matW, h: matH }, cx, cy, aW, aH, sW: aW, sH: aH,
     zones: { player: P, rival: Rv },
-    disc: { x: P.bench[0].x + P.bench[0].w / 2 - d / 2, y: cy - d / 2, w: d, h: d },
-    console: { x: matX, y: matY + matH + 12, w: matW, h: consoleH },
+    console: { x: matX, y: matY + matH + 12 + tabRoom, w: matW, h: consoleH },
+    log: logW ? { x: matX + matW + 12, y: matY, w: logW, h: matH + 12 + consoleH } : null,
   };
 }
+
 function phoneGeometry(W, H, turn) {
-  // MODES.md's 390 x 844 table, scaled to the width; the console keeps the foot, any spare height goes between
+  // MODES.md's 390 x 844 table, scaled to the width; the console keeps the foot at 268 px and the mat takes the rest
   const s = W / 390;
-  const consoleH = R(268 * Math.min(1, s)), consoleY = H - 8 - consoleH;
+  // round 5: four full-width moves, each with its whole description; they scroll inside the 268 px console (a taller
+  // console still scrolled on every phone and only took height from the cards)
+  const consoleH = 268, consoleY = H - 8 - consoleH;
   const T = phoneTurn(W, H, s, consoleY, consoleH);
   if (turn) return T;
-  const matTop = R(56 * s), matH = Math.min(R(504 * s), consoleY - 8 - matTop);
+  // round 5: a one-line plate for each card in play, the rival's under the rail and yours over the console
+  const strip = PHONE_STRIP;
+  const matTop = R(56 * s) + strip + 14, matH = Math.min(R(504 * s), consoleY - 8 - matTop - strip);
   const k = matH / (504 * s); // a short phone squeezes the mat's rows together
   const X = (x) => x * s, Y = (y) => matTop + (y - 56) * s * k, S = (v) => v * s * Math.min(1, k);
   const b = (x, y, w, h) => ({ x: X(x) + (w * s - S(w)) / 2, y: Y(y), w: S(w), h: S(h) });
-  const P = { active: b(125, 320, 140, 196), bench: [b(24, 320, 66, 92), b(24, 424, 66, 92)], ko: b(300, 320, 66, 92), leader: b(296, 424, 72, 96), kit: null };
-  const Rv = { active: b(125, 100, 140, 196), bench: [b(300, 204, 66, 92), b(300, 100, 66, 92)], ko: b(24, 204, 66, 92), leader: b(22, 84, 72, 96), kit: null };
+  // the side columns hold two 60 x 84 cards in the active's 196 px, 28 apart, so the lower card's HP tab (about 21 px
+  // over its card) clears the card above it on a squeezed phone too
+  const P = { active: b(125, 320, 140, 196), bench: [b(27, 320, 60, 84), b(27, 432, 60, 84)], ko: b(303, 320, 60, 84), leader: b(296, 424, 72, 96), kit: null };
+  const Rv = { active: b(125, 100, 140, 196), bench: [b(303, 212, 60, 84), b(303, 100, 60, 84)], ko: b(27, 212, 60, 84), leader: b(22, 84, 72, 96), kit: null };
   const aH = P.active.h, aW = (aH * 63) / 88;
   return {
     phone: true, W, H, rail: R(52 * s), tilt: 0,
     // every card's box is the turn's active size, scaled down to its well: a turn's change of size is a transform
     mat: { x: X(8), y: matTop, w: X(374), h: matH }, cx: W / 2, cy: Y(308), aW, aH, sW: T.sW, sH: T.sH,
     zones: { player: P, rival: Rv },
-    // the turn disc in the right column's gap: the left gap holds your bench card's HP tab
-    disc: { x: X(333) - S(20), y: Y(308) - S(7.5), w: S(40), h: S(15) },
     console: { x: X(8), y: consoleY, w: X(374), h: consoleH },
+    plates: { rival: { x: X(8), y: 62, w: X(374), strip: true }, player: { x: X(8), bottom: consoleY - 6, w: X(374), strip: true } },
   };
 }
+/** The height a phone gives each one-line plate (shared/hud.css .plate[data-strip]). */
+const PHONE_STRIP = 40;
 
 /** A phone while a turn plays: the console keeps only its row of acts (Auto among them), and the mat takes the room
  *  above it. The actives grow to 240 px at 390 wide, the benches to 70 x 98, the two rows part round the centre line. */
 function phoneTurn(W, H, s, consoleY, consoleH) {
-  const matTop = R(56 * s), acts = consoleY + consoleH - 6 - 48 - 4;
-  const matB = acts - 8, matH = matB - matTop;
+  const matTop = R(56 * s) + PHONE_STRIP + 14, acts = consoleY + consoleH - 6 - 48 - 4;
+  const matB = acts - 8 - PHONE_STRIP, matH = matB - matTop;
   const aH = R(Math.min(240 * s, (matH - 44 * 2 - 120) / 2)), aW = (aH * 63) / 88;
   const bH = R(98 * s * Math.min(1, aH / (240 * s))), bW = (bH * 63) / 88;
   const cx = W / 2, top = matTop + R(44 * s), bottom = matB - R(44 * s);
@@ -109,8 +189,8 @@ function phoneTurn(W, H, s, consoleY, consoleH) {
     phone: true, turn: true, W, H, rail: R(52 * s), tilt: 0,
     mat: { x: R(8 * s), y: matTop, w: W - 2 * R(8 * s), h: matH }, cx, cy, aW, aH, sW: aW, sH: aH,
     zones: { player: P, rival: Rv },
-    disc: { x: rx + bW / 2 - R(20 * s), y: cy - R(7.5 * s), w: R(40 * s), h: R(15 * s) },
     console: { x: R(8 * s), y: consoleY, w: W - 2 * R(8 * s), h: consoleH },
+    plates: { rival: { x: R(8 * s), y: 62, w: W - 2 * R(8 * s), strip: true }, player: { x: R(8 * s), bottom: acts - 6, w: W - 2 * R(8 * s), strip: true } },
   };
 }
 
@@ -173,12 +253,8 @@ export class MatBoard extends Layout {
     this.markEl = el('i', 'mat-mark', m);
     this.markEl.innerHTML = K.icon('kl');
     this.stitch = el('i', 'mat-stitch', m);
-    this.disc = el('div', 'mat-disc', m);
-    this.discNum = el('b', '', this.disc, '1');
-    this.disc.setAttribute('aria-label', 'Turn 1');
     this.wells = {};
     this.koCount = {};
-    this.kits = {};
     for (const s of SIDES) {
       const w = { active: el('i', 'well well-active', m), bench: [], ko: el('i', 'well well-ko', m) };
       w.active.dataset.side = s; w.ko.dataset.side = s;
@@ -191,11 +267,6 @@ export class MatBoard extends Layout {
       this.wells[s] = w;
       this.koCount[s] = el('b', 'ko-count', m);
       this.koCount[s].dataset.side = s;
-      const tray = s === 'player' ? el('button', 'kit-tray', m) : el('div', 'kit-tray', m);
-      tray.dataset.side = s;
-      if (s === 'player') { tray.type = 'button'; tray.setAttribute('aria-label', 'Kit'); tray.addEventListener('click', () => this.ctx.onKit?.()); }
-      const chips = E.ITEMS.map((it) => { const c = el('i', 'kit-chip', tray); c.dataset.item = it.id; c.title = it.name; return c; });
-      this.kits[s] = { tray, chips };
     }
     this.cardLayer = el('div', 'mat-cards', m);
     this.fxLayer = el('div', 'mat-fx', m);
@@ -266,25 +337,23 @@ export class MatBoard extends Layout {
       z.bench.forEach((b, i) => put(this.wells[s].bench[i], b));
       put(this.wells[s].ko, z.ko);
       const kc = local(z.ko);
-      const right = g.phone ? s === 'rival' : s === 'player';
-      this.koCount[s].style.transform = `translate3d(${right ? kc.x + kc.w + 8 : kc.x - 8}px,${kc.y + kc.h - 34}px,0)${right ? '' : ' translateX(-100%)'}`;
-      // the leader stands in its zone on the shared foot anchor, at whole device pixels per atlas pixel
+      // the count stands over its pile on a wide mat (the rim has no room beside it), beside it on a phone
+      if (!g.phone) this.koCount[s].style.transform = `translate3d(${kc.x + kc.w / 2}px,${s === 'rival' ? kc.y + kc.h + 4 : kc.y - 38}px,0) translateX(-50%)`;
+      else { const right = s === 'player'; this.koCount[s].style.transform = `translate3d(${right ? kc.x + kc.w + 8 : kc.x - 8}px,${kc.y + kc.h - 34}px,0)${right ? '' : ' translateX(-100%)'}`; }
+      // the leader stands in its zone on the shared foot anchor, at the scale its box allows (leaderScale)
       const L = this.leaders[s], lb = local(z.leader), foot = { x: lb.w / 2, y: (lb.h * 116) / 128 };
       L.box(lb);
-      L.place(foot, wholeScale(L.id, foot.y));
-      const kit = this.kits[s].tray;
-      if (z.kit) { kit.hidden = false; put(kit, z.kit); } else kit.hidden = true;
+      L.place(foot, this.leaderScale(s, foot.y));
       // the lead's world, as a halftone bloom on the floor round its well
       const a = local(z.active), tw = a.w * 3.1, th = a.h * 1.7;
       this.tint[s].style.width = `${tw}px`; this.tint[s].style.height = `${th}px`;
       this.tint[s].style.transform = `translate3d(${a.x + a.w / 2 - tw / 2}px,${a.y + a.h / 2 - th / 2}px,0)`;
     }
-    put(this.disc, g.disc);
     this.line.style.transform = `translate3d(0,${g.cy - M.y}px,0)`;
     // the kl signature, debossed at the free end of the centre line
     const mk = g.phone ? 0 : Math.round(g.aH * 0.3);
     this.markEl.hidden = !mk;
-    if (mk) { const zr = g.zones.rival.bench[1], x = (zr.x + zr.w + M.x + M.w) / 2; this.markEl.style.width = this.markEl.style.height = `${mk}px`; this.markEl.style.transform = `translate3d(${(x - M.x - mk / 2).toFixed(1)}px,${(g.cy - M.y - mk / 2).toFixed(1)}px,0)`; }
+    if (mk) { const zr = g.zones.rival.bench[1], x = (M.x + zr.x) / 2; this.markEl.style.width = this.markEl.style.height = `${mk}px`; this.markEl.style.transform = `translate3d(${(x - M.x - mk / 2).toFixed(1)}px,${(g.cy - M.y - mk / 2).toFixed(1)}px,0)`; }
     this.cardLayer.style.setProperty('--aw', `${g.sW}px`);
     for (const sl of this.slots.values()) { sl.el.style.width = `${g.sW}px`; sl.el.style.height = `${g.sH}px`; }
     if (!moving || g.mat.h !== was.mat.h) this.paintScreen();
@@ -292,9 +361,18 @@ export class MatBoard extends Layout {
     else if (this.finaled) this.finaleRow(false);
     if (flip) this.playFlip(flip, was);
   }
+  /** A leader's scale (atlas px to css px). */
+  leaderScale(s, footY) {
+    // one art pixel per css pixel (crisp at any device ratio: whole device pixels at 1 and 2), never larger; smaller
+    // only where the box has less room; the rival never larger than yours
+    const own = (side, y) => Math.max(0.35, Math.min(1, y / tallOf(this.leaders[side].id)));
+    if (s === 'player' || this.g?.phone) return own(s, footY);
+    const pz = this.g.zones.player.leader;
+    return Math.min(own('rival', footY), own('player', (pz.h * 116) / 128));
+  }
   /** Where every placed part stands now (its transform and size), for a move to the next layout. */
   capture() {
-    const parts = [this.disc, this.line, this.markEl, ...SIDES.flatMap((s) => [this.wells[s].active, ...this.wells[s].bench, this.wells[s].ko, this.koCount[s], this.leaders[s].el, this.tint[s]]), ...[...this.slots.values()].map((sl) => sl.el)];
+    const parts = [this.line, this.markEl, ...SIDES.flatMap((s) => [this.wells[s].active, ...this.wells[s].bench, this.wells[s].ko, this.koCount[s], this.leaders[s].el, this.tint[s]]), ...[...this.slots.values()].map((sl) => sl.el)];
     return parts.map((e) => ({ e, t: e.style.transform, w: parseFloat(e.style.width) || 0, h: parseFloat(e.style.height) || 0 }));
   }
   /** Move every part from where it stood to where the new layout put it: one transform each, and the mat's own edge. */
@@ -376,6 +454,15 @@ export class MatBoard extends Layout {
     const k = zs.ko, o = Math.min(z.n ?? 0, 4) * 3;
     return { x: k.x + o, y: k.y - o, w: k.w, h: k.h };
   }
+  /** A benched or fallen card is laid out at the width it is drawn at: mat.css sets its `--card` to `--lay-w` (over
+   *  the kit's fit, whose small tier never goes under 164 px), so the card's own container rules choose its small
+   *  layout as the home page's do at that size; the box is scaled up to the slot by `--lay-up`, and the slot's
+   *  transform scales it back down. */
+  layFor(sl, z) {
+    const lay = Math.max(1, Math.round(this.g.sW * this.rectOf(sl, z).h / this.g.sH));
+    sl.el.style.setProperty('--lay-w', `${lay}px`);
+    sl.el.style.setProperty('--lay-up', (this.g.sW / lay).toFixed(4));
+  }
   transformFor(sl, z) {
     const b = this.local(this.rectOf(sl, z)), g = this.g;
     return `translate3d(${(b.x + b.w / 2 - g.sW / 2).toFixed(1)}px,${(b.y + b.h - g.sH).toFixed(1)}px,${z.zone === 'ko' ? (z.n ?? 0) * 0.5 : 0}px) scale(${(b.h / g.sH).toFixed(4)})`;
@@ -391,6 +478,7 @@ export class MatBoard extends Layout {
       const moved = sl.zone !== z.zone || sl.n !== z.n;
       sl.el.dataset.zone = z.zone;
       sl.zone = z.zone; sl.n = z.n;
+      this.layFor(sl, z);
       if (motion && moved && !this.reduced()) jobs.push(this.tween(sl.el, tf, ms, IN_OUT));
       else this.tween(sl.el, tf, 0);
       // the bench wells are buttons for that card
@@ -461,16 +549,8 @@ export class MatBoard extends Layout {
       const side = view.sides[s];
       const n = side.team.filter((f) => f.hp <= 0).length;
       this.koCount[s].textContent = n ? String(n) : '';
+      this.wells[s].ko.dataset.none = n ? 'false' : 'true';
       this.koCount[s].setAttribute('aria-label', `${n} out`);
-      this.kits[s].chips.forEach((c) => { c.dataset.left = String(side.kit[c.dataset.item] ?? 0); });
-      if (s === 'player') this.kits[s].tray.setAttribute('aria-label', `Kit, ${Object.values(side.kit).reduce((a, b) => a + b, 0)} left`);
-    }
-    if (view.turn !== this.turnShown) {
-      const first = !this.turnShown;
-      this.turnShown = view.turn;
-      this.discNum.textContent = String(view.turn);
-      this.disc.setAttribute('aria-label', `Turn ${view.turn}`);
-      if (!first && !this.reduced()) this.disc.animate([{ scale: '1.18' }, { scale: '1' }], { duration: 260, easing: SLAM });
     }
   }
   drawWorlds(view, motion = true) {
@@ -512,15 +592,16 @@ export class MatBoard extends Layout {
   /** The tokens: one per hit, round ink with white numerals, folded into one past three. Sum = HP lost. */
   drawTokens(sl, slamLast = 0) {
     const list = sl.tokens.filter((n) => n > 0);
-    const shown = list.length > 3 ? [list.reduce((a, b) => a + b, 0)] : list;
-    const key = shown.join(',') + (list.length > 3 ? 'f' : '');
+    // round 5: the plate carries the HP, so a card keeps one disc of the damage it has taken (summed from the second hit)
+    const shown = list.length > 1 ? [list.reduce((a, b) => a + b, 0)] : list;
+    const key = shown.join(',') + (list.length > 1 ? 'f' : '');
     if (sl.tokensEl.dataset.key === key) return;
     sl.tokensEl.dataset.key = key;
     sl.tokensEl.textContent = '';
     const made = shown.map((n, i) => {
       const t = el('b', 'token', sl.tokensEl, String(n));
       t.dataset.i = String(i);
-      if (list.length > 3) t.dataset.fold = 'true';
+      if (list.length > 1) t.dataset.fold = 'true';
       return t;
     });
     // a phone lays its tokens with a fade, not a slam: the contact's shake already carries the blow
@@ -620,7 +701,7 @@ export class MatBoard extends Layout {
 
   // ---------- small board effects
   shakeCard(sl, amp, ms) {
-    const k = sl.side === 'rival' ? -1 : 1, f = [];
+    const k = sl.side === 'rival' ? 1 : -1, f = [];
     // a phone: a shorter, smaller shake with no turn in it (a translate the compositor moves alone)
     const ph = this.g?.phone, n = ph ? 4 : 8, a = ph ? amp * 0.6 : amp;
     for (let i = 0; i <= n; i++) { const d = (1 - i / n) ** 2; f.push({ transform: ph ? `translate3d(${((i % 2 ? -1 : 1) * a * d * k).toFixed(2)}px,0,0)` : `translate3d(${((i % 2 ? -1 : 1) * a * d * k).toFixed(2)}px,${(-a * 0.3 * d).toFixed(2)}px,0) rotate(${((i % 2 ? -1 : 1) * 1.2 * d).toFixed(2)}deg)` }); }
@@ -650,6 +731,29 @@ export class MatBoard extends Layout {
     const f = v.sides[side].team[v.sides[side].active];
     return f ? this.slots.get(f.uid) : null;
   }
+  /** Where each side's plate stands (round 5, shared/hud.js): beside its active card on a wide mat. The mat is tilted
+   *  8 degrees, so the box is read off the well's painted rectangle, not the flat geometry. */
+  plateBox(side) {
+    if (this.g?.phone) return this.g.plates?.[side] ?? null;
+    const z = this.g?.zones[side];
+    if (!z?.plate) return null;
+    // the wells live under the camera, which pushes in for board scenes: measure only at rest, else the last resting box
+    const cam = this.camEl ? getComputedStyle(this.camEl).transform : 'none';
+    const key = `${this.g.W}x${this.g.H}`, pl = z.plate;
+    this.restPlates ??= {};
+    if (cam !== 'none' && !/^matrix\(1, 0, 0, 1, 0, 0\)$/.test(cam)) return this.restPlates[key]?.[side] ?? (pl.foot ? { x: pl.x, bottom: pl.y + pl.h, w: pl.w } : { x: pl.x, y: pl.y, w: pl.w });
+    const w = this.wells?.[side]?.active?.getBoundingClientRect();
+    if (!w || !w.width) return pl;
+    const right = pl.x > z.active.x;
+    const gap = right ? pl.x - (z.active.x + z.active.w) : z.active.x - (pl.x + pl.w);
+    const x = right ? w.right + gap : w.left - gap - pl.w;
+    // yours from the top of its card (your leader stands under it), the rival's from the foot (its leader above)
+    const box = pl.foot ? { x, bottom: w.bottom, w: pl.w } : { x, y: w.top, w: pl.w };
+    (this.restPlates[key] ??= {})[side] = box;
+    return box;
+  }
+  /** The battle log's rail on a wide screen. */
+  logBox() { return this.g?.log ?? null; }
   anchor(role, side) {
     const sl = this.activeSlot(side);
     if (!sl) return null;
@@ -685,8 +789,9 @@ export class MatBoard extends Layout {
    *  lies over the band, where the call-out and the dealt card are. */
   cutinAt(side, w, h, box) {
     if (!box?.band) return null;
-    if (side === 'rival') return { x: 16, y: Math.max(8, box.band.top - 10 - h) };
-    return { x: innerWidth - 16 - w, y: Math.min(innerHeight - 8 - h, box.top + box.height + 10) };
+    // each leader steps in on its own end of the table: the rival's top right, yours bottom left
+    if (side === 'rival') return { x: innerWidth - 16 - w, y: Math.max(8, box.band.top - 10 - h) };
+    return { x: 16, y: Math.min(innerHeight - 8 - h, box.top + box.height + 10) };
   }
   /** The board's half of the bars: the window above and below the band's host, dimmed as the bars dim the mat. */
   dimOn(box, on) {
@@ -866,7 +971,7 @@ export class MatBoard extends Layout {
   }
   /** A miss: the defender slides 18 px aside and back, and a Miss plate sits where the token would. */
   sidestep(sl) {
-    const k = sl.side === 'rival' ? 1 : -1;
+    const k = sl.side === 'rival' ? -1 : 1;
     this.anim(sl.shake, [{ transform: 'none' }, { transform: `translate3d(${18 * k}px,-3px,0) rotate(${3 * k}deg)`, offset: 0.4 }, { transform: 'none' }], { duration: 240, easing: OUT });
     this.stampText(sl, 'Miss', 'miss', 700);
   }
@@ -945,8 +1050,8 @@ export class MatBoard extends Layout {
   supportChip(sl, scene) { if (sl && scene?.label) this.stampText(sl, scene.label, 'support', 900); }
   async itemFly(side, target, name, ms) {
     if (!target) return;
-    const tray = this.kits[side].tray;
-    const from = !tray.hidden ? this.restRect(tray) : this.restRect(this.leaders[side].el);
+    // the item comes from its leader (the Kit is the plate's row now, shared/hud.js)
+    const from = this.restRect(this.leaders[side].el);
     const to = this.restRect(target.parts.root);
     const chip = el('b', 'item-chip', this.camEl, name);
     chip.style.transform = `translate3d(${from.x + from.w / 2}px,${from.y + from.h / 2}px,0) translate(-50%,-50%)`;
@@ -979,6 +1084,7 @@ export class MatBoard extends Layout {
     const z = { zone: 'ko', n: k.indexOf(sl.uid) };
     const tf = this.transformFor(sl, z);
     sl.zone = 'ko'; sl.n = z.n; sl.el.dataset.zone = 'ko'; sl.el.dataset.down = 'true';
+    this.layFor(sl, z);
     delete sl.num.dataset.hpShown;
     if (sl.live) this.reprint(sl, false);
     if (rd) { this.tween(sl.el, tf, 0); this.face(sl, true, false); this.drawSides(this.view); return; }
@@ -1030,7 +1136,6 @@ export class MatBoard extends Layout {
     });
     for (const f of v.sides[loser].team) { const sl = this.slots.get(f.uid); if (sl) sl.el.dataset.dim = 'true'; }
     this.matEl.dataset.finale = winner;
-    if (!rd) this.anim(this.disc, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }); else this.disc.style.opacity = '0';
     await this.finaleRow(!rd);
   }
   /** The winners' row: on the centre line, clear of the losing side's KO stack, on a clear band (every well it would
@@ -1058,9 +1163,9 @@ export class MatBoard extends Layout {
     for (const s of SIDES) {
       const z = g.zones[s], w8 = this.wells[s];
       [[w8.active, z.active], ...w8.bench.map((e, i) => [e, z.bench[i]]), [w8.ko, z.ko]].forEach(([e, b]) => { e.dataset.under = under(b) ? 'true' : 'false'; });
-      this.kits[s].tray.dataset.under = z.kit && under(z.kit) ? 'true' : 'false';
       // a KO count the row would cover stands just off the band, on its side of the table
-      const kc = this.koCount[s], k = z.ko, right = g.phone ? s === 'rival' : s === 'player';
+      const kc = this.koCount[s], k = z.ko, right = s === 'player';
+      if (!g.phone) { const l = this.local({ x: k.x + k.w / 2, y: s === 'rival' ? k.y + k.h + 4 : Math.max(g.mat.y + 6, k.y - 38), w: 0, h: 0 }); kc.style.transform = `translate3d(${l.x}px,${l.y}px,0) translateX(-50%)`; continue; }
       const at = { x: right ? k.x + k.w + 8 : k.x - 8, y: k.y + k.h - 34 };
       if (at.y + 34 > band.y0 && at.y < band.y1 && (right ? at.x < band.x1 : at.x > band.x0)) at.y = s === 'rival' ? band.y0 - 40 : band.y1 + 6;
       const l = this.local({ x: at.x, y: at.y, w: 0, h: 0 });

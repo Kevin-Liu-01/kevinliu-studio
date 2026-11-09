@@ -33,4 +33,4 @@ The data every page and agent file reads, computed once at build.
 ## Gotchas
 <!-- agent-docs:fill:gotchas -->
 - `FACE[id].hue` holds the card's colours (`energy`, `deep`, `panel`, `glint`, `ink`).
-- The battle holds fewer cards than the wall; `battleRoster` reads its roster from `public/battle/vendor/cards/fighters.js`.
+- The battle holds fewer cards than the wall; `battleRoster` reads its roster from the engine bundle `vendor/battle/vendor/engine.js`.

@@ -261,16 +261,14 @@ button.hcard:focus-visible { outline-offset: 3px; }
 }
 .say { display: none; }
 .moves { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; min-width: 0; }
-.move { display: grid; grid-template-rows: auto auto minmax(0, 1fr); align-content: start; justify-items: stretch; gap: 6px; height: 100%; padding: 11px 13px 10px; text-align: left; white-space: normal; border-radius: 13px; min-width: 0; }
+.cmove { display: grid; grid-template-rows: auto auto minmax(0, 1fr); align-content: start; justify-items: stretch; gap: 6px; height: 100%; padding: 11px 13px 10px; text-align: left; white-space: normal; border-radius: 13px; min-width: 0; }
 .move-head { display: flex; align-items: center; gap: 7px; min-width: 0; font: 700 15px/1.1 var(--sans); }
 .move-head .i { color: var(--d); }
 .move-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .move-ring { margin-left: auto; flex: none; width: 3.1em; text-align: center; font: 800 11.5px/1 var(--sans); font-variant-numeric: tabular-nums; padding: 4px 0; border-radius: 6px; }
-.move[data-ring="up"] .move-ring { background: var(--paper); color: oklch(14% 0.01 75); }
-.move[data-ring="down"] .move-ring { box-shadow: inset 0 0 0 1.5px var(--ink-3); color: var(--ink-2); }
-.move-nums { font: 600 12.5px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
-.move-desc { font: 400 12.5px/1.32 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
-.move[aria-disabled="true"] .move-head .i { color: var(--ink-3); }
+.cmove[data-ring="up"] .move-ring { background: var(--paper); color: oklch(14% 0.01 75); }
+.cmove[data-ring="down"] .move-ring { box-shadow: inset 0 0 0 1.5px var(--ink-3); color: var(--ink-2); }
+.cmove[aria-disabled="true"] .move-head .i { color: var(--ink-3); }
 .acts { display: grid; grid-template-columns: repeat(2, minmax(84px, 1fr)); grid-auto-rows: minmax(44px, 1fr); gap: 6px; }
 .act { padding: 0 10px; }
 .panel { position: absolute; left: 6px; right: 6px; bottom: calc(100% + 10px); display: grid; gap: 8px; padding: 10px; border-radius: 16px; background: var(--room-clay); box-shadow: var(--room-raise-l); }
@@ -309,6 +307,18 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .team-rail { justify-self: start; }
   .team-lead span { display: none; }
 }
+/* the narrowest desktops (720 to 900 px) share the rail with both teams: the speed is one key that cycles, as on a
+   phone, and Replay stays on its R key, so every key fits */
+@media (max-width: 900px) and (min-width: 720px) {
+  .speed .key:not([aria-pressed="true"]), .speed .bi { display: none; }
+  .speed .key { min-width: 44px; padding: 0 8px; }
+  #replay { display: none; }
+  .rail-keys { gap: 6px; }
+  .rail-keys .key { padding: 0 11px; }
+  /* the leaders' names and the turn chip give way (each pip keeps its card; the console's tab says the turn) */
+  .team-lead, .team-turn { display: none; }
+  .team-rail { gap: 8px; }
+}
 /* ============================================================ phones: the team rail under the keys, the console a 2x2 */
 @media (max-width: 719px) {
   .rail { grid-template-columns: 1fr; grid-template-rows: var(--rail-h) var(--team-h); height: calc(var(--rail-h) + var(--team-h)); padding: 0 8px; align-items: center;
@@ -328,10 +338,8 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .console { grid-template-columns: 1fr; grid-template-rows: 38px minmax(0, 1fr) 48px; padding: 6px; }
   .say { display: block; margin: 0; padding: 4px 6px 0; font: 600 13px/1.3 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .moves { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(44px, 1fr)); }
-  .move { grid-template-rows: auto auto; gap: 5px; padding: 8px 10px; }
+  .cmove { grid-template-rows: auto auto; gap: 5px; padding: 8px 10px; }
   .move-head { font-size: 14px; }
-  .move-desc { display: none; }
-  .move-nums { font-size: 11.5px; }
   .acts { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 44px; }
   .result { grid-template-columns: 1fr; gap: 10px; padding: 14px; top: auto; bottom: 8px; }
   .result h1 { font-size: 34px; }

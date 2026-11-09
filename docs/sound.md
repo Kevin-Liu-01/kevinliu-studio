@@ -8,7 +8,7 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 
 - Sound answers the visitor's own actions: a press, a hover, a tilt, a flip, adding or removing a card, tearing a pack,
   and the battle they start.
-- Nothing is fetched before the first gesture. The player unlocks audio on that gesture.
+- On the home page nothing is fetched before the first gesture. The player unlocks audio on that gesture.
 - The home page makes one silent `AudioContext` at idle after load and closes it at once (`src/pages/index.astro`,
   only when sound would be on). A browser's first context waits on its audio service starting, which took 4.7 s inside
   the first press on a busy machine (2026-11-05); started at idle, the press makes its own context in about 1 ms.
@@ -23,5 +23,8 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 - Home: `/sound/boot.gallery.js` (module, before `gallery.js`) sets `globalThis.Sound` and binds `#sound`.
   `gallery.js` and `rituals.js` carry the hooks from r4/sound `INTEGRATION.md` section 2, applied by the sync as
   anchored patches. Each call goes through `globalThis.Sound?.`, so a page whose sound fails behaves as before.
-- Battle: INTEGRATION.md sections 3 and 4 are wired by the battle-r4b run in r4/play and r3/battle. Until that run's
-  re-vendor lands and is synced, the battle plays silent.
+- Battle: round 5 (r4/play 42ff51c7, `SPEC.md` section 10) wires INTEGRATION.md section 3 in `shared/battle.js`: a
+  dynamic import of `/sound/sound.js` with `manifest.battle.json`, the rail's speaker key (N) bound to the same saved
+  choice, and every board moment and scene cue on the stage's own clock. The visitor started the battle with Play, so
+  the page asks for the battle group and its mode's theme as it loads (`resumeAtLoad`, about 30 short files) and plays
+  once the browser allows audio, after the first gesture on the page.

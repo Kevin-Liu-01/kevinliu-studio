@@ -219,7 +219,12 @@ function* duelSteps(g, P, fr, step = 4) {
   // the cost of a pair: its composition, then its hard failures; `bound` is what a pair must beat (the best so far,
   // from an earlier painting size too), so the dearer tests run only for a pair that could win
   let best = null, bound = fr.bound ?? Infinity;
-  const own = (n) => { const big = Math.log((n.lk * LEADER.h) / (T.lead * fr.H)); return (big > 0 ? 2 : 1) * Math.abs(big) + 0.6 * n.soft; };
+  // your side keeps off the frame's kept rectangles (`fr.keep`: your plate on a wide screen): the card that stands
+  // first wholly, your leader at rest beyond a 6% graze (its box is its pose's whole cell, margins and all, so a
+  // stricter rule shrank the 1440 duel by a tenth for no visible overlap)
+  const keep = fr.keep ?? [];
+  const kept = (n) => { let h = 0; for (const k of keep) h += lapB(n.fbs[0], k) / area(n.fbs[0]) + Math.max(0, lapB(n.lb, k) / area(n.lb) - 0.06); return h; };
+  const own = (n) => { const big = Math.log((n.lk * LEADER.h) / (T.lead * fr.H)); return (big > 0 ? 2 : 1) * Math.abs(big) + 0.6 * n.soft + 30 * kept(n); };
   // (no allocation per pair: the failures are counted as bits and named only for a pair that wins)
   const WHY = ['far not far enough', 'pads too close', 'figures overlap', 'rival too tall', 'a leader over the other side', 'rival leader behind your figure'];
   const lapB = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));

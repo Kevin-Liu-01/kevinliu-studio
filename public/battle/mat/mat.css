@@ -90,11 +90,6 @@ html[data-boot] #app { visibility: hidden; }
 .mat-mark { position: absolute; left: 0; top: 0; display: grid; place-items: center; padding: 10px; border-radius: 50%; background: var(--tray); pointer-events: none; }
 .mat-mark .i { width: 100%; height: 100%; color: var(--tray); filter: drop-shadow(1px 1.5px 0 oklch(100% 0 0 / .8)) drop-shadow(-.8px -1px 0 oklch(42% 0.035 70 / .35)); }
 :root[data-theme="dark"] .mat-mark .i { filter: drop-shadow(1px 1.5px 0 oklch(100% 0 0 / .07)) drop-shadow(-.8px -1px 0 oklch(0% 0 0 / .6)); }
-.mat-disc { position: absolute; left: 0; top: 0; display: grid; place-items: center; border-radius: 50%; background: var(--room-clay); box-shadow: var(--room-raise-m); pointer-events: none; }
-.mat-disc b { font: 800 22px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink); }
-.mat[data-phone="true"] .mat-disc { border-radius: 10px; box-shadow: var(--room-raise-s); }
-.mat[data-phone="true"] .mat-disc b { font-size: 11px; }
-.mat[data-phone="true"] .mat-disc { border-radius: 8px; }
 
 /* the leads' worlds, a halftone print on the floor round each active well: the card's room through the 4x4 Bayer */
 .mat-tint {
@@ -120,16 +115,9 @@ button.well:focus-visible { outline: 2px solid var(--ink); outline-offset: 9px; 
 .mat[data-phone="true"] .ko-count { font-size: 22px; }
 
 /* the result's row lies on a clear band: every well and tray under it fills in with the mat */
-:is(.well, .kit-tray)[data-under="true"] { opacity: 0; pointer-events: none; transition: opacity .3s; }
+.well[data-under="true"] { opacity: 0; pointer-events: none; transition: opacity .3s; }
 /* a scene staged on the mat: past the band's host the window dims as its bars dim the mat */
 .mat-dim { position: absolute; z-index: 2; left: 0; top: 0; width: 100%; height: 0; background: var(--band-dim); opacity: 0; pointer-events: none; }
-
-/* the Kit: a small sunk tray at each side's end, nine chips, lit while one is left */
-.kit-tray { position: absolute; left: 0; top: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 12px; border: 0; margin: 0; border-radius: 16px; background: var(--well); box-shadow: var(--well-sink); }
-button.kit-tray { cursor: pointer; }
-.kit-chip { border-radius: 50%; background: var(--room-clay); box-shadow: var(--room-raise-s); transition: opacity .3s; }
-.kit-chip[data-left="0"] { background: none; box-shadow: var(--room-sink-s); }
-.kit-tray[data-side="rival"] .kit-chip:not([data-left="0"]) { background: color-mix(in oklab, var(--room-clay) 84%, var(--rival)); }
 
 /* ============================================================ the cards on the mat: the HUD is on them */
 .mat-cards { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
@@ -137,6 +125,9 @@ button.kit-tray { cursor: pointer; }
 .slot-lift { position: absolute; inset: 0; transform-origin: 50% 100%; transform-style: preserve-3d; transition: opacity .18s; }
 .slot-shake, .slot-flip { position: absolute; inset: 0; transform-origin: 50% 55%; }
 .slot .bc-card { left: 0; top: 0; width: 100%; height: 100%; }
+.slot:is([data-zone="bench"], [data-zone="ko"]) .bc-card { width: var(--lay-w, 100%); height: auto; transform-origin: 0 0; scale: var(--lay-up, 1); }
+/* its card is laid out at that width too: over the kit's fit (inline --card and scale), whose small tier stops at 164 px */
+.slot:is([data-zone="bench"], [data-zone="ko"]) .bc-card > .card { --card: var(--lay-w) !important; scale: none !important; }
 .slot .bc-card .card { pointer-events: none; }
 .slot[data-away="true"] .slot-lift { opacity: 0; transition-duration: 0s; }
 .slot[data-dim="true"] { opacity: .38; transition: opacity .5s; }
@@ -145,8 +136,8 @@ button.kit-tray { cursor: pointer; }
 .slot[data-zone="finale"][data-out="true"] .tab { opacity: 0; }
 .slot[data-zone="finale"][data-out="true"] .slot-flip { opacity: .5; filter: saturate(.2); transition: opacity .4s, filter .4s; }
 .mat[data-finale] .leader-quote { max-width: 190px; }
-.mat[data-finale] .leader[data-side="player"] .leader-quote { right: auto; left: 0; }
-.mat[data-finale] .leader[data-side="rival"] .leader-quote { left: auto; right: 0; }
+.mat[data-finale] .leader[data-side="player"] .leader-quote { right: auto; left: 0; bottom: calc(100% - 4px); }
+.mat[data-finale] .leader[data-side="rival"] .leader-quote { left: auto; right: 0; top: calc(100% + 44px); }
 
 /* the HP tab: die-cut on the card's top edge in the card's colour; its figures are the card's HP */
 .tab {
@@ -191,14 +182,15 @@ button.kit-tray { cursor: pointer; }
 .leader-shade { position: absolute; left: 0; top: 0; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, oklch(30% 0.02 70 / .38), transparent); }
 .leader-plate { position: absolute; left: 50%; top: calc(100% + 2px); translate: -50% 0; margin: 0; display: grid; justify-items: center; gap: 3px; white-space: nowrap; }
 .leader-plate b { font: 800 14px/1 var(--sans); color: var(--ink); }
-.leader-plate span { font: 600 11px/1 var(--sans); color: var(--ink-2); }
+.leader-plate span { font: 600 11px/1 var(--sans); color: var(--ink); padding: 2px 5px; border-radius: 5px; background: color-mix(in oklch, var(--room-clay) 82%, transparent); }
 .leader[data-side="rival"] .leader-plate b::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--rival); margin-right: 6px; vertical-align: 1px; }
 .leader-quote {
   position: absolute; z-index: 7; transform: translateZ(90px); margin: 0; width: max-content; max-width: 230px; padding: 9px 14px 10px; background: var(--ink); color: var(--room-clay);
   font: 600 14px/1.25 var(--sans); text-wrap: balance; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 }
-.leader[data-side="player"] .leader-quote { right: 40%; bottom: calc(100% - 4px); }
-.leader[data-side="rival"] .leader-quote { left: 30%; top: calc(100% + 44px); }
+/* round 5: each leader stands beside its plate, so its line opens on its outer side, clear of the plate and the cards */
+.leader[data-side="player"] .leader-quote { right: 72%; bottom: 46%; }
+.leader[data-side="rival"] .leader-quote { left: 72%; top: 26%; }
 .leader-quote b { display: none; }
 .mat[data-phone="true"] .leader-quote { display: none; }
 .mat[data-phone="true"] .leader-plate b { font-size: 11px; }
@@ -219,16 +211,14 @@ button.kit-tray { cursor: pointer; }
 }
 .say { display: none; }
 .moves { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; min-width: 0; }
-.move { display: grid; grid-template-rows: auto auto minmax(0, 1fr); align-content: start; justify-items: stretch; gap: 6px; height: 100%; padding: 11px 13px 10px; text-align: left; white-space: normal; border-radius: 13px; min-width: 0; }
+.cmove { display: grid; grid-template-rows: auto auto minmax(0, 1fr); align-content: start; justify-items: stretch; gap: 6px; height: 100%; padding: 11px 13px 10px; text-align: left; white-space: normal; border-radius: 13px; min-width: 0; }
 .move-head { display: flex; align-items: center; gap: 7px; min-width: 0; font: 700 15px/1.1 var(--sans); }
 .move-head .i { color: var(--d); }
 .move-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .move-ring { margin-left: auto; flex: none; width: 3.1em; text-align: center; font: 800 11.5px/1 var(--sans); font-variant-numeric: tabular-nums; padding: 4px 0; border-radius: 6px; }
-.move[data-ring="up"] .move-ring { background: var(--ink); color: var(--room-clay); }
-.move[data-ring="down"] .move-ring { box-shadow: inset 0 0 0 1.5px var(--ink-3); color: var(--ink-2); }
-.move-nums { font: 600 12.5px/1 var(--sans); font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
-.move-desc { font: 400 12.5px/1.32 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
-.move[aria-disabled="true"] .move-head .i { color: var(--ink-3); }
+.cmove[data-ring="up"] .move-ring { background: var(--ink); color: var(--room-clay); }
+.cmove[data-ring="down"] .move-ring { box-shadow: inset 0 0 0 1.5px var(--ink-3); color: var(--ink-2); }
+.cmove[aria-disabled="true"] .move-head .i { color: var(--ink-3); }
 .acts { display: grid; grid-template-columns: repeat(2, minmax(84px, 1fr)); grid-auto-rows: minmax(44px, 1fr); gap: 6px; }
 .act { padding: 0 10px; }
 .panel { position: absolute; left: 6px; right: 6px; bottom: calc(100% + 10px); display: grid; gap: 8px; padding: 10px; border-radius: 16px; background: var(--room-clay); box-shadow: var(--room-raise-l); }
@@ -259,10 +249,11 @@ dialog#log ol { list-style: none; margin: 0; padding: 0 18px 18px; display: grid
 dialog#log .log-turn { margin-top: 8px; font-weight: 700; color: var(--ink-2); }
 dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--ink-2); }
 
-@media (max-width: 1199px) { .move-nums { font-size: 11.5px; } .move { padding: 10px 11px 9px; } }
+@media (max-width: 1199px) { .cmove { padding: 10px 11px 9px; } }
 /* ============================================================ phones: the rival above, you below, the console a 2x2 */
 @media (max-width: 719px) {
-  .rail { padding: 0 8px 4px; }
+  /* round 5: the rail keeps its own height; the rival's plate strip sits between it and the mat */
+  .rail { padding: 0 8px 4px; height: 58px; }
   .mark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .rail-keys { width: 100%; justify-content: space-between; gap: 6px; }
   .seg .key { min-width: 64px; }
@@ -271,10 +262,8 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .console { grid-template-columns: 1fr; grid-template-rows: 38px minmax(0, 1fr) 48px; padding: 6px; }
   .say { display: block; margin: 0; padding: 4px 6px 0; font: 600 13px/1.3 var(--sans); color: var(--ink-2); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .moves { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(44px, 1fr)); }
-  .move { grid-template-rows: auto auto; gap: 5px; padding: 8px 10px; }
+  .cmove { grid-template-rows: auto auto; gap: 5px; padding: 8px 10px; }
   .move-head { font-size: 14px; }
-  .move-desc { display: none; }
-  .move-nums { font-size: 11.5px; }
   .acts { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 44px; }
   .result { grid-template-columns: 1fr; gap: 10px; padding: 14px; top: auto; bottom: 8px; }
   .slot:is([data-zone="bench"], [data-zone="ko"]) .tab { scale: 1.4; transform-origin: 0 100%; }
@@ -297,9 +286,12 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 
 /* ============================================================ reduced motion: every step a still */
 @media (prefers-reduced-motion: reduce) {
-  .rail, .console, .key, .slot-lift, .slot[data-dim], .kit-chip, .result, #app[data-scene] .rail, #app[data-scene] .console, .slot[data-zone="finale"] :is(.chips, .tokens) { transition: none !important; }
-}
+  .rail, .console, .key, .slot-lift, .slot[data-dim], }
 
 /* the deal's cards, printed ahead one a frame in an unseen box at their slot's size (board.js prepare) */
 .mat-print { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; contain: strict; }
 .mat-print .bc-card { left: 0; top: 0; width: 100%; height: 100%; }
+
+/* round 5: a KO pile's well shows once a card is out */
+.well-ko[data-none="true"] { opacity: 0; }
+/* (the turn disc is retired; the turn tab carries the turn) */

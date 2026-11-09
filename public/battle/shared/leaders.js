@@ -43,6 +43,8 @@ export function leadersFor(seed, given) {
   const g = String(given ?? '').split(',').filter((x) => IDS.includes(x));
   return g.length === 2 ? g : [IDS[seed % 8], IDS[(seed + 3) % 8]];
 }
+/** The leader's tallest pose in atlas pixels (foot anchor to top). */
+export function tallOf(id) { const t = DATA.byId[id]; return Math.max(...t.cells.map((c, i) => t.anchors[i][1] - c[1])); }
 /** The largest scale at whole device pixels per atlas pixel at which the leader's tallest pose stands in `h` px. */
 export function wholeScale(id, h, dpr = devicePixelRatio || 1) {
   const t = DATA.byId[id];

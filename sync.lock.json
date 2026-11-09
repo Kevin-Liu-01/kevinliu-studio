@@ -1,11 +1,16 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "30e69931",
- "synced": "2026-11-08T18:20:22.366Z",
+ "head": "30e69931 + 42ff51c7",
+ "pins": {
+  "cards": "30e69931",
+  "sound": "30e69931",
+  "battle": "42ff51c7"
+ },
+ "synced": "2026-11-09T17:42:58.968Z",
  "stages": {
   "cards": {
-   "files": 1031,
-   "bytes": 107516313,
+   "files": 1033,
+   "bytes": 107533897,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -5161,6 +5166,16 @@
      "src": "r4/ex/copy/overrides.json",
      "sha256": "210cddfa6a3e8855e4a20e56ddf7c5d6bffa084ba498b402885e3a099984204b",
      "bytes": 134646
+    },
+    "public/ex/face.gen.js": {
+     "src": "r4/ex/face.gen.js",
+     "sha256": "fd39fbd9ca523693f75ab0aa3f22c878165f2d030cf8962577810801055d7ffd",
+     "bytes": 16409
+    },
+    "public/ex/icons/card-symbols.svg": {
+     "src": "r4/ex/icons/card-symbols.svg",
+     "sha256": "c336bb7bec11bf15320c1797f760c2afc26008ad73340cfa4ff71bcaee8799c9",
+     "bytes": 1175
     }
    }
   },
@@ -10661,23 +10676,23 @@
    }
   },
   "battle": {
-   "files": 754,
-   "bytes": 136502154,
+   "files": 893,
+   "bytes": 144494048,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "75cafbde8c600bd6d17956caa31be25916fa636def06d33473f2aa079d4643e1",
-     "bytes": 32103
+     "sha256": "803408f1e749096ad99016f6ea22272535a198d5858ec230f8e1f0ead369fafd",
+     "bytes": 32329
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
-     "sha256": "b006a73c27c3594e843368ebcf052474c3f88f5de87e6827132786e39d3bee49",
-     "bytes": 89143
+     "sha256": "0145d274b5c6490a3f02c2d8f54d5a02e5fff83bd8bd9f2533f01d0c4c41c9dc",
+     "bytes": 92898
     },
     "public/battle/arena/ground.js": {
      "src": "r4/play/arena/ground.js",
-     "sha256": "49fa4a9d9f70f3167ca64c5a2aefadf3dbf1b8759c0b2411a6eaaa50c656d41e",
-     "bytes": 24957
+     "sha256": "11abe3564adba3993ffe48ece2e97352ca50226f84a233b86fdb8fd9c00f9234",
+     "bytes": 25467
     },
     "public/battle/arena/specials.js": {
      "src": "r4/play/arena/specials.js",
@@ -10686,13 +10701,13 @@
     },
     "public/battle/mat/board.js": {
      "src": "r4/play/mat/board.js",
-     "sha256": "1d3918b338dde6afdba45477bbf40b1a946ac605d3612ae782b2b66613633c25",
-     "bytes": 61968
+     "sha256": "8ac06718e7ef22b9fffe587f16872cfd09dd289e85fd20b6d5a3e7618d278607",
+     "bytes": 69933
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "83c0d3ba0e926bb7fad88ef0d590ee77d6d705ffe4f538ee3fac51db9b5141e6",
-     "bytes": 28088
+     "sha256": "2efde40a80b11e9042e6ad6593d312f2b131a25e8a9163849446c02aca60b7bc",
+     "bytes": 27223
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
@@ -10706,28 +10721,58 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "52e9891e63874c4af67a88b00186d8371651ddf7dc621ffbea21300ae8e7968c",
-     "bytes": 46094
+     "sha256": "53b84803d1fdfd18f6b164a1121711e0243d9eccc348efd1fff448de83433d99",
+     "bytes": 61748
+    },
+    "public/battle/shared/excard.js": {
+     "src": "r4/play/shared/excard.js",
+     "sha256": "c44417529421201c7f47b2a44badf5d50913474ad5a4ec46fef3bb9f07580516",
+     "bytes": 3846
     },
     "public/battle/shared/fx.js": {
      "src": "r4/play/shared/fx.js",
-     "sha256": "d1ec99eb8883f00051ee24d5d03ce80a8a96bd6962d082fda6fbd86fefb3a31d",
-     "bytes": 15323
+     "sha256": "2a450e52ea4c2c6838d0a1e9a7d7360a8a504497c7988f8aa21adcf9260aea60",
+     "bytes": 15471
+    },
+    "public/battle/shared/hud.css": {
+     "src": "r4/play/shared/hud.css",
+     "sha256": "24eebf19dcacdd8ca1c05485c19ea61ca3d8a3b6564f6bd725e9b254c34f8663",
+     "bytes": 50118
+    },
+    "public/battle/shared/hud.js": {
+     "src": "r4/play/shared/hud.js",
+     "sha256": "9eaa9c3f25b04f0467f4cff0d41d6c257d3bea0502c73b898d688c711e1535d3",
+     "bytes": 62355
+    },
+    "public/battle/shared/icons.js": {
+     "src": "r4/play/shared/icons.js",
+     "sha256": "19ae3cd0edac5bab06bdbfe0fee9c685b593ca7869c9dce350814c163cf7e4b6",
+     "bytes": 7984
     },
     "public/battle/shared/leaders.js": {
      "src": "r4/play/shared/leaders.js",
-     "sha256": "7ecf4253fd713e5e05d09b7f8ec96c4980da50e8c6f77bbd67af9b4f884663c7",
-     "bytes": 12037
+     "sha256": "3b9b165dde9ca64460cec7c74a77a310af017dc472d390048eecb4220223db79",
+     "bytes": 12231
+    },
+    "public/battle/shared/pace.js": {
+     "src": "r4/play/shared/pace.js",
+     "sha256": "f1fc6eb460c8210bb0881a90435e635cfacfaae554eaadff10e224cc89870933",
+     "bytes": 12267
     },
     "public/battle/shared/plan.js": {
      "src": "r4/play/shared/plan.js",
      "sha256": "d04653277759a48ffd115e80553dcbcf93852028bef0d048649eaf2793611309",
      "bytes": 5234
     },
+    "public/battle/shared/room.css": {
+     "src": "r4/play/shared/room.css",
+     "sha256": "c4baa98db4c5042825dd0acc35be028af799173b7af77550dc377ac156e051f7",
+     "bytes": 10090
+    },
     "public/battle/shared/runtime.js": {
      "src": "r4/play/shared/runtime.js",
-     "sha256": "08f09453732fa061630a25e0e13521cc64d4d0a662b77234bd911fc861676b61",
-     "bytes": 35243
+     "sha256": "426568ff8ce75d5c0805c7f65d1066a31cc03ee8328418b2d4c64bb1fb3673bc",
+     "bytes": 35588
     },
     "public/battle/vendor/broadcast/broadcast.css": {
      "src": "r4/play/vendor/broadcast/broadcast.css",
@@ -10754,11 +10799,6 @@
      "sha256": "4287c5ec71df78e9addb021f1dc266540d0ed484252a39d847ba8fd3d4e37c50",
      "bytes": 7516
     },
-    "public/battle/vendor/cards/bands.json": {
-     "src": "r4/play/vendor/cards/bands.json",
-     "sha256": "3d0f6fb126c18f4285f896fb3cf63616889ecd4389716dc27defe75029ac74dc",
-     "bytes": 2457
-    },
     "public/battle/vendor/cards/card-env.gen.js": {
      "src": "r4/play/vendor/cards/card-env.gen.js",
      "sha256": "5f7dda9909b14a8a43b9b95a47f16b99676c01a34a775185ee0fea61fed83e9f",
@@ -10768,61 +10808,6 @@
      "src": "r4/play/vendor/cards/card-sprite.gen.js",
      "sha256": "87ce463f4cac5e3104840f8ff2aede5b6865922d8b9111eac3cb34961c5eb823",
      "bytes": 9952
-    },
-    "public/battle/vendor/cards/card.css": {
-     "src": "r4/play/vendor/cards/card.css",
-     "sha256": "b6b5afb74be566bc588c7e13cbbef564e6bcdf341267151fcde9de109e11ffaa",
-     "bytes": 10718
-    },
-    "public/battle/vendor/cards/card.gen.css": {
-     "src": "r4/play/vendor/cards/card.gen.css",
-     "sha256": "a2738f5e40a3bb90becc5cfa5acd0d97b4388ffff0f7dbefe87542cac2479e9b",
-     "bytes": 17788
-    },
-    "public/battle/vendor/cards/fighters.js": {
-     "src": "r4/play/vendor/cards/fighters.js",
-     "sha256": "ab42d77ceef720c2d3baa6c3baf20acd6c9a4cab362cc7a38d96c889ce62efc2",
-     "bytes": 66816
-    },
-    "public/battle/vendor/cards/ground.js": {
-     "src": "r4/play/vendor/cards/ground.js",
-     "sha256": "9fc71e3c12fae886749dd112b836e241f94030ce2025636827048eee0a18f47b",
-     "bytes": 58883
-    },
-    "public/battle/vendor/cards/grounds/programs.gen.js": {
-     "src": "r4/play/vendor/cards/grounds/programs.gen.js",
-     "sha256": "f653fe1b2681b9a4ffc2011977f31583d83c186d33c13d9dabf6e6ed89235c92",
-     "bytes": 176380
-    },
-    "public/battle/vendor/cards/grounds/recipes.js": {
-     "src": "r4/play/vendor/cards/grounds/recipes.js",
-     "sha256": "60d48b3fe65af043fa7508366362c89bbb929a621f711c192387f74a9abcb350",
-     "bytes": 19510
-    },
-    "public/battle/vendor/cards/icons.svg": {
-     "src": "r4/play/vendor/cards/icons.svg",
-     "sha256": "06055ab93ae3f13b05c3e952e31e5328f2e35be26b4226d27f2cc15aef969528",
-     "bytes": 11926
-    },
-    "public/battle/vendor/cards/markup.js": {
-     "src": "r4/play/vendor/cards/markup.js",
-     "sha256": "854b56f3c57f7b750fc0b3574a1881382bf601addf6432da7837a565373219d2",
-     "bytes": 19773
-    },
-    "public/battle/vendor/cards/media.gen.js": {
-     "src": "r4/play/vendor/cards/media.gen.js",
-     "sha256": "e408f85d531a89373527d82d18e08d41a84dfbc53476474ff3c86a2de214121f",
-     "bytes": 10491
-    },
-    "public/battle/vendor/cards/neu-tokens.css": {
-     "src": "r4/play/vendor/cards/neu-tokens.css",
-     "sha256": "ab9ea219d0a53226d335fac4869752e7e0aa88ee4d9854a9a44dbc64be4b65df",
-     "bytes": 3635
-    },
-    "public/battle/vendor/cards/ui.css": {
-     "src": "r4/play/vendor/cards/ui.css",
-     "sha256": "499d216cc672042148d2da9ccff98ccce513aa1e4a766df44df39933b1a7bcb6",
-     "bytes": 27276
     },
     "public/battle/vendor/fonts/OFL.txt": {
      "src": "r4/play/vendor/fonts/OFL.txt",
@@ -10843,6 +10828,726 @@
      "src": "r4/play/vendor/fonts/katagami-sans-cards.woff2",
      "sha256": "26b2859b46e43a0af0e848e346c3228e9a5b57f2dd3f9a996f24a63f351ff1ce",
      "bytes": 24624
+    },
+    "public/battle/previews/agent-machines.four-runtimes.webm": {
+     "src": "r4/play/previews/agent-machines.four-runtimes.webm",
+     "sha256": "f17d1672cff52a204d15b7a0e0d4b3ceb2e4a0e6d04b3769d249632b1d98a59a",
+     "bytes": 83407
+    },
+    "public/battle/previews/agent-machines.four-runtimes.webp": {
+     "src": "r4/play/previews/agent-machines.four-runtimes.webp",
+     "sha256": "a067bf394d6626c180c5467d940f589b5c8a0e7ee53cb4076bfd25e9f8b9f1b0",
+     "bytes": 9486
+    },
+    "public/battle/previews/agent-machines.provider-route.webm": {
+     "src": "r4/play/previews/agent-machines.provider-route.webm",
+     "sha256": "6e27f9c427cfc31f9811f55c89b7e5a5d8a1497c8d56af73789cc5e0a316fef4",
+     "bytes": 55095
+    },
+    "public/battle/previews/agent-machines.provider-route.webp": {
+     "src": "r4/play/previews/agent-machines.provider-route.webp",
+     "sha256": "505c801799595e410c0374092f0e1eafdbbfc03ac168622e217ea7b6c32036d5",
+     "bytes": 7754
+    },
+    "public/battle/previews/agent-machines.provision.webm": {
+     "src": "r4/play/previews/agent-machines.provision.webm",
+     "sha256": "c80181e628bcc1d859fe22e026d272bdee53e9b331868661a74d482d722e06fc",
+     "bytes": 49377
+    },
+    "public/battle/previews/agent-machines.provision.webp": {
+     "src": "r4/play/previews/agent-machines.provision.webp",
+     "sha256": "045bbbfa94806d5c2e2c52bda0cae64b80ae700394b932c1f70c4d2cb8748c68",
+     "bytes": 7612
+    },
+    "public/battle/previews/agent-machines.worker-library.webm": {
+     "src": "r4/play/previews/agent-machines.worker-library.webm",
+     "sha256": "af9ec44c94bd627ab623725babf84fdbf7cc99e76cda82fb9fb373e70d250302",
+     "bytes": 74481
+    },
+    "public/battle/previews/agent-machines.worker-library.webp": {
+     "src": "r4/play/previews/agent-machines.worker-library.webp",
+     "sha256": "eea543afe0e9506ba626072164867a7df31451da881ceb112889d59e1cdd3ad9",
+     "bytes": 7804
+    },
+    "public/battle/previews/agent-pets.needs-attention.webm": {
+     "src": "r4/play/previews/agent-pets.needs-attention.webm",
+     "sha256": "93c369366f0dc657463a88d1c2db9727daa09646d465bb53caf498eb80de0127",
+     "bytes": 106615
+    },
+    "public/battle/previews/agent-pets.needs-attention.webp": {
+     "src": "r4/play/previews/agent-pets.needs-attention.webp",
+     "sha256": "70bbfe4adf1cc066f236a0bb096faad09add459f859b4f8f81fddf5a854903b3",
+     "bytes": 7476
+    },
+    "public/battle/previews/agent-pets.run-cycle.webm": {
+     "src": "r4/play/previews/agent-pets.run-cycle.webm",
+     "sha256": "5cc504a27d1f61fd7ba8439abe5fb679ef3bed9e9d42c800f60e4546a6ccbecb",
+     "bytes": 101410
+    },
+    "public/battle/previews/agent-pets.run-cycle.webp": {
+     "src": "r4/play/previews/agent-pets.run-cycle.webp",
+     "sha256": "0112e8776afb77a6c9b05c26caf3ad1006946e4da993253453c999648eb1a075",
+     "bytes": 12306
+    },
+    "public/battle/previews/agent-pets.safety-border.webm": {
+     "src": "r4/play/previews/agent-pets.safety-border.webm",
+     "sha256": "a359c85267eea1b64b34c10e0ef611e1a2c854695e2e1806dc7386cbbfccf281",
+     "bytes": 67216
+    },
+    "public/battle/previews/agent-pets.safety-border.webp": {
+     "src": "r4/play/previews/agent-pets.safety-border.webp",
+     "sha256": "c033b9b66814406c6edf0b9612284e3eaa134a43fd955f2948c58b3b423495e5",
+     "bytes": 15222
+    },
+    "public/battle/previews/agent-pets.sixteen-looks.webm": {
+     "src": "r4/play/previews/agent-pets.sixteen-looks.webm",
+     "sha256": "07a68f852d25e46b264e06cc60a4bf3e0034326ca35c144f7d3443762568eb6e",
+     "bytes": 89776
+    },
+    "public/battle/previews/agent-pets.sixteen-looks.webp": {
+     "src": "r4/play/previews/agent-pets.sixteen-looks.webp",
+     "sha256": "b53a297df0a8e4df2f81756323eb3ab8c46deaaddf79b40c4a188579f804e012",
+     "bytes": 11320
+    },
+    "public/battle/previews/bday-land.leave-a-card.webm": {
+     "src": "r4/play/previews/bday-land.leave-a-card.webm",
+     "sha256": "38e3faa2c452898ba4851ae60c014444433676437a6ba24f763c1f75847a8ea7",
+     "bytes": 101162
+    },
+    "public/battle/previews/bday-land.leave-a-card.webp": {
+     "src": "r4/play/previews/bday-land.leave-a-card.webp",
+     "sha256": "ea0fbd33b3f1f77716e5afe661e4bd9c7384a78786a4f1d735dc39f40335e043",
+     "bytes": 7084
+    },
+    "public/battle/previews/bday-land.light-a-candle.webm": {
+     "src": "r4/play/previews/bday-land.light-a-candle.webm",
+     "sha256": "48bcae9cf412476fd2f5322a7aeca7226862c361d400f0e48cab97106d0db198",
+     "bytes": 104800
+    },
+    "public/battle/previews/bday-land.light-a-candle.webp": {
+     "src": "r4/play/previews/bday-land.light-a-candle.webp",
+     "sha256": "99a055dbb96d76bc038ec5faa621b5b9ae7243fe5c3048bf7c91a1cf776fe5fe",
+     "bytes": 9498
+    },
+    "public/battle/previews/bday-land.plus999-love.webm": {
+     "src": "r4/play/previews/bday-land.plus999-love.webm",
+     "sha256": "50de11740ca26c529f7e607a6bd348b4c40e11f6dc8b52657769b8bc8610673a",
+     "bytes": 133682
+    },
+    "public/battle/previews/bday-land.plus999-love.webp": {
+     "src": "r4/play/previews/bday-land.plus999-love.webp",
+     "sha256": "026a2763fd5339f13656e348ad68a90c3ef57a84391f66a7dbe87a77228a1c23",
+     "bytes": 6424
+    },
+    "public/battle/previews/bday-land.whack-a-gnome.webm": {
+     "src": "r4/play/previews/bday-land.whack-a-gnome.webm",
+     "sha256": "21aa09a01a7900dd4a1c61747243fde6e02c419ece5912224098cb30ddd274f1",
+     "bytes": 123338
+    },
+    "public/battle/previews/bday-land.whack-a-gnome.webp": {
+     "src": "r4/play/previews/bday-land.whack-a-gnome.webp",
+     "sha256": "1bae8382d0b410a39cae4886be6488cb6ea2f7433abb68937c9a763f34cad510",
+     "bytes": 8316
+    },
+    "public/battle/previews/claude-of-tanks.column-fire.webm": {
+     "src": "r4/play/previews/claude-of-tanks.column-fire.webm",
+     "sha256": "120daa3cbbe48f1887e5b14f6804f6b90ee0bfa8d6cbc585db65599ada52a92f",
+     "bytes": 158600
+    },
+    "public/battle/previews/claude-of-tanks.column-fire.webp": {
+     "src": "r4/play/previews/claude-of-tanks.column-fire.webp",
+     "sha256": "cff81f50f4e289b079cba18bf74c1bda156027425b6b897bf9ade47a7af38419",
+     "bytes": 11886
+    },
+    "public/battle/previews/claude-of-tanks.killcam.webm": {
+     "src": "r4/play/previews/claude-of-tanks.killcam.webm",
+     "sha256": "8ac3785fba1f95620a6443778741d20af83d95f3a56a797bf391a6d888245f75",
+     "bytes": 88529
+    },
+    "public/battle/previews/claude-of-tanks.killcam.webp": {
+     "src": "r4/play/previews/claude-of-tanks.killcam.webp",
+     "sha256": "561e3421e4dd0f8dea1a595fb220b6aa6f7773b9a55256251ce79faed42f7008",
+     "bytes": 10184
+    },
+    "public/battle/previews/claude-of-tanks.one-spec.webm": {
+     "src": "r4/play/previews/claude-of-tanks.one-spec.webm",
+     "sha256": "b4f39eb96c46346e860c65937c06ef7e70513e23ca77d16ca918801d4fa6aac4",
+     "bytes": 150432
+    },
+    "public/battle/previews/claude-of-tanks.one-spec.webp": {
+     "src": "r4/play/previews/claude-of-tanks.one-spec.webp",
+     "sha256": "a0c28babbaefa4f04574342520a7b708a515f5f2447d00443e38cda5948a7797",
+     "bytes": 17636
+    },
+    "public/battle/previews/claude-of-tanks.sabot-round.webm": {
+     "src": "r4/play/previews/claude-of-tanks.sabot-round.webm",
+     "sha256": "3f7d50b0a6f1345287006dc8e8b33a353fd401a0b5bfc44eba99396e597773d4",
+     "bytes": 138577
+    },
+    "public/battle/previews/claude-of-tanks.sabot-round.webp": {
+     "src": "r4/play/previews/claude-of-tanks.sabot-round.webp",
+     "sha256": "9dd27ae513149c3b7908c52fddb3d328c162af5f4e86d3ef943b1ef5b14dfd4f",
+     "bytes": 11728
+    },
+    "public/battle/previews/cotfly.fire-button.webm": {
+     "src": "r4/play/previews/cotfly.fire-button.webm",
+     "sha256": "1ec736ff434289bc2872e93b59062c4c08b1716ba8a8ccaf2e3acb0b83a4c185",
+     "bytes": 96674
+    },
+    "public/battle/previews/cotfly.fire-button.webp": {
+     "src": "r4/play/previews/cotfly.fire-button.webp",
+     "sha256": "c395832a95f988f850293597e8c16c1913707db4715cb691ef3e248e6e3bbe50",
+     "bytes": 12602
+    },
+    "public/battle/previews/cotfly.inhibition.webm": {
+     "src": "r4/play/previews/cotfly.inhibition.webm",
+     "sha256": "cc6853999ebff01d461ad1a76687e11eefcd732db10867e9969ba94e00d54e5c",
+     "bytes": 65762
+    },
+    "public/battle/previews/cotfly.inhibition.webp": {
+     "src": "r4/play/previews/cotfly.inhibition.webp",
+     "sha256": "8f652a8b525fa16fbd87d0e4e1ed4ec7597f7e765f75b05e7d3666c53dfcd282",
+     "bytes": 10932
+    },
+    "public/battle/previews/cotfly.integrate-and-fire.webm": {
+     "src": "r4/play/previews/cotfly.integrate-and-fire.webm",
+     "sha256": "1e0f659b3d2719edc26b5884c8fb1c6df1304068c36c7bed2641a04929a31925",
+     "bytes": 80521
+    },
+    "public/battle/previews/cotfly.integrate-and-fire.webp": {
+     "src": "r4/play/previews/cotfly.integrate-and-fire.webp",
+     "sha256": "36536230e5c36223344d4aaffe453b399b7f802d1d24ae8f971e2724071d76f6",
+     "bytes": 9536
+    },
+    "public/battle/previews/cotfly.sugar-boost.webm": {
+     "src": "r4/play/previews/cotfly.sugar-boost.webm",
+     "sha256": "44848ee7d525c4a466346696b4f426523d6e37345bc6e196ae9062eb030a47ea",
+     "bytes": 98398
+    },
+    "public/battle/previews/cotfly.sugar-boost.webp": {
+     "src": "r4/play/previews/cotfly.sugar-boost.webp",
+     "sha256": "4534527d781de345f5fdd0bd71299bce5ef3938abc37c29fc56bf04ae7da22a4",
+     "bytes": 13296
+    },
+    "public/battle/previews/elo.blind-pair.webm": {
+     "src": "r4/play/previews/elo.blind-pair.webm",
+     "sha256": "28bc5fc5492932ca9ec2aafe7801cd9dfc7ef3e489d35c574c07f9a12e340e80",
+     "bytes": 60555
+    },
+    "public/battle/previews/elo.blind-pair.webp": {
+     "src": "r4/play/previews/elo.blind-pair.webp",
+     "sha256": "43b290d39a3e03e20d893eb8741136a99575d23366cf2df1a43608afb66d551e",
+     "bytes": 4254
+    },
+    "public/battle/previews/elo.change-vote.webm": {
+     "src": "r4/play/previews/elo.change-vote.webm",
+     "sha256": "2c2958d30091103b56b04fa3bd9a777110ee6bbc6edec28630ae4cc564983959",
+     "bytes": 55567
+    },
+    "public/battle/previews/elo.change-vote.webp": {
+     "src": "r4/play/previews/elo.change-vote.webp",
+     "sha256": "7a6e5ce6a9cf3cc8d9d5f338ff4b8a557f6d20a0041d7859164ad65d6f25ada1",
+     "bytes": 6114
+    },
+    "public/battle/previews/elo.elo-replay.webm": {
+     "src": "r4/play/previews/elo.elo-replay.webm",
+     "sha256": "ce5fba80df1e8e49b75950ea2ad8c36f2be4605fae01cdea0310a8b015e4ef2c",
+     "bytes": 67291
+    },
+    "public/battle/previews/elo.elo-replay.webp": {
+     "src": "r4/play/previews/elo.elo-replay.webp",
+     "sha256": "0580c10fb6961d7fc24dc83e21012d32cf2e55373ecdf9fbcad9a3319c937c4c",
+     "bytes": 4388
+    },
+    "public/battle/previews/elo.mcp-server.webm": {
+     "src": "r4/play/previews/elo.mcp-server.webm",
+     "sha256": "eae1a59c4c77ab57c193ae0e05115d0e42f287f76723ff94c2d88facdebc1b74",
+     "bytes": 77716
+    },
+    "public/battle/previews/elo.mcp-server.webp": {
+     "src": "r4/play/previews/elo.mcp-server.webp",
+     "sha256": "3d0b973878f99fb4b108f2518ce1acde6d4e4ba0b7ae5bbd3d126fb0cade00a8",
+     "bytes": 9806
+    },
+    "public/battle/previews/glyphfield.agent-api.webm": {
+     "src": "r4/play/previews/glyphfield.agent-api.webm",
+     "sha256": "1a0f73edab733276e4d7f17745c0188bf512c7fae03c584546607432ed5ef661",
+     "bytes": 185189
+    },
+    "public/battle/previews/glyphfield.agent-api.webp": {
+     "src": "r4/play/previews/glyphfield.agent-api.webp",
+     "sha256": "f44c76ede274053cb0b5f0a095c7f72933123a3246b739e286b2f69d1539e35b",
+     "bytes": 7964
+    },
+    "public/battle/previews/glyphfield.editable-layers.webm": {
+     "src": "r4/play/previews/glyphfield.editable-layers.webm",
+     "sha256": "0e0a5342d25c170a0e5c205347152c21da1e27147a420ef04b18b4a3dfb9184f",
+     "bytes": 173012
+    },
+    "public/battle/previews/glyphfield.editable-layers.webp": {
+     "src": "r4/play/previews/glyphfield.editable-layers.webp",
+     "sha256": "23a63425bf0935abea2eb2b69ef22f1e3ac6ea11e6692d0dc14317872ab5d65f",
+     "bytes": 15332
+    },
+    "public/battle/previews/glyphfield.material-lab.webm": {
+     "src": "r4/play/previews/glyphfield.material-lab.webm",
+     "sha256": "d0ac87b075772f821e1b87489d1a330d03bd3760cbb28f4e2894657b7346cdae",
+     "bytes": 196206
+    },
+    "public/battle/previews/glyphfield.material-lab.webp": {
+     "src": "r4/play/previews/glyphfield.material-lab.webp",
+     "sha256": "4b0ab58b176c62046419e5e404d7b5e6bb8b7c4704bc19d7ebd6b2ee350943ec",
+     "bytes": 11830
+    },
+    "public/battle/previews/glyphfield.motion-study.webm": {
+     "src": "r4/play/previews/glyphfield.motion-study.webm",
+     "sha256": "20d0bec1251dd66731311d0ec56a17476b116f62974c9f7abba27598e680ed1c",
+     "bytes": 152299
+    },
+    "public/battle/previews/glyphfield.motion-study.webp": {
+     "src": "r4/play/previews/glyphfield.motion-study.webp",
+     "sha256": "3588ba31ab94b8e22fc8b2417affd27b94bf6385c197db0290c38cc6ef6fdd05",
+     "bytes": 14066
+    },
+    "public/battle/previews/jarhead.reflex.webm": {
+     "src": "r4/play/previews/jarhead.reflex.webm",
+     "sha256": "ea919d5d3e0bfdae39288ca992f8453000e4c91ac9274a336ebbe07f3174a456",
+     "bytes": 49804
+    },
+    "public/battle/previews/jarhead.reflex.webp": {
+     "src": "r4/play/previews/jarhead.reflex.webp",
+     "sha256": "63c6cd51404602d75b9b6a27f561347488b75387c8952c1b5e4bb20245c39858",
+     "bytes": 8792
+    },
+    "public/battle/previews/jarhead.swift-hands.webm": {
+     "src": "r4/play/previews/jarhead.swift-hands.webm",
+     "sha256": "c0f4d65f627f063a0f4b89128a821d96b9011957e2d5fb0b6c2747a6aa2b7781",
+     "bytes": 74874
+    },
+    "public/battle/previews/jarhead.swift-hands.webp": {
+     "src": "r4/play/previews/jarhead.swift-hands.webp",
+     "sha256": "44745c59a220a0bd52b1e35978d0f1a23be7bd295f5546c67045728b26803091",
+     "bytes": 8974
+    },
+    "public/battle/previews/jarhead.threads.webm": {
+     "src": "r4/play/previews/jarhead.threads.webm",
+     "sha256": "5bd61c692128f306c4a064abcf615348ed8a8d101f84d8e8e34855d75dd6ca9b",
+     "bytes": 95799
+    },
+    "public/battle/previews/jarhead.threads.webp": {
+     "src": "r4/play/previews/jarhead.threads.webp",
+     "sha256": "112cd463b86a91fb32cf22c82cb7871548e7f05b1c3d19ac65ee505e881b4a4d",
+     "bytes": 8272
+    },
+    "public/battle/previews/jarhead.wake-word.webm": {
+     "src": "r4/play/previews/jarhead.wake-word.webm",
+     "sha256": "6e1bd60a4dc553d1df5ecec59c83e8c7b8938bee7c6dccb570778516664a528c",
+     "bytes": 89091
+    },
+    "public/battle/previews/jarhead.wake-word.webp": {
+     "src": "r4/play/previews/jarhead.wake-word.webp",
+     "sha256": "48958d2eec3058fa2fb888e1ba6a05f953beecd690c1becd2c5c10958251305d",
+     "bytes": 13356
+    },
+    "public/battle/previews/katagami.bezier-points.webm": {
+     "src": "r4/play/previews/katagami.bezier-points.webm",
+     "sha256": "8a973f4845e95b5def79058af8723a1005940fa98c592d2a93638544a615e418",
+     "bytes": 101013
+    },
+    "public/battle/previews/katagami.bezier-points.webp": {
+     "src": "r4/play/previews/katagami.bezier-points.webp",
+     "sha256": "a604de15c3d565f99957c36aa75d724d7885c36a496649cacddc2051163386fe",
+     "bytes": 12816
+    },
+    "public/battle/previews/katagami.confusables-apart.webm": {
+     "src": "r4/play/previews/katagami.confusables-apart.webm",
+     "sha256": "e1e6c820668e2af45a0961beca199ebfe7ea8c47c5730eb58110b38f71c9d0e0",
+     "bytes": 88155
+    },
+    "public/battle/previews/katagami.confusables-apart.webp": {
+     "src": "r4/play/previews/katagami.confusables-apart.webp",
+     "sha256": "713f11d1e131275beae0386444f282d7952074cf9084645837da0295ede4fd32",
+     "bytes": 10830
+    },
+    "public/battle/previews/katagami.shared-skeleton.webm": {
+     "src": "r4/play/previews/katagami.shared-skeleton.webm",
+     "sha256": "db99c3e8166c6b0505c24f445a3152391b5902b8f9ed4c294fd31670bcbd9d58",
+     "bytes": 83725
+    },
+    "public/battle/previews/katagami.shared-skeleton.webp": {
+     "src": "r4/play/previews/katagami.shared-skeleton.webp",
+     "sha256": "775f991373bd98c6064732532dde9118c5ee80c7cf67e41dd874efd96a00d7a5",
+     "bytes": 9092
+    },
+    "public/battle/previews/katagami.weight-axis.webm": {
+     "src": "r4/play/previews/katagami.weight-axis.webm",
+     "sha256": "395ccc243f75feb723f6c74e61c4804854dc87796fc3cd96201f6085b91e474a",
+     "bytes": 113974
+    },
+    "public/battle/previews/katagami.weight-axis.webp": {
+     "src": "r4/play/previews/katagami.weight-axis.webp",
+     "sha256": "08bbe1e53cd752be6846c0d2352543157e61e000e50931dad5d48eb3ceaf9b08",
+     "bytes": 9082
+    },
+    "public/battle/previews/kevin-wiki.capture-ingest.webm": {
+     "src": "r4/play/previews/kevin-wiki.capture-ingest.webm",
+     "sha256": "7ff3a590d1bcf2a544230c7a76d3dc24fc132f5c99b5114526f4a68a7181840d",
+     "bytes": 103924
+    },
+    "public/battle/previews/kevin-wiki.capture-ingest.webp": {
+     "src": "r4/play/previews/kevin-wiki.capture-ingest.webp",
+     "sha256": "2c6db217c1a66152ab24b7c1c7f32c7f1a8c9e77ab697543567acd5cbf8f1903",
+     "bytes": 8382
+    },
+    "public/battle/previews/kevin-wiki.hybrid-search.webm": {
+     "src": "r4/play/previews/kevin-wiki.hybrid-search.webm",
+     "sha256": "29bc00d688566e7cc0f6cf87fae8c40dfd0ef78e68262636c465981666044655",
+     "bytes": 115354
+    },
+    "public/battle/previews/kevin-wiki.hybrid-search.webp": {
+     "src": "r4/play/previews/kevin-wiki.hybrid-search.webp",
+     "sha256": "65fa0bd2ef32c5fca9ae2164e9cc069e118778689f2f489345dda50b20404a36",
+     "bytes": 12308
+    },
+    "public/battle/previews/kevin-wiki.knowledge-graph.webm": {
+     "src": "r4/play/previews/kevin-wiki.knowledge-graph.webm",
+     "sha256": "df08bf4bd7c31d4a76dc2e1b8217134104c107ee54476de59e77d1ea694054a0",
+     "bytes": 148682
+    },
+    "public/battle/previews/kevin-wiki.knowledge-graph.webp": {
+     "src": "r4/play/previews/kevin-wiki.knowledge-graph.webp",
+     "sha256": "6622ba7e239de980be175db84bce9656cd5ee52a853c21a5a5de7b5f3acfaaf8",
+     "bytes": 9044
+    },
+    "public/battle/previews/kevin-wiki.self-heal.webm": {
+     "src": "r4/play/previews/kevin-wiki.self-heal.webm",
+     "sha256": "fe6a3b7a81b9e3f76f90cb8cd5cfcbf2449ec6cf7869904b12090b1947212ccf",
+     "bytes": 131075
+    },
+    "public/battle/previews/kevin-wiki.self-heal.webp": {
+     "src": "r4/play/previews/kevin-wiki.self-heal.webp",
+     "sha256": "ada4c589c1e973f2e466c276458ce40b4f9ff69cea500e6ea75d94c854c86727",
+     "bytes": 13302
+    },
+    "public/battle/previews/local-search.148-7-ms.webm": {
+     "src": "r4/play/previews/local-search.148-7-ms.webm",
+     "sha256": "598196f110faa8d3407b7c97b1db988af50e3e1ccbaed819d0df74b4e43370c1",
+     "bytes": 48362
+    },
+    "public/battle/previews/local-search.148-7-ms.webp": {
+     "src": "r4/play/previews/local-search.148-7-ms.webp",
+     "sha256": "a4d4a22f0dcb4daf9d793d731bcd134615781d7784b1366ec53f7c20effc5956",
+     "bytes": 5776
+    },
+    "public/battle/previews/local-search.53-4-tokens.webm": {
+     "src": "r4/play/previews/local-search.53-4-tokens.webm",
+     "sha256": "f53b2dadbf5443ef712d46cdfe91c6ee23d908c354636eae25bfa55059f913bb",
+     "bytes": 49200
+    },
+    "public/battle/previews/local-search.53-4-tokens.webp": {
+     "src": "r4/play/previews/local-search.53-4-tokens.webp",
+     "sha256": "0f0e8a762aa99abca06b1654d27bacc19a5384f460e02ba244fa13a57f6880f8",
+     "bytes": 5870
+    },
+    "public/battle/previews/local-search.browser-query.webm": {
+     "src": "r4/play/previews/local-search.browser-query.webm",
+     "sha256": "881393b68616f909ec4853bc1e5572f065195316017b7ef0892cf760016ef257",
+     "bytes": 49337
+    },
+    "public/battle/previews/local-search.browser-query.webp": {
+     "src": "r4/play/previews/local-search.browser-query.webp",
+     "sha256": "827daaf25916e680fb10b781713a19dd976ba954870e7137f189a9fd59788583",
+     "bytes": 6120
+    },
+    "public/battle/previews/local-search.stable-json.webm": {
+     "src": "r4/play/previews/local-search.stable-json.webm",
+     "sha256": "4b9778f128f00b97a32b57aad0221bc894b7ee9cc619ffc317fee384ace84dfa",
+     "bytes": 67057
+    },
+    "public/battle/previews/local-search.stable-json.webp": {
+     "src": "r4/play/previews/local-search.stable-json.webp",
+     "sha256": "bcd4a83441bf4157ad3f56324908325298eb702cc8f71fd8aa40c84dd4877b22",
+     "bytes": 7002
+    },
+    "public/battle/previews/loop.full-diff.webm": {
+     "src": "r4/play/previews/loop.full-diff.webm",
+     "sha256": "15d39cf6d41208b90c8093e79bc50d3eb450ee6e2d05e62eb34132a756d08ffb",
+     "bytes": 78958
+    },
+    "public/battle/previews/loop.full-diff.webp": {
+     "src": "r4/play/previews/loop.full-diff.webp",
+     "sha256": "2cb91f6b44cdab54c5cca9a2c9727af962e6bc72a8f3b5fa2b4b67b850467a24",
+     "bytes": 5202
+    },
+    "public/battle/previews/loop.queue-fan-out.webm": {
+     "src": "r4/play/previews/loop.queue-fan-out.webm",
+     "sha256": "36cda0e3b69032b37d91eb239c5fcfdda0ab80e9f76dc1bfc09513a6acfc06a5",
+     "bytes": 68401
+    },
+    "public/battle/previews/loop.queue-fan-out.webp": {
+     "src": "r4/play/previews/loop.queue-fan-out.webp",
+     "sha256": "4d136a885b15a34da8234b8b3ee8dc5abd34fba3c6bfe22490b99c18c1a629b0",
+     "bytes": 9670
+    },
+    "public/battle/previews/loop.refresh-run.webm": {
+     "src": "r4/play/previews/loop.refresh-run.webm",
+     "sha256": "b4701b7e89967f255c8ba308d8d04111c0c0f4b3f103b3de309e8adc2294077b",
+     "bytes": 65201
+    },
+    "public/battle/previews/loop.refresh-run.webp": {
+     "src": "r4/play/previews/loop.refresh-run.webp",
+     "sha256": "35febcbf2a17fd34c57a0dd17c20ddcf5fac589dfcc990560a0c9a1e59d4c614",
+     "bytes": 10360
+    },
+    "public/battle/previews/loop.source-scan.webm": {
+     "src": "r4/play/previews/loop.source-scan.webm",
+     "sha256": "3cb468b1288c74d1fdcd8f39bc9bcf462609eacf6bd03f7c5d6be3a1862ff9a1",
+     "bytes": 85884
+    },
+    "public/battle/previews/loop.source-scan.webp": {
+     "src": "r4/play/previews/loop.source-scan.webp",
+     "sha256": "44d1b8ee77c2cabe26cfeec68495007477138b27816dcc532168a44b2412fbfd",
+     "bytes": 7880
+    },
+    "public/battle/previews/mailroom.ask-in-plain-words.webm": {
+     "src": "r4/play/previews/mailroom.ask-in-plain-words.webm",
+     "sha256": "6225540039985b8134752ca4b3ba099e52a48184ecc0cd86dfe2deb4b6b78e81",
+     "bytes": 77404
+    },
+    "public/battle/previews/mailroom.ask-in-plain-words.webp": {
+     "src": "r4/play/previews/mailroom.ask-in-plain-words.webp",
+     "sha256": "07e89d4fc53a74e25e49f832d97a31a886a7a76ed1b316b4be9527de65da823c",
+     "bytes": 10760
+    },
+    "public/battle/previews/mailroom.five-questions.webm": {
+     "src": "r4/play/previews/mailroom.five-questions.webm",
+     "sha256": "8ac4a2ca6f9588a8a0d8a07a0d0688e5f0f7c2b36ce21e9d963b2ed8ed207546",
+     "bytes": 85322
+    },
+    "public/battle/previews/mailroom.five-questions.webp": {
+     "src": "r4/play/previews/mailroom.five-questions.webp",
+     "sha256": "e0b32b4c682d7a46f2536e7f3b80f2f6b218e96ad45da0e2c5452daa92c679c6",
+     "bytes": 8690
+    },
+    "public/battle/previews/mailroom.rules.webm": {
+     "src": "r4/play/previews/mailroom.rules.webm",
+     "sha256": "03000e405978c6b2a5a582f5bd29004bdb9ec3e2bf48a539e4e815034ae137cf",
+     "bytes": 58254
+    },
+    "public/battle/previews/mailroom.rules.webp": {
+     "src": "r4/play/previews/mailroom.rules.webp",
+     "sha256": "da1f6116f061e00d580e13927eb0ae4066511e690416e63f7f013541a9db1563",
+     "bytes": 9148
+    },
+    "public/battle/previews/mailroom.undo.webm": {
+     "src": "r4/play/previews/mailroom.undo.webm",
+     "sha256": "567e06897a05b5515980d553f1ba6e47a7d4b0dd4f0f4e9cdbaf47f1f6c4c4d9",
+     "bytes": 63884
+    },
+    "public/battle/previews/mailroom.undo.webp": {
+     "src": "r4/play/previews/mailroom.undo.webp",
+     "sha256": "4d13be312df3cc8bf7f2b432cebdbfcf8d035c5407653422cfa7499fdcf61412",
+     "bytes": 11574
+    },
+    "public/battle/previews/powerlifting.84-icons.webm": {
+     "src": "r4/play/previews/powerlifting.84-icons.webm",
+     "sha256": "e297fb6cf02d145fdf867a4ad20f50cb499d0f3413aa98eee510cbfd13503504",
+     "bytes": 84088
+    },
+    "public/battle/previews/powerlifting.84-icons.webp": {
+     "src": "r4/play/previews/powerlifting.84-icons.webp",
+     "sha256": "e5baed02fe55cffab70643632d803a75cf1466ca387c56a97ce79f272f111679",
+     "bytes": 6918
+    },
+    "public/battle/previews/powerlifting.chamfered-alphabet.webm": {
+     "src": "r4/play/previews/powerlifting.chamfered-alphabet.webm",
+     "sha256": "1b57834d0816f846fa393eb24136397b212a5f11ec7362fc08bced2997a88711",
+     "bytes": 102692
+    },
+    "public/battle/previews/powerlifting.chamfered-alphabet.webp": {
+     "src": "r4/play/previews/powerlifting.chamfered-alphabet.webp",
+     "sha256": "ed25b4a75fb368869dd0690b42820670e56a0f1f1e34bccab07748a84770922b",
+     "bytes": 10048
+    },
+    "public/battle/previews/powerlifting.primary-mark.webm": {
+     "src": "r4/play/previews/powerlifting.primary-mark.webm",
+     "sha256": "e50eea5c351216ba6caea3db5d66f721adae7f96ff916c60b2155e5a33e4dc25",
+     "bytes": 90094
+    },
+    "public/battle/previews/powerlifting.primary-mark.webp": {
+     "src": "r4/play/previews/powerlifting.primary-mark.webp",
+     "sha256": "2cd5b84ecf46d585e4de73186caf4d72cbb610ffbe712a951e738d2420e23cd0",
+     "bytes": 6372
+    },
+    "public/battle/previews/powerlifting.six-colorways.webm": {
+     "src": "r4/play/previews/powerlifting.six-colorways.webm",
+     "sha256": "8bfa40c848fbaea9d9c967c64cc625db3c777e0392e342489dbc4d5ec701e130",
+     "bytes": 77576
+    },
+    "public/battle/previews/powerlifting.six-colorways.webp": {
+     "src": "r4/play/previews/powerlifting.six-colorways.webp",
+     "sha256": "93c9b887bda8c4e72043713067e4992ebaa6090df5482ca3a1c3ffcbaf440946",
+     "bytes": 14234
+    },
+    "public/battle/previews/princeton-td.boss-wave.webm": {
+     "src": "r4/play/previews/princeton-td.boss-wave.webm",
+     "sha256": "11e21fc36f4afcee4a44fa4215aa9e1af6a4e0c27a84e7cb7fbc6cbeb8ae61f1",
+     "bytes": 87315
+    },
+    "public/battle/previews/princeton-td.boss-wave.webp": {
+     "src": "r4/play/previews/princeton-td.boss-wave.webp",
+     "sha256": "3ecde404174a2f9fc4531fb61af629c9591a1ecf6bcdfac588f0b46f124cb123",
+     "bytes": 8348
+    },
+    "public/battle/previews/princeton-td.missile-battery.webm": {
+     "src": "r4/play/previews/princeton-td.missile-battery.webm",
+     "sha256": "5fd1bc546a34f02dd84cdd29c0aba65bbec59f833cea2d2cc632e45487ff93a5",
+     "bytes": 82885
+    },
+    "public/battle/previews/princeton-td.missile-battery.webp": {
+     "src": "r4/play/previews/princeton-td.missile-battery.webp",
+     "sha256": "91af2d0df79336180a68b1867974d6ece4d23be45f1eb4c8a78f850d309513bb",
+     "bytes": 11920
+    },
+    "public/battle/previews/princeton-td.offscreen-layers.webm": {
+     "src": "r4/play/previews/princeton-td.offscreen-layers.webm",
+     "sha256": "f6a64cb3c8dbab000ec118d68bd1e58a3a6f9d0e19dc37f06166ee41b67d4d8b",
+     "bytes": 74447
+    },
+    "public/battle/previews/princeton-td.offscreen-layers.webp": {
+     "src": "r4/play/previews/princeton-td.offscreen-layers.webp",
+     "sha256": "442c94ed1da2a4cb960c953c085d5cb870be03ddf8dfc2731ed2db020b5b6950",
+     "bytes": 9472
+    },
+    "public/battle/previews/princeton-td.wave-schedule.webm": {
+     "src": "r4/play/previews/princeton-td.wave-schedule.webm",
+     "sha256": "9edac0c2183060e03d2f1a133640c5ab5bc6096c749a3b97a49bfa451a0a8e08",
+     "bytes": 87677
+    },
+    "public/battle/previews/princeton-td.wave-schedule.webp": {
+     "src": "r4/play/previews/princeton-td.wave-schedule.webp",
+     "sha256": "714494aaf93f4dd66af98c4e1a85e40f5ea49f062332e6ae3e739bb13af9557b",
+     "bytes": 11254
+    },
+    "public/battle/previews/prototemplate.every-sentence.webm": {
+     "src": "r4/play/previews/prototemplate.every-sentence.webm",
+     "sha256": "d22f65cb3c6216ad3f6649df7306566ce1a8afc1b3d810c5863020d008380601",
+     "bytes": 152930
+    },
+    "public/battle/previews/prototemplate.every-sentence.webp": {
+     "src": "r4/play/previews/prototemplate.every-sentence.webp",
+     "sha256": "1085003adf1e03e4c938a9bb4ace95f62176878a572ae7b926e83bd20fa1befd",
+     "bytes": 12200
+    },
+    "public/battle/previews/prototemplate.horizon-field.webm": {
+     "src": "r4/play/previews/prototemplate.horizon-field.webm",
+     "sha256": "cf62ef05443290b1ba4db6b591fd6fb49ee99c566e54d6eb207b770c308caf3b",
+     "bytes": 163714
+    },
+    "public/battle/previews/prototemplate.horizon-field.webp": {
+     "src": "r4/play/previews/prototemplate.horizon-field.webp",
+     "sha256": "22017d9d4ea7fa70df984f016909e605cb13ffa302e3fcecfa7c32ca5cb049b1",
+     "bytes": 12078
+    },
+    "public/battle/previews/prototemplate.studio-field.webm": {
+     "src": "r4/play/previews/prototemplate.studio-field.webm",
+     "sha256": "752d76e04c1dd292e69f44b6f64cf313de07691911e7fd3a0f8c8061d4f6ad41",
+     "bytes": 215943
+    },
+    "public/battle/previews/prototemplate.studio-field.webp": {
+     "src": "r4/play/previews/prototemplate.studio-field.webp",
+     "sha256": "b6ede5c202d5934c61d585972fb3ee9f83b3eaa3c0053245525214251038ebec",
+     "bytes": 20252
+    },
+    "public/battle/previews/prototemplate.type-field.webm": {
+     "src": "r4/play/previews/prototemplate.type-field.webm",
+     "sha256": "5262e90d934bc3d9c7761696bb94628d6e2ce699395bb895bbbfe168f175a864",
+     "bytes": 170211
+    },
+    "public/battle/previews/prototemplate.type-field.webp": {
+     "src": "r4/play/previews/prototemplate.type-field.webp",
+     "sha256": "5f11ae82d68507a3366a590c073c7f3e141c542b114a8a2cec360ece66946cb4",
+     "bytes": 8196
+    },
+    "public/battle/previews/relay.1v1.webm": {
+     "src": "r4/play/previews/relay.1v1.webm",
+     "sha256": "6e7a85d1d9a0c23c7713e26623ef16029dd17311e000e8839a0fb858c6379227",
+     "bytes": 58692
+    },
+    "public/battle/previews/relay.1v1.webp": {
+     "src": "r4/play/previews/relay.1v1.webp",
+     "sha256": "3ec6359fa7e4d1df04756b82d9a4dd0b00dfb6a3a108971965f6c3c294ae6d8e",
+     "bytes": 9334
+    },
+    "public/battle/previews/relay.jev-choice.webm": {
+     "src": "r4/play/previews/relay.jev-choice.webm",
+     "sha256": "85a860b8891f6de913d58331bc2bb0656ac7a90083fb9ccc6d26b1c20dbb34e7",
+     "bytes": 62122
+    },
+    "public/battle/previews/relay.jev-choice.webp": {
+     "src": "r4/play/previews/relay.jev-choice.webp",
+     "sha256": "1129b53ee956864593a708e9a1c141a5eae07b2505468c1bcc3c81d54d48390d",
+     "bytes": 8038
+    },
+    "public/battle/previews/relay.live-browser.webm": {
+     "src": "r4/play/previews/relay.live-browser.webm",
+     "sha256": "6af0d0b38793923e0f0f3e173db05a7d61c4b0b71e99b14b7478c8be10d94512",
+     "bytes": 63080
+    },
+    "public/battle/previews/relay.live-browser.webp": {
+     "src": "r4/play/previews/relay.live-browser.webp",
+     "sha256": "0abe39771bddcc016ec202ec5e6f75036d0b8aadee15ef28c920b04738d5c9f8",
+     "bytes": 7764
+    },
+    "public/battle/previews/relay.watch-replay.webm": {
+     "src": "r4/play/previews/relay.watch-replay.webm",
+     "sha256": "fcd87f4dea65618aa911adad15f2a37930ccb7f4d902768cb15c7c9ebbf0b7dd",
+     "bytes": 75184
+    },
+    "public/battle/previews/relay.watch-replay.webp": {
+     "src": "r4/play/previews/relay.watch-replay.webp",
+     "sha256": "dd0229c9df78b29a73e489a87b7a68681a2c47ed70967bfcd50a654a7263eb86",
+     "bytes": 9006
+    },
+    "public/battle/previews/turboslide.live-pointers.webm": {
+     "src": "r4/play/previews/turboslide.live-pointers.webm",
+     "sha256": "708126017aee6c507c5f56776f7216889835d2defc79cb798677100e5f05574d",
+     "bytes": 206210
+    },
+    "public/battle/previews/turboslide.live-pointers.webp": {
+     "src": "r4/play/previews/turboslide.live-pointers.webp",
+     "sha256": "9015eeb20620186db5401f6751dbbe67325ad6043a63a1bcffcb036aea9b1055",
+     "bytes": 11762
+    },
+    "public/battle/previews/turboslide.perfect-export.webm": {
+     "src": "r4/play/previews/turboslide.perfect-export.webm",
+     "sha256": "a8debe30f01fb52be637fe9e6640d1af423a997a784d32010e8ca640b7093e43",
+     "bytes": 197859
+    },
+    "public/battle/previews/turboslide.perfect-export.webp": {
+     "src": "r4/play/previews/turboslide.perfect-export.webp",
+     "sha256": "583000da50fe4540aaec63fc148218b43387781abc5a2636a754f9e832e45108",
+     "bytes": 13476
+    },
+    "public/battle/previews/turboslide.revision-check.webm": {
+     "src": "r4/play/previews/turboslide.revision-check.webm",
+     "sha256": "1f599fe423957759808b754edc2da4cfe77638bc48d6bd8c8c716964eb1962b2",
+     "bytes": 209668
+    },
+    "public/battle/previews/turboslide.revision-check.webp": {
+     "src": "r4/play/previews/turboslide.revision-check.webp",
+     "sha256": "9be2e42e78b228f27fc5f8948511f380f482f7c5f8e04b22c54bda3c4cffdb1e",
+     "bytes": 10724
+    },
+    "public/battle/previews/turboslide.two-tone.webm": {
+     "src": "r4/play/previews/turboslide.two-tone.webm",
+     "sha256": "39b00c813b6848181416a7d064bf51aa8dc1c3c8879e3c4ec6275bd8bc3092e0",
+     "bytes": 228077
+    },
+    "public/battle/previews/turboslide.two-tone.webp": {
+     "src": "r4/play/previews/turboslide.two-tone.webp",
+     "sha256": "b97c3c8de295bc2db9c1cf71b6ad2df84cfcf4222c9f36481a06202f2367190f",
+     "bytes": 9716
     },
     "public/battle/media/figures/agent-machines/front.webp": {
      "src": "r4/play/media/figures/agent-machines/front.webp",
@@ -11481,8 +12186,13 @@
     },
     "vendor/battle/mat/index.html": {
      "src": "r4/play/mat/index.html",
-     "sha256": "bdcc8301912fae6240473db727dbee33d3591992d47088c765b0fce57725e832",
-     "bytes": 5185
+     "sha256": "0a0bf9e5e5d1da7f925723822c7d787658a45bf73069c50c1888ef170c5084b3",
+     "bytes": 6637
+    },
+    "vendor/battle/vendor/engine.js": {
+     "src": "r4/play/vendor/engine.js",
+     "sha256": "e2ca758354ad8751fa559f8335e236c7ea4000d68e79724a762b24242e8eadc8",
+     "bytes": 107348
     },
     "public/battle/r3/broadcast/media/agent-machines/emblem.svg": {
      "src": "r3/battle/broadcast/media/agent-machines/emblem.svg",

@@ -39,7 +39,7 @@ for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg
 
 const GT = /general\s?translation|generaltranslation/i;
 // the wall and the cards index print every card, Atlas's line among them
-const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js']);
+const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js', '/ex/face.gen.js']);
 const BANNED = [[/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'], [/\/api\/(submissions|emails)\b/, 'OMMC participant route'], [/xi-api-key|\bsk_[a-f0-9]{40,}\b/i, 'key shape']];
 
 // width and height from a JPEG's start-of-frame marker
@@ -130,14 +130,24 @@ for (const f of htmls) {
     const abs = new URL(u, `https://x${base}`).pathname;
     if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);
   }
-  // every card prints plain with its framed print in a template beside it (frames on desktop only, src/lib/cards.ts);
-  // the framed print is in its family (design/card.js, data-fam), never the plain fallback markup.js prints when the
-  // family modules are missing, and a card printed in a style has that style's sheet (the sync's page closure)
-  const framed = [...html.matchAll(/<template class="framed">([\s\S]*?)<\/template>/g)].map((m) => m[1]);
-  const ids = (h) => [...h.matchAll(/<div class="card\b[^"]*"[^>]*\sdata-id="([\w-]+)"[^>]*>/g)];
-  for (const h of framed) for (const m of ids(h)) if (!/\sdata-fam="/.test(m[0])) fail(page, `card ${m[1]} prints without its family (design/card.js)`);
-  const framedIds = new Set(framed.flatMap((h) => ids(h).map((m) => m[1])));
-  for (const m of ids(html.replace(/<template class="framed">[\s\S]*?<\/template>/g, ''))) if (!framedIds.has(m[1])) fail(page, `card ${m[1]} has no framed print`);
+  // every card prints plain with its framed print in a template right after it (frames on desktop only,
+  // src/lib/cards.ts): the same card, in its family (design/card.js, data-fam), never the plain fallback markup.js prints
+  // when the family modules are missing. A card printed in a style has that style's sheet (the sync's page closure)
+  const cardTag = /<div class="card\b[^"]*"[^>]*\sdata-id="([\w-]+)"[^>]*>/g;
+  const parts = html.split('<template class="framed">');
+  for (let i = 1; i < parts.length; i++) {
+    const end = parts[i].indexOf('</template>');
+    const framed = parts[i].slice(0, end), before = parts[i - 1].slice(parts[i - 1].lastIndexOf('</template>') + 1);
+    const plain = [...before.matchAll(cardTag)].at(-1), fr = [...framed.matchAll(cardTag)];
+    if (!plain) { fail(page, 'a framed print with no plain card before it'); continue; }
+    if (fr.length !== 1 || fr[0][1] !== plain[1]) { fail(page, `card ${plain[1]}: its template holds ${fr.map((m) => m[1]).join(', ') || 'no card'}`); continue; }
+    if (!/\sdata-fam="/.test(fr[0][0])) fail(page, `card ${plain[1]} prints without its family (design/card.js)`);
+    // what the framed print shares with the plain one it names by path (src/lib/cards.ts delta), never by a fresh copy
+    if (!/<b data-same="[\d.]+"><\/b>/.test(framed)) fail(page, `card ${plain[1]}: its framed print repeats the plain print`);
+  }
+  const outside = html.replace(/<template class="framed">[\s\S]*?<\/template>/g, '');
+  const printed = [...outside.matchAll(cardTag)].length;
+  if (printed !== parts.length - 1) fail(page, `${printed} cards outside templates and ${parts.length - 1} framed prints`);
   if (/\sdata-card-style="breakout"/.test(html) && !/href="\/ex\/styles\/breakout\/breakout\.css\?v=/.test(html)) fail(page, 'a Breakout card without breakout.css');
   for (const m of html.matchAll(/\ssrcset="([^"]+)"/g)) {
     for (const part of m[1].split(',')) {

@@ -66,25 +66,36 @@ function frameOf(W, H) {
   let g;
   if (phone) {
     const rail = 52, team = 46;
-    const conH = Math.min(268, Math.max(220, R(H * 0.318)));
+    const conH = 268; // the Mat's phone console: four whole moves scroll inside it and the duel keeps the rest
     const con = { x: 8, y: H - 8 - conH, w: W - 16, h: conH };
     const th = Math.round(clamp(W / 390, 0.82, 1.25) * 32);
     g = { phone, W, H, rail, team, con, tw: th * 2, th };
   } else {
     const t = clamp((W - 1024) / (1440 - 1024));
     const rail = R(lerp(48, 56, t));
-    const conH = R(lerp(104, 128, t)), bottom = R(lerp(12, 16, t));
-    const conW = Math.min(1296, W - 48);
-    const con = { x: R((W - conW) / 2), y: H - bottom - conH, w: conW, h: conH };
+    const conH = R(lerp(128, 146, t)), bottom = R(lerp(12, 16, t));
+    // round 5: from 1280 up the battle log stands at the right edge, from under the rail to the floor
+    const logW = W >= 1280 ? R(lerp(256, 288, clamp((W - 1280) / 320))) : 0;
+    const conW = Math.min(1296, W - 48 - (logW ? logW + 12 : 0));
+    const con = { x: logW ? 24 : R((W - conW) / 2), y: H - bottom - conH, w: conW, h: conH };
     const th = R(lerp(40, 56, t));
     g = { phone, W, H, rail, team: 0, con, tw: th * 2, th };
+    if (logW) g.log = { x: W - 24 - logW, y: rail + 12, w: logW, h: H - bottom - rail - 12 };
   }
-  g.band = phone ? { top: g.rail + g.team, bottom: g.con.y + 24 } : { top: 0, bottom: H };
+  // the duel's floor: on a phone your plate strip (36 px, 6 over the console) stands above the console, so the figures
+  // and their pads end above it
+  g.floor = phone ? g.con.y - 42 : g.con.y;
+  g.band = phone ? { top: g.rail + g.team, bottom: g.floor + 24 } : { top: 0, bottom: H };
   return g;
 }
 const duels = new Map();
 const duelKey = (ground, W, H, env) => `${ground.map}|${W}|${H}|${env?.key ?? ''}`;
-const stageFrame = (g, env) => ({ W: g.W, H: g.H, phone: g.phone, top: g.rail + g.team, bottom: g.con.y, band: g.band, env });
+/** Your plate on a wide screen: at the console's left end, 40 px over it; 102 px tall at 272 wide, and 112 at 244,
+ *  where a long name takes two lines (measured, shared/hud.css). */
+const deskPlate = (g) => ({ x: g.con.x, bottom: g.con.y - 40, w: g.W >= 1280 ? 272 : 244, h: g.W >= 1280 ? 102 : 112 });
+// (the duel keeps your opening figure and your leader at rest off exactly that box)
+const keepOf = (g) => { if (g.phone) return []; const p = deskPlate(g); return [{ x0: p.x, y0: p.bottom - p.h, x1: p.x + p.w, y1: p.bottom }]; };
+const stageFrame = (g, env) => ({ W: g.W, H: g.H, phone: g.phone, top: g.rail + g.team, bottom: g.floor, band: g.band, keep: keepOf(g), env });
 /** A new task at once (a message, never a clamped timer), so a boot's solve in 4 ms slices costs no idle waits. */
 const yieldTask = () => new Promise((r) => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });
 /** An idle moment (a frame's spare time), for a solve while another mode's battle plays: its slices never crowd a
@@ -361,6 +372,22 @@ export class ArenaBoard extends Layout {
   }
 
   // ---------------------------------------------------------------- layout: every box from the floor, no motion
+  /** Where each side's plate stands (round 5, shared/hud.js): the rival's top right under the rail, yours right above
+   *  the console. */
+  plateBox(side) {
+    const g = this.g;
+    if (!g) return null;
+    // a phone: a one-line plate under the team rail for the rival, over the console for you
+    if (g.phone) return side === 'rival' ? { x: 8, y: g.rail + g.team + 4, w: g.W - 16, strip: true } : { x: 8, bottom: g.con.y - 6, w: g.W - 16, strip: true };
+    const w = g.W >= 1280 ? 272 : 244;
+    // the rival's over its own half of the floor (the right), clear of your hand at the top left
+    if (side === 'rival') return { x: (g.log ? g.log.x - 12 : g.W - 24) - w - Math.round(g.W * 0.08), y: g.rail + 12, w };
+    const p = deskPlate(g);
+    return { x: p.x, bottom: p.bottom, w: p.w };
+  }
+  logBox() { return this.g?.log ?? null; }
+  /** The turn the battle is waiting on (round 5), on the team rail. */
+  turnTo(n) { if (!this.turnEl) return; const t = `T${n}`; if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', `Turn ${n}`); }
   layout() {
     const ground = this.gd;
     const g = this.g = geometry(innerWidth, innerHeight, ground, this.env);
@@ -516,7 +543,7 @@ export class ArenaBoard extends Layout {
     const lead = (t) => this.reach(t);
     const placed = [];
     // on a phone the hands wait in the top corners (placeHand)
-    if (g.phone) for (const t of SIDES) { const sz = this.handSize(g); placed.push({ x: t === 'player' ? 8 : g.W - 8 - sz.bw, y: g.rail + g.team + 8 - 0.3 * sz.h, w: sz.bw, h: sz.bh + 0.3 * sz.h }); }
+    if (g.phone) for (const t of SIDES) { const sz = this.handSize(g); placed.push({ x: t === 'player' ? 8 : g.W - 8 - sz.bw, y: g.rail + g.team + 48 - 0.3 * sz.h, w: sz.bw, h: sz.bh + 0.3 * sz.h }); }
     for (const s of SIDES) {
       const F = this.flags[s], P = this.pad[s];
       const pref = s === 'player' ? -1 : 1;
@@ -566,7 +593,8 @@ export class ArenaBoard extends Layout {
    *  each HP tab clear of the next card; a third (a card on its way back while its pad is empty) closes them up. */
   /** A hand's card size and the spot two cards side by side take. */
   handSize(g) {
-    const h = g.phone ? 63 : Math.max(64, R(g.th * 1.58)), w = R((h * 63) / 88);
+    // (a short phone, under 700 px tall, has no free corner for 63 px cards beside the duel: its hands are 52 px)
+    const h = g.phone ? (g.H < 700 ? 52 : 63) : Math.max(64, R(g.th * 1.58)), w = R((h * 63) / 88);
     const f = Math.max(12, h * 0.2), step = R(Math.max(w * 0.62, 2.7 * f + 6));
     return { h, w, step, bw: w + step + R(h * 0.1), bh: h + R(h * 0.3) };
   }
@@ -587,6 +615,10 @@ export class ArenaBoard extends Layout {
     // every card's picture as it would stand on either pad, with room for its recoil, its lunge and its sink into
     // the pad (the hand stays put while cards come and go)
     for (const f of this.figs.values()) if (f.box) { const m = 0.12 * f.k; avoid.push({ x: f.box.x - m, y: f.box.y - m, w: f.box.w + 2 * m, h: f.box.h + 2 * m }); }
+    // round 5: the HUD's plates stand all battle long (shared/hud.js); a hand keeps off them
+    if (!g.phone) for (const t of SIDES) { const pb = this.plateBox(t); if (pb) avoid.push({ x: pb.x - 8, y: (pb.y ?? pb.bottom - 150) - 8, w: pb.w + 16, h: 166, k: 60 }); }
+    // a phone's two plate strips (36 px each) are never under a hand either
+    else for (const t of SIDES) { const pb = this.plateBox(t); if (pb) avoid.push({ x: pb.x - 4, y: (pb.y ?? pb.bottom - 36) - 4, w: pb.w + 8, h: 44, k: 60 }); }
     for (const t of SIDES) {
       const b = g.box[t], p = this.pad[t].bbox;
       avoid.push(b, { x: p.x - 8, y: p.y - 8, w: p.w + 16, h: p.h + 16 });
@@ -596,7 +628,10 @@ export class ArenaBoard extends Layout {
       const rr = this.reach(t);
       avoid.push({ x: rr.x - 4, y: rr.y - 4, w: rr.w + 8, h: rr.h + 8, k: 60 });
     }
-    const top = g.rail + g.team + 8, bottom = g.con.y - 8;
+    const top = g.rail + g.team + (g.phone ? 48 : 8), bottom = g.con.y - 8;
+    // round 5: from 1280 the log rail holds the right edge, so the frame's usable right edge is the rail's
+    const right = g.log ? g.log.x - 8 : g.W - 8;
+    if (g.log) avoid.push({ x: g.log.x - 8, y: 0, w: g.W, h: g.H, k: 60 });
     // on a wide screen a scene's call-out lands across the lower part of the frame, over the board, at rest and while
     // the camera whips onto either defender at a board ending (the call-out fades as the whip begins)
     if (!g.phone) {
@@ -611,7 +646,8 @@ export class ArenaBoard extends Layout {
     const pad = this.pad[s].bbox;
     // a phone's frame is the duel's: there the hand waits under its leader's name on the team rail, at its side's top
     // corner, unless that corner is taken
-    const corner = g.phone ? [{ x: outer < 0 ? 8 : g.W - 8 - bw, y: g.rail + g.team + 8, w: bw, h: bh }] : [];
+    // (a phone's rival plate strip, about 40 px, sits under the team rail: the corner starts under it)
+    const corner = g.phone ? [{ x: outer < 0 ? 8 : g.W - 8 - bw, y: g.rail + g.team + 48, w: bw, h: bh }] : [];
     const rb = this.reach(s);
     // beside its leader on the outer side (at the hip, the shoulder, the knee), over its head, under its feet, under
     // its figure's pad, beside it on the inner side: each clear of the leader in every pose (`reach`)
@@ -625,17 +661,21 @@ export class ArenaBoard extends Layout {
       at(outer < 0 ? lb.x + lb.w : lb.x, Math.max(g.lead[s].y, pad.y + pad.h) + 8),
       { x: outer < 0 ? rb.x + rb.w + 6 : rb.x - 6 - bw, y: lb.y + lb.h * 0.8 - bh, w: bw, h: bh },
       // then its side's top corner under the rail
-      ...(g.phone ? [] : [{ x: outer < 0 ? 8 : g.W - 8 - bw, y: top, w: bw, h: bh }]),
+      ...(g.phone ? [] : [{ x: outer < 0 ? 8 : right - bw, y: top, w: bw, h: bh }]),
     ];
-    for (const r of cands.slice()) cands.push({ ...r, x: clamp(r.x, 8, g.W - 8 - bw) });
+    for (const r of cands.slice()) cands.push({ ...r, x: clamp(r.x, 8, right - bw) });
     const hit = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
     // a card the frame's edge cuts cannot be read, so the edges cost three times what covering something does
     const cost = (r) => avoid.reduce((n, b) => n + (b.k ?? 1) * hit(r, b), 0) + 3 * (hit(r, { x: -1e4, y: -1e4, w: 2e4 + 0, h: 1e4 + top }) + hit(r, { x: -1e4, y: bottom, w: 2e4, h: 1e4 })
-      + hit(r, { x: -1e4, y: -1e4, w: 1e4 + 8, h: 2e4 }) + hit(r, { x: g.W - 8, y: -1e4, w: 1e4, h: 2e4 })) + (this.hands[other(s)]?.box ? hit(r, this.hands[other(s)].box) : 0);
-    let best = cands[0], bc = Infinity;
-    for (const r of cands) { const c = cost(r); if (c < bc) { bc = c; best = r; } if (c === 0) break; }
+      + hit(r, { x: -1e4, y: -1e4, w: 1e4 + 8, h: 2e4 }) + hit(r, { x: right, y: -1e4, w: 1e4, h: 2e4 })) + (this.hands[other(s)]?.box ? 60 * hit(r, this.hands[other(s)].box) : 0);
+    // a spot the window's side cuts is never taken while one inside it is there (the clamped copies always are), and
+    // the two hands never stack (the other hand costs what a plate does)
+    const inside = cands.filter((r) => r.x >= 8 && r.x + r.w <= right);
+    let best = inside[0] ?? cands[0], bc = Infinity;
+    for (const r of inside.length ? inside : cands) { const c = cost(r); if (c < bc) { bc = c; best = r; } if (c === 0) break; }
     H.box = best; H.w = w; H.h = h; H.step = step; H.dir = outer;
-    H.el.style.zIndex = String(R(best.y + bh));
+    // (a phone's hand may have to stand over a figure: it is drawn in front, so its cards stay readable)
+    H.el.style.zIndex = String(g.phone ? 5000 : R(best.y + bh));
     H.el.style.setProperty('--hw', `${w}px`); H.el.style.setProperty('--hh', `${h}px`);
     this.drawHand(s, true);
   }
@@ -678,6 +718,7 @@ export class ArenaBoard extends Layout {
       }
       if (!on) continue;
       const r = this.slotOf(side, f.uid);
+      c.el.dataset.fan = String((r?.z ?? 0) % 2); // its HP tab's corner alternates along the fan, left to right on screen
       const tf = `translate3d(${R(r.x)}px,${R(r.y)}px,0) rotate(${r.rot.toFixed(1)}deg)`;
       if (now || !was || this.reduced()) { c.el.style.transition = 'none'; c.el.style.transform = tf; void c.el.offsetWidth; c.el.style.transition = ''; }
       else c.el.style.transform = tf;
@@ -742,7 +783,7 @@ export class ArenaBoard extends Layout {
       side.team.forEach((x, i) => this.drawPip(s, i, x, i === side.active && x.hp > 0 && Boolean(this.shown[s])));
       this.drawHand(s);
     }
-    if (this.turnEl) { const t = String(v.turn); if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', `Turn ${t}`); }
+    if (this.turnEl) { const t = `T${v.turn}`; if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', `Turn ${v.turn}`); }
   }
   drawPad(s, f, on) {
     const P = this.pad?.[s];
@@ -866,7 +907,7 @@ export class ArenaBoard extends Layout {
     const w = ([...e.textContent].length * 0.64 + 1.4) * fs * 1.5 + 4, h = 1.7 * fs * 1.5 + 4;
     const boxes = SIDES.map((t) => this.reach(t));
     const hit = (cx, cy) => boxes.some((b) => cx + w / 2 > b.x && cx - w / 2 < b.x + b.w && cy + h / 2 > b.y && cy - h / 2 < b.y + b.h);
-    const inFrame = (cx, cy) => cx - w / 2 >= 4 && cx + w / 2 <= g.W - 4 && cy - h / 2 >= g.rail + g.team && cy + h / 2 <= g.con.y;
+    const inFrame = (cx, cy) => cx - w / 2 >= 4 && cx + w / 2 <= g.W - 4 && cy - h / 2 >= g.rail + g.team && cy + h / 2 <= g.floor;
     if (!hit(x, y)) return { x, y };
     let best = null;
     for (let i = 1; i <= 24; i++) for (const [dx, dy] of [[0, -1], [0, 1], [1, 0], [-1, 0], [1, -1], [-1, -1], [1, 1], [-1, 1]]) {
@@ -1048,7 +1089,7 @@ export class ArenaBoard extends Layout {
     }
     const x0 = Math.min(...boxes.map((b) => b.x)), x1 = Math.max(...boxes.map((b) => b.x + b.w));
     const y0 = Math.min(...boxes.map((b) => b.y)), y1 = Math.max(...boxes.map((b) => b.y + b.h));
-    const A = { x0: 6, y0: g.rail + 4, x1: g.W - 6, y1: g.con.y - 4 };
+    const A = { x0: 6, y0: g.rail + 4, x1: g.W - 6, y1: g.floor - 4 };
     const keep = (want, lo, hi) => Math.min(hi, Math.max(lo, want));
     // on a wide screen a scene's call-out lands across the lower 30% of the frame: the hands stay above it
     const handsLow = g.phone ? 0 : Math.max(0, ...SIDES.map((t) => { const h = this.hands[t]?.box; return h ? h.y + h.h : 0; }));

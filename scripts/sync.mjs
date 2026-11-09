@@ -4,7 +4,10 @@
 // rounds no longer ship.
 //   pnpm sync            copy, transform, scan, write sync.lock.json
 //   pnpm sync --check    copy nothing; exit 1 when any synced file differs from the rounds
-//   ROUNDS=<dir>         the rounds folder (default ~/Documents/ChatGPT/portfolio-design-rounds/2026-10-30)
+//   ROUNDS=<dir>         the rounds folder to read (default ~/Documents/ChatGPT/portfolio-design-rounds/2026-10-30), or an
+//                        export of it (git archive at the pins plus the git-ignored frame SVGs)
+// Each stage ships the rounds as they were at its pinned commit (PIN below): a tracked file that differs from its stage's
+// pin stops the sync, so a plain `pnpm sync` never pulls round work nobody has reviewed. A release moves a pin.
 // Stages and their owners are in docs/sync.md. Every destination folder below belongs to this script alone.
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -18,7 +21,12 @@ import { PHONE } from './phone-memory.mjs';
 import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const ROUNDS = process.env.ROUNDS ?? path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
+// the rounds' git checkout: the pins are read from it, and the lock names it, whichever folder ROUNDS reads
+const ROUNDS_GIT = path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
+const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
+// the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
+// final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1)
+const PIN = { cards: '30e69931', sound: '30e69931', battle: '42ff51c7' };
 const CHECK = process.argv.includes('--check');
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex');
@@ -61,18 +69,31 @@ const STAGES = {
     // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
     { from: EX, to: 'vendor/ex', files: only('index.html') },
     { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    // the battle prints the wall's own card (r4/play shared/excard.js), so the page loads these at runtime from /ex/ too:
+    // the faces, and the icon set it inlines beside the card's own symbols
+    { from: EX, to: 'public/ex', files: only('face.gen.js', 'icons/icons.svg', 'icons/card-symbols.svg') },
   ],
   // r4/sound: the kit's own allow-list (tools/ship.mjs): the player, its types, the gallery boot, two manifests, and
   // exactly the Opus and AAC files they name. Never the takes, the ledger or the receipts.
   sound: [{ from: `${ROUNDS}/r4/sound`, to: 'public/sound', files: soundFiles }],
-  // r4/play: one battle page for Mat and Arena. It reads scene media from r3/battle and card pictures from r3/cards, so
-  // those runtime folders come too. vendor/ is r4/play's bundle of r3 (rebuilt by battle-r4b's re-vendor step).
+  // r4/play: one battle page for Mat and Arena (round 5: r4/play SPEC.md). It prints the wall's own cards from r4/ex
+  // (public/ex, the cards stage), reads scene media from r3/battle and card pictures from r3/cards, so those runtime
+  // folders come too, and plays r4/sound's battle slice from ../../sound (public/sound). vendor/ is r4/play's 11-01
+  // bundle of r3.
   battle: [
+    // the two layouts and the shared page code: battle, runtime, fx, leaders, plan, and round 5's pace, hud, icons and
+    // excard scripts with its hud and room sheets
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^(mat|arena)\/[\w.-]+\.(js|css)$/.test(f) || /^shared\/[\w.-]+\.(js|css)$/.test(f)) },
+    { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: only('shared/pace.js', 'shared/hud.js', 'shared/icons.js', 'shared/excard.js', 'shared/hud.css', 'shared/room.css') },
+    // what is left of the battle's card copies (round 5 prints r4/ex's): the art masks and the kit's card sprite
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^vendor\/(cards|broadcast|fonts)\//.test(f) && !/\.md$/.test(f)) },
+    // each move's loop and its poster at the contact, for the move tooltip (shared/hud.js PREVIEWS)
+    { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^previews\/[\w.-]+\.(webm|webp)$/.test(f)) },
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^media\//.test(f) && !/(proof\.png|@3x\.)/.test(f) && !SKIP.test(f) && /\.(webp|png|json)$/.test(f)) },
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^assets\/maps\/[\w.-]+\.webp$/.test(f)) },
-    { from: `${ROUNDS}/r4/play`, to: 'vendor/battle', files: only('mat/index.html') },
+    // build-only: the page itself (src/lib/battle.ts), and the engine's roster and rules (src/lib/cards.ts battleRoster),
+    // bundled from the same r3/battle source as the kit
+    { from: `${ROUNDS}/r4/play`, to: 'vendor/battle', files: only('mat/index.html', 'vendor/engine.js') },
     { from: `${ROUNDS}/r3/battle`, to: 'public/battle/r3', files: (l) => l.filter((f) => /^(broadcast\/media|media|media-moves)\//.test(f) && !SKIP.test(f) && !DROP.has(f) && (IMG.test(f) || /^broadcast\/media\/.*\.json$/.test(f))) },
     { from: `${ROUNDS}/r3/cards`, to: 'public/battle/gallery', files: (l) => l.filter((f) => /^(posters|grounds|media)\//.test(f) && !SKIP.test(f) && IMG.test(f)) },
   ],
@@ -156,8 +177,8 @@ const SND = "\n  const SND = () => globalThis.Sound || null;\n  const snd = (id,
 const TILT = "\n      { const w = c.box.w, t = e.timeStamp; if (c.tx !== undefined) { const v = ((e.clientX - c.tx) / Math.max(1, t - c.tt)) * 1000 / w; if (c.tdir && Math.sign(v) && Math.sign(v) !== c.tdir && Math.abs(v) > 0.6) snd('card.tilt', { key: el.dataset.id, pan: pan(el) }); if (Math.abs(v) > 0.05) c.tdir = Math.sign(v); } c.tx = e.clientX; c.tt = t; }";
 const GRAIN = "\n        { const p = clamp((dx * st.P.dir) / st.P.r.w); if (Math.abs(p - (st.g ?? 0)) >= 0.05) { const speed = Math.abs(p - (st.g ?? 0)) / Math.max(0.001, (e.timeStamp - (st.gt ?? e.timeStamp)) / 1000); snd('pack.tear.grain', { gainDb: Math.max(-6, Math.min(0, 6 * Math.log2(speed / 2))), pan: pan(packEl) }); st.g = p; st.gt = e.timeStamp; } }";
 const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.schedule(S0.packCues({ n, top: tier, base, size: G.SIZE }), { t0: S0.context ? S0.context.currentTime - t0 / 1000 : undefined }); { const fin = T.finish; T.finish = () => { const S2 = SND(); if (sh && S2?.context && S2.context.currentTime < sh.t0 + Fj(0) / 1000) { sh.cancel(40); snd(`pack.reveal.${tier}`); snd(base + n >= G.SIZE ? 'team.complete' : 'team.add', { offsetMs: 0 }); } fin.call(T); }; }\n      ";
-// a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on the wall's
-// card faces and the battle's
+// a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on every card
+// face (the battle prints the wall's markup.js)
 const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
 const TRANSFORMS = {
   // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
@@ -168,6 +189,12 @@ const TRANSFORMS = {
     ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
     ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
+  ]),
+  // the card code is the wall's, served at /ex/ (the rounds' ../../../r4/ex/). A phone prints each card plain, as the
+  // wall does (Kevin, 11-08, "Desktop-only frames"): a family's frame SVG layers held about 250 MB on an iPhone
+  'public/battle/shared/excard.js': (t) => patch('excard.js', t, [
+    ["const EX = new URL('../../../r4/ex/', document.currentScript.src).href;", "const EX = new URL('/ex/', document.currentScript.src).href;\n  const PLAIN = matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4; // kevinliu.studio: frames on desktop only"],
+    ['card: (f, opts, e) => resolve(M.card(', 'card: (f, opts, e) => resolve((PLAIN ? M.baseCard : M.card)('],
   ]),
   // the battle's media manifest: the rounds' gate notes ship empty (the page never shows them), the two dropped
   // captures give way to clean ones from the same project, and the Prototemplate loop points at the clip that exists
@@ -198,7 +225,6 @@ const TRANSFORMS = {
     ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
     nolink(t),
   ]),
-  'public/battle/vendor/cards/markup.js': (t) => patch('markup.js', t, [nolink(t)]),
   // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
   // screen's edge (Agent Machines, release 11-07 ship checks), so the tray stops 8 in from each edge and its rows wrap
   'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),
@@ -239,7 +265,7 @@ const TRANSFORMS = {
     ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
     // the lens's frame row stays in the rounds: its buttons carry the design lanes' working names ("studio border lane,
     // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
-    // every card prints its primary frame
+    // every card prints its primary frame, so the frame printings never run and src/lib/cards.ts loads none of their code
     ['    frs.hidden = !F || F.length < 2;', '    frs.hidden = true;'],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
@@ -286,7 +312,7 @@ const BANNED = [
 ];
 // General Translation appears only in the Atlas card's own records: the shared card data files print every card.
 const GT = /general\s?translation|generaltranslation/i;
-const GT_OK = new Set(['public/ex/fighters.js', 'public/ex/media.gen.js', 'vendor/ex/face.gen.js', 'vendor/ex/roster/battle-roster.json', 'vendor/ex/copy/overrides.json']);
+const GT_OK = new Set(['public/ex/fighters.js', 'public/ex/media.gen.js', 'public/ex/face.gen.js', 'vendor/ex/face.gen.js', 'vendor/ex/roster/battle-roster.json', 'vendor/ex/copy/overrides.json']);
 
 function scan(dest, buf) {
   const hits = [];
@@ -306,11 +332,14 @@ function scan(dest, buf) {
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
 const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : { stages: {} };
-const lock = { rounds: ROUNDS, head: null, synced: null, stages: {} };
+const lock = { rounds: ROUNDS_GIT, head: null, pins: PIN, synced: null, stages: {} };
 const problems = [];
 const writes = [], removes = [];
+let unpinned = 0;
 for (const [stage, rules] of Object.entries(STAGES)) {
   const files = {};
+  const pinned = blobsAt(PIN[stage], rules.map((r) => rel(ROUNDS, r.from)));
+  if (!pinned) { problems.push(`${stage}: cannot read pinned commit ${PIN[stage]} in ${ROUNDS_GIT}`); continue; }
   for (const r of rules) {
     const where = `${stage}: ${rel(ROUNDS, r.from) || '.'} -> ${r.to}`;
     if (!fs.existsSync(r.from)) { problems.push(`${where}: missing source`); continue; }
@@ -321,6 +350,10 @@ for (const [stage, rules] of Object.entries(STAGES)) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
       if (files[dest]) continue; // two rules may pick the same file
       let buf = fs.readFileSync(src);
+      // the file as it was at the stage's pin; a file git does not track (the generated frame SVGs) cannot be checked
+      const at = pinned.get(rel(ROUNDS, src));
+      if (at === undefined) unpinned++;
+      else if (at !== blobSha(buf)) { problems.push(`${dest}: ${rel(ROUNDS, src)} differs from the ${stage} pin ${PIN[stage]}`); continue; }
       try {
         if (TRANSFORMS[dest]) buf = Buffer.from(TRANSFORMS[dest](buf.toString('utf8')));
         if (PHONE[dest]) buf = Buffer.from(PHONE[dest](buf.toString('utf8')));
@@ -336,9 +369,10 @@ for (const [stage, rules] of Object.entries(STAGES)) {
   for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
-// the rounds' commit, marked only when a file this sync ships differs from it (other rounds' scratch work does not count)
-lock.head = gitHead(ROUNDS, new Set(Object.values(lock.stages).flatMap((s) => Object.values(s.list).map((f) => f.src))));
-for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB`);
+// the rounds' commits: one per stage, every tracked file checked against it above
+lock.head = [...new Set(Object.values(PIN))].join(' + ');
+for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB, pinned at ${PIN[stage]}`);
+if (unpinned) console.log(`${unpinned} shipped files are not tracked by git in the rounds (generated); their bytes are in the lock`);
 if (problems.length) {
   console.error(`\n${problems.length} problem(s); nothing was written. Fix them at the source or by a transform:`);
   for (const p of problems.slice(0, 40)) console.error(`  ${p}`);
@@ -357,13 +391,14 @@ const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev
 if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
-function gitHead(dir, shipped) {
+// path -> git blob id of every file under `dirs` at `commit`, or null when the rounds' checkout cannot answer
+function blobsAt(commit, dirs) {
   try {
-    const head = execFileSync('git', ['-C', dir, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
-    // porcelain paths are relative to the repo's top, which may sit above the rounds folder
-    const prefix = execFileSync('git', ['-C', dir, 'rev-parse', '--show-prefix'], { encoding: 'utf8' }).trim();
-    const dirty = execFileSync('git', ['-C', dir, 'status', '--porcelain', '--untracked-files=no', '-z', '--', '.'], { encoding: 'utf8', maxBuffer: 1 << 28 })
-      .split('\0').filter(Boolean).map((l) => l.slice(3)).filter((f) => f.startsWith(prefix) && shipped.has(f.slice(prefix.length)));
-    return head + (dirty.length ? ` (with ${dirty.length} uncommitted shipped file${dirty.length > 1 ? 's' : ''})` : '');
+    const prefix = execFileSync('git', ['-C', ROUNDS_GIT, 'rev-parse', '--show-prefix'], { encoding: 'utf8' }).trim();
+    const out = execFileSync('git', ['-C', ROUNDS_GIT, 'ls-tree', '-r', '-z', '--full-tree', commit, '--', ...dirs.map((d) => prefix + d)], { encoding: 'utf8', maxBuffer: 1 << 28 });
+    const m = new Map();
+    for (const line of out.split('\0').filter(Boolean)) { const [meta, f] = line.split('\t'); m.set(f.slice(prefix.length), meta.split(' ')[2]); }
+    return m;
   } catch { return null; }
 }
+function blobSha(buf) { return createHash('sha1').update(`blob ${buf.length}\0`).update(buf).digest('hex'); }

@@ -303,11 +303,14 @@ export class Stage extends runtime.Stage {
     this.loads ??= new Map();
     const list = refs.filter(Boolean).map((r) => {
       let p = this.loads.get(r.src);
-      if (!p) { p = runtime.preload([r], 8000).then(() => { p.done = true; }); this.loads.set(r.src, p); }
+      // the kit's own cap would run on the scene clock: give it none and cap the wait in real time here
+      if (!p) { p = Promise.race([runtime.preload([r], 1e9), new Promise((done) => (window.battlePace?.realTimeout ?? setTimeout)(done, 8000))]).then(() => { p.done = true; }); this.loads.set(r.src, p); }
       return p;
     });
     if (list.every((p) => p.done)) return null;
-    return Promise.race([Promise.all(list), new Promise((r) => setTimeout(r, timeout))]);
+    // a wait for loading is real time, whatever the battle's speed (shared/pace.js)
+    const wait = window.battlePace?.realTimeout ?? setTimeout;
+    return Promise.race([Promise.all(list), new Promise((r) => wait(r, timeout))]);
   }
   /** What a scene shows: its plate, its subject's cutout, its target, its footage (or still) and its world. */
   mediaOf(scene, still, stillFeature, shaderGrounds) {
