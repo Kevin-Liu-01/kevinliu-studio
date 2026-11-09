@@ -119,7 +119,7 @@ for (const f of htmls) {
   // every character a translated page shows is held by one of its faces (the language list names each language in
   // the system face and is left out)
   if (code !== 'en' && !/<base href="\/battle\//.test(html)) {
-    const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang">[\s\S]*?<\/details>/, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
+    const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang[ "][\s\S]*?<\/details>/g, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
     const have = held(code), missing = new Set([...shown].filter((ch) => ch > '~' && !have.has(ch)));
     if (missing.size) fail(page, `prints ${[...missing].slice(0, 12).join('')} that no face holds (python3 scripts/i18n-fonts.py)`);
   }

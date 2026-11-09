@@ -1,0 +1,16 @@
+---
+// The language key: the same page in every language, as plain links in a disclosure that opens over the page, so
+// nothing moves. In the header (800 px and wider) its face is the two-letter code; below that the header has no room,
+// so the footer holds it (as it holds the Human and Machine switch) and its face names the language. Each language
+// names itself in the system face, which holds every script.
+import { of, LOCALES, lp, split } from '../i18n';
+interface Props { path: string; where: 'head' | 'foot' }
+const { path, where } = Astro.props;
+const l = of(path);
+const { path: base } = split(path);
+const pageIn = (code: string) => (base === '/404' ? lp(code, '/') : lp(code, base));
+---
+<details class:list={['lang', `in-${where}`]}>
+  <summary class:list={[where === 'head' && 'press icon']} aria-label={`${l.t('frame.language')}: ${l.name}`}><span aria-hidden="true">{where === 'head' ? l.code.toUpperCase() : l.name}</span></summary>
+  <ul>{LOCALES.map((x) => <li><a href={pageIn(x.code)} hreflang={x.lang} lang={x.lang} aria-current={x.code === l.code ? 'true' : undefined}>{x.name}</a></li>)}</ul>
+</details>

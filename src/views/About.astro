@@ -14,6 +14,8 @@ const QA = qaOf(code);
 // a paragraph of Kevin's words: runs of text and links (site.ts ABOUT) in English, its Markdown links elsewhere
 const runsOf = (i: number) => (l.en ? ABOUT[i] : aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
 // "Find me on X, GitHub, and LinkedIn, or write to the email": the sentence in the language, its four links in place
+// a project's name and what it is: "Turboslide. A browser..."; Japanese and Chinese take a full-width colon, Korean a colon
+const sep = /^(ja|zh)$/.test(code) ? '：' : code === 'ko' ? ': ' : '. ';
 const findMe = l.t('about.elsewhere').split(/(\{x\}|\{github\}|\{linkedin\}|\{email\})/);
 const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
 // the Machine view's forms: the twin's blocks where the page shows them (its headings are the page's own, marked by
@@ -43,7 +45,7 @@ const jsonld = [website, kevin, ...page({ path: l.p('/about'), type: 'ProfilePag
       : <p class="sw"><span class="hx">{findMe.map((x) => x === '{email}' ? <a href={`mailto:${EMAIL}`}>{EMAIL}</a> : x === '{x}' ? <a href={social('X').url} rel="me">X</a> : x === '{github}' ? <a href={social('GitHub').url} rel="me">GitHub</a> : x === '{linkedin}' ? <a href={social('LinkedIn').url} rel="me">LinkedIn</a> : x)}</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>}
     <div class="sw hw"><h2>{l.t('about.projects')}</h2><p class="mx" set:html={mdHtml(H.projects)} /></div>
     <ul>
-      {fighters.map((f, i) => <li class="sw"><span class="hx"><a href={cardPath(f, code)}>{f.title}</a>. {whatIn(f, code)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>)}
+      {fighters.map((f, i) => <li class="sw"><span class="hx"><a href={cardPath(f, code)}>{f.title}</a>{sep}{whatIn(f, code)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>)}
     </ul>
     <div class="sw hw"><h2>{l.t('about.questions')}</h2><p class="mx" set:html={mdHtml(H.questions)} /></div>
     <dl>

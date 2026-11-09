@@ -54,6 +54,13 @@ function localize(body: string) {
 }
 // the page's own faces for its language (scripts/i18n-fonts.py), as Base.astro declares them
 const faces = l.en ? [] : Object.values(FACES).filter((f) => f.locales.length > 1 || f.locales.includes(l.code));
+// a translated rail: its longer words (Verlassen, Protokoll) fit at a phone's width with the rounds' own narrow-phone
+// spacing (hud.css, 389 px and under), applied below 720 px, and 12 px labels under 360 px
+const railCss = l.en ? '' : '@media (max-width:719px){#app#app .rail-keys{gap:3px}#app#app .rail-keys .tray{padding:3px;gap:3px}#app#app .rail-keys .key{padding:0 7px}#app#app .rail-keys .seg .key{min-width:0}#app#app .speed .key{min-width:38px;padding:0 6px}#app#app .key.snd{min-width:34px;padding:0 6px}}@media (max-width:359px){#app#app .rail-keys .key{padding:0 5px;font-size:12px}#app#app .rail-keys{gap:2px}#app#app .rail-keys .tray{padding:2px;gap:2px}}';
+// battle.js points Leave (the rail's and the result's) at the English wall (/#you=...) and titles the tab in English on
+// each mode switch; on a translated page Leave goes to this language's wall and the title stays in the language
+const titles = { 'Battle | Kevin Liu': `${t('battle.title')} | ${NAME}`, 'Battle, Arena | Kevin Liu': `${t('battle.titleArena')} | ${NAME}` };
+const fixScript = l.en ? '' : String.raw`(function(P,T){var d=Object.getOwnPropertyDescriptor(Document.prototype,'title');if(d&&d.set)Object.defineProperty(document,'title',{configurable:true,get:function(){return d.get.call(this)},set:function(v){d.set.call(this,T[v]||v)}});function f(a){var h=a.getAttribute&&a.getAttribute('href');if(a.tagName==='A'&&h&&/^\/(?:[#?]|$)/.test(h))a.setAttribute('href',P+h.slice(1))}new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='attributes')f(m.target);else m.addedNodes.forEach(function(n){if(n.nodeType===1){f(n);n.querySelectorAll&&n.querySelectorAll('a[href]').forEach(f)}})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['href']})})(${JSON.stringify(l.p('/'))},${JSON.stringify(titles)})`;
 const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.range}}`).join('');
 ---
 <!doctype html>
@@ -64,8 +71,8 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 <base href={`/battle/${mode}/`} />
 <Seo title={title} description={description} path={path} share={share} imageAlt={alt} jsonld={jsonld} twin={`${path}.md`} />
 {faceCss && <style is:inline set:html={faceCss} />}
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+{railCss && <style is:inline set:html={railCss} />}
+{fixScript && <script is:inline set:html={fixScript} />}
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>
 <Release />
 <Fragment set:html={battlePage.head} />

@@ -122,7 +122,9 @@ export function galleryShim(code: string, fighters: Fighter[]) {
   const add = { add: l.t('home.addToTeam'), remove: l.t('home.remove'), full: l.t('home.addFull'), over: l.t('home.addOver') };
   return `/* kevinliu.studio, ${l.name}: the lens's sheets and the room's labels in this language (src/lib/i18n-room.ts) */
 (function(){var M=globalThis.MARKUP;if(!M)return;var S=${JSON.stringify(sheets)},R=${JSON.stringify(labelRules(code))}.map(function(r){return[new RegExp(r[0]),r[1]]}),F=self.Intl&&Intl.ListFormat?new Intl.ListFormat(${JSON.stringify(l.lang)},{type:"conjunction"}):null;
-var o=M.sheet;M.sheet=function(f,m){return S[f.id]||o(f,m)};Object.assign(M.ADD_LABEL,${JSON.stringify(add)});
+var o=M.sheet;M.sheet=function(f,m){return S[f.id]||o(f,m)};
+/* gallery.js writes the lens's address as /cards/<id> and the wall's as /: in this language they are ${l.p('/cards/<id>')} and ${l.p('/')} */
+var P=${JSON.stringify(l.p('/'))};["pushState","replaceState"].forEach(function(k){var f=history[k];history[k]=function(s,t,u){if(typeof u==="string"){if(/^\\/cards\\//.test(u))u=P+u;else if(/^\\/(?=[?#]|$)/.test(u))u=P+u.slice(1);else if(u.indexOf(P+"/")===0&&/^(?:[?#]|$)/.test(u.slice(P.length+1)))u=P+u.slice(P.length+1)}return f.call(history,s,t,u)}});Object.assign(M.ADD_LABEL,${JSON.stringify(add)});
 function list(s){var p=s.split(/, | and /);return F?F.format(p):p.join(", ")}
 function tr(s){for(var i=0;i<R.length;i++){var m=R[i][0].exec(s);if(m)return R[i][1].replace(/\\$L(\\d)/g,function(_,k){return list(m[+k])}).replace(/\\$(\\d)/g,function(_,k){return m[+k]})}return null}
 function fix(n){if(n.nodeType!==1)return;var a=n.getAttribute("aria-label");if(a){var r=tr(a);if(r!==null)n.setAttribute("aria-label",r)}}

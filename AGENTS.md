@@ -41,6 +41,11 @@ Read `memory.md` before acting and append to it after every meaningful change.
   `scripts/phone-memory.mjs`; measure before and after on the phone profiles.
 - Every page keeps one h1, a canonical, a share image and loop, JSON-LD and a Markdown twin. `pnpm build` fails
   otherwise.
+- Languages (docs/i18n.md): English at the root, unchanged; es, fr, de, pt, ja, ko and zh under their codes. A new
+  interface string goes in `src/i18n/en/ui.json`, then `pnpm i18n:translate` and `python3 scripts/i18n-fonts.py`.
+  After `pnpm sync` changes card words, run the same two; until then the changed strings print in English. Move,
+  trait and product names, receipts and the card faces are never translated. `GT_API_KEY` lives only in the
+  gitignored `.env.local`; the build needs no key and Vercel has none.
 - Ask Kevin before creating the GitHub repo, pushing, deploying, touching Vercel domains or DNS, adding a paid service
   or entering a credential. The swap runbook is `docs/deploy.md`.
 - Commit as `66856750+Kevin-Liu-01@users.noreply.github.com`, by explicit path, at each milestone.
@@ -51,6 +56,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 ## Commands
 
 - `pnpm sync` and `pnpm sync --check`
+- `pnpm i18n:translate` (extract, then GT), `python3 scripts/i18n-fonts.py`, `node scripts/i18n-extract.mjs --check`
 - `pnpm dev`, `pnpm build` (runs the guard), `pnpm preview`
 - `node scripts/smoke.mjs <base-url>` and `node scripts/check-seo.mjs <base-url> --external` against a deployment
 - `node scripts/icons.mjs` after the kl mark changes

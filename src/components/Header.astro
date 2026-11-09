@@ -2,7 +2,8 @@
 // The site's one header, on the wall's rails (ui.css header.top). Home names the page with the h1; elsewhere the
 // name is the way home and each page's own h1 sits in its content.
 import { KL_PATH, M } from '../lib/cards';
-import { of, LOCALES, lp, split } from '../i18n';
+import { of, split } from '../i18n';
+import Lang from './Lang.astro';
 interface Props { path: string }
 const { path } = Astro.props;
 const l = of(path);
@@ -12,9 +13,6 @@ const NAV = [
   { href: l.p('/battle'), label: l.t('frame.battle') },
   { href: l.p('/about'), label: l.t('frame.about') },
 ];
-// the language key: the same page in every language, as plain links in a disclosure that opens over the page, so the
-// header never moves; its face is the two-letter code, the same width in every language
-const pageIn = (code: string) => (base === '/404' ? lp(code, '/') : lp(code, base));
 ---
 <header class="top site">
   <a class="brand" href={l.p('/')} aria-label={home ? undefined : l.t('frame.brand')} data-astro-prefetch={home ? undefined : 'viewport'}>
@@ -26,10 +24,7 @@ const pageIn = (code: string) => (base === '/404' ? lp(code, '/') : lp(code, bas
   <nav class="links" aria-label={l.t('frame.site')}>
     {NAV.map((n) => <a class="sw" href={n.href} aria-current={path.startsWith(n.href) && (path === n.href || path[n.href.length] === '/') ? 'page' : undefined} data-astro-prefetch="viewport"><span class="hx">{n.label}</span><span class="mx">{n.href}</span></a>)}
   </nav>
-  <details class="lang">
-    <summary class="press icon" aria-label={`${l.t('frame.language')}: ${l.name}`}><span aria-hidden="true">{l.code.toUpperCase()}</span></summary>
-    <ul>{LOCALES.map((x) => <li><a href={pageIn(x.code)} hreflang={x.lang} lang={x.lang} aria-current={x.code === l.code ? 'true' : undefined}>{x.name}</a></li>)}</ul>
-  </details>
+  <Lang path={path} where="head" />
   <div class="seg" role="group" aria-label={l.t('frame.view')} style="--i:0">
     {/* in the Machine view each half names the type it asks for: every address on the site answers text/markdown with its
      twin (vercel.json negotiates on Accept), so the links keep their addresses and this switch is the difference */}
@@ -39,6 +34,6 @@ const pageIn = (code: string) => (base === '/404' ? lp(code, '/') : lp(code, bas
   {home && <button type="button" class="press icon" id="pause" aria-pressed="false" aria-label={l.t('frame.pause')}><span class="swapi" set:html={`${M.icon('pause', 'off')}${M.icon('play', 'on')}`} /><span class="mx" aria-hidden="true"><span class="off">||</span><span class="on">&gt;</span></span></button>}
   {/* the wall's sound and pause keys keep their room on every other page, so the links and the view switch never move between pages */}
   {!home && <span class="press icon spacer" aria-hidden="true"></span><span class="press icon spacer" aria-hidden="true"></span>}
-  <script is:inline>/* the language key closes on a press outside it or on Escape, and gives focus back to its face */(function(d){var x=d.querySelector('header.top .lang');if(!x)return;d.addEventListener('click',function(e){if(x.open&&!x.contains(e.target))x.open=false});x.addEventListener('keydown',function(e){if(e.key==='Escape'&&x.open){x.open=false;x.querySelector('summary').focus()}})})(document)</script>
+  <script is:inline>/* a language key (header and footer) closes on a press outside it or on Escape, and gives focus back to its face */(function(d){d.addEventListener('click',function(e){d.querySelectorAll('details.lang[open]').forEach(function(x){if(!x.contains(e.target))x.open=false})});d.addEventListener('keydown',function(e){var x=e.key==='Escape'&&e.target.closest&&e.target.closest('details.lang[open]');if(x){x.open=false;x.querySelector('summary').focus()}})})(document)</script>
   <script is:inline>/* the view switch, sound and pause keys start in the state the page's scripts give them after load (Base.astro's mode script, sound.js preference, gallery.js setPaused), so no key flips on screen */(function(d){var m=d.dataset.mode==='machine';document.querySelectorAll('header.top [data-mode-set]').forEach(function(b){b.setAttribute('aria-pressed',String((b.dataset.modeSet==='machine')===m))});document.querySelector('header.top .seg').style.setProperty('--i',m?1:0);var s=document.getElementById('sound'),p=document.getElementById('pause');if(s){var on=false;try{var k=localStorage.getItem('kevin-liu-studio:sound');on=k==='on'||k===null&&!matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}s.setAttribute('aria-pressed',String(on));d.dataset.sound=on?'on':'off'}if(p)p.setAttribute('aria-pressed',String('paused' in d.dataset))})(document.documentElement)</script>
 </header>

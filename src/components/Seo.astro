@@ -22,6 +22,7 @@ const { title, description, path, share, og = share ? undefined : 'home', imageA
 // the page's language from its path, and the same page in every language (hreflang, og:locale:alternate)
 const { code, path: base } = split(path);
 const here = localeOf(code);
+const fullTitle = Astro.props.fullTitle ?? (base === '/' ? title : `${title} | ${NAME}`);
 // a translated description keeps to the 160 characters a result shows: its first sentences that fit, else cut at a word
 // (at a character in a language without spaces) with an ellipsis. English descriptions are written to fit.
 const fit = (s: string) => {
@@ -36,7 +37,7 @@ const fit = (s: string) => {
 const url = abs(path);
 const image = share ? `${SITE}/share/${share}.jpg` : `${SITE}/og/${og}.jpg`;
 const video = og ? `${SITE}/og/${og}.mp4` : null;
-const fullTitle = Astro.props.fullTitle ?? (path === '/' ? title : `${title} | ${NAME}`);
+
 const ld = jsonld.length ? JSON.stringify({ '@context': 'https://schema.org', '@graph': jsonld }).replace(/</g, '\\u003c') : null;
 ---
 <title>{fullTitle}</title>

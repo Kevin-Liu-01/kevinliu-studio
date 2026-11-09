@@ -4,6 +4,7 @@
 import { SOCIAL, EMAIL, SITE } from '../lib/site';
 import { TWINS, twinPath } from '../lib/twins';
 import { of } from '../i18n';
+import Lang from './Lang.astro';
 interface Props { path: string; twin?: string | null }
 const { path, twin: twinLink } = Astro.props;
 const l = of(path);
@@ -24,6 +25,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
     {twinLink && <a href={twinLink} type="text/markdown">{l.t('frame.markdown')}</a>}
     <a href={l.p('/llms.txt')}>llms.txt</a>
     <button type="button" class="tomachine" data-mode-set="machine" aria-pressed="false">{l.t('frame.machine')}</button>
+    <Lang path={path} where="foot" />
   </nav>
   <div class="mx fm">
     <nav aria-label={l.t('frame.elsewhere')}>
