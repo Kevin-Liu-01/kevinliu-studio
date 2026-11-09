@@ -1,0 +1,319 @@
+{
+  "bio": "Kevin Liu is an infra-product engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.",
+  "description": "Kevin Liu's projects as 26 collectible cards: type, games, shaders, agents and interfaces, each with its real product, its features as moves, and a battle you can play.",
+  "about": [
+    "I am an infra-product engineer at [General Translation](https://generaltranslation.com) based in San Francisco.",
+    "I am 19, and I've been coding and designing since I was 12. I am currently attending [Princeton University](https://www.princeton.edu).",
+    "I design interfaces that feel alive, from first principles, with a spirit of their own. I follow friction toward what is missing, and treat environments as part of the product. I build strange observations into useful worlds through type, skills, and protocols."
+  ],
+  "facts": [
+    "Kevin Liu is an infra-product engineer at General Translation in San Francisco, since July 2026.",
+    "He studies computer science at Princeton University (B.S.E., class of 2028).",
+    "He has been coding and designing since he was 12.",
+    "Before General Translation he was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025).",
+    "He interned at Amazon (2025), Bloomberg (2023 and 2024) and AT&T Labs Research (2023).",
+    "He co-founded the Online Monmouth Math Competition (OMMC), a 501(c)(3) nonprofit math contest, and leads its technology.",
+    "He was lead developer of HackPrinceton's websites and built Podium, its judging tool.",
+    "He won 13 hackathons in a row; his team's RecyclAIble took first place in hardware at PennApps XXIII (2022).",
+    "He is the author of a paper on speech transcription for Huntington's disease (IYRC 2023), which won a Sigma Xi award, and a co-author of a paper on heat flow in lithium-ion polymer batteries (IEEE MIT URTC 2024)."
+  ],
+  "qa": [
+    {
+      "q": "What did he do before General Translation?",
+      "a": "He was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025). He interned at Amazon (2025), Bloomberg (2023 and 2024) and AT&T Labs Research (2023)."
+    },
+    {
+      "q": "What else has he done?",
+      "a": "He co-founded the Online Monmouth Math Competition (OMMC), a 501(c)(3) nonprofit math contest, and leads its technology. He was lead developer of HackPrinceton's websites and built Podium, its judging tool. He won 13 hackathons in a row; his team's RecyclAIble took first place in hardware at PennApps XXIII (2022). He is the author of a paper on speech transcription for Huntington's disease (IYRC 2023), which won a Sigma Xi award, and a co-author of a paper on heat flow in lithium-ion polymer batteries (IEEE MIT URTC 2024)."
+    }
+  ],
+  "ringRule": "An attack is 1.5x against the next discipline on the ring and 0.67x against the previous one; every other pairing is 1x. Dual disciplines multiply.",
+  "cards": {
+    "turboslide": {
+      "what": "A browser slides editor where people and AI agents edit one deck.",
+      "answer": "Turboslide is a browser slides editor where people and AI agents edit one deck.",
+      "rule": "Turboslide loads each page before you click, so its first move after entering goes first.",
+      "moves": [
+        "{move} hits for 30 twice, 95% of the time. People and AI agents edit one deck at once, each with a named pointer; changes appear within a second.",
+        "{move} hits for 60. PowerPoint pages export as screenshots, checked against the screen before saving, so the file matches the editor.",
+        "{move} hits for 50. Pictures print in two colors through an 8 by 8 dot pattern, and the editor and the export match pixel for pixel.",
+        "{move} raises a 50% barrier. Every edit names the deck version it read. An edit made on an old version is refused, so nobody overwrites newer work."
+      ]
+    },
+    "glyphfield": {
+      "what": "A free studio that turns one brand into graphics, animation and templates.",
+      "answer": "Glyphfield is a free studio that turns one brand into graphics, animation and templates.",
+      "rule": "The same request always returns the same graphic, so its moves never miss.",
+      "moves": [
+        "{move} hits for 70, 95% of the time. Design Lab sets a brand’s logo over any of 197 live shaders, animated textures from the graphics card.",
+        "{move} hits for 55 and raises its Pace. The Animation tool turns the brand’s text, logo and images into timed scenes, exported as GIF or MP4.",
+        "{move} raises a 40% barrier. Every tool opens its state as editable code, and an edit there updates the same visual controls.",
+        "{move} hits for 45 and goes first. AI agents make templates and backgrounds with one web request and get a vector graphic back, no browser needed."
+      ]
+    },
+    "jarhead": {
+      "what": "A voice assistant that clicks, types and reads the screen on your Mac.",
+      "answer": "Jarhead is a voice assistant that clicks, types and reads the screen on your Mac.",
+      "rule": "Jarhead relaunches after a crash, so the first hit that would end it leaves 1 Health.",
+      "moves": [
+        "{move} raises a 40% barrier. Asleep, it listens on the Mac only for its name. Touch ID or a password must pass before it takes a command.",
+        "{move} hits for 35 and goes first. Clear commands such as “scroll” or “click Save” skip the AI model and run in about 8 ms.",
+        "{move} hits for 18, 1 to 4 times, 95% of the time. Up to three extra Jarheads split a request, each working at once with its own AI model.",
+        "{move} hits for 55. It takes a screenshot, finds a button by its label and clicks it, using 71 tools for the Mac."
+      ]
+    },
+    "katagami": {
+      "what": "A free font family in five styles for interfaces, long reading and code.",
+      "answer": "Katagami is a free font family in five styles for interfaces, long reading and code.",
+      "rule": "Its weights run 100 to 900, so you set Weight Axis: heavier hits harder, misses more.",
+      "moves": [
+        "{move} hits for 120, 95% of the time. The site draws the word Katagami as outlines; drag any curve point and the letter reshapes.",
+        "{move} hits for 135 at wght 600. Each Katagami style is a variable font: one file holding every weight, plus a matching Italic.",
+        "{move} restores 60 health. Sans, Round, Text, Serif and Mono are built on one shared skeleton, so the site’s slider morphs a word through all five.",
+        "{move} hits for 100. Katagami Mono, the coding style, gives 0, O, 1, l and I clearly different shapes, so code reads without mix-ups."
+      ]
+    },
+    "claude-of-tanks": {
+      "what": "A free browser tank game: 7 v 7 online, 33 destructible battlefields, 13 modes.",
+      "answer": "Claude of Tanks is a free browser tank game: 7 v 7 online, 33 destructible battlefields, 13 modes.",
+      "rule": "The game's simulation is seeded, so this card's damage varies only on a critical hit.",
+      "moves": [
+        "{move} hits for 80, 95% of the time and cuts through 50% of a barrier. Fires an armor-piercing dart, one of five shell types, checked against the armor plate and angle it hits.",
+        "{move} hits for 65 and finishes a target under 35% health. An X-ray replay shows why a tank died: the shell’s path through its armor and the parts it wrecked.",
+        "{move} raises its Proof. Each tank is one record of armor, gun, crew and look, so the garage, bots and battle always agree.",
+        "{move} hits for 25, 2 to 3 times, 90% of the time. Battles run 7 against 7 and one switch makes them 14 against 14, with bots or with friends in multiplayer rooms."
+      ]
+    },
+    "mailroom": {
+      "what": "A Gmail sorter that uses readable rules and low-cost AI, all undoable.",
+      "answer": "Mailroom is a Gmail sorter that uses readable rules and low-cost AI, all undoable.",
+      "rule": "Trash rules past their cap refuse to run, so no hit takes over half its Health.",
+      "moves": [
+        "{move} hits for 65 and goes first. Rules you can read in one screen become Gmail filters, so new mail is labeled the moment it lands, at no cost.",
+        "{move} hits for 21 five times, 95% of the time. An AI model answers five questions about each email the rules miss, like “needs action”, as probabilities.",
+        "{move} hits for 105, 95% of the time. Ask in plain words, like “who hasn’t replied to me”, and get an editable Gmail search with ranked results.",
+        "{move} restores 50 health. Every run previews first and writes a receipt, and Undo puts labels, filters and policy back, whole or per message."
+      ]
+    },
+    "local-search": {
+      "what": "A command-line tool for AI agents to search the web in your own browser.",
+      "answer": "Local Search is a command-line tool for AI agents to search the web in your own browser.",
+      "rule": "Repeat searches return saved results in a median 6.5 ms, so a reused move goes first.",
+      "moves": [
+        "{move} hits for 61, 95% of the time. Your agent searches the web in the browser you already use, with no separate search service.",
+        "{move} hits for 57. Results arrive as JSON in one fixed shape, and failures carry an error code agents can act on.",
+        "{move} hits for 55 and raises its Pace. Its July 2026 benchmark measured a 148.7 ms median search, mixing fresh searches with answers from saved results.",
+        "{move} restores 45 health. Each result is short, a median 53.4 tokens (the word pieces AI models read), so agents can take in more results."
+      ]
+    },
+    "agent-pets": {
+      "what": "Pixel pets that sit beside your coding agent and show what it is doing.",
+      "answer": "Agent Pets: Pixel pets that sit beside your coding agent and show what it is doing.",
+      "rule": "Pets play every action three times, so moves that hit more than once hit three times.",
+      "moves": [
+        "{move} hits for 100 and goes first. An idle pet looks toward your pointer, using 16 drawn poses, one per direction.",
+        "{move} hits for 40, 2 to 3 times, 95% of the time. The run animation plays eight pixel-art frames at 120 ms each, then holds the last one for 220 ms.",
+        "{move} hits for 70, 95% of the time and stuns 30% of the time. When your agent needs you, an optional local script makes the pet wait, and its badge stays until you read it.",
+        "{move} raises a 40% barrier. Every frame keeps at least 16 clear pixels around the pet, and an audit rejects any frame that touches the edge."
+      ]
+    },
+    "loop": {
+      "what": "A service that updates AI agents' skill files from their sources every day.",
+      "answer": "Loop is a service that updates AI agents' skill files from their sources every day.",
+      "rule": "Skills improve with each refresh, so its Reach grows every third turn, up to 2 times.",
+      "moves": [
+        "{move} hits for 60 and sharpens its next hit. Each skill lists the sources it depends on, like feeds, docs, blogs and GitHub, and each refresh scans them first.",
+        "{move} hits for 85, 95% of the time. An AI agent reads what changed, searches the web and rewrites the skill as a new version.",
+        "{move} hits for 75 and cuts through 50% of a barrier. Every refresh shows the skill before and after, with each removed and added line marked for review.",
+        "{move} hits for 32, 2 to 3 times, 95% of the time. A daily job queues a refresh for each skill that is due, and cloud workers run them unattended."
+      ]
+    },
+    "agent-machines": {
+      "what": "An open-source kit and dashboard to run AI agents on cloud machines.",
+      "answer": "Agent Machines is an open-source kit and dashboard to run AI agents on cloud machines.",
+      "rule": "Stopped machines keep files. Out of play, it keeps stat changes but loses conditions.",
+      "moves": [
+        "{move} raises its Proof. It starts a cloud machine for an agent, runs its work, shows its files and logs, then tears it down.",
+        "{move} hits for 22, 1 to 4 times, 95% of the time. One shared interface runs Claude Code, Codex, Hermes or OpenClaw, so switching agents takes one change.",
+        "{move} hits for 60 and takes the discipline that hits hardest. Its cloud is one setting, so an agent runs on Daytona, E2B, Sprites or Vercel Sandbox.",
+        "{move} hits for 55. Agents can load any of 161 skills and 39 tool servers, and the dashboard shows which are verified."
+      ]
+    },
+    "prototemplate": {
+      "what": "A design lab of 27 live website designs and its own graphics engines.",
+      "answer": "Prototemplate is a design lab of 27 live website designs and its own graphics engines.",
+      "rule": "Its animations pause off screen, so out of play it regains 6% Health a turn.",
+      "moves": [
+        "{move} hits for 85, 90% of the time. A black hole drawn live bends the page’s ruled lines into arcs, and your pointer can bend them too.",
+        "{move} hits for 28, 2 to 3 times, 95% of the time. Ten animated patterns of square dots share one graphics canvas, so a page can run many at once.",
+        "{move} hits for 55 and sharpens its next hit. Glyphs from eight writing systems rain down and gather into the word “language” in one script after another.",
+        "{move} hits for 65 and stuns 20% of the time. A headline breaks into glyphs and regroups as the same sentence in the next language, right-to-left included."
+      ]
+    },
+    "bday-land": {
+      "what": "A birthday site friends fill with cards, which turns into a 3D island.",
+      "answer": "bday.land is a birthday site friends fill with cards, which turns into a 3D island.",
+      "rule": "A friend's blob throws up to five doodles, so when +999 Love lands, all five hit.",
+      "moves": [
+        "{move} hits for 27, 1 to 5 times, 95% of the time. On the island, a friend’s blob pelts you with the doodles they drew on their card, then says their message.",
+        "{move} hits for 105, 90% of the time. The first of twelve festival games: bonk gnomes for 45 seconds, but never a llama.",
+        "{move} hits for 85 and goes first. Friends open one link, with no account, and build a card in seven steps, from a message to a selfie.",
+        "{move} restores 50 health. The cake has one candle per friend, and each lights when you hug that friend’s blob, showing who you found."
+      ]
+    },
+    "powerlifting": {
+      "what": "Princeton's powerlifting club website, its whole brand drawn in code.",
+      "answer": "Princeton Powerlifting is Princeton's powerlifting club website, its whole brand drawn in code.",
+      "rule": "Both kg and lb are on the page, so switching never flashes, and it cannot be stunned.",
+      "moves": [
+        "{move} hits for 130. The club’s main logo, drawn in code: a tiger head over a loaded barbell above the club name.",
+        "{move} hits for 105 and goes first. A block alphabet with cut corners, drawn as shapes in code, so wordmarks need no font file.",
+        "{move} hits for 30, 2 to 5 times, 95% of the time. 84 icons for lifting, meets and the club, drawn on one grid with one line weight, plus solid squat, bench and deadlift.",
+        "{move} raises its Proof. Every logo comes in six color versions for dark and light backgrounds, drawn by the same code so they always match."
+      ]
+    },
+    "elo": {
+      "what": "A blind voting tool that ranks a team's options with chess-style ratings.",
+      "answer": "Elo is a blind voting tool that ranks a team's options with chess-style ratings.",
+      "rule": "Elo rewards upsets, so it hits cards with higher stat totals harder, lower ones softer.",
+      "moves": [
+        "{move} hits for 85. Each matchup shows two options under 12-character codes, so no name can sway the voter.",
+        "{move} hits for 110, 95% of the time. Ratings are rebuilt from the vote log: options start at 1000, and each counted vote moves up to 32 points.",
+        "{move} hits for 75 and goes first. All 16 admin actions are also tools AI agents can call, so an agent can do anything the admin can.",
+        "{move} restores 50 health. A voter can go back to any matchup and change the pick; the latest vote counts, up to 10 per pair."
+      ]
+    },
+    "cotfly": {
+      "what": "A 3D fruit fly in Claude of Tanks, its throttle set by 124 simulated neurons.",
+      "answer": "CoTFly is a 3D fruit fly in Claude of Tanks, its throttle set by 124 simulated neurons.",
+      "rule": "Firing neurons scale its throttle, so after two turns in play, its Pace rises to 1.5 times.",
+      "moves": [
+        "{move} hits for 120, 95% of the time. Each of 124 neurons charges, leaks and fires past a voltage threshold, computed live every millisecond.",
+        "{move} hits for 75 and stuns 30% of the time. 75 inhibiting neurons quiet 49 driving neurons through 1,106 connections mapped in a real fly brain, slowing the throttle.",
+        "{move} raises its Reach. Pilot controls give the fly 15 seconds of sugar: its driving neurons fire faster and it drives closer to targets.",
+        "{move} hits for 145, 90% of the time and goes last. The tank fires only while one foreleg holds aim and the other holds fire, after 90 ms of travel."
+      ]
+    },
+    "relay": {
+      "what": "A mock team chat app for testing AI agents, with every run graded.",
+      "answer": "Relay is a mock team chat app for testing AI agents, with every run graded.",
+      "rule": "A hidden check reads only the final state, so its hits ignore barriers and raised Proof.",
+      "moves": [
+        "{move} hits for 100, 95% of the time. Pick a model and a task, then watch every action it takes in a real browser.",
+        "{move} hits for 45 twice, 95% of the time. Two models run the same task from the same starting data in fresh workspaces, side by side, each graded separately.",
+        "{move} hits for 80. An AI model picks one action from a menu of visible actions, and the panel shows the probability it gave each.",
+        "{move} sharpens its next hit. Any recorded run plays back in the real interface, step by step, with its dialogs, typed text and targets."
+      ]
+    },
+    "princeton-td": {
+      "what": "A browser tower defense game set at Princeton, with 26 levels.",
+      "answer": "Princeton TD is a browser tower defense game set at Princeton, with 26 levels.",
+      "rule": "Enemy waves are fixed lists, so its moves that hit more than once land every hit.",
+      "moves": [
+        "{move} hits for 100, 90% of the time and goes first. The Palmer Mortar’s final upgrade can be a six-pod guided launcher that fires barrages, aimed automatically or by hand.",
+        "{move} hits for 45 three times. The first level, Poe Field, opens with three timed enemy groups, each with a set count and spacing.",
+        "{move} raises a 40% barrier. Terrain and paths are drawn once and kept until you zoom, so each frame redraws only towers, enemies and effects.",
+        "{move} hits for 145, 80% of the time. Sandbox mode is an endless arena for testing tower builds, and every fifth round sends a boss."
+      ]
+    },
+    "kevin-wiki": {
+      "what": "A personal wiki that AI agents write and keep current from saved sources.",
+      "answer": "Kevin Wiki is a personal wiki that AI agents write and keep current from saved sources.",
+      "rule": "Pages link earlier pages: each different move landed in play adds 10% damage, up to 30%.",
+      "moves": [
+        "{move} hits for 85, 90% of the time. A live 3D graph draws public pages as points and their links as lines.",
+        "{move} hits for 60 and goes first. Search runs on the machine with no cloud: it merges keyword and meaning matches, then a local AI model re-ranks them.",
+        "{move} hits for 25, 2 to 4 times, 95% of the time. Paste a link and say add it; an AI agent writes its page, related pages, backlinks, citations and index entry.",
+        "{move} restores 50 health. Its doctor script scores the wiki’s health from 0 to 100; self-heal applies the safe fixes and reruns it to verify."
+      ]
+    },
+    "sandbox-arena": {
+      "what": "A benchmark that races two cloud code sandboxes on the same task.",
+      "answer": "Sandbox Arena is a benchmark that races two cloud code sandboxes on the same task.",
+      "rule": "Each run gets a fresh sandbox, deleted after, so its conditions clear every turn.",
+      "moves": [
+        "{move} hits for 40 twice, 95% of the time. Two sandboxes start the same task at once and stream their logs side by side, so you watch the race live.",
+        "{move} hits for 80 and finishes a target under 35% health. Every task ends by checking its output against a known answer, so a fast but broken run scores zero.",
+        "{move} hits for 95, 90% of the time. Rankings can sort providers by the time that 1 run in 20 exceeds, because averages hide rare long stalls.",
+        "{move} raises a 40% barrier. Your own account keys run one real trial, are read once, expire in ten minutes and never reach logs or the sandbox."
+      ]
+    },
+    "ariadne": {
+      "what": "An AI host that guests text to check in, play quests and order drinks.",
+      "answer": "Ariadne is an AI host that guests text to check in, play quests and order drinks.",
+      "rule": "It ignores repeated messages, so a move that hits it more than once lands one hit.",
+      "moves": [
+        "{move} hits for 65 and goes first. Guests check in by texting a first name, with no app, and get back a color gem, secret word and quest.",
+        "{move} hits for 30 three times, 95% of the time. Find two guests whose gems form a color-wheel triangle with yours, then text their IDs for 100 points.",
+        "{move} restores 50 health. Text a drink in your own words; it is matched to the menu and queued, and you get a text when ready.",
+        "{move} hits for 85. A big screen ranks every guest’s tile by points, refreshing every 1.5 seconds and surviving a reload."
+      ]
+    },
+    "sigil-ui": {
+      "what": "A library of 350+ components, all styled from one markdown file.",
+      "answer": "Sigil UI is a library of 350+ components, all styled from one markdown file.",
+      "rule": "Presets are checked on load and unsafe values refused, so it cannot be poisoned.",
+      "moves": [
+        "{move} hits for 60 and takes the discipline that hits hardest. One command swaps in one of 44 complete looks, changing all 519 style values, and no component needs editing.",
+        "{move} hits for 85, 90% of the time. All 519 style values, from colors to motion, live in one markdown file, and one compile restyles every component.",
+        "{move} hits for 25, 2 to 4 times, 95% of the time. Setup installs ten skills, guide files that teach AI coding agents Sigil’s style values, layouts and polish rules.",
+        "{move} restores 50 health. Doctor runs seven checks on a project’s setup, from config to agent files, and marks each one pass, warn or fail."
+      ]
+    },
+    "dedalus-terminal": {
+      "what": "A retro birthday terminal where typed passwords set off hidden effects.",
+      "answer": "050525 is a retro birthday terminal where typed passwords set off hidden effects.",
+      "rule": "Passwords match in any case or spacing, so its accuracy rises 5 points, up to 100.",
+      "moves": [
+        "{move} hits for 90, 90% of the time. Type any word: 143 passwords, most unlisted, set off confetti, music, candles or a new screen mode.",
+        "{move} hits for 60 and goes first. Tab completes any of 432 known words and commands, so a password takes only a few keys.",
+        "{move} hits for 22, 1 to 4 times, 95% of the time. The cake starts with four lit candles; type or click to light or blow them out, and lit candles warm the screen.",
+        "{move} restores 50 health. 44 achievements arrive as mail on the screen as you play, and the inbox and rewards are saved for your next visit."
+      ]
+    },
+    "sevenfold": {
+      "what": "A workspace for researchers to find, read and write papers with an AI.",
+      "answer": "Sevenfold is a workspace for researchers to find, read and write papers with an AI.",
+      "rule": "Three search lists only add to a paper's rank, so its hits are never resisted.",
+      "moves": [
+        "{move} hits for 30 three times, 95% of the time. Search ranks papers by keywords, meaning and fit with your project at once, then merges the three lists.",
+        "{move} raises a 40% barrier. An AI model reads an uploaded PDF’s title, authors and year, and offers to link a matching paper already in the library.",
+        "{move} hits for 85, 95% of the time. Ask about attached papers: an AI model reads each PDF in full, compares them and typesets the math.",
+        "{move} restores 50 health. Search, chat, sources and drafts are views of one project, and each keeps its results when you switch views or reload."
+      ]
+    },
+    "podium": {
+      "what": "A hackathon judging tool that sends judges to teams in fair blocks of five.",
+      "answer": "Podium is a hackathon judging tool that sends judges to teams in fair blocks of five.",
+      "rule": "A looser second pass always gives a judge work, so its misses still hit at half power.",
+      "moves": [
+        "{move} hits for 85. The least-reviewed teams get judges first, so all projects reach enough reviews at once.",
+        "{move} hits for 16 five times, 95% of the time. A judge gets five neighboring teams on one floor, visited in a single trip, so walking stays short.",
+        "{move} hits for 90, 90% of the time. Each judge ranks a top three from five teams, for 3, 2 and 1 points, and teams are ordered by average.",
+        "{move} hits for 60 and goes first. Every team is a dot that stays gray until judged and turns brighter orange with each review, so missed teams stand out."
+      ]
+    },
+    "ommc": {
+      "what": "A nonprofit online math contest for teams of students 18 and under.",
+      "answer": "OMMC is a nonprofit online math contest for teams of students 18 and under.",
+      "rule": "Top teams advance to a proof round, so once at half Health, its Reach rises to 1.5 times.",
+      "moves": [
+        "{move} hits for 90, 95% of the time. The test PDF opens beside 25 answer boxes, and Submit stays locked until all 25 are answered.",
+        "{move} hits for 28, 1 to 4 times, 95% of the time. Up to four students enter as one team, each adding an age, grade and school, or the word anonymous.",
+        "{move} hits for 80. Search past problems by text, topic and difficulty, then open each typeset solution when you want it.",
+        "{move} restores 50 health. Each answer saves in the browser as you type and reloads from the server when you sign in, so nothing is lost."
+      ]
+    },
+    "atlas": {
+      "what": "General Translation's magazine, each story an issue with a live cover.",
+      "answer": "Atlas is General Translation's magazine, each story an issue with a live cover.",
+      "rule": "A spread turns two pages, so its moves that hit more than once land at least twice.",
+      "moves": [
+        "{move} hits for 90, 95% of the time. Every issue’s cover is a live fluid simulation in its own three colors, stirred by your pointer.",
+        "{move} hits for 28, 1 to 4 times, 95% of the time. Each story is laid out as magazine pages of two text columns, and a click turns each page over at the spine.",
+        "{move} hits for 75. Pick one of nine languages on the globe’s dial, and every story title resets in that language.",
+        "{move} sharpens its next hit. A globe printed in dots turns to the chosen language’s city and pins its coordinates, then stops drawing until it turns again."
+      ]
+    }
+  }
+}

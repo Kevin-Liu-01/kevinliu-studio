@@ -1,0 +1,22 @@
+{
+  "$schema": "https://assets.gtx.dev/config-schema.json",
+  "projectId": "prj_i3sf0ks7nnj2gtm95aexc481",
+  "description": "kevinliu.studio, Kevin Liu's personal site: 26 of his software projects shown as collectible cards, plus a turn-based card battle. Terse, plain, factual voice. Keep product names, people's and company names, move names in {move}, code, file paths and URLs exactly as written. 'Type' as a discipline means typography and type design. 'Inks' are the cost unit a card spends in a team. 'Kit' is the battle's item bag. 'Mat' and 'Arena' are the two battle modes. Machine view and Human view are the site's two ways of reading a page.",
+  "defaultLocale": "en",
+  "locales": [
+    "es",
+    "fr",
+    "de",
+    "pt-BR",
+    "ja",
+    "ko",
+    "zh-CN"
+  ],
+  "files": {
+    "json": {
+      "include": [
+        "src/i18n/[locale]/*.json"
+      ]
+    }
+  }
+}

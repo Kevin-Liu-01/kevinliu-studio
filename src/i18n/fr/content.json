@@ -1,0 +1,319 @@
+{
+  "bio": "Kevin Liu est ingénieur infrastructure et produit à San Francisco et étudiant à Princeton University. Il conçoit des interfaces qui semblent vivantes.",
+  "description": "Les projets de Kevin Liu en 26 cartes à collectionner : typographie, jeux, shaders, agents et interfaces. Chaque carte présente un produit réel, ses fonctionnalités sous forme de capacités et un combat à jouer.",
+  "about": [
+    "Je suis ingénieur infrastructure et produit chez [General Translation](https://generaltranslation.com), à San Francisco.",
+    "J'ai 19 ans et je code et conçois depuis l'âge de 12 ans. J'étudie actuellement à [Princeton University](https://www.princeton.edu).",
+    "Je conçois des interfaces qui semblent vivantes, en repartant des principes fondamentaux pour leur donner une personnalité propre. Les points de friction me guident vers ce qui manque, et je considère les environnements comme une partie intégrante du produit. Grâce à la typographie, aux compétences et aux protocoles, je transforme des observations insolites en univers utiles."
+  ],
+  "facts": [
+    "Kevin Liu est ingénieur infrastructure et produit chez General Translation à San Francisco depuis juillet 2026.",
+    "Il étudie l'informatique à Princeton University (B.S.E., promotion 2028).",
+    "Il code et conçoit depuis l'âge de 12 ans.",
+    "Avant de rejoindre General Translation, il était ingénieur fondateur chez Dedalus Labs (de janvier à juillet 2026), où il a développé une infrastructure pour agents IA, et chez Sevenfold AI (de juin à novembre 2025).",
+    "Il a effectué des stages chez Amazon (2025), Bloomberg (2023 et 2024) et AT&T Labs Research (2023).",
+    "Il a cofondé l'Online Monmouth Math Competition (OMMC), un concours de mathématiques à but non lucratif bénéficiant du statut 501(c)(3), dont il assure la direction technique.",
+    "Il a été le développeur principal des sites web de HackPrinceton et a créé Podium, son outil d'évaluation.",
+    "Il a remporté 13 hackathons d'affilée ; RecyclAIble, le projet de son équipe, a décroché la première place dans la catégorie matériel à PennApps XXIII (2022).",
+    "Il est l'auteur d'un article sur la transcription de la parole dans le contexte de la maladie de Huntington (IYRC 2023), récompensé par un prix Sigma Xi, et coauteur d'un article sur les flux thermiques dans les batteries lithium-ion polymère (IEEE MIT URTC 2024)."
+  ],
+  "qa": [
+    {
+      "q": "Que faisait-il avant General Translation ?",
+      "a": "Il était ingénieur fondateur chez Dedalus Labs (de janvier à juillet 2026), où il a développé une infrastructure pour agents IA, et chez Sevenfold AI (de juin à novembre 2025). Il a effectué des stages chez Amazon (2025), Bloomberg (2023 et 2024) et AT&T Labs Research (2023)."
+    },
+    {
+      "q": "Qu'a-t-il fait d'autre ?",
+      "a": "Il a cofondé l'Online Monmouth Math Competition (OMMC), un concours de mathématiques à but non lucratif bénéficiant du statut 501(c)(3), dont il assure la direction technique. Il a été le développeur principal des sites web de HackPrinceton et a créé Podium, son outil d'évaluation. Il a remporté 13 hackathons d'affilée ; RecyclAIble, le projet de son équipe, a décroché la première place dans la catégorie matériel à PennApps XXIII (2022). Il est l'auteur d'un article sur la transcription de la parole dans le contexte de la maladie de Huntington (IYRC 2023), récompensé par un prix Sigma Xi, et coauteur d'un article sur les flux thermiques dans les batteries lithium-ion polymère (IEEE MIT URTC 2024)."
+    }
+  ],
+  "ringRule": "Les dégâts d'une attaque sont multipliés par 1,5 contre la discipline suivante sur le cercle et par 0,67 contre la précédente ; le multiplicateur est de 1 dans tous les autres cas. Pour les doubles disciplines, les multiplicateurs se cumulent par multiplication.",
+  "cards": {
+    "turboslide": {
+      "what": "Un éditeur de diapositives en ligne où humains et agents IA travaillent sur une même présentation.",
+      "answer": "Turboslide est un éditeur de diapositives en ligne où humains et agents IA travaillent sur une même présentation.",
+      "rule": "Turboslide charge chaque page avant même votre clic : sa première capacité après son entrée en jeu est donc prioritaire.",
+      "moves": [
+        "{move} inflige deux fois 30 points de dégâts, avec 95 % de réussite. Humains et agents IA modifient une même présentation en simultané, chacun avec un pointeur à son nom ; les modifications apparaissent en moins d'une seconde.",
+        "{move} inflige 60 points de dégâts. Les diapositives PowerPoint sont exportées sous forme de captures d'écran, comparées à l'affichage avant l'enregistrement pour que le fichier soit fidèle au rendu dans l'éditeur.",
+        "{move} inflige 50 points de dégâts. Les images sont rendues en deux couleurs à l'aide d'une trame de 8 points sur 8, avec un résultat identique au pixel près dans l'éditeur et à l'export.",
+        "{move} dresse une barrière de 50 %. Chaque modification indique la version de la présentation sur laquelle elle s'appuie. Toute modification fondée sur une ancienne version est refusée, pour que personne n'écrase un travail plus récent."
+      ]
+    },
+    "glyphfield": {
+      "what": "Un studio gratuit qui décline une marque en visuels, animations et modèles.",
+      "answer": "Glyphfield est un studio gratuit qui décline une marque en visuels, animations et modèles.",
+      "rule": "Une même requête produit toujours le même visuel : ses capacités ne ratent donc jamais leur cible.",
+      "moves": [
+        "{move} inflige 70 points de dégâts, avec 95 % de réussite. Design Lab superpose le logo d'une marque à l'un des 197 shaders en temps réel : des textures animées par la carte graphique.",
+        "{move} inflige 55 points de dégâts et augmente sa Cadence. L'outil Animation transforme le texte, le logo et les images de la marque en scènes à la durée définie, exportées au format GIF ou MP4.",
+        "{move} dresse une barrière de 40 %. Chaque outil donne accès à son état sous forme de code modifiable ; toute modification de ce code se répercute sur les commandes visuelles correspondantes.",
+        "{move} inflige 45 dégâts et agit en premier. Les agents IA créent des modèles et des arrière-plans en une seule requête web et récupèrent un graphique vectoriel, sans avoir besoin de navigateur."
+      ]
+    },
+    "jarhead": {
+      "what": "Un assistant vocal qui clique, saisit du texte et lit l’écran de votre Mac.",
+      "answer": "Jarhead est un assistant vocal qui clique, saisit du texte et lit l’écran de votre Mac.",
+      "rule": "Jarhead redémarre après un plantage : le premier coup qui devrait l’achever lui laisse donc 1 point de Santé.",
+      "moves": [
+        "{move} érige une barrière de 40 %. En veille sur le Mac, il reste uniquement à l’écoute de son nom. Une authentification par Touch ID ou mot de passe est requise avant toute commande.",
+        "{move} inflige 35 dégâts et agit en premier. Les commandes explicites comme « faire défiler » ou « cliquer sur Enregistrer » s’exécutent sans passer par le modèle d’IA, en environ 8 ms.",
+        "{move} inflige 18 dégâts, 1 à 4 fois, dans 95 % des cas. Jusqu’à trois Jarhead supplémentaires se répartissent une demande et travaillent en parallèle, chacun avec son propre modèle d’IA.",
+        "{move} inflige 55 dégâts. Il prend une capture d’écran, repère un bouton grâce à son libellé et clique dessus, à l’aide de 71 outils pour Mac."
+      ]
+    },
+    "katagami": {
+      "what": "Une famille de polices gratuite en cinq styles pour les interfaces, la lecture prolongée et le code.",
+      "answer": "Katagami est une famille de polices gratuite en cinq styles pour les interfaces, la lecture prolongée et le code.",
+      "rule": "Ses graisses vont de 100 à 900 : à vous de régler l’axe de graisse. Plus elle est élevée, plus les coups sont puissants, mais plus ils risquent de rater.",
+      "moves": [
+        "{move} inflige 120 dégâts dans 95 % des cas. Le site trace les contours du mot Katagami ; faites glisser un point d’une courbe pour remodeler la lettre.",
+        "{move} inflige 135 dégâts à wght 600. Chaque style Katagami est une police variable : un seul fichier regroupe toutes les graisses, avec une version italique assortie.",
+        "{move} restaure 60 points de santé. Sans, Round, Text, Serif et Mono reposent sur une même ossature : le curseur du site fait ainsi passer un mot par les cinq styles.",
+        "{move} inflige 100 dégâts. Katagami Mono, le style conçu pour le code, donne à 0, O, 1, l et I des formes bien distinctes pour lire le code sans confusion."
+      ]
+    },
+    "claude-of-tanks": {
+      "what": "Un jeu de chars gratuit sur navigateur : 7 contre 7 en ligne, 33 champs de bataille destructibles, 13 modes.",
+      "answer": "Claude of Tanks est un jeu de chars gratuit sur navigateur : 7 contre 7 en ligne, 33 champs de bataille destructibles, 13 modes.",
+      "rule": "La simulation du jeu repose sur une graine aléatoire : les dégâts de cette carte ne varient donc qu’en cas de coup critique.",
+      "moves": [
+        "{move} inflige 80 dégâts dans 95 % des cas et traverse 50 % d’une barrière. Tire un obus-flèche perforant, l’un des cinq types d’obus, dont l’effet dépend de la plaque de blindage touchée et de l’angle d’impact.",
+        "{move} inflige 65 dégâts et achève une cible à moins de 35 % de santé. Un ralenti aux rayons X montre pourquoi un char a été détruit : le trajet de l’obus à travers son blindage et les composants endommagés.",
+        "{move} augmente sa Preuve. Chaque char possède une fiche unique regroupant blindage, canon, équipage et apparence : le garage, les bots et les combats utilisent ainsi toujours les mêmes données.",
+        "{move} inflige 25 dégâts, 2 à 3 fois, dans 90 % des cas. Les combats se jouent à 7 contre 7 et un simple réglage les fait passer à 14 contre 14, avec des bots ou des amis dans des salons multijoueurs."
+      ]
+    },
+    "mailroom": {
+      "what": "Un outil de tri pour Gmail qui combine des règles faciles à lire et une IA peu coûteuse, avec des actions entièrement annulables.",
+      "answer": "Mailroom est un outil de tri pour Gmail qui combine des règles faciles à lire et une IA peu coûteuse, avec des actions entièrement annulables.",
+      "rule": "Les règles de mise à la corbeille ne s’exécutent pas si leur plafond est dépassé : aucun coup ne lui retire donc plus de la moitié de sa Santé.",
+      "moves": [
+        "{move} inflige 65 dégâts et agit en premier. Des règles qui tiennent sur un seul écran deviennent des filtres Gmail : les nouveaux messages reçoivent ainsi un libellé dès leur arrivée, sans frais.",
+        "{move} inflige 21 dégâts cinq fois, dans 95 % des cas. Pour chaque e-mail non traité par les règles, un modèle d’IA répond à cinq questions, comme « nécessite une action », sous forme de probabilités.",
+        "{move} inflige 105 dégâts dans 95 % des cas. Formulez une demande en langage courant, comme « qui ne m’a pas répondu », et obtenez une recherche Gmail modifiable avec des résultats classés par pertinence.",
+        "{move} restaure 50 points de santé. Chaque exécution présente d’abord un aperçu, puis produit un compte rendu. La fonction Annuler rétablit les libellés, les filtres et la politique de tri, pour l’ensemble des messages ou au cas par cas."
+      ]
+    },
+    "local-search": {
+      "what": "Un outil en ligne de commande permettant aux agents IA d’effectuer des recherches sur le web dans votre propre navigateur.",
+      "answer": "Local Search est un outil en ligne de commande permettant aux agents IA d’effectuer des recherches sur le web dans votre propre navigateur.",
+      "rule": "Les recherches répétées renvoient les résultats enregistrés en un temps médian de 6,5 ms : une capacité réutilisée agit donc en premier.",
+      "moves": [
+        "{move} inflige 61 dégâts dans 95 % des cas. Votre agent effectue ses recherches sur le web dans le navigateur que vous utilisez déjà, sans service de recherche distinct.",
+        "{move} inflige 57 dégâts. Les résultats sont renvoyés en JSON selon une structure fixe, et chaque échec s’accompagne d’un code d’erreur que les agents peuvent exploiter.",
+        "{move} inflige 55 dégâts et augmente sa Cadence. Son banc d’essai de juillet 2026 a mesuré un temps de recherche médian de 148.7 ms, en combinant de nouvelles recherches et des réponses tirées de résultats enregistrés.",
+        "{move} restaure 45 points de Santé. Chaque résultat est court : une longueur médiane de 53.4 jetons (les fragments de mots que lisent les modèles d’IA), ce qui permet aux agents d’assimiler davantage de résultats."
+      ]
+    },
+    "agent-pets": {
+      "what": "Des animaux en pixels qui se tiennent aux côtés de votre agent de programmation et montrent ce qu’il fait.",
+      "answer": "Agent Pets : des animaux en pixels qui se tiennent aux côtés de votre agent de programmation et montrent ce qu’il fait.",
+      "rule": "Les animaux répètent chaque action trois fois : les capacités à coups multiples frappent donc trois fois.",
+      "moves": [
+        "{move} inflige 100 dégâts et agit en premier. Au repos, l’animal regarde vers votre pointeur grâce à 16 poses dessinées, une par direction.",
+        "{move} inflige 40 dégâts, 2 à 3 fois, avec 95 % de réussite. L’animation de course affiche huit images en pixel art pendant 120 ms chacune, puis garde la dernière à l’écran pendant 220 ms.",
+        "{move} inflige 70 dégâts avec 95 % de réussite et étourdit dans 30 % des cas. Quand votre agent a besoin de vous, un script local facultatif fait patienter l’animal, et son badge reste affiché jusqu’à ce que vous le lisiez.",
+        "{move} dresse une barrière de 40 %. Chaque image laisse une marge d’au moins 16 pixels autour de l’animal, et un contrôle rejette toute image où il touche le bord."
+      ]
+    },
+    "loop": {
+      "what": "Un service qui met à jour chaque jour les fichiers de compétences des agents d’IA à partir de leurs sources.",
+      "answer": "Loop est un service qui met à jour chaque jour les fichiers de compétences des agents d’IA à partir de leurs sources.",
+      "rule": "Les compétences s’améliorent à chaque actualisation : sa Portée augmente donc tous les trois tours, deux fois au maximum.",
+      "moves": [
+        "{move} inflige 60 dégâts et renforce sa prochaine frappe. Chaque compétence répertorie les sources dont elle dépend, comme les flux, la documentation, les blogs et GitHub, et chaque actualisation commence par les analyser.",
+        "{move} inflige 85 dégâts avec 95 % de réussite. Un agent d’IA examine les changements, effectue des recherches sur le Web et réécrit la compétence pour en créer une nouvelle version.",
+        "{move} inflige 75 dégâts et traverse 50 % d’une barrière. Chaque actualisation présente la compétence avant et après, en signalant chaque ligne supprimée ou ajoutée pour vérification.",
+        "{move} inflige 32 dégâts, 2 à 3 fois, avec 95 % de réussite. Une tâche quotidienne met en file d’attente l’actualisation des compétences à mettre à jour, puis des processus dans le cloud s’en chargent sans intervention."
+      ]
+    },
+    "agent-machines": {
+      "what": "Un kit et un tableau de bord open source pour exécuter des agents d’IA sur des machines dans le cloud.",
+      "answer": "Agent Machines est un kit et un tableau de bord open source pour exécuter des agents d’IA sur des machines dans le cloud.",
+      "rule": "Les machines arrêtées conservent leurs fichiers. Hors jeu, cette carte conserve ses modifications de statistiques, mais perd ses altérations d’état.",
+      "moves": [
+        "{move} augmente sa Preuve. Le service démarre une machine dans le cloud pour un agent, lui fait exécuter ses tâches, affiche ses fichiers et ses journaux, puis supprime la machine.",
+        "{move} inflige 22 dégâts, 1 à 4 fois, avec 95 % de réussite. Une interface commune permet d’exécuter Claude Code, Codex, Hermes ou OpenClaw : un seul changement suffit pour passer d’un agent à l’autre.",
+        "{move} inflige 60 dégâts et adopte la discipline qui frappe le plus fort. Un seul paramètre définit le cloud utilisé : l’agent peut ainsi fonctionner sur Daytona, E2B, Sprites ou Vercel Sandbox.",
+        "{move} inflige 55 dégâts. Les agents peuvent charger les compétences et les serveurs d’outils de leur choix parmi les 161 compétences et 39 serveurs disponibles, et le tableau de bord indique lesquels sont vérifiés."
+      ]
+    },
+    "prototemplate": {
+      "what": "Un laboratoire de design proposant 27 designs de sites Web fonctionnels et ses propres moteurs graphiques.",
+      "answer": "Prototemplate est un laboratoire de design proposant 27 designs de sites Web fonctionnels et ses propres moteurs graphiques.",
+      "rule": "Ses animations se mettent en pause hors écran : hors jeu, cette carte récupère donc 6 % de Santé par tour.",
+      "moves": [
+        "{move} inflige 85 dégâts avec 90 % de réussite. Un trou noir dessiné en temps réel courbe les lignes du quadrillage de la page en arcs, et votre pointeur peut lui aussi les déformer.",
+        "{move} inflige 28 dégâts, 2 à 3 fois, avec 95 % de réussite. Dix motifs animés de points carrés partagent une même surface de dessin, ce qui permet à une page d’en afficher plusieurs à la fois.",
+        "{move} inflige 55 dégâts et renforce sa prochaine frappe. Des glyphes de huit systèmes d’écriture tombent en pluie et s’assemblent pour former le mot « langue » dans chacun de ces systèmes à tour de rôle.",
+        "{move} inflige 65 dégâts et étourdit dans 20 % des cas. Un titre se décompose en glyphes, puis se reconstitue dans la langue suivante, y compris dans les langues qui s’écrivent de droite à gauche."
+      ]
+    },
+    "bday-land": {
+      "what": "Un site d’anniversaire que les amis remplissent de cartes et qui se transforme en île en 3D.",
+      "answer": "bday.land est un site d’anniversaire que les amis remplissent de cartes et qui se transforme en île en 3D.",
+      "rule": "La créature gélatineuse d’un ami lance jusqu’à cinq gribouillis : quand +999 Amour touche sa cible, les cinq font mouche.",
+      "moves": [
+        "{move} inflige 27 dégâts, 1 à 5 fois, avec 95 % de réussite. Sur l’île, la créature gélatineuse d’un ami vous bombarde des gribouillis qu’il a dessinés sur sa carte, puis récite son message.",
+        "{move} inflige 105 dégâts dans 90 % des cas. Le premier de douze jeux de fête : tapez sur des gnomes pendant 45 secondes, mais jamais sur un lama.",
+        "{move} inflige 85 dégâts et agit en premier. Les amis ouvrent un simple lien, sans créer de compte, et composent une carte en sept étapes, du message au selfie.",
+        "{move} restaure 50 points de santé. Le gâteau porte une bougie par ami : chacune s’allume quand vous enlacez la petite créature de cet ami, pour indiquer qui vous avez retrouvé."
+      ]
+    },
+    "powerlifting": {
+      "what": "Le site du club de force athlétique de Princeton, dont toute l’identité visuelle est dessinée en code.",
+      "answer": "Princeton Powerlifting est le site du club de force athlétique de Princeton, dont toute l’identité visuelle est dessinée en code.",
+      "rule": "Les valeurs en kg et en lb sont toutes présentes sur la page : changer d’unité ne provoque donc aucun clignotement, et cette carte ne peut pas être étourdie.",
+      "moves": [
+        "{move} inflige 130 dégâts. Le logo principal du club, dessiné en code : une tête de tigre surmontant une barre chargée, au-dessus du nom du club.",
+        "{move} inflige 105 dégâts et agit en premier. Un alphabet de lettres massives aux coins coupés, composé de formes dessinées en code : les logos typographiques n’ont ainsi besoin d’aucun fichier de police.",
+        "{move} inflige 30 dégâts, 2 à 5 fois, dans 95 % des cas. 84 icônes consacrées à la musculation, aux compétitions et au club, dessinées sur une même grille avec une épaisseur de trait uniforme, plus des silhouettes pleines pour le squat, le développé couché et le soulevé de terre.",
+        "{move} augmente sa Preuve. Chaque logo existe en six variantes de couleur pour les fonds sombres et clairs, toutes générées par le même code pour garantir leur cohérence."
+      ]
+    },
+    "elo": {
+      "what": "Un outil de vote à l’aveugle qui classe les options d’une équipe selon un système de scores inspiré des échecs.",
+      "answer": "Elo est un outil de vote à l’aveugle qui classe les options d’une équipe selon un système de scores inspiré des échecs.",
+      "rule": "Elo récompense les victoires inattendues : ses coups frappent plus fort les cartes dont le total des statistiques est supérieur au sien, et moins fort celles dont le total est inférieur.",
+      "moves": [
+        "{move} inflige 85 dégâts. Chaque duel présente deux options identifiées par des codes de 12 caractères, pour qu’aucun nom ne puisse influencer le votant.",
+        "{move} inflige 110 dégâts dans 95 % des cas. Les scores sont recalculés à partir du journal des votes : les options commencent à 1000, et chaque vote comptabilisé fait varier le score de 32 points au maximum.",
+        "{move} inflige 75 dégâts et agit en premier. Les 16 actions d’administration sont aussi accessibles sous forme d’outils aux agents d’IA : un agent peut donc faire tout ce que fait l’administrateur.",
+        "{move} restaure 50 points de santé. Un votant peut revenir à n’importe quel duel et modifier son choix ; seul son dernier vote est retenu, dans la limite de 10 votes par paire."
+      ]
+    },
+    "cotfly": {
+      "what": "Une drosophile en 3D dans Claude of Tanks, dont l’accélération est contrôlée par 124 neurones simulés.",
+      "answer": "CoTFly est une drosophile en 3D dans Claude of Tanks, dont l’accélération est contrôlée par 124 neurones simulés.",
+      "rule": "Les décharges neuronales modulent son accélération : après deux tours en jeu, sa Cadence est multipliée par 1,5.",
+      "moves": [
+        "{move} inflige 120 dégâts dans 95 % des cas. Chacun des 124 neurones accumule une charge, en perd progressivement et émet une décharge au-delà d’un seuil de tension, le tout calculé en temps réel à chaque milliseconde.",
+        "{move} inflige 75 dégâts et étourdit dans 30 % des cas. 75 neurones inhibiteurs freinent l’activité de 49 neurones moteurs via 1 106 connexions cartographiées dans un véritable cerveau de mouche, ce qui réduit l’accélération.",
+        "{move} augmente sa Portée. Les commandes de pilotage offrent à la mouche un apport de sucre de 15 secondes : ses neurones moteurs émettent des décharges plus rapidement et elle s’approche davantage des cibles.",
+        "{move} inflige 145 dégâts dans 90 % des cas et agit en dernier. Le char ne tire que lorsqu’une patte avant maintient la commande de visée et l’autre celle de tir, après 90 ms de déplacement."
+      ]
+    },
+    "relay": {
+      "what": "Une application simulant une messagerie d’équipe pour tester des agents d’IA, avec une note pour chaque exécution.",
+      "answer": "Relay est une application simulant une messagerie d’équipe pour tester des agents d’IA, avec une note pour chaque exécution.",
+      "rule": "Une vérification cachée ne prend en compte que l’état final : ses coups ignorent donc les barrières et les augmentations de Preuve.",
+      "moves": [
+        "{move} inflige 100 dégâts dans 95 % des cas. Choisissez un modèle et une tâche, puis observez chacune de ses actions dans un véritable navigateur.",
+        "{move} inflige 45 dégâts deux fois, dans 95 % des cas. Deux modèles exécutent côte à côte la même tâche à partir des mêmes données initiales, chacun dans un espace de travail vierge et avec une note distincte.",
+        "{move} inflige 80 dégâts. Un modèle d’IA choisit une action dans un menu d’actions visibles, et le panneau affiche la probabilité qu’il a attribuée à chacune.",
+        "{move} renforce sa prochaine frappe. Toute exécution enregistrée peut être rejouée dans l’interface réelle, étape par étape, avec ses boîtes de dialogue, le texte saisi et les cibles."
+      ]
+    },
+    "princeton-td": {
+      "what": "Un jeu de tower defense sur navigateur qui se déroule à Princeton, avec 26 niveaux.",
+      "answer": "Princeton TD est un jeu de tower defense sur navigateur qui se déroule à Princeton, avec 26 niveaux.",
+      "rule": "Les vagues ennemies suivent des listes prédéfinies : ses capacités à coups multiples touchent donc à chaque coup.",
+      "moves": [
+        "{move} inflige 100 dégâts dans 90 % des cas et agit en premier. L’amélioration finale du Palmer Mortar peut le transformer en lanceur de missiles guidés à six modules, qui tire des salves à visée automatique ou manuelle.",
+        "{move} inflige 45 dégâts trois fois. Le premier niveau, Poe Field, commence par trois groupes ennemis arrivant à des moments précis, chacun avec un effectif et un espacement définis.",
+        "{move} dresse une barrière de 40 %. Le terrain et les chemins sont dessinés une seule fois et conservés jusqu’au prochain zoom : à chaque image, seuls les tours, les ennemis et les effets sont redessinés.",
+        "{move} inflige 145 dégâts, avec 80 % de chances de toucher. Le mode bac à sable est une arène sans fin pour tester des configurations de tours, avec un boss toutes les cinq manches."
+      ]
+    },
+    "kevin-wiki": {
+      "what": "Un wiki personnel que des agents IA rédigent et tiennent à jour à partir de sources enregistrées.",
+      "answer": "Kevin Wiki est un wiki personnel que des agents IA rédigent et tiennent à jour à partir de sources enregistrées.",
+      "rule": "Les pages renvoient aux pages précédentes : chaque capacité différente qui touche en jeu ajoute 10 % de dégâts, jusqu’à 30 %.",
+      "moves": [
+        "{move} inflige 85 dégâts, avec 90 % de chances de toucher. Un graphe 3D en temps réel représente les pages publiques par des points et leurs liens par des lignes.",
+        "{move} inflige 60 dégâts et agit en premier. La recherche s’effectue sur la machine, sans cloud : elle combine les résultats par mots-clés et par proximité de sens, puis un modèle d’IA local les reclasse.",
+        "{move} inflige 25 dégâts, 2 à 4 fois, avec 95 % de chances de toucher. Collez un lien et demandez son ajout ; un agent IA rédige la page correspondante, les pages connexes, les liens retour, les citations et l’entrée dans l’index.",
+        "{move} restaure 50 points de santé. Son script de diagnostic évalue la santé du wiki de 0 à 100 ; la réparation automatique applique les correctifs sans risque et relance le diagnostic pour vérifier le résultat."
+      ]
+    },
+    "sandbox-arena": {
+      "what": "Un banc d’essai qui met en compétition deux bacs à sable d’exécution de code dans le cloud sur une même tâche.",
+      "answer": "Sandbox Arena est un banc d’essai qui met en compétition deux bacs à sable d’exécution de code dans le cloud sur une même tâche.",
+      "rule": "Chaque exécution dispose d’un nouveau bac à sable, supprimé ensuite : ses altérations d’état sont donc dissipées à chaque tour.",
+      "moves": [
+        "{move} inflige 40 dégâts deux fois, avec 95 % de chances de toucher. Deux bacs à sable démarrent la même tâche simultanément et affichent leurs journaux côte à côte en temps réel, pour vous permettre de suivre la course en direct.",
+        "{move} inflige 80 dégâts et achève une cible ayant moins de 35 % de santé. Chaque tâche se termine par une comparaison du résultat à une réponse connue : une exécution rapide mais incorrecte ne rapporte donc aucun point.",
+        "{move} inflige 95 dégâts, avec 90 % de chances de toucher. Les classements peuvent trier les fournisseurs selon le temps que dépasse une exécution sur 20, car les moyennes masquent les rares blocages prolongés.",
+        "{move} dresse une barrière de 40 %. Les clés de votre propre compte servent à lancer un essai réel, sont lues une seule fois, expirent au bout de dix minutes et ne sont jamais transmises aux journaux ni au bac à sable."
+      ]
+    },
+    "ariadne": {
+      "what": "Un hôte IA auquel les invités écrivent par SMS pour signaler leur arrivée, accomplir des quêtes et commander des boissons.",
+      "answer": "Ariadne est un hôte IA auquel les invités écrivent par SMS pour signaler leur arrivée, accomplir des quêtes et commander des boissons.",
+      "rule": "Il ignore les messages répétés : une capacité à coups multiples ne le touche donc qu’une seule fois.",
+      "moves": [
+        "{move} inflige 65 dégâts et agit en premier. Les invités signalent leur arrivée en envoyant un prénom par SMS, sans application, et reçoivent une gemme de couleur, un mot secret et une quête.",
+        "{move} inflige 30 dégâts trois fois, avec 95 % de chances de toucher. Trouvez deux invités dont les gemmes forment un triangle avec la vôtre sur le cercle chromatique, puis envoyez leurs identifiants par SMS pour gagner 100 points.",
+        "{move} restaure 50 points de santé. Commandez une boisson par SMS avec vos propres mots ; votre demande est associée à une boisson de la carte puis ajoutée à la file des commandes. Un SMS vous prévient quand elle est prête.",
+        "{move} inflige 85 dégâts. Un grand écran classe les vignettes des invités par points. Le classement s’actualise toutes les 1,5 secondes et reste intact après un rechargement."
+      ]
+    },
+    "sigil-ui": {
+      "what": "Une bibliothèque de plus de 350 composants, tous mis en forme à partir d’un seul fichier Markdown.",
+      "answer": "Sigil UI est une bibliothèque de plus de 350 composants, tous mis en forme à partir d’un seul fichier Markdown.",
+      "rule": "Les préréglages sont vérifiés au chargement et les valeurs dangereuses refusées, ce qui l’immunise contre le poison.",
+      "moves": [
+        "{move} inflige 60 dégâts et adopte la discipline qui frappe le plus fort. Une seule commande applique l’un des 44 styles complets en modifiant les 519 valeurs de style, sans retoucher aucun composant.",
+        "{move} inflige 85 dégâts, avec 90 % de chances de toucher. Les 519 valeurs de style, des couleurs aux animations, sont réunies dans un seul fichier Markdown, et une compilation suffit à modifier l’apparence de tous les composants.",
+        "{move} inflige 25 dégâts, 2 à 4 fois, avec 95 % de chances de toucher. L’installation ajoute dix compétences : des fichiers guides qui enseignent aux agents de programmation IA les valeurs de style, les mises en page et les règles de finition de Sigil.",
+        "{move} restaure 50 points de santé. L’outil de diagnostic effectue sept vérifications de l’installation d’un projet, de la configuration aux fichiers des agents, et attribue à chacune le statut pass, warn ou fail."
+      ]
+    },
+    "dedalus-terminal": {
+      "what": "Un terminal d’anniversaire rétro où les mots de passe saisis déclenchent des effets cachés.",
+      "answer": "050525 est un terminal d’anniversaire rétro où les mots de passe saisis déclenchent des effets cachés.",
+      "rule": "Les mots de passe sont reconnus quels que soient la casse et les espaces, ce qui augmente sa précision de 5 points, jusqu’à 100.",
+      "moves": [
+        "{move} inflige 90 dégâts, avec 90 % de chances de toucher. Saisissez n’importe quel mot : 143 mots de passe, pour la plupart non répertoriés, déclenchent des confettis, de la musique, des bougies ou un nouveau mode d’affichage.",
+        "{move} inflige 60 dégâts et agit en premier. La touche Tab complète automatiquement les 432 mots et commandes reconnus : quelques touches suffisent donc à saisir un mot de passe.",
+        "{move} inflige 22 dégâts, 1 à 4 fois, dans 95 % des cas. Le gâteau apparaît avec quatre bougies allumées ; utilisez le clavier ou cliquez pour les allumer ou les éteindre. Les bougies allumées réchauffent l’écran.",
+        "{move} restaure 50 points de santé. Au fil du jeu, 44 succès arrivent sous forme de courrier à l’écran. La boîte de réception et les récompenses sont sauvegardées pour votre prochaine visite."
+      ]
+    },
+    "sevenfold": {
+      "what": "Un espace de travail où les chercheurs peuvent rechercher, lire et rédiger des articles scientifiques avec une IA.",
+      "answer": "Sevenfold est un espace de travail où les chercheurs peuvent rechercher, lire et rédiger des articles scientifiques avec une IA.",
+      "rule": "Les trois listes de résultats ne peuvent qu’améliorer le classement d’un article : ses coups ne rencontrent donc jamais de résistance.",
+      "moves": [
+        "{move} inflige 30 dégâts trois fois, dans 95 % des cas. La recherche classe les articles selon leurs mots-clés, leur sens et leur pertinence pour votre projet, puis fusionne les trois listes.",
+        "{move} dresse une barrière de 40 %. Un modèle d’IA lit le titre, les auteurs et l’année d’un PDF importé, puis propose de l’associer à un article correspondant déjà présent dans la bibliothèque.",
+        "{move} inflige 85 dégâts, dans 95 % des cas. Posez des questions sur les articles joints : un modèle d’IA lit chaque PDF en entier, les compare et met en forme les formules mathématiques.",
+        "{move} restaure 50 points de santé. Recherche, discussion, sources et brouillons sont les différentes vues d’un même projet. Chacune conserve ses résultats lorsque vous changez de vue ou rechargez la page."
+      ]
+    },
+    "podium": {
+      "what": "Un outil d’évaluation de hackathon qui attribue équitablement à chaque juge des groupes de cinq équipes.",
+      "answer": "Podium est un outil d’évaluation de hackathon qui attribue équitablement à chaque juge des groupes de cinq équipes.",
+      "rule": "Un second passage aux critères plus souples trouve toujours des équipes à évaluer pour un juge : même ses coups manqués infligent donc la moitié des dégâts.",
+      "moves": [
+        "{move} inflige 85 dégâts. Les juges sont envoyés en priorité aux équipes les moins évaluées, afin que tous les projets atteignent en même temps un nombre suffisant d’évaluations.",
+        "{move} inflige 16 dégâts cinq fois, dans 95 % des cas. Un juge se voit attribuer cinq équipes voisines au même étage, à visiter en un seul passage pour limiter les déplacements.",
+        "{move} inflige 90 dégâts, dans 90 % des cas. Chaque juge classe ses trois meilleures équipes parmi cinq et leur attribue respectivement 3, 2 et 1 points. Les équipes sont ensuite classées selon leur moyenne.",
+        "{move} inflige 60 dégâts et agit en premier. Chaque équipe est représentée par un point qui reste gris jusqu’à sa première évaluation, puis prend un orange de plus en plus vif à chaque évaluation, ce qui fait ressortir les équipes oubliées."
+      ]
+    },
+    "ommc": {
+      "what": "Un concours de mathématiques en ligne à but non lucratif pour des équipes d’élèves de 18 ans ou moins.",
+      "answer": "OMMC est un concours de mathématiques en ligne à but non lucratif pour des équipes d’élèves de 18 ans ou moins.",
+      "rule": "Les meilleures équipes accèdent à une épreuve de démonstration : lorsque sa Santé tombe à la moitié, sa Portée est donc multipliée par 1,5.",
+      "moves": [
+        "{move} inflige 90 dégâts, dans 95 % des cas. Le PDF de l’épreuve s’ouvre à côté de 25 champs de réponse, et le bouton Envoyer reste désactivé tant que les 25 champs ne sont pas remplis.",
+        "{move} inflige 28 dégâts, 1 à 4 fois, dans 95 % des cas. Jusqu’à quatre élèves peuvent s’inscrire dans une même équipe, chacun indiquant son âge, sa classe et son établissement, ou le mot anonymous.",
+        "{move} inflige 80 dégâts. Recherchez des problèmes d’éditions précédentes par texte, thème et difficulté, puis ouvrez les solutions mises en forme quand vous le souhaitez.",
+        "{move} restaure 50 points de santé. Chaque réponse est enregistrée dans le navigateur au fil de la saisie et récupérée depuis le serveur à votre connexion : rien n’est perdu."
+      ]
+    },
+    "atlas": {
+      "what": "Le magazine de General Translation, où chaque article constitue un numéro à la couverture animée.",
+      "answer": "Atlas est le magazine de General Translation, où chaque article constitue un numéro à la couverture animée.",
+      "rule": "Une double page fait tourner deux pages : ses capacités à coups multiples touchent donc au moins deux fois.",
+      "moves": [
+        "{move} inflige 90 dégâts, dans 95 % des cas. La couverture de chaque numéro est une simulation de fluide en temps réel dans ses trois couleurs propres, que votre pointeur met en mouvement.",
+        "{move} inflige 28 dégâts, 1 à 4 fois, dans 95 % des cas. Chaque article est mis en page comme dans un magazine, sur deux colonnes de texte, et un clic fait tourner chaque page autour de la reliure.",
+        "{move} inflige 75 dégâts. Choisissez l’une des neuf langues sur le cadran du globe : tous les titres des articles s’affichent alors dans cette langue.",
+        "{move} renforce sa prochaine frappe. Un globe dessiné en points pivote vers la ville associée à la langue choisie et en marque les coordonnées, puis suspend son rendu jusqu’à sa prochaine rotation."
+      ]
+    }
+  }
+}
