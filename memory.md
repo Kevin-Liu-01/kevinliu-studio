@@ -289,3 +289,7 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: pushing main needs Kevin's yes. Minor, not blocking: the battle defines 17 icon ids twice (identical
   copies); with ?auto=1 and no gesture the battle still fetches each scene's cues (34 files, 216 KB in 20 s); the
   rounds should take the sound.js and 320 px rail fixes upstream; the 26-card battle still waits on the kit rebuild.
+- **Shipped** (2026-11-09): Kevin said "Yes, push main". main fast-forwarded cc54526 to f0feb6b; production deployment
+  kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
+  www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
+  kevinliu-studio-ai52pppxd (cc54526).
