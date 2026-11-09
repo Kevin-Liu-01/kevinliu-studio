@@ -123,7 +123,7 @@ for (const f of htmls) {
   // (SVG <use href="#icon"> stays in the document, so only <a> is checked)
   if (/<base href=/.test(html)) for (const m of html.matchAll(/<a\b[^>]*\shref="(#[^"]*)"/g)) fail(page, `link ${m[1]} resolves against <base>`);
   const base = html.match(/<base href="([^"]+)"/)?.[1] ?? page.replace(/[^/]*$/, '');
-  for (const m of html.replace(/<base [^>]*>/, '').matchAll(/\s(?:src|href|poster)="([^"]+)"|url\(["']?([^"')]+)["']?\)/g)) {
+  for (const m of html.replace(/<base [^>]*>/, '').matchAll(/\s(?:src|href|poster|data-plainfx)="([^"]+)"|url\(["']?([^"')]+)["']?\)/g)) {
     const u = m[1] ?? m[2];
     // %23 is an encoded fragment inside an inline SVG data URI (a filter or gradient id), not a file
     if (!u || /^(https?:|mailto:|data:|#|%23|javascript:|blob:)/.test(u) || u.includes('${')) continue;

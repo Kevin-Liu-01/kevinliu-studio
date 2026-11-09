@@ -76,12 +76,61 @@ export const wallCss: string = WALL.css();
 export const masks = ART.masks();
 
 const framedCard = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+// A card's element children as [start, end) slices of its HTML, the open tag that holds them and where they end.
+// markup.js writes well-formed HTML: every element closed or void, no "<" in text or attributes.
+const VOID = new Set(['img', 'br', 'input', 'source', 'wbr', 'hr', 'meta', 'link', 'area', 'col', 'embed', 'track']);
+function kidsOf(html: string) {
+  const tag = /<(\/?)([a-zA-Z][\w-]*)\b[^>]*?(\/?)>/g;
+  const first = tag.exec(html)!;
+  const kids: [number, number][] = [];
+  let depth = 1, at = -1;
+  for (let m; (m = tag.exec(html)); ) {
+    if (m[1]) { if (--depth === 0) return { kids, body: first.index + first[0].length, end: m.index }; if (depth === 1) kids.push([at, m.index + m[0].length]); }
+    else if (m[3] || VOID.has(m[2].toLowerCase())) { if (depth === 1) kids.push([m.index, m.index + m[0].length]); }
+    else { if (depth === 1) at = m.index; depth++; }
+  }
+  throw new Error('card markup is not balanced');
+}
+const keyOf = (h: string) => /^<([\w-]+)(?:[^>]*?\sclass="([^"]*)")?/.exec(h)?.slice(1).join('.') ?? '';
+// The framed print with every subtree it shares with the plain print replaced by <b data-same="i.j.k">, the path of
+// element children that reaches the same subtree in the plain card. Never inside an <svg> (a <b> there leaves SVG).
+function delta(plain: string, framed: string, at: number[] = []): string {
+  const P = kidsOf(plain), F = kidsOf(framed);
+  const pk = P.kids.map(([a, b]) => plain.slice(a, b));
+  const used = new Set<number>();
+  let out = framed.slice(0, F.body), from = F.body;
+  F.kids.forEach(([a, b]) => {
+    const s = framed.slice(a, b);
+    out += framed.slice(from, a);
+    from = b;
+    let j = pk.findIndex((x, i) => !used.has(i) && x === s);
+    if (j >= 0 && s.length > 40) { used.add(j); out += `<b data-same="${[...at, j].join('.')}"></b>`; return; }
+    j = /^<svg\b|\/>$/.test(s) || VOID.has(keyOf(s).split('.')[0]) ? -1 : pk.findIndex((x, i) => !used.has(i) && keyOf(x) === keyOf(s));
+    if (j >= 0) { used.add(j); out += delta(pk[j], s, [...at, j]); return; }
+    out += s;
+  });
+  return out + framed.slice(from);
+}
+// the framed print again from the plain print and its delta, as FRAMED rebuilds it in the page
+function undelta(plain: string, d: string) {
+  return d.replace(/<b data-same="([\d.]+)"><\/b>/g, (_, p: string) => p.split('.').reduce((h, i) => { const [a, b] = kidsOf(h).kids[+i]; return h.slice(a, b); }, plain));
+}
 // Frames print on desktop only (Kevin, 11-07). On the wall a phone held about 250 MB more for the frames' SVG layers,
 // so a card prints plain (markup.js's own card) with its framed print waiting in an inert template; FRAMED, run right
-// after the cards, swaps the framed print in on a fine pointer and drops the template everywhere else
-export const card = (f: Fighter, opts: Record<string, unknown> = {}) =>
-  `${M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env)}<template class="framed">${framedCard(f, opts)}</template>`;
-export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){if(d)t.previousElementSibling.replaceWith(t.content);t.remove()})})()`;
+// after the cards, swaps the framed print in on a fine pointer and drops the template everywhere else.
+// The two prints share most of a card (its words, art and icons), so the template holds only what differs and points
+// at the rest (data-same); FRAMED moves those nodes from the plain print into the framed one. Each delta is rebuilt
+// here and must give back the framed print exactly. The plain print's front-effect poster (-fx.webp) carries its
+// address in data-plainfx, so a desktop never fetches it (Chromium lays out a streamed wall before FRAMED runs, so
+// loading="lazy" was not enough); FRAMED gives it its src where the plain print stays, lazy where the card's poster is.
+export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
+  const plain = (M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"/, '$1data-plainfx="$2"');
+  const framed = framedCard(f, opts);
+  const d = delta(plain, framed);
+  if (undelta(plain, d) !== framed) throw new Error(`card ${f.id}: the framed print's delta does not rebuild it`);
+  return `${plain}<template class="framed">${d}</template>`;
+};
+export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;if(d){var ms=t.content.querySelectorAll("b[data-same]"),ns=[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n.children[i]},c)});ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.
@@ -97,11 +146,12 @@ export const factLines = (f: Fighter) => M.factOrder(f).map(([k]: [string]) => {
 // The card's own colours, for the page around it (face.gen.js: energy, deep, panel, glint, ink)
 export const hueOf = (f: Fighter): Record<string, string> => (FACE?.[f.id]?.hue ?? {}) as Record<string, string>;
 
-// The cards the battle holds, with its costs and budget, as gallery.js reads them from <meta name="battle-roster">
-export const battleRoster = (() => {
-  const file = path.join(ROOT, 'public/battle/vendor/cards/fighters.js');
+// The cards the battle holds, with its costs and budget, as gallery.js reads them from <meta name="battle-roster">: the
+// engine's roster (vendor/battle/vendor/engine.js, bundled from r3/battle with the kit, build-only)
+export const battleRoster = await (async () => {
+  const file = path.join(ROOT, 'vendor/battle/vendor/engine.js');
   if (!fs.existsSync(file)) return null;
-  const b = require(file) as { RULES: any; FIGHTERS: Fighter[] };
+  const b = await import(/* @vite-ignore */ file) as { RULES: any; FIGHTERS: Fighter[] };
   return { budget: b.RULES.team.budget as number, cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number> };
 })();
 
@@ -109,7 +159,10 @@ export const battleRoster = (() => {
 // sheet marked data-card-style-sheet is a card style's (Breakout), which styles/breakout/switch.js finds and never adds twice.
 const HEAD = fs.readFileSync(path.join(VX, 'index.html'), 'utf8');
 export const roundSheets = [...HEAD.matchAll(/<link rel="stylesheet" href="([^"]+)"( data-card-style-sheet)?>/g)].map((m) => ({ href: m[1], style: !!m[2] }));
-export const roundScripts = [...HEAD.matchAll(/<script defer src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+// The frame printings (design/frames.gen.js, frames.js) run only from the lens's frame row, which the sync hides
+// (gallery.js `frs.hidden = true`: design-lane working names, release 11-07), so no page loads their 70 KB.
+const UNUSED = new Set(['design/frames.gen.js', 'frames.js']);
+export const roundScripts = [...HEAD.matchAll(/<script defer src="([^"]+)"><\/script>/g)].map((m) => m[1]).filter((f) => !UNUSED.has(f));
 
 // The page head's piece the card needs: the neumorphic tokens (the face is public/fonts/katagami-sans-site.woff2, Base.astro)
 export const neuTokens = fs.readFileSync(path.join(VX, 'vendor/neu-tokens.css'), 'utf8').replace(/^\/\*.*\*\/\n/, '');

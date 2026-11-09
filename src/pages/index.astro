@@ -14,7 +14,7 @@ const ART_RATIO = 88 / 63;
 // first screen never shares the line with pictures nobody can see yet, and no lens, pack or dock ever opens on a hole.
 // On a touch screen the rest stay lazy: a phone decodes only the cards it has scrolled to (docs/performance.md, Memory).
 const FIRST_SCREEN = 14;
-const lazy = (html: string) => html.replace(/<img /g, '<img loading="lazy" ');
+const lazy = (html: string) => html.replace(/<img (?!loading=)/g, '<img loading="lazy" ');
 // the Machine view's art: each card's subject as text, 40 characters wide (lib/ascii.ts)
 const arts = await Promise.all(fighters.map((f) => asciiArt(f.id, 40)));
 const wall = fighters.map((f, i) => {
