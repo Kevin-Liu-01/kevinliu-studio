@@ -54,6 +54,7 @@ which anchor moved.
   change at once.
 - `battle/arena/arena.css`: under 360 px the rail's column holds the rail's width and the team pips tighten, so Leave
   stays on screen at 320 px.
+- `battle/shared/hud.css`: under 360 px round 5's rail keys and gaps tighten, so Leave ends 8 px in at 320 px.
 - `battle/vendor/broadcast/media.js`: the rounds' gate notes are emptied (the page never shows them), the Elo and
   Turboslide cards use the captures that replace the dropped ones, and the Prototemplate loop points at the clip that
   exists.
@@ -81,9 +82,10 @@ atoms). The release guard runs the same check on `dist`.
 Each stage ships the rounds as they were at one commit (`PIN` in `scripts/sync.mjs`): today cards and sound at
 30e69931 (the 11-07 release's Breakout final) and the battle at 42ff51c7 (round 5 with its sound). Every shipped file
 git tracks is compared with its stage's pin, and a file that differs stops the sync, so a plain `pnpm sync` never ships
-round work after the cutoff. The 78 frame SVGs under `r4/ex/design/{lit,fxcut}` are generated and git-ignored, so
-they cannot be checked; the sync counts them and the lock records their bytes. A release moves a pin in the same commit
-as the files it brings.
+round work after the cutoff. A shipped file the pin does not have (the 78 frame SVGs under `r4/ex/design/{lit,fxcut}`
+were generated and committed only after 30e69931) ships only with the bytes the last lock recorded; a new or changed
+one stops the sync until it has been looked at and admitted with `--admit-unpinned`. A release moves a pin in the same
+commit as the files it brings.
 
 The working tree usually has moved past the pins, so a release syncs from an export: `git archive <pin>` of each
 stage's folders plus the git-ignored frame SVGs, then `ROUNDS=<export> pnpm sync`. The pins are read from the rounds'

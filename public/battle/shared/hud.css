@@ -621,3 +621,10 @@ body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
   #app .rail-keys .key { padding: 0 10px; }
   #app .rail-keys .seg .key { min-width: 0; }
 }
+/* kevinliu.studio: the rail at 320 px (scripts/sync.mjs) */
+@media (max-width: 359px) {
+  #app .rail-keys { gap: 3px; }
+  #app .rail-keys .key { padding: 0 7px; }
+  #app .speed .key { min-width: 38px; padding: 0 6px; }
+  #app .key.snd { min-width: 34px; padding: 0 6px; }
+}

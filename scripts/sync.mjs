@@ -4,6 +4,7 @@
 // rounds no longer ship.
 //   pnpm sync            copy, transform, scan, write sync.lock.json
 //   pnpm sync --check    copy nothing; exit 1 when any synced file differs from the rounds
+//   --admit-unpinned     let a file the pin does not have ship with new bytes (looked at first)
 //   ROUNDS=<dir>         the rounds folder to read (default ~/Documents/ChatGPT/portfolio-design-rounds/2026-10-30), or an
 //                        export of it (git archive at the pins plus the git-ignored frame SVGs)
 // Each stage ships the rounds as they were at its pinned commit (PIN below): a tracked file that differs from its stage's
@@ -28,6 +29,8 @@ const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1)
 const PIN = { cards: '30e69931', sound: '30e69931', battle: '42ff51c7' };
 const CHECK = process.argv.includes('--check');
+// a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
+const ADMIT = process.argv.includes('--admit-unpinned');
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex');
 // scratch folders are never listed (r4/ex/.work alone is about 67 GB)
@@ -209,6 +212,16 @@ const TRANSFORMS = {
       ['"src":"media/prototemplate/pt-every-sentence.mp4"', '"src":"media-moves/prototemplate/every-sentence.mp4"'],
     ]);
   },
+  // round 5's rail (the mode pair, the speed key, the speaker, Log and Leave) fits down to 360 px; at 320 Leave ran 15 px
+  // off the screen (next-release ship checks), so under 360 the keys and gaps tighten until it ends 8 px in
+  'public/battle/shared/hud.css': (t) => patch('hud.css', t, [['  #app .rail-keys .seg .key { min-width: 0; }\n}\n', after(`/* kevinliu.studio: the rail at 320 px (scripts/sync.mjs) */
+@media (max-width: 359px) {
+  #app .rail-keys { gap: 3px; }
+  #app .rail-keys .key { padding: 0 7px; }
+  #app .speed .key { min-width: 38px; padding: 0 6px; }
+  #app .key.snd { min-width: 34px; padding: 0 6px; }
+}
+`)]]),
   // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
   // accessibility tree
   // a key's raise and colour change at once; only its press moves (transform), so no frame repaints a shadow
@@ -350,7 +363,8 @@ for (const [stage, rules] of Object.entries(STAGES)) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
       if (files[dest]) continue; // two rules may pick the same file
       let buf = fs.readFileSync(src);
-      // the file as it was at the stage's pin; a file git does not track (the generated frame SVGs) cannot be checked
+      // the file as it was at the stage's pin. A file the pin does not have (the frame SVGs were generated and committed
+      // only after 30e69931) cannot be checked against it, so it ships only as the last lock recorded it
       const at = pinned.get(rel(ROUNDS, src));
       if (at === undefined) unpinned++;
       else if (at !== blobSha(buf)) { problems.push(`${dest}: ${rel(ROUNDS, src)} differs from the ${stage} pin ${PIN[stage]}`); continue; }
@@ -360,6 +374,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
         if (BINARY[dest]) buf = await BINARY[dest](buf);
       } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
       for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);
+      if (at === undefined && !ADMIT && prev.stages[stage]?.list?.[dest]?.sha256 !== sha(buf)) problems.push(`${dest}: ${rel(ROUNDS, src)} is not in the ${stage} pin ${PIN[stage]} and is ${prev.stages[stage]?.list?.[dest] ? 'not the bytes the lock records' : 'new'} (look at it, then --admit-unpinned)`);
       files[dest] = { src: rel(ROUNDS, src), sha256: sha(buf), bytes: buf.length };
       const abs = path.join(REPO, dest);
       if (!(fs.existsSync(abs) && sha(fs.readFileSync(abs)) === files[dest].sha256)) writes.push([abs, buf]);
@@ -372,7 +387,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
 // the rounds' commits: one per stage, every tracked file checked against it above
 lock.head = [...new Set(Object.values(PIN))].join(' + ');
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB, pinned at ${PIN[stage]}`);
-if (unpinned) console.log(`${unpinned} shipped files are not tracked by git in the rounds (generated); their bytes are in the lock`);
+if (unpinned) console.log(`${unpinned} shipped files are not in their pinned commit; each ships only as the lock records it${ADMIT ? ' (--admit-unpinned: new bytes admitted)' : ''}`);
 if (problems.length) {
   console.error(`\n${problems.length} problem(s); nothing was written. Fix them at the source or by a transform:`);
   for (const p of problems.slice(0, 40)) console.error(`  ${p}`);
@@ -387,7 +402,7 @@ if (CHECK) {
 for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: true }); fs.writeFileSync(`${abs}.tmp`, buf); fs.renameSync(`${abs}.tmp`, abs); }
 for (const abs of removes) fs.rmSync(abs);
 // the lock changes only when the shipped files or the rounds' commit do, so a no-op rerun leaves no diff
-const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head;
+const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head && JSON.stringify(prev.pins) === JSON.stringify(lock.pins);
 if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 

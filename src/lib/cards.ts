@@ -123,6 +123,7 @@ function undelta(plain: string, d: string) {
 // here and must give back the framed print exactly. The plain print's front-effect poster (-fx.webp) carries its
 // address in data-plainfx, so a desktop never fetches it (Chromium lays out a streamed wall before FRAMED runs, so
 // loading="lazy" was not enough); FRAMED gives it its src where the plain print stays, lazy where the card's poster is.
+// A delta whose paths do not all resolve in the page keeps the plain print.
 export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
   const plain = (M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"/, '$1data-plainfx="$2"');
   const framed = framedCard(f, opts);
@@ -130,7 +131,7 @@ export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
   if (undelta(plain, d) !== framed) throw new Error(`card ${f.id}: the framed print's delta does not rebuild it`);
   return `${plain}<template class="framed">${d}</template>`;
 };
-export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;if(d){var ms=t.content.querySelectorAll("b[data-same]"),ns=[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n.children[i]},c)});ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
+export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;var ms=t.content.querySelectorAll("b[data-same]"),ns=d?[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n&&n.children[i]},c)}):[];if(d&&ns.every(Boolean)){ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.
