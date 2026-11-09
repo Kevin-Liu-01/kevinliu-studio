@@ -8,7 +8,7 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 
 - Sound answers the visitor's own actions: a press, a hover, a tilt, a flip, adding or removing a card, tearing a pack,
   and the battle they start.
-- On the home page nothing is fetched before the first gesture. The player unlocks audio on that gesture.
+- Nothing but the player and its manifest is fetched before the first gesture. The player unlocks audio on that gesture.
 - The home page makes one silent `AudioContext` at idle after load and closes it at once (`src/pages/index.astro`,
   only when sound would be on). A browser's first context waits on its audio service starting, which took 4.7 s inside
   the first press on a busy machine (2026-11-05); started at idle, the press makes its own context in about 1 ms.
@@ -25,6 +25,7 @@ ledger and the generation receipts stay in the rounds and never come here; the s
   anchored patches. Each call goes through `globalThis.Sound?.`, so a page whose sound fails behaves as before.
 - Battle: round 5 (r4/play 42ff51c7, `SPEC.md` section 10) wires INTEGRATION.md section 3 in `shared/battle.js`: a
   dynamic import of `/sound/sound.js` with `manifest.battle.json`, the rail's speaker key (N) bound to the same saved
-  choice, and every board moment and scene cue on the stage's own clock. The visitor started the battle with Play, so
-  the page asks for the battle group and its mode's theme as it loads (`resumeAtLoad`, about 30 short files) and plays
-  once the browser allows audio, after the first gesture on the page.
+  choice, and every board moment and scene cue on the stage's own clock. It fetches the player and the manifest at load
+  (`resumeAtLoad`) and the sounds at the first gesture on the page, or at load where the browser already lets the page
+  play. A sync transform keeps that promise: `sound.js`'s `unlock()` treated a cue played before any gesture as one and
+  fetched every wanted group, about 240 files and 2.3 MB, while every such cue was dropped.

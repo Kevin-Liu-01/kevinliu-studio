@@ -272,6 +272,7 @@ function musicPick(id) {
 // ---------------------------------------------------------------- unlocking
 function unlock(e) {
   if (e && e.isTrusted === false) return;
+  if (!e && !S.gestured && !(S.ctx && S.ctx.state === 'running')) return; // kevinliu.studio: no gesture, no fetch (scripts/sync.mjs)
   S.gestured = true;
   // only a real gesture brings a frozen context back (a call from play() on a page with no gesture yet does not)
   if (e) S.resumeAskedAt = performance.now();

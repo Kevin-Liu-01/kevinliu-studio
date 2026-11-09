@@ -255,6 +255,11 @@ const TRANSFORMS = {
     ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
     ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
   ]),
+  // nothing is fetched before the first gesture (the player's own header): a cue played before one (the battle's deal)
+  // called unlock() with no event, which counted as a gesture and loaded every wanted group, about 240 files and 2.3 MB
+  // on /battle while the context stayed suspended and every cue was dropped (next-release ship checks). Such a call now
+  // returns, unless the context already runs (resumeAtLoad on a page the browser lets play)
+  'public/sound/sound.js': (t) => patch('sound.js', t, [['  if (e && e.isTrusted === false) return;\n  S.gestured = true;\n', "  if (e && e.isTrusted === false) return;\n  if (!e && !S.gestured && !(S.ctx && S.ctx.state === 'running')) return; // kevinliu.studio: no gesture, no fetch (scripts/sync.mjs)\n  S.gestured = true;\n"]]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
