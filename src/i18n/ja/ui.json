@@ -46,7 +46,18 @@
     "refused": "{title}：{why}",
     "rivalDealt": "対戦相手：{list}",
     "notYetOne": "{list}はまだ対戦に参加していません",
-    "notYetMany": "{list}はまだ対戦に参加していません"
+    "notYetMany": "{list}はまだ対戦に参加していません",
+    "cardInks": "{title}、{n}インク",
+    "cardInk": "{title}、{n}インク",
+    "inYourTeam": "{label}、あなたのチームに所属",
+    "inTheirTeam": "{label}、相手のチームに所属",
+    "openPackFull": "パックを開く、チームは満員です",
+    "playHeld": "プレイ、{list}はまだバトルに参加していません",
+    "packDealt": "パック：{list}、{budget}インク中{n}インク",
+    "packOnly": "パック：{list}",
+    "statsSr": "体力 {hp}、射程 {atk}、耐性 {def}、速度 {spd}",
+    "art": "イラスト",
+    "frame": "枠"
   },
   "cards": {
     "title": "カード",

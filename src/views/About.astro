@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import { fighters, whatOf } from '../lib/cards';
+import { cardPath, qaOf, aboutMd, aboutParas, whatIn, bioIn } from '../lib/twins';
+import { L } from '../i18n';
+import { mdHtml } from '../lib/machine';
+import { website, page } from '../lib/schema';
+import { SITE, NAME, ABOUT, SOCIAL, EMAIL, person } from '../lib/site';
+interface Props { code: string }
+const { code } = Astro.props;
+const l = L(code);
+const BIO = bioIn(code);
+const QA = qaOf(code);
+// a paragraph of Kevin's words: runs of text and links (site.ts ABOUT) in English, its Markdown links elsewhere
+const runsOf = (i: number) => (l.en ? ABOUT[i] : aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
+// "Find me on X, GitHub, and LinkedIn, or write to the email": the sentence in the language, its four links in place
+const findMe = l.t('about.elsewhere').split(/(\{x\}|\{github\}|\{linkedin\}|\{email\})/);
+const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
+// the Machine view's forms: the twin's blocks where the page shows them (its headings are the page's own, marked by
+// machine.css). The twin's line about the cards has no place of its own on the page; it is in the footer's whole twin
+const tw = aboutMd(code).trimEnd().split('\n\n').filter((b, i) => !(i === 1 && !l.en));
+const at = (h: string) => tw.indexOf(h);
+const paras = tw.slice(1, 1 + ABOUT.length);
+const H = { projects: `## ${l.t('about.projects')}`, questions: `## ${l.t('about.questions')}`, elsewhere: `## ${l.t('frame.elsewhere')}` };
+const projects = tw[at(H.projects) + 1].split('\n');
+const questions = tw.slice(at(H.questions) + 1, at(H.elsewhere));
+// the line that names X, GitHub, LinkedIn and the email holds the twin's lines for those four
+const mail = l.t('twin.linkEmail');
+const elsewhere = tw[at(H.elsewhere) + 1].split('\n').filter((x) => /^- (X|GitHub|LinkedIn):/.test(x) || x.startsWith(`- ${mail}:`)).join('\n');
+// Kevin's employer is named only here and in the files that print this page (docs/content.md)
+const kevin = { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } };
+const heading = l.t('about.heading', { name: NAME });
+const jsonld = [website, kevin, ...page({ path: l.p('/about'), type: 'ProfilePage', name: heading, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [[l.t('about.title'), l.p('/about')]], mainEntity: { '@id': person['@id'] }, code })];
+---
+<Base seo={{ title: l.t('about.title'), fullTitle: heading, description: BIO, path: l.p('/about'), type: 'profile', share: 'about', imageAlt: l.t('about.imageAlt', { name: NAME }), jsonld }}>
+  <main class="prose" id="main">
+    <div class="sw hw"><h1>{heading}</h1><p class="mx" set:html={mdHtml(tw[0])} /></div>
+    {ABOUT.map((_, i) => (
+      <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runsOf(i).map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
+    ))}
+    {l.en
+      ? <p class="sw"><span class="hx">Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>
+      : <p class="sw"><span class="hx">{findMe.map((x) => x === '{email}' ? <a href={`mailto:${EMAIL}`}>{EMAIL}</a> : x === '{x}' ? <a href={social('X').url} rel="me">X</a> : x === '{github}' ? <a href={social('GitHub').url} rel="me">GitHub</a> : x === '{linkedin}' ? <a href={social('LinkedIn').url} rel="me">LinkedIn</a> : x)}</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>}
+    <div class="sw hw"><h2>{l.t('about.projects')}</h2><p class="mx" set:html={mdHtml(H.projects)} /></div>
+    <ul>
+      {fighters.map((f, i) => <li class="sw"><span class="hx"><a href={cardPath(f, code)}>{f.title}</a>. {whatIn(f, code)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>)}
+    </ul>
+    <div class="sw hw"><h2>{l.t('about.questions')}</h2><p class="mx" set:html={mdHtml(H.questions)} /></div>
+    <dl>
+      {/* each question and answer is one paragraph of the twin, "**question** answer", split across its dt and dd */}
+      {QA.map(([q, a], i) => <Fragment><dt class="sw"><span class="hx">{q}</span><span class="mx" set:html={mdHtml(questions[i].slice(0, questions[i].indexOf('** ') + 2))} /></dt><dd class="sw"><span class="hx">{a}</span><span class="mx" set:html={mdHtml(questions[i].slice(questions[i].indexOf('** ') + 3))} /></dd></Fragment>)}
+    </dl>
+  </main>
+</Base>

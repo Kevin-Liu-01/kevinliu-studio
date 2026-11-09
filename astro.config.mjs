@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import { DEFAULT, LOCALES, OTHER } from './src/i18n/locales.mjs';
 
 export const SITE = 'https://www.kevinliu.studio';
 
@@ -16,15 +17,19 @@ const gitDate = (...paths) => {
   return sha && !SHALLOW.has(sha) ? date : undefined;
 };
 const SOURCES = [
-  [/^\/$/, () => ['public/ex/fighters.js', 'src/pages/index.astro']],
-  [/^\/cards$/, () => ['public/ex/fighters.js', 'src/pages/cards.astro']],
-  [/^\/cards\/([\w-]+)$/, (id) => ['public/ex/fighters.js', `public/og/${id}.jpg`, `public/ex/media/${id}`, 'src/pages/cards/[id].astro']],
-  [/^\/about$/, () => ['src/lib/site.ts', 'src/pages/about.astro']],
+  [/^\/$/, () => ['public/ex/fighters.js', 'src/views/Home.astro']],
+  [/^\/cards$/, () => ['public/ex/fighters.js', 'src/views/Cards.astro']],
+  [/^\/cards\/([\w-]+)$/, (id) => ['public/ex/fighters.js', `public/og/${id}.jpg`, `public/ex/media/${id}`, 'src/views/Card.astro']],
+  [/^\/about$/, () => ['src/lib/site.ts', 'src/views/About.astro']],
   [/^\/battle(\/arena)?$/, () => ['vendor/battle', 'public/battle', 'src/components/BattlePage.astro']],
 ];
+// a translated page changes when its English page does, or when its language's translations do
+const LANG = new RegExp(`^/(${OTHER.join('|')})(?=/|$)`);
 const lastmod = (url) => {
-  const p = new URL(url).pathname;
-  for (const [re, paths] of SOURCES) { const m = p.match(re); if (m) return gitDate(...paths(m[1])); }
+  const full = new URL(url).pathname, lang = LANG.exec(full)?.[1];
+  const p = lang ? full.slice(lang.length + 1) || '/' : full;
+  const gt = LOCALES.find((l) => l.code === lang)?.gt;
+  for (const [re, paths] of SOURCES) { const m = p.match(re); if (m) return gitDate(...paths(m[1]), ...(gt ? [`src/i18n/${gt}`] : [])); }
   return undefined;
 };
 
@@ -34,8 +39,12 @@ export default defineConfig({
   trailingSlash: 'never',
   build: { format: 'file', inlineStylesheets: 'auto' },
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
+  // English at the root, every other language under its code (/es/cards/turboslide); the pages are src/pages/[lang]
+  i18n: { defaultLocale: DEFAULT, locales: LOCALES.map((l) => l.code), routing: { prefixDefaultLocale: false } },
   integrations: [sitemap({
     filter: (page) => !page.includes('/404'),
+    // each page lists itself in every language (xhtml:link hreflang)
+    i18n: { defaultLocale: DEFAULT, locales: Object.fromEntries(LOCALES.map((l) => [l.code, l.lang])) },
     serialize: (item) => ({ ...item, lastmod: lastmod(item.url) }),
   })],
   vite: { build: { assetsInlineLimit: 0 } },

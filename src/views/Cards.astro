@@ -1,0 +1,32 @@
+---
+// Every card as a plain index: its page, its live site and its public source, one row each
+import Base from '../layouts/Base.astro';
+import { fighters, repoOf } from '../lib/cards';
+import { cardPath, cardsLead, host, cardsMd, whatIn } from '../lib/twins';
+import { mdHtml } from '../lib/machine';
+import { graph, page, cardListIn } from '../lib/schema';
+import { SITE, NAME } from '../lib/site';
+import { L } from '../i18n';
+interface Props { code: string }
+const { code } = Astro.props;
+const l = L(code);
+const CARDS_LEAD = cardsLead(code);
+const cardList = cardListIn(code);
+const title = l.t('cards.title');
+// the Machine view's forms: each card's row of the twin's table in its own row (the lead is the twin's own line)
+const rows = cardsMd(code).split('\n').filter((l) => /^\| \d/.test(l));
+const jsonld = graph(page({ path: l.p('/cards'), type: 'CollectionPage', name: l.en ? `${NAME}'s cards` : l.t('cards.pageName', { name: NAME }), description: CARDS_LEAD, image: `${SITE}/share/cards.jpg`, crumbs: [[title, l.p('/cards')]], mainEntity: { '@id': cardList['@id'] }, code }), cardList);
+---
+<Base seo={{ title, description: CARDS_LEAD, path: l.p('/cards'), share: 'cards', imageAlt: l.t('cards.imageAlt', { n: fighters.length, name: NAME }), jsonld }}>
+  <main class="prose" id="main">
+    <div class="sw hw"><h1>{title}</h1><p class="mx" set:html={mdHtml(`# ${title}`)} /></div>
+    <p class="lede sw"><span class="hx">{CARDS_LEAD}</span><span class="mx">{CARDS_LEAD}</span></p>
+    <ol class="index">
+      {fighters.map((f, i) => {
+        const repo = repoOf(f);
+        return <li class="sw"><span class="hx"><a class="t" href={cardPath(f, code)}>{f.title}</a><span class="y">{f.year}</span><span class="w">{whatIn(f, code)}</span>
+          <span class="go">{f.url && <a href={f.url} rel="noopener">{host(f.url)}</a>}{repo && <a href={repo} rel="noopener">{l.t('cards.source')}</a>}</span></span><span class="mx" set:html={mdHtml(rows[i])} /></li>;
+      })}
+    </ol>
+  </main>
+</Base>

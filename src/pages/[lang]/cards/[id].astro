@@ -1,0 +1,8 @@
+---
+import Card from '../../../views/Card.astro';
+import { fighters, type Fighter } from '../../../lib/cards';
+import { OTHER } from '../../../i18n/locales.mjs';
+export const getStaticPaths = () => OTHER.flatMap((lang) => fighters.map((f) => ({ params: { lang, id: f.id }, props: { f } })));
+const { f } = Astro.props as { f: Fighter };
+---
+<Card f={f} code={Astro.params.lang!} />

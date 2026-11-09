@@ -5,25 +5,65 @@ import Release from './Release.astro';
 import { battlePage } from '../lib/battle';
 import { graph, page } from '../lib/schema';
 import { SITE, NAME, person } from '../lib/site';
-interface Props { mode: 'mat' | 'arena' }
-const { mode } = Astro.props;
-const path = mode === 'arena' ? '/battle/arena' : '/battle';
-const title = mode === 'arena' ? 'Battle, Arena' : 'Battle';
-const description = mode === 'arena'
-  ? `Play three of ${NAME}'s project cards against three more on a painted floor, with eight original trainer figures and a cutscene for every move.`
-  : `Play three of ${NAME}'s project cards against three more on a card mat, with a cutscene for every move.`;
-const game = { '@type': 'VideoGame', '@id': `${SITE}/battle#game`, name: `${NAME}'s card battle`, url: `${SITE}/battle`, description: `Play three of ${NAME}'s project cards against three more, on a card mat or in an arena.`, genre: 'Card battle', playMode: 'SinglePlayer', gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Web browser', isAccessibleForFree: true, inLanguage: 'en', image: `${SITE}/share/battle.jpg`, author: { '@id': person['@id'] }, creator: { '@id': person['@id'] } };
+import { L } from '../i18n';
+import { versioned } from '../lib/assets';
+import FACES from '../i18n/fonts.json';
+interface Props { mode: 'mat' | 'arena'; code?: string }
+const { mode, code = 'en' } = Astro.props;
+const l = L(code), t = l.t;
+const path = l.p(mode === 'arena' ? '/battle/arena' : '/battle');
+const title = t(mode === 'arena' ? 'battle.titleArena' : 'battle.title');
+const description = t(mode === 'arena' ? 'battle.descriptionArena' : 'battle.description', { name: NAME });
+const game = { '@type': 'VideoGame', '@id': `${SITE}${l.p('/battle')}#game`, name: t('battle.game', { name: NAME }), url: `${SITE}${l.p('/battle')}`, description: t('battle.gameDescription', { name: NAME }), genre: 'Card battle', playMode: 'SinglePlayer', gamePlatform: 'Web browser', applicationCategory: 'GameApplication', operatingSystem: 'Web browser', isAccessibleForFree: true, inLanguage: l.lang, image: `${SITE}/share/battle.jpg`, author: { '@id': person['@id'] }, creator: { '@id': person['@id'] } };
 const share = mode === 'arena' ? 'arena' : 'battle';
-const jsonld = graph(page({ path, type: 'WebPage', name: title, description, image: `${SITE}/share/${share}.jpg`, crumbs: mode === 'arena' ? [['Battle', '/battle'], ['Arena', path]] : [['Battle', path]], mainEntity: { '@id': game['@id'] } }), game);
-const alt = mode === 'arena' ? 'Three project cards against three more on the Arena floor' : 'Three project cards against three more on the card mat';
+const jsonld = graph(page({ path, type: 'WebPage', name: title, description, image: `${SITE}/share/${share}.jpg`, crumbs: mode === 'arena' ? [[t('battle.title'), l.p('/battle')], [t('battle.arena'), path]] : [[t('battle.title'), path]], mainEntity: { '@id': game['@id'] }, code }), game);
+const alt = t(mode === 'arena' ? 'battle.altArena' : 'battle.alt');
+// The battle in another language: the page's own frame (its rail, console keys, hints and log heading) speaks it; the
+// game inside (turn prompts, move panels, tooltips, narration, cutscenes) is the rounds' r4/play and writes English
+// until the rounds give it string tables. Each swap names markup that occurs once, so a changed round fails the build.
+function localize(body: string) {
+  if (l.en) return body;
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const pairs: [string, string][] = [
+    ['<header class="rail" aria-label="Battle">', `<header class="rail" aria-label="${esc(t('battle.title'))}">`],
+    ['<div class="team-rail" id="team" aria-label="Teams" hidden>', `<div class="team-rail" id="team" aria-label="${esc(t('battle.teams'))}" hidden>`],
+    ['role="group" aria-label="Mode">', `role="group" aria-label="${esc(t('battle.mode'))}">`],
+    ['aria-keyshortcuts="M">Mat</button>', `aria-keyshortcuts="M">${esc(t('battle.mat'))}</button>`],
+    ['aria-keyshortcuts="M">Arena</button>', `aria-keyshortcuts="M">${esc(t('battle.arena'))}</button>`],
+    ['aria-label="Battle speed"', `aria-label="${esc(t('battle.speed'))}"`],
+    ['aria-label="Sound" aria-keyshortcuts="N">', `aria-label="${esc(t('battle.sound'))}" aria-keyshortcuts="N">`],
+    ['aria-keyshortcuts="R">Replay</button>', `aria-keyshortcuts="R">${esc(t('battle.replay'))}</button>`],
+    ['aria-keyshortcuts="L">Log</button>', `aria-keyshortcuts="L">${esc(t('battle.log'))}</button>`],
+    ['<a class="key" id="leave" href="/">Leave</a>', `<a class="key" id="leave" href="${l.p('/')}">${esc(t('battle.leave'))}</a>`],
+    ['<section class="board" id="board" aria-label="Board">', `<section class="board" id="board" aria-label="${esc(t('battle.board'))}">`],
+    ['id="console" aria-label="Commands">', `id="console" aria-label="${esc(t('battle.commands'))}">`],
+    ['aria-keyshortcuts="G">Guard</button>', `aria-keyshortcuts="G">${esc(t('battle.guard'))}</button>`],
+    ['aria-keyshortcuts="S">Switch</button>', `aria-keyshortcuts="S">${esc(t('battle.switch'))}</button>`],
+    ['aria-keyshortcuts="K">Kit</button>', `aria-keyshortcuts="K">${esc(t('battle.kit'))}</button>`],
+    ['aria-keyshortcuts="A">Auto</button>', `aria-keyshortcuts="A">${esc(t('battle.auto'))}</button>`],
+    ['<span class="sk-key"><kbd>Space</kbd> skips</span>', `<span class="sk-key">${esc(t('battle.skips', { key: '\u0000' })).replace('\u0000', '<kbd>Space</kbd>')}</span>`],
+    ['<span class="sk-tap">Tap to skip</span>', `<span class="sk-tap">${esc(t('battle.tapToSkip'))}</span>`],
+    ['<dialog id="log" aria-label="Log"><div class="log-head"><b>Log</b><button type="button" class="key" id="log-close">Close</button>', `<dialog id="log" aria-label="${esc(t('battle.log'))}"><div class="log-head"><b>${esc(t('battle.log'))}</b><button type="button" class="key" id="log-close">${esc(t('battle.close'))}</button>`],
+  ];
+  for (const [from, to] of pairs) {
+    const n = body.split(from).length - 1;
+    if (n !== 1) throw new Error(`battle page (${code}): expected one ${from.slice(0, 80)}, found ${n}`);
+    body = body.replace(from, to);
+  }
+  return body;
+}
+// the page's own faces for its language (scripts/i18n-fonts.py), as Base.astro declares them
+const faces = l.en ? [] : Object.values(FACES).filter((f) => f.locales.length > 1 || f.locales.includes(l.code));
+const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.range}}`).join('');
 ---
 <!doctype html>
-<html lang="en" data-boot>
+<html lang={l.lang} data-boot>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href={`/battle/${mode}/`} />
 <Seo title={title} description={description} path={path} share={share} imageAlt={alt} jsonld={jsonld} twin={`${path}.md`} />
+{faceCss && <style is:inline set:html={faceCss} />}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>
@@ -31,5 +71,5 @@ const alt = mode === 'arena' ? 'Three project cards against three more on the Ar
 <Fragment set:html={battlePage.head} />
 <Analytics />
 </head>
-<body><Fragment set:html={battlePage.body} /></body>
+<body><Fragment set:html={localize(battlePage.body)} /></body>
 </html>

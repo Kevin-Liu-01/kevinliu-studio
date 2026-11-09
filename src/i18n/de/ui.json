@@ -46,7 +46,18 @@
     "refused": "{title}: {why}",
     "rivalDealt": "Gegner: {list}",
     "notYetOne": "{list} ist noch nicht im Kampf",
-    "notYetMany": "{list} sind noch nicht im Kampf"
+    "notYetMany": "{list} sind noch nicht im Kampf",
+    "cardInks": "{title}, {n} Tinten",
+    "cardInk": "{title}, {n} Tinte",
+    "inYourTeam": "{label}, in Ihrem Team",
+    "inTheirTeam": "{label}, im gegnerischen Team",
+    "openPackFull": "Kartenpack öffnen, Team voll",
+    "playHeld": "Spielen, {list} noch nicht im Kampf",
+    "packDealt": "Kartenpack: {list}, {n} von {budget} Tinten",
+    "packOnly": "Kartenpack: {list}",
+    "statsSr": "Lebenspunkte {hp}, Reichweite {atk}, Nachweis {def}, Tempo {spd}",
+    "art": "Illustration",
+    "frame": "Rahmen"
   },
   "cards": {
     "title": "Karten",

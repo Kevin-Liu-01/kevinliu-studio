@@ -46,7 +46,18 @@
     "refused": "{title}：{why}",
     "rivalDealt": "对手：{list}",
     "notYetOne": "{list} 尚未参战",
-    "notYetMany": "{list} 尚未参战"
+    "notYetMany": "{list} 尚未参战",
+    "cardInks": "{title}，{n} 墨水",
+    "cardInk": "{title}，{n} 墨水",
+    "inYourTeam": "{label}，在您的队伍中",
+    "inTheirTeam": "{label}，在对方的队伍中",
+    "openPackFull": "打开卡包，队伍已满",
+    "playHeld": "开始对战，{list} 尚未加入对战",
+    "packDealt": "卡包：{list}，已用 {n} 墨水，预算 {budget} 墨水",
+    "packOnly": "卡包：{list}",
+    "statsSr": "生命值 {hp}，攻击范围 {atk}，抗性 {def}，速度 {spd}",
+    "art": "插画",
+    "frame": "边框"
   },
   "cards": {
     "title": "卡牌",

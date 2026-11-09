@@ -46,7 +46,18 @@
     "refused": "{title}: {why}",
     "rivalDealt": "Rival: {list}",
     "notYetOne": "{list} is not in the battle yet",
-    "notYetMany": "{list} are not in the battle yet"
+    "notYetMany": "{list} are not in the battle yet",
+    "cardInks": "{title}, {n} inks",
+    "cardInk": "{title}, {n} ink",
+    "inYourTeam": "{label}, in your team",
+    "inTheirTeam": "{label}, in their team",
+    "openPackFull": "Open Pack, Team Full",
+    "playHeld": "Play, {list} Not In The Battle Yet",
+    "packDealt": "Pack: {list}, {n} of {budget} inks",
+    "packOnly": "Pack: {list}",
+    "statsSr": "Health {hp}, Reach {atk}, Proof {def}, Pace {spd}",
+    "art": "Art",
+    "frame": "Frame"
   },
   "cards": {
     "title": "Cards",

@@ -9,6 +9,9 @@ import Footer from '../components/Footer.astro';
 import Release from '../components/Release.astro';
 import { neuTokens, masks, sprite, roundSheets } from '../lib/cards';
 import { versioned } from '../lib/assets';
+import { of } from '../i18n';
+import { twinPath } from '../lib/twins';
+import FACES from '../i18n/fonts.json';
 import '../styles/site.css';
 import '../styles/machine.css';
 
@@ -21,7 +24,8 @@ interface Props {
   main?: string; // the id the skip link lands on
   heavy?: boolean; // gives back its GPU memory and pictures when it leaves on a touch screen (Release.astro)
 }
-const { seo, room = false, scripts = [], html = {}, twinPath = seo.path, main = 'main', heavy = false } = Astro.props;
+const { seo, room = false, scripts = [], html = {}, twinPath: twinOf = seo.path, main = 'main', heavy = false } = Astro.props;
+const l = of(seo.path);
 // One face for every page, preloaded first and cached for a year. It blocks text rather than swapping (the cards'
 // titles are fitted to its advances at build, markup.js ADV), and the fallback is Arial scaled to its width and line,
 // so a page that ever paints before it arrives keeps every line where it was.
@@ -31,13 +35,21 @@ const fontFace = [
   '@font-face{font-family:"Katagami Sans Fallback";src:local("Arial"),local("ArialMT");font-weight:100 600;size-adjust:106.9%;ascent-override:90.6%;descent-override:22.6%;line-gap-override:0%}',
   '@font-face{font-family:"Katagami Sans Fallback";src:local("Arial Bold"),local("Arial-BoldMT");font-weight:601 900;size-adjust:102%;ascent-override:95%;descent-override:23.6%;line-gap-override:0%}',
 ].join('');
+// A translated page adds the faces its language prints beyond that subset (scripts/i18n-fonts.py): accented Latin for
+// every language, and the page's own CJK face. Each joins "Katagami Sans" for its unicode-range only, so a browser
+// fetches it only for the characters that need it; the page's own is preloaded beside the site face. English pages
+// declare none of them.
+const faces = l.en ? [] : Object.values(FACES).filter((f) => f.locales.length > 1 || f.locales.includes(l.code));
+const extFaces = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.range}}`).join('');
+const preloads = faces.filter((f) => f.locales.includes(l.code)).map((f) => versioned(f.file));
 ---
 <!doctype html>
-<html lang="en" data-mode="human" {...html}>
+<html lang={l.lang} data-mode="human" {...html}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <link rel="preload" href={FONT} as="font" type="font/woff2" crossorigin />
+{preloads.map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
 {room && <base href="/ex/" />}
 <meta name="color-scheme" content="light dark" />
 <meta name="theme-color" content="#e9e4dc" media="(prefers-color-scheme: light)" />
@@ -49,7 +61,7 @@ const fontFace = [
 <link rel="manifest" href="/site.webmanifest" />
 <script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams(location.search);try{if(localStorage.getItem('ill-mode')==='machine'){d.dataset.mode='machine';var l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='';l.href='/fonts/katagami-mono-site.woff2';document.head.append(l)}}catch(e){}var t=q.get('theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');d.dataset.theme=t;try{if(localStorage.getItem('ill-pause')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)d.dataset.paused=''}catch(e){}})()</script>
 {heavy && <Release />}
-<style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
+<style is:inline id="kface" set:html={`${fontFace}${extFaces}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
 <link rel="stylesheet" href={versioned('/ex/ui.css')} />
 {room && <link rel="stylesheet" href={versioned('/ex/card.css')} />}
 {/* only a page that runs the rituals takes their sheet: it opts the page into cross-document View Transitions, which on
@@ -62,17 +74,17 @@ const fontFace = [
 <Analytics />
 </head>
 <body>
-<a class="skip" href={`${seo.path}#${main}`} data-to={main}>Skip to content</a>
+<a class="skip" href={`${seo.path}#${main}`} data-to={main}>{l.t('frame.skip')}</a>
 <script is:inline>/* the skip link keeps the address as typed (query, unknown paths), so it never reloads */(function(a){a.href=location.pathname+location.search+"#"+a.dataset.to})(document.currentScript.previousElementSibling)</script>
 {/* on a phone the header has no room for the Human and Machine switch, so the footer holds it; these give a keyboard the
    other view at the second stop, and show only while focused (machine.css) */}
-<button type="button" class="skip skipmode" data-mode-set="machine" aria-pressed="false">Machine view</button>
-<button type="button" class="skip skipmode" data-mode-set="human" aria-pressed="false">Human view</button>
+<button type="button" class="skip skipmode" data-mode-set="machine" aria-pressed="false">{l.t('frame.machineView')}</button>
+<button type="button" class="skip skipmode" data-mode-set="human" aria-pressed="false">{l.t('frame.humanView')}</button>
 <div class="human">
 <div id="behind">
 <Header path={seo.path} />
 <slot />
-<Footer path={twinPath} twin={seo.twin === undefined ? (seo.path === '/' ? '/index.md' : `${seo.path}.md`) : seo.twin} />
+<Footer path={twinOf} twin={seo.twin === undefined ? twinPath(seo.path) : seo.twin} />
 </div>
 <slot name="overlay" />
 </div>

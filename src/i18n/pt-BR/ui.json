@@ -46,7 +46,18 @@
     "refused": "{title}: {why}",
     "rivalDealt": "Rival: {list}",
     "notYetOne": "{list} ainda não está na batalha",
-    "notYetMany": "{list} ainda não estão na batalha"
+    "notYetMany": "{list} ainda não estão na batalha",
+    "cardInks": "{title}, {n} tintas",
+    "cardInk": "{title}, {n} tinta",
+    "inYourTeam": "{label}, na sua equipe",
+    "inTheirTeam": "{label}, na equipe adversária",
+    "openPackFull": "Abrir pacote, equipe completa",
+    "playHeld": "Jogar, {list} ainda fora da Batalha",
+    "packDealt": "Pacote: {list}, {n} de {budget} tintas",
+    "packOnly": "Pacote: {list}",
+    "statsSr": "Vida {hp}, Alcance {atk}, Resistência {def}, Ritmo {spd}",
+    "art": "Arte",
+    "frame": "Moldura"
   },
   "cards": {
     "title": "Cartas",

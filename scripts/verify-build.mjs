@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { MEDIA, hasLocation } from './location.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
 const SITE = 'https://www.kevinliu.studio';
@@ -36,10 +37,22 @@ if (fs.existsSync(path.join(DIST, '..', 'src/pages/SKILL.md'))) fail('src/pages/
 for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg', '/share/cards.jpg', '/share/battle.jpg', '/share/arena.jpg', '/share/404.jpg', '/about.html', '/battle.html', '/battle/arena.html', '/404.html', '/robots.txt', '/llms.txt', '/llms-full.txt', '/index.md', '/sitemap-index.xml', '/favicon.ico', '/site.webmanifest']) {
   if (!exists(need)) fail(need, 'missing');
 }
+// every page and text file in every language (src/i18n/locales.mjs)
+for (const c of OTHER) for (const need of [`/${c}.html`, `/${c}/index.md`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/about.html`, `/${c}/about.md`, `/${c}/battle.html`, `/${c}/battle.md`, `/${c}/battle/arena.html`, `/${c}/battle/arena.md`, `/${c}/404.html`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`, `/${c}/cards/atlas.html`, `/${c}/cards/atlas.md`]) {
+  if (!exists(need)) fail(need, 'missing');
+}
+const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')})/404\\.html$`).test(page);
+// a language's pages, by their prefix
+const langOf = (page) => OTHER.find((c) => page === `/${c}.html` || page.startsWith(`/${c}/`)) ?? 'en';
+// the characters each face holds (scripts/i18n-fonts.py): a translated page prints only what its faces hold
+const FACES = JSON.parse(fs.readFileSync(path.join(path.dirname(DIST), 'src/i18n/fonts.json'), 'utf8'));
+const held = (code) => new Set(Object.values(FACES).filter((f) => !f.locales.length || f.locales.length > 1 || f.locales.includes(code)).flatMap((f) => [...f.chars]));
 
 const GT = /general\s?translation|generaltranslation/i;
 // the wall and the cards index print every card, Atlas's line among them
-const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js', '/ex/face.gen.js']);
+const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js', '/ex/face.gen.js',
+  // the same pages in every language, and the lens sheets a translated wall loads (Atlas's among them)
+  ...OTHER.flatMap((c) => [`/${c}.html`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/404.html`, `/${c}/about.html`, `/${c}/index.md`, `/${c}/about.md`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`])]);
 const BANNED = [[/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'], [/\/api\/(submissions|emails)\b/, 'OMMC participant route'], [/xi-api-key|\bsk_[a-f0-9]{40,}\b/i, 'key shape']];
 
 // width and height from a JPEG's start-of-frame marker
@@ -63,7 +76,7 @@ function checkGraph(ld, page) {
   const ids = new Set(ld['@graph'].map((n) => n['@id']).filter(Boolean));
   const has = (t) => ld['@graph'].some((n) => n['@type'] === t);
   for (const t of ['WebSite', 'Person']) if (!has(t)) out.push(`no ${t} node`);
-  if (page !== '/404.html' && !ld['@graph'].some((n) => /Page$/.test(n['@type'] ?? ''))) out.push('no page node');
+  if (!/404\.html$/.test(page) && !ld['@graph'].some((n) => /Page$/.test(n['@type'] ?? ''))) out.push('no page node');
   const walk = (v, at) => {
     if (Array.isArray(v)) return v.forEach((x) => walk(x, at));
     if (!v || typeof v !== 'object') return;
@@ -87,9 +100,30 @@ for (const f of htmls) {
   if (h1 !== 1) fail(page, `${h1} h1 elements`);
   if (!/<title>[^<]{3,}<\/title>/.test(html)) fail(page, 'no title');
   const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
-  if (desc.length < 50 || desc.length > 170) fail(page, `description is ${desc.length} characters`);
+  // a CJK sentence says in about half the characters what a Latin one does
+  const cjk = /^(ja|ko|zh)$/.test(langOf(page));
+  if (desc.length < (cjk ? 25 : 50) || desc.length > 170) fail(page, `description is ${desc.length} characters`);
+  const code = langOf(page), want = LOCALES.find((l) => l.code === code).lang;
+  if (html.match(/<html lang="([^"]+)"/)?.[1] !== want) fail(page, `html lang is not ${want}`);
   const canon = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
-  if (page === '/404.html') { if (canon || !/<meta name="robots" content="noindex/.test(html)) fail(page, 'the 404 page must be noindex without a canonical'); }
+  // the same page in every language, each one existing, and English as x-default
+  if (!is404(page)) {
+    const alts = Object.fromEntries([...html.matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map((m) => [m[1], m[2]]));
+    for (const l of [...LOCALES.map((x) => x.lang), 'x-default']) {
+      const u = alts[l];
+      if (!u?.startsWith(SITE)) { fail(page, `no hreflang ${l}`); continue; }
+      if (!exists(u.slice(SITE.length) || '/index.html')) fail(page, `hreflang ${l} ${u} does not exist in dist`);
+    }
+    if (canon && alts[want] !== canon) fail(page, `hreflang ${want} is not the canonical`);
+  }
+  // every character a translated page shows is held by one of its faces (the language list names each language in
+  // the system face and is left out)
+  if (code !== 'en' && !/<base href="\/battle\//.test(html)) {
+    const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang">[\s\S]*?<\/details>/, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
+    const have = held(code), missing = new Set([...shown].filter((ch) => ch > '~' && !have.has(ch)));
+    if (missing.size) fail(page, `prints ${[...missing].slice(0, 12).join('')} that no face holds (python3 scripts/i18n-fonts.py)`);
+  }
+  if (is404(page)) { if (canon || !/<meta name="robots" content="noindex/.test(html)) fail(page, 'the 404 page must be noindex without a canonical'); }
   else if (!canon?.startsWith(SITE)) fail(page, `canonical ${canon}`);
   const meta = (k) => html.match(new RegExp(`<meta (?:property|name)="${k}" content="([^"]*)"`))?.[1];
   for (const k of ['og:image', 'og:video']) {
@@ -117,7 +151,7 @@ for (const f of htmls) {
   // each stylesheet and deferred script a page names under /ex/ carries its content address (vercel.json caches it)
   for (const m of html.matchAll(/\s(?:href|src)="(\/ex\/[^"]+\.(?:css|js))"/g)) fail(page, `${m[1]} has no ?v= content address`);
   const twin = html.match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
-  if (page !== '/404.html' && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
+  if (!is404(page) && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
   // every local reference, resolved the way the browser will
   // a link to a bare fragment is safe only without <base>: with one, "#x" goes to the base folder, not this page
   // (SVG <use href="#icon"> stays in the document, so only <a> is checked)
@@ -171,8 +205,9 @@ for (const f of files) {
 
 const sitemap = files.filter((f) => /sitemap-\d+\.xml$/.test(f)).map((f) => fs.readFileSync(f, 'utf8')).join('');
 const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-if (listed.length < 31) fail('sitemap', `${listed.length} URLs`);
-if (!listed.includes(`${SITE}/cards`)) fail('sitemap', 'does not list /cards');
+if (listed.length < 31 * LOCALES.length) fail('sitemap', `${listed.length} URLs`);
+for (const c of ['', ...OTHER.map((x) => `/${x}`)]) if (!listed.includes(`${SITE}${c}/cards`)) fail('sitemap', `does not list ${c}/cards`);
+if ((sitemap.match(/<xhtml:link rel="alternate" hreflang=/g) ?? []).length < listed.length * LOCALES.length) fail('sitemap', 'a page lacks its alternates in every language');
 // lastmod is left out where git history cannot date a page (astro.config.mjs), so only its shape is checked
 for (const m of sitemap.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)) if (Number.isNaN(Date.parse(m[1])) || Date.parse(m[1]) > Date.now() + 864e5) fail('sitemap', `lastmod ${m[1]}`);
 for (const u of listed) if (/\/404$|\/$(?<!studio\/)/.test(u)) fail('sitemap', `lists ${u}`);

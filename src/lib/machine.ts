@@ -5,6 +5,7 @@ import { fighters, rules, repoOf, type Fighter } from './cards';
 import { cardPath, cardMd } from './twins';
 import { workType } from './schema';
 import { PREVIOUS } from './site';
+import { L, DEFAULT } from '../i18n';
 
 export const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const host = (u?: string) => (u ? u.replace(/^https?:\/\//, '').replace(/\/$/, '') : '');
@@ -22,8 +23,8 @@ export const cardLabel = (f: Fighter) => `${String(fighters.indexOf(f) + 1).padS
 
 /** A card's record: its place, addresses, schema type and its row of the home twin's table (its number and id are on
  *  the frame); `full` adds the rest of the twin's numbers and the source, for the card's own page. */
-export function cardRecord(f: Fighter, { full = false } = {}): Field[] {
-  const p = cardPath(f);
+export function cardRecord(f: Fighter, { full = false, code = DEFAULT } = {}): Field[] {
+  const p = cardPath(f, code);
   const t = workType(f);
   const repo = repoOf(f); // a public repository only, as the twin prints it
   return [
@@ -32,7 +33,7 @@ export function cardRecord(f: Fighter, { full = false } = {}): Field[] {
     { k: '@type', v: t.type },
     ...(t.category ? [{ k: 'category', v: t.category }] : []),
     { k: 'year', v: String(f.year) },
-    { k: 'disciplines', v: f.disciplines.join(', ') },
+    { k: 'disciplines', v: f.disciplines.map((d) => L(code).disc(d)).join(', ') },
     { k: 'inks', v: String(f.cost) },
     { k: 'health', v: String(f.stats.hp) },
     ...(full ? [{ k: 'attack', v: String(f.stats.atk) }, { k: 'defence', v: String(f.stats.def) }, { k: 'speed', v: String(f.stats.spd) }] : []),
@@ -44,9 +45,9 @@ export function cardRecord(f: Fighter, { full = false } = {}): Field[] {
 
 /** The deck: where it goes. The pack: what it fills, under which budget, from which seed (gallery.js fills the seed). */
 export const deckRecord = (): Field[] => [{ k: 'href', v: host(PREVIOUS) }, { k: 'target', v: '_blank' }];
-export const packRecord = (): Field[] => [
-  { k: 'team', v: `${rules.team.size} cards` },
-  { k: 'budget', v: `${rules.team.budget} inks` },
+export const packRecord = (code = DEFAULT): Field[] => [
+  { k: 'team', v: L(code).t('twin.teamCards', { n: rules.team.size }) },
+  { k: 'budget', v: L(code).t('twin.budgetInks', { n: rules.team.budget }) },
   { k: 'seed', v: '', live: 'seed' },
   { k: 'keys', v: 'Enter, Space' },
 ];
@@ -73,20 +74,24 @@ export function mdHtml(s: string) {
 }
 
 /** A card's Markdown twin cut into the blocks its page shows, in its page's order. */
-export function cardBlocks(f: Fighter) {
+export function cardBlocks(f: Fighter, code = DEFAULT) {
   // found by what each block is, not where it stands, so a twin that adds a block (an answer, a related list) still maps
-  const b = cardMd(f).trimEnd().split('\n\n');
+  const t = L(code).t;
+  const b = cardMd(f, code).trimEnd().split('\n\n');
   const at = (h: string) => b.indexOf(h);
-  const nums = at('## The numbers'), trait = at('## Trait'), moves = at('## Moves');
-  const line = b.findIndex((x) => x.startsWith('Card '));
+  const nums = at(`## ${t('card.numbers')}`), trait = at(`## ${t('card.trait')}`), moves = at(`## ${t('card.moves')}`), related = at(`## ${t('card.related')}`);
+  // the line after the answer (the twin opens with its heading, a translated edition's note, then the answer)
+  const line = b.findIndex((x, i) => i > 0 && !x.startsWith('- ') && b[i + 1]?.startsWith('- ')) ;
+  const labels = [t('twin.live'), t('twin.source'), t('twin.battle')].map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const pinned = t('twin.pinned', { sha: '\u0000', date: '\u0000' }).split('\u0000')[0];
   return {
     line: b[line],
     // the twin's link lines (Live, Source, Battle) are the page's link row; its inks and stats are on the stand's record
-    links: (b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '').split('\n').filter((x) => /^- (Live|Source|Battle):/.test(x)).join('\n'),
+    links: (b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '').split('\n').filter((x) => new RegExp(`^- (${labels.join('|')}):`).test(x)).join('\n'),
     facts: b[nums + 1].split('\n'),
     trait: trait >= 0 ? b[trait + 1] : null,
     moves: b[moves + 1].split('\n'),
-    related: at('## Related') >= 0 ? b[at('## Related') + 1].split('\n') : [],
-    pinned: b.slice(moves + 2).find((x) => x.startsWith('Facts pinned')) ?? null,
+    related: related >= 0 ? b[related + 1].split('\n') : [],
+    pinned: b.slice(moves + 2).find((x) => pinned && x.startsWith(pinned)) ?? null,
   };
 }

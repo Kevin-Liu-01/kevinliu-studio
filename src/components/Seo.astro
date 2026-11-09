@@ -2,6 +2,8 @@
 // Every page's head metadata: title, description, canonical, share cards (image, and the loop where the rounds drew
 // one), the Markdown twin and JSON-LD. One component, so no page can ship without a canonical or a share image.
 import { NAME, HANDLE, SITE, abs } from '../lib/site';
+import { LOCALES, localeOf, lp, split } from '../i18n/locales.mjs';
+import { twinPath } from '../lib/twins';
 
 interface Props {
   title: string;
@@ -16,7 +18,21 @@ interface Props {
   twin?: string | null; // the Markdown twin's path
   noindex?: boolean; // the 404 page: no canonical, kept out of the index
 }
-const { title, description, path, share, og = share ? undefined : 'home', imageAlt, type = 'website', jsonld = [], noindex = false, twin = path === '/' ? '/index.md' : `${path}.md` } = Astro.props;
+const { title, description, path, share, og = share ? undefined : 'home', imageAlt, type = 'website', jsonld = [], noindex = false, twin = twinPath(path) } = Astro.props;
+// the page's language from its path, and the same page in every language (hreflang, og:locale:alternate)
+const { code, path: base } = split(path);
+const here = localeOf(code);
+// a translated description keeps to the 160 characters a result shows: its first sentences that fit, else cut at a word
+// (at a character in a language without spaces) with an ellipsis. English descriptions are written to fit.
+const fit = (s: string) => {
+  if (code === 'en' || s.length <= 160) return s;
+  const sentences = s.match(/[^.!?。！？]+[.!?。！？]+/g) ?? [];
+  let out = '';
+  for (const x of sentences) { if ((out + x).trim().length > 160) break; out += x; }
+  if (out.trim().length >= 50) return out.trim();
+  const cut = s.slice(0, 159);
+  return `${/\s/.test(cut) ? cut.replace(/[\s,:;]+\S*$/, '') : cut}…`;
+};
 const url = abs(path);
 const image = share ? `${SITE}/share/${share}.jpg` : `${SITE}/og/${og}.jpg`;
 const video = og ? `${SITE}/og/${og}.mp4` : null;
@@ -24,18 +40,21 @@ const fullTitle = Astro.props.fullTitle ?? (path === '/' ? title : `${title} | $
 const ld = jsonld.length ? JSON.stringify({ '@context': 'https://schema.org', '@graph': jsonld }).replace(/</g, '\\u003c') : null;
 ---
 <title>{fullTitle}</title>
-<meta name="description" content={description} />
+<meta name="description" content={fit(description)} />
 {!noindex && <link rel="canonical" href={url} />}
 <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
 <meta name="author" content={NAME} />
 {twin && <link rel="alternate" type="text/markdown" href={twin} title="Markdown" />}
-<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
-<link rel="author" href="/about" />
+<link rel="alternate" type="text/plain" href={lp(code, '/llms.txt')} title="llms.txt" />
+{!noindex && LOCALES.map((l) => <link rel="alternate" hreflang={l.lang} href={abs(lp(l.code, base))} />)}
+{!noindex && <link rel="alternate" hreflang="x-default" href={abs(base)} />}
+<link rel="author" href={lp(code, '/about')} />
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={NAME} />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={here.og} />
+{!noindex && LOCALES.filter((l) => l !== here).map((l) => <meta property="og:locale:alternate" content={l.og} />)}
 <meta property="og:title" content={fullTitle} />
-<meta property="og:description" content={description} />
+<meta property="og:description" content={fit(description)} />
 {!noindex && <meta property="og:url" content={url} />}
 <meta property="og:image" content={image} />
 <meta property="og:image:secure_url" content={image} />
@@ -54,7 +73,7 @@ const ld = jsonld.length ? JSON.stringify({ '@context': 'https://schema.org', '@
 <meta name="twitter:site" content={HANDLE} />
 <meta name="twitter:creator" content={HANDLE} />
 <meta name="twitter:title" content={fullTitle} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:description" content={fit(description)} />
 <meta name="twitter:image" content={image} />
 <meta name="twitter:image:alt" content={imageAlt} />
 {ld && <script type="application/ld+json" set:html={ld} />}

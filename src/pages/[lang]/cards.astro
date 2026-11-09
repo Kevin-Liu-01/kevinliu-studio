@@ -1,0 +1,6 @@
+---
+import Cards from '../../views/Cards.astro';
+import { OTHER } from '../../i18n/locales.mjs';
+export const getStaticPaths = () => OTHER.map((lang) => ({ params: { lang } }));
+---
+<Cards code={Astro.params.lang!} />

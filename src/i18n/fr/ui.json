@@ -46,7 +46,18 @@
     "refused": "{title} : {why}",
     "rivalDealt": "Adversaire : {list}",
     "notYetOne": "{list} ne participe pas encore au combat",
-    "notYetMany": "{list} ne participent pas encore au combat"
+    "notYetMany": "{list} ne participent pas encore au combat",
+    "cardInks": "{title}, {n} encres",
+    "cardInk": "{title}, {n} encre",
+    "inYourTeam": "{label}, dans votre équipe",
+    "inTheirTeam": "{label}, dans son équipe",
+    "openPackFull": "Ouvrir le paquet, équipe complète",
+    "playHeld": "Jouer, {list} pas encore en combat",
+    "packDealt": "Paquet : {list}, {n} encres sur {budget}",
+    "packOnly": "Paquet : {list}",
+    "statsSr": "Santé {hp}, Portée {atk}, Preuve {def}, Cadence {spd}",
+    "art": "Illustration",
+    "frame": "Cadre"
   },
   "cards": {
     "title": "Cartes",

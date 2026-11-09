@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import { fighters, card, FRAMED, M, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../lib/cards';
+import { cardPath, answerIn, ruleIn } from '../lib/twins';
+import { moveHtml, roomIn } from '../lib/i18n-room';
+import { L } from '../i18n';
+import { graph, page, work } from '../lib/schema';
+import { cardRecord, cardLabel, recordHtml, cardBlocks, mdHtml, BX } from '../lib/machine';
+import { asciiArt } from '../lib/ascii';
+import { SITE } from '../lib/site';
+
+interface Props { f: Fighter; code: string }
+const { f, code } = Astro.props;
+const l = L(code);
+const i = fighters.indexOf(f);
+const prev = fighters[(i + fighters.length - 1) % fighters.length];
+const next = fighters[(i + 1) % fighters.length];
+const answer = answerIn(f, code);
+const hue = hueOf(f);
+const repo = repoOf(f);
+const related = relatedOf(f);
+const team = teamFor(f.id);
+const pinned = (f as any).pinned as { sha: string; date?: string } | undefined;
+// a description is one sentence of at most 160 characters, cut at a word (a language without spaces, at a character)
+const cut = (s: string) => (/\s/.test(s.slice(0, 159)) ? s.slice(0, 159).replace(/[\s,:;]+\S*$/, '') : s.slice(0, 158));
+const description = answer.length <= 160 ? answer : `${cut(answer)}${/[\u3000-\u9fff\uac00-\ud7af]$/.test(answer.slice(0, 158)) ? '。' : '.'}`;
+const jsonld = graph(
+  page({ path: cardPath(f, code), type: 'ItemPage', name: f.title, description: answer, image: `${SITE}/og/${f.id}.jpg`, crumbs: [[l.t('cards.title'), l.p('/cards')], [f.title, cardPath(f, code)]], mainEntity: { '@id': `${SITE}${cardPath(f, code)}#work` }, code }),
+  work(f, code),
+);
+const discIcon = (d: string) => M.icon(d.toLowerCase());
+// the Machine view's forms of this page: the card's whole record on the stand, the twin block by block in the info
+// column (its headings are the human headings, marked by machine.css, so each heading keeps one text)
+const tw = cardBlocks(f, code);
+const art = await asciiArt(f.id, 48);
+// a heading in the Machine view is its twin line laid over the heading's own box, so it keeps the page's one h1; a list
+// (.sl) is one panel of its twin lines laid over the whole list, so its lines share the room its tiles take
+const hd = (md: string) => `<p class="mx">${mdHtml(md)}</p>`;
+const facts = factLines(f);
+// "Numbers pinned at <sha>, <date>.": the sentence in the language around the commit's link
+const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sha: '\u0000', date: pinned.date ?? '' }).split('\u0000') : [];
+---
+<Base
+  seo={{ title: f.title, description, path: cardPath(f, code), og: f.id, imageAlt: l.t('card.imageAlt', { title: f.title, answer }), jsonld }}
+  room
+  html={{ 'data-card': f.id }}
+>
+  <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
+    <div class="stand"><Fragment set:html={roomIn(card(f, { id: `c-${f.id}`, focusable: false }), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
+    <script is:inline set:html={FRAMED} />
+    <article class="info">
+      <div class="sw hw"><h1>{f.title}</h1><Fragment set:html={hd(`# ${f.title}`)} /></div>
+      <p class="cp-what sw"><span class="hx">{answer}</span><span class="mx">{answer}</span></p>
+      <p class="cp-disc sw"><span class="hx">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{l.disc(d)}</span>)}</span><span class="mx" set:html={mdHtml(tw.line)} /></p>
+      <p class="cp-go sw">
+        <span class="hx">
+        {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>{l.t('card.open', { host: f.url.replace(/^https?:\/\//, '').replace(/\/$/, '') })}</span></a>}
+        {repo && <a class="press" href={repo} rel="noopener"><span>{l.t('card.source')}</span></a>}
+        {team && <a class="press" href={`${l.p('/battle')}#team=${team.join(',')}`}><span>{l.t('card.battle')}</span></a>}
+        </span>
+        <span class="mx" set:html={mdHtml(tw.links)} />
+      </p>
+      <div class="sw hw"><h2>{l.t('card.numbers')}</h2><Fragment set:html={hd(`## ${l.t('card.numbers')}`)} /></div>
+      <ul class="cp-facts sl">
+        {facts.map((x) => <li><b>{l.en ? x.value : l.num(f.facts[x.key].value)}</b><span>{l.en ? x.unit : l.unit(f.facts[x.key].value, f.facts[x.key].unit ?? '')}</span><code>{x.receipt}</code></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.facts.join('\n'))} />
+      </ul>
+      {f.trait && <Fragment><div class="sw hw"><h2>{l.t('card.trait')}</h2><Fragment set:html={hd(`## ${l.t('card.trait')}`)} /></div><div class="cp-trait sw"><div class="hx"><p><b>{f.trait.name}</b> {ruleIn(f, code)}</p><code>{f.trait.receipt}</code></div><p class="mx" set:html={BX + mdHtml(tw.trait!)} /></div></Fragment>}
+      <div class="sw hw"><h2>{l.t('card.moves')}</h2><Fragment set:html={hd(`## ${l.t('card.moves')}`)} /></div>
+      <ol class="cp-moves sl">
+        {f.moves.map((mv, j) => <li><p set:html={moveHtml(f, j, code)} /><code>{mv.receipt}</code></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.moves.join('\n'))} />
+      </ol>
+      <div class="sw hw"><h2>{l.t('card.related')}</h2><Fragment set:html={hd(`## ${l.t('card.related')}`)} /></div>
+      <ul class="cp-related sl">
+        {related.map((g) => <li><a href={cardPath(g, code)}><b>{g.title}</b><span>{g.disciplines.map((d) => l.disc(d)).join(', ')}</span></a></li>)}
+        <li class="mx" set:html={BX + mdHtml(tw.related.join('\n'))} />
+      </ul>
+      {pinned && <p class="cp-pin sw"><span class="hx">{pinLine[0]}{repo ? <a href={`${repo}/commit/${pinned.sha}`} rel="noopener">{pinned.sha}</a> : pinned.sha}{pinLine[1]}</span>{tw.pinned && <span class="mx" set:html={mdHtml(tw.pinned)} />}</p>}
+    </article>
+  </main>
+  <nav class="pager" aria-label={l.t('card.pager')}>
+    <a href={cardPath(prev, code)} rel="prev" data-astro-prefetch="viewport" class="sw"><span class="hx"><Fragment set:html={M.icon('prev')} />{prev.title}</span><span class="mx">{cardPath(prev, code)}</span></a>
+    <a href={cardPath(next, code)} rel="next" data-astro-prefetch="viewport" class="sw"><span class="hx">{next.title}<Fragment set:html={M.icon('next')} /></span><span class="mx">{cardPath(next, code)}</span></a>
+  </nav>
+</Base>

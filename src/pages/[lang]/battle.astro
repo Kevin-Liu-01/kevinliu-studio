@@ -1,0 +1,6 @@
+---
+import BattlePage from '../../components/BattlePage.astro';
+import { OTHER } from '../../i18n/locales.mjs';
+export const getStaticPaths = () => OTHER.map((lang) => ({ params: { lang } }));
+---
+<BattlePage mode="mat" code={Astro.params.lang!} />

@@ -1,0 +1,6 @@
+---
+import NotFound from '../../views/NotFound.astro';
+import { OTHER } from '../../i18n/locales.mjs';
+export const getStaticPaths = () => OTHER.map((lang) => ({ params: { lang } }));
+---
+<NotFound code={Astro.params.lang!} />
