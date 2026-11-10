@@ -185,7 +185,7 @@
     "playAt": "プレイ: {mat} (Mat) または {arena} (闘技場)。アドレスには {hash} を指定できます。",
     "aboutCards": "このサイトでは、{n}件のプロジェクトをコレクションカードとして紹介しています。カード上の数値にはすべて、各プロジェクトのリポジトリに裏付けがあります。",
     "previousSite": "以前のサイト、PortfolioMon Showdown",
-    "everyPageTwin": "各ページにはMarkdown版もあります。パスに.mdを追加するか、{accept}を送信してください。",
+    "everyPageTwin": "各ページにはMarkdown版もあります。パスに.mdを追加するか（ホームページの場合は{home}）、ヘッダーで{accept}を先頭に指定して送信してください。",
     "aka": "{names}という名前でも知られています。",
     "contact": "連絡先",
     "pages": "ページ",

@@ -185,7 +185,7 @@
     "playAt": "Play: {mat} (Mat) or {arena} (Arena). The address takes {hash}.",
     "aboutCards": "This site shows {n} of the projects as collectible cards. Every number on a card has a receipt from the project's repository.",
     "previousSite": "The previous site, PortfolioMon Showdown",
-    "everyPageTwin": "Every page has a Markdown twin: add .md to its path, or send {accept}.",
+    "everyPageTwin": "Every page has a Markdown twin: add .md to its path (the home page's is {home}), or send {accept} first in the header.",
     "aka": "He is also known as {names}.",
     "contact": "Contact",
     "pages": "Pages",

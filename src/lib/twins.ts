@@ -183,7 +183,7 @@ const intro = (code: string) => {
 
 > ${bioIn(code)} ${descriptionIn(code)}
 
-${edition(code, '/llms.txt')}${t('twin.everyPageTwin', { accept: '`Accept: text/markdown`' })}
+${edition(code, '/llms.txt')}${t('twin.everyPageTwin', { home: twinPath(lp(code, '/')), accept: '`Accept: text/markdown`' })}
 
 ## ${t('frame.about')}
 

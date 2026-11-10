@@ -185,7 +185,7 @@
     "playAt": "Jogue: {mat} (Tapete) ou {arena} (Arena). O endereço aceita {hash}.",
     "aboutCards": "Este site apresenta {n} dos projetos como cartas colecionáveis. Cada número em uma carta tem um comprovante no repositório do projeto.",
     "previousSite": "O site anterior, PortfolioMon Showdown",
-    "everyPageTwin": "Cada página tem uma versão equivalente em Markdown: adicione .md ao caminho ou envie {accept}.",
+    "everyPageTwin": "Cada página tem uma versão equivalente em Markdown: adicione .md ao caminho (o da página inicial é {home}) ou envie {accept} primeiro no cabeçalho.",
     "aka": "Ele também é conhecido como {names}.",
     "contact": "Contato",
     "pages": "Páginas",

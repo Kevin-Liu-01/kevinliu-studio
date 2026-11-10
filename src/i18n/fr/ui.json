@@ -185,7 +185,7 @@
     "playAt": "Pour jouer : {mat} (Tapis) ou {arena} (Arène). L'adresse accepte {hash}.",
     "aboutCards": "Ce site présente {n} projets sous forme de cartes à collectionner. Chaque chiffre figurant sur une carte est accompagné d'un justificatif issu du dépôt du projet.",
     "previousSite": "L'ancien site, PortfolioMon Showdown",
-    "everyPageTwin": "Chaque page possède une version Markdown : ajoutez .md à son chemin ou envoyez {accept}.",
+    "everyPageTwin": "Chaque page possède une version Markdown : ajoutez .md à son chemin (celui de la page d’accueil est {home}) ou envoyez {accept} en premier dans l’en-tête.",
     "aka": "Il est aussi connu sous les noms de {names}.",
     "contact": "Contact",
     "pages": "Pages",

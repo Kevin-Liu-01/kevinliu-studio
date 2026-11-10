@@ -185,7 +185,7 @@
     "playAt": "开始游戏：{mat}（卡垫）或 {arena}（竞技场）。地址支持 {hash}。",
     "aboutCards": "本网站将其中 {n} 个项目制作成可收藏的卡牌。卡牌上的每个数字都能在项目代码仓库中找到依据。",
     "previousSite": "旧版网站：PortfolioMon Showdown",
-    "everyPageTwin": "每个页面都有对应的 Markdown 版本：在路径后添加 .md，或发送 {accept}。",
+    "everyPageTwin": "每个页面都有对应的 Markdown 版本：在路径后添加 .md（首页为 {home}），或在请求头中优先发送 {accept}。",
     "aka": "他也使用这些名字：{names}。",
     "contact": "联系方式",
     "pages": "页面",

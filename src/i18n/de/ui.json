@@ -185,7 +185,7 @@
     "playAt": "Spielen: {mat} (Mat) oder {arena} (Arena). Die Adresse unterstützt {hash}.",
     "aboutCards": "Diese Website zeigt {n} der Projekte als Sammelkarten. Jede Zahl auf einer Karte ist durch einen Beleg aus dem Repository des Projekts nachgewiesen.",
     "previousSite": "Die frühere Website, PortfolioMon Showdown",
-    "everyPageTwin": "Jede Seite hat einen Markdown-Zwilling: Hängen Sie .md an den Pfad an oder senden Sie {accept}.",
+    "everyPageTwin": "Jede Seite hat einen Markdown-Zwilling: Hängen Sie .md an den Pfad an (für die Startseite lautet er {home}) oder senden Sie {accept} zuerst im Header.",
     "aka": "Er ist auch als {names} bekannt.",
     "contact": "Kontakt",
     "pages": "Seiten",
