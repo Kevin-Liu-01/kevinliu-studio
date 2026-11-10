@@ -35,7 +35,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 | [017](017-wall-saved-state-and-history.md) | The wall saves only the visitor's own choices, keeps history straight, names the tab, works without scripts | P2 | S–M | 016 first (same array) | TODO |
 | [018](018-battle-screen-reader-and-reduced-motion.md) | The battle announces every outcome, honours reduced motion on the Mat, keeps one h1 | P2 | S | — (after 008; same entries) | TODO |
 | [019](019-sound-player-robustness.md) | The sound player keeps the choice after Back, answers the battle's speaker key, keeps real time, retries its manifest | P2 | S | — (after 005; same entry) | TODO |
-| [020](020-typecheck-and-pins.md) | `pnpm check` type-checks again; toolchain versions pinned; unused dependency removed | P2 | S | — | TODO |
+| [020](020-typecheck-and-pins.md) | `pnpm check` type-checks again; toolchain versions pinned; unused dependency removed | P2 | S | — | DONE (`improve/020-typecheck-and-pins` cce834f, from 4025230; `pnpm check` 0 errors (was 1, Header's aria-pressed); TypeScript 5.9.3, Node 24.x, engineStrict, `@astrojs/mdx` gone; 523 built files byte-identical) |
 | [021](021-ci-workflow.md) | A GitHub Action runs the tests, the lock check and the build | P2 | S | 001, 003 | TODO |
 | [022](022-sound-memory-on-phones.md) | Measure decoded audio on a phone across three hands; then unload what the hand does not use | P3 | M | 005, 019 (same entry) | TODO |
 | [023](023-battle-first-paint-and-pops.md) | The battle's known pops and slow first paint: captures, two small fixes, a written recommendation | P3 | M | — (after 008, 018; same entries) | TODO |
