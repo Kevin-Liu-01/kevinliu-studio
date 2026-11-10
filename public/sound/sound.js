@@ -29,6 +29,8 @@ const FIRST = ['ui.press', 'ui.tap', 'ui.hover', 'ui.sound.on'];
 const VOICES = { max: 24, burst: 4, burstMs: 30, dueMs: 50 };
 // the gestures that may unlock audio: a touch pointerdown is not a user activation on iOS, its pointerup, touchend
 // and click are; Safari can also leave a context 'interrupted'
+// kevinliu.studio: the battle's clock (shared/pace.js) runs every page timer in scene time; the player's waits keep real time (scripts/sync.mjs)
+const setTimeout = (fn, ms, ...a) => (globalThis.battlePace?.realTimeout ?? globalThis.setTimeout)(fn, ms, ...a);
 const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
 const RARE = [0, 0, 0, 140, 280];
 // a context that is not running has a frozen clock: a one-shot scheduled on it waits there and sounds, late and all at
@@ -146,13 +148,15 @@ function ensureManifest() {
   S.mp = (async () => {
     if (typeof src === 'string') {
       const url = new URL(src, hasWindow ? document.baseURI : 'file:///');
-      S.m = await (await fetch(url)).json();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`manifest ${res.status}`);
+      S.m = await res.json();
       S.base = baseOf();
     } else { S.m = src; S.base = S.opts.base ?? 'out/'; }
     S.pageDb = S.opts.pageDb ?? (S.page && S.m.pages && S.m.pages[S.page] ? S.m.pages[S.page].gainDb : 0);
     applyGraph();
     return S.m;
-  })();
+  })().catch((e) => { S.mp = null; throw e; }); // kevinliu.studio: a manifest that failed is asked for again (scripts/sync.mjs)
   return S.mp;
 }
 function makeContext() {
@@ -249,7 +253,7 @@ function pcm() {
 function load(group) {
   if (!group) return Promise.resolve();
   if (!S.ctx || !S.unlocked || !S.enabled) { S.wantGroups.add(group); return Promise.resolve(); }
-  if (!S.m) return ensureManifest().then(() => load(group));
+  if (!S.m) return ensureManifest().then(() => load(group)).catch(() => { S.wantGroups.add(group); });
   if (S.groups.has(group)) return S.groups.get(group);
   const files = new Set();
   // a track loads only the variant this page will play (a Final Turns layer, its base's); stingers rotate later
@@ -293,7 +297,7 @@ function unlock(e) {
   // boot.gallery.js), are fetched now beside the manifest instead of after it: one round trip less before the press
   // sounds (the engineer judge, round four: 249.8 ms worst on fast 4G against the 250 ms line)
   if (S.opts.first && !S.m) {
-    ensureManifest(); // its request goes first
+    ensureManifest().catch(() => {}); // its request goes first
     S.base = baseOf();
     for (const id of FIRST) for (const f of S.opts.first[id]?.files ?? []) loadFile(f, S.opts.first[id].group, 'high');
   }
@@ -314,7 +318,7 @@ function unlock(e) {
         if (S.music.wanted) { const { track, o } = S.music.wanted; S.music.wanted = null; music(track, o); }
       });
     });
-  });
+  }).catch(() => { S.unlocked = false; if (!S.gesturesBound) { bindGestures(); S.gesturesBound = true; } }); // kevinliu.studio: the next gesture asks again (scripts/sync.mjs)
 }
 function bindGestures() { if (hasWindow) for (const t of GESTURES) addEventListener(t, unlock, true); }
 function unbindGestures() {
@@ -445,7 +449,7 @@ function play(id0, o = {}) {
     // the manifest, 130 ms at 85 ms latency and 195 ms at 150)
     const pre = S.opts.first?.[id0]?.cue;
     if (pre && S.unlocked && S.ctx) return playCue(id0, pre, o);
-    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest(); }
+    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest().catch(() => {}); }
     return null;
   }
   const id = resolve(id0, o);
@@ -1190,7 +1194,7 @@ function setEnabled(on, { persist = true, feedback = false } = {}) {
     if (S.ctx && S.ctx.state === 'suspended') S.ctx.resume().catch(() => {});
     // the theme that was playing when sound went off comes back
     if (S.unlocked && S.m && S.music.wanted) { const { track, o } = S.music.wanted; S.music.wanted = null; music(track, o); }
-    if (feedback) { play('ui.sound.on', { force: true, waitMs: 900 }); load('gallery'); }
+    if (feedback) { play(S.m && !S.m.cues['ui.sound.on'] && S.m.cues['bt.ui.toggle'] ? 'bt.ui.toggle' : 'ui.sound.on', { force: true, waitMs: 900 }); if (S.page !== 'battle') load('gallery'); } // kevinliu.studio: the battle answers with its own toggle cue (scripts/sync.mjs)
   }
   for (const f of listeners) f(on);
   emit('change', { enabled: on });
@@ -1237,11 +1241,13 @@ function init(o = {}) {
     if (hasWindow && !bound) {
       bound = true;
       addEventListener('storage', (e) => { if (e.key === KEY && (e.newValue === 'on' || e.newValue === 'off')) setEnabled(e.newValue === 'on', { persist: false }); });
+      // kevinliu.studio: a page shown again from the back-forward cache gets no storage event; it reads the saved choice (scripts/sync.mjs)
+      addEventListener('pageshow', (e) => { if (!e.persisted) return; const s = saved(); if (s !== null && s !== S.enabled) setEnabled(s, { persist: false }); });
       document.addEventListener('visibilitychange', onVisibility);
       // asking for less motion mid-visit quiets an unchosen default; it never turns sound on
       reducedQ.addEventListener('change', () => { if (reducedQ.matches && S.enabled && saved() === null) setEnabled(false, { persist: false }); });
     }
-    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest();
+    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest().catch(() => {});
     S.opts.ready = true;
     if (S.gestured) unlock();
     else if (o.resumeAtLoad && S.enabled && makeContext()) {

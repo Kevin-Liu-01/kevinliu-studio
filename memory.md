@@ -416,3 +416,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+
+## 2026-11-10: The sound player keeps the choice after Back, the battle's key answers, waits keep real time, a failed manifest retries (improve/019-sound-player-robustness, executor agent)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four groups of anchored pairs on the `public/sound/sound.js` entry, after plan 005's), `public/sound/sound.js` and `sync.lock.json` (by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Rationale**: pageshow reads the saved choice after a back-forward restore; the battle's speaker key plays `bt.ui.toggle` and skips the gallery group; the player's timers use `battlePace.realTimeout`; a failed manifest clears its cached promise and re-arms the gestures.
+- **Checked**: sync check `in sync`; marker counts ok, 1, 1, 1, 4; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. Browser (preview, agent-browser): (a) true then false on / and on /es; (b) true offline, then true after the second press online; (c) pressed "true", toggled true, files 128.
+- **Open**: the upstream request to the sound lane (four lines in the plan); the reviewer appends it.

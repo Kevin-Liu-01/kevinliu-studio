@@ -45,7 +45,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
-- `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md).
+- `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md); the saved choice is read again on a back-forward restore, the battle's speaker key answers with its own cue, the player's timers keep real time under the battle's clock, and a failed manifest is retried.
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
 - `battle/shared/battle.js`, `battle/arena/board.js`: a bad address keeps its reason on screen, retries without its log, checks `mode=` and `map=` as own keys, and a start that rejects un-hides the page.
