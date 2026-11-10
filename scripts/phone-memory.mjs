@@ -3,6 +3,8 @@
 // sync.mjs applies them after TRANSFORMS, so every sync writes them. When the rounds are not at hand,
 //   node scripts/phone-memory.mjs           applies them once to the synced files here and records the new bytes in
 //                                           sync.lock.json (only to a file whose bytes are still the lock's)
+//                                           A file that already carries the marker is skipped, so a NEW patch for it
+//                                           needs the full sync (ROUNDS=<export> pnpm sync), not this command.
 //   node scripts/phone-memory.mjs --check   exits 1 when a synced file lacks them
 // The same anchored-patch contract as TRANSFORMS: each anchor must occur exactly once.
 import { createHash } from 'node:crypto';
@@ -70,7 +72,10 @@ if (isMain) {
   const sha = (buf) => createHash('sha256').update(buf).digest('hex');
   const LOCK = path.join(REPO, 'sync.lock.json');
   const lock = JSON.parse(fs.readFileSync(LOCK, 'utf8'));
-  let missing = 0, changed = 0;
+  // Read and patch everything first; write only when every file's patches applied. A patch that throws (its anchor
+  // moved) leaves every file and the lock as they were.
+  const todo = [];
+  let missing = 0;
   for (const [dest, fn] of Object.entries(PHONE)) {
     const abs = path.join(REPO, dest);
     const text = fs.readFileSync(abs, 'utf8');
@@ -79,13 +84,16 @@ if (isMain) {
     const stage = Object.values(lock.stages).find((s) => s.list[dest]);
     const rec = stage && stage.list[dest];
     if (!rec || rec.sha256 !== sha(Buffer.from(text))) throw new Error(`${dest}: not the bytes sync.lock.json records; run pnpm sync instead`);
-    const out = Buffer.from(fn(text));
-    fs.writeFileSync(abs, out);
+    todo.push({ dest, abs, stage, rec, out: Buffer.from(fn(text)) });
+  }
+  // each file, then the lock, by a temp file and a rename: a stop halfway never leaves a half-written file
+  const put = (file, data) => { fs.writeFileSync(`${file}.tmp`, data); fs.renameSync(`${file}.tmp`, file); };
+  for (const { dest, abs, stage, rec, out } of todo) {
+    put(abs, out);
     stage.bytes += out.length - rec.bytes;
     Object.assign(rec, { sha256: sha(out), bytes: out.length });
-    changed++;
     console.log(`${dest}: patched (${rec.bytes} bytes)`);
   }
-  if (changed) fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n');
+  if (todo.length) put(LOCK, JSON.stringify(lock, null, 1) + '\n');
   process.exit(missing ? 1 : 0);
 }

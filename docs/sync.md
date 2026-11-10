@@ -39,7 +39,8 @@ wrote is never touched.
 
 The only edits are in `TRANSFORMS` in `scripts/sync.mjs` and `PHONE` in `scripts/phone-memory.mjs` (applied after
 `TRANSFORMS`). Each patch names the exact text it attaches to and must match exactly once, or the sync stops and says
-which anchor moved.
+which anchor moved. A patch whose file no rule shipped also stops the sync: a file the rounds renamed never loses its
+patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in memory before it writes any.
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).

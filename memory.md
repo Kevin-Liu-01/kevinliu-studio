@@ -305,3 +305,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; a probe file holding `General&nbsp;Translation`
   in a copy of dist fails with exit 1; no change under public, vendor or sync.lock.json.
 - **Open**: plans 002 and 003 also edit scripts/sync.mjs.
+
+## 2026-11-09: the sync stops when a patch never met its file (improve/002-sync-fails-on-unapplied-patches, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/sync.mjs, scripts/phone-memory.mjs, docs/sync.md, memory.md.
+- **Why**: a renamed file dropped its TRANSFORMS, PHONE or BINARY patch silently (the two picture paint-outs are invisible to any text scan); the standalone phone-memory run could leave a file patched and the lock wrong; pageHead dropped tags it could not read.
+- **Checked**: `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; a temporary patch key for a missing file fails with exit 1 and the new message, then removed; `phone-memory.mjs` and `--check` exit 0 with no file changed.
+- **Open**: none.
