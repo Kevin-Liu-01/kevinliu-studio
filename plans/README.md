@@ -20,7 +20,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 | [002](002-sync-fails-on-unapplied-patches.md) | The sync stops when a patch never met its file; phone patches write all or nothing | P1 | S | — (after 001; same file) | TODO |
 | [003](003-lock-integrity-check.md) | Every build checks the synced folders against `sync.lock.json` | P1 | S | 001 | TODO |
 | [005](005-battle-no-sound-fetch-before-gesture.md) | The battle fetches no sound file before the first gesture | P1 | S | — | TODO |
-| [004](004-markdown-negotiation-and-headers.md) | Markdown only for a client that prefers it; a missing `.md` is a plain 404; no framing by other sites | P1 | S | — | TODO |
+| [004](004-markdown-negotiation-and-headers.md) | Markdown only for a client that prefers it; a missing `.md` is a plain 404; no framing by other sites | P1 | S | — | DONE (`improve/004-markdown-negotiation-and-headers` 2200a43; the negotiation check passes 16 cases; the Vercel lookahead still needs a preview smoke) |
 | [006](006-phone-keeps-team-after-back.md) | A phone keeps the Pick Three team after Back | P1 | S | — (land 010 with or before it) | TODO |
 | [010](010-wall-phone-no-prerender.md) | On a phone the wall does not prerender the battle or build its cast before a press | P1 | M | — | TODO |
 | [009](009-battle-phone-memory.md) | On a phone the battle gives back shader worlds and warm-up bytes, and stops idle prints | P1 | M | — | TODO |
