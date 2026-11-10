@@ -403,3 +403,16 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Changed**: `src/components/Release.astro` (on a return from the back-forward cache the wall writes the dock's team into its address, then reloads as before; gallery.js restore() reads it), `scripts/check-release.mjs` (new, runs the built inline script under node:vm), `docs/performance.md` (Memory table row).
 - **Checked**: `pnpm build` ends `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; `node scripts/check-release.mjs` prints `release: 5 cases pass` on dist/index.html, dist/battle.html and dist/battle/arena.html. The check fails (2 cases, exit 1) against the old script. Browser check ran (playwright-core Chromium, iPhone 14 context, matchMedia coarse true, pageshow persisted sent by hand; agent-browser not used because its device mode gives no coarse pointer): after Gallery.toggle of katagami and mailroom the hash was empty; after the event the page reloaded to `/#you=katagami,mailroom&rival=&seed=N` with __table.you = katagami, mailroom.
 - **Open**: not checked on a real iPhone or in a real back-forward cache; a lens left open (`/cards/<id>` in the address) still returns to that card's page.
+## 2026-11-09: the battle gives back shader worlds and warm-up bytes on a phone (improve/009-battle-phone-memory, Claude Code)
+
+- **Type**: perf
+- **Changed**: `scripts/phone-memory.mjs` (two `PHONE` entries), `public/battle/shared/runtime.js` and
+  `public/battle/shared/battle.js` (by the sync), `sync.lock.json`, `docs/performance.md`, `docs/sync.md`.
+- **Rationale**: a visit kept one WebGL2 context per card with a world and every warmed clip's Blob, and the cards' live
+  prints ran behind the result and the Log. A touch screen or small-memory device now keeps two worlds, the warm-up keeps no
+  bytes, the prints pause at the result and under the Log.
+- **Measured**: 150 s Auto battle, Chromium with the iPhone 14 descriptor (coarse pointer true): stage canvases 3 → 2.
+  WebKit soak (pages only): glLive 2 → 2; contentMB and gpuMB moved with machine load. Pause check: true under the Log,
+  false after.
+- **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
+  `groundG.paused` at the result and Log; the reviewer appends it.
