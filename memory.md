@@ -438,3 +438,70 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   the language key; every language clean from 600 to 1100 px and at 390 and 320), the wall's pack flow in six languages
   (no hang, 20/20 pings), card framing 26/26, translated battles to their result, sound gate 10 files before a tap.
   Evidence: ~/k7-rescue/release-next/checks/i18n-*, final-widths.
+## 2026-11-10: Striking a fact no longer puts the wrong answer under a question on /about (improve/p2-checks, plan 011)
+
+- **Type**: fix
+- **Changed**: `src/lib/site.ts` (`FACT_LIST` with a `q` per fact, `factsFor`, the one `QA`), `src/lib/twins.ts` (reads `QA`),
+  `src/i18n/source.mjs` (reads `QA`), `scripts/facts.test.mjs` (new), `docs/seo.md`, `src/lib/SKILL.md`.
+- **Rationale**: the two answers were picked from `FACTS` by position (`FACTS[3]`, `FACTS[4]`, `FACTS.slice(5)`), in two files, so
+  deleting an early line moved every later answer. Each fact now names its question; a question left empty stops the build.
+- **Checked**: every built page, twin and text file (523) is byte-identical to before; `node scripts/i18n-extract.mjs --check`
+  passes, `content.json` unchanged; `pnpm test` 13 tests, 0 fail (10 before); a positional mutant fails the strike test.
+- **Open**: none.
+
+## 2026-11-10: The two site faces are named by content address; a year only where the address holds the content (improve/p2-checks, plan 012)
+
+- **Type**: perf
+- **Changed**: `src/layouts/Base.astro` (both faces through `versioned()`, the Mono `@font-face` rule moved into the inline style, `data-mono` on `<html>` for the head script's preload), `src/styles/machine.css` (Mono rule removed), `vercel.json` (`/fonts/` immutable only with `?v=`; `/ex/borders` and `/ex/fx` drawings a year with `?v=`, a day without), `scripts/cache-rules.test.mjs` (new), `scripts/verify-build.mjs` (face without `?v=` fails; a `?v=` on a face or border/fx drawing must be the file's sha-256), `scripts/smoke.mjs`, `docs/performance.md`, `docs/deploy.md`.
+- **Rationale**: a subset rebuilt under a plain address would sit in returning visitors' caches for a year; a year is now earned only by an address that holds its content.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; all four sampled pages name `katagami-mono-site.woff2?v=9fade4c28f` and `katagami-sans-site.woff2?v=8254e26517`; no `fonts/` in `dist/_astro/*.css`; `pnpm test` 15 tests, 0 fail (the new test fails 2 of 2 on the old `vercel.json`); a corrupted `fx.svg?v=` token made the guard name `is not the file's sha-256`, and the guard passed again once the file was restored; `node scripts/check-negotiation.mjs` exit 0.
+- **Open**: not deployed: the smoke check of the cache headers (`node scripts/smoke.mjs <preview>`) has not run, so Vercel's handling of the `missing` condition is unproven on a deployment; the plain picture addresses (`posters/`, `media/`) still keep a day and are not hashed; `design/` drawings carry a `?v=` that is not their own hash (a rounds matter); returning visitors fetch each face once more after this ships.
+
+## 2026-11-10: llms.txt sections are link lists, lastmod counts what a page prints, the docs say what the code does (improve/p2-checks, plan 024)
+
+- **Type**: fix
+- **Changed**: `src/lib/twins.ts` (`intro`: facts above the first `##`, Contact as links), `scripts/verify-build.mjs` (llms.txt shape check in all eight languages), `astro.config.mjs` (`SOURCES`: battle roster and `site.ts` counted for the home page, card pages and `/about`), `docs/architecture.md`, `docs/seo.md`, `docs/battle.md`, `docs/performance.md`, `docs/sync.md`, `src/lib/SKILL.md`, `AGENTS.md` (line 11), `memory.md`.
+- **Checked**: the new guard check reported 120 problem(s) (60 listed) on the old `dist/`; `pnpm test` 15 tests, 0 fail; `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `dist/llms.txt` and `dist/es/llms.txt` keep 46 list lines, 4 `##` sections, all 9 facts above the first `##`; `lastmod-check.mjs` reports 7 pages match.
+- **Open**: the loader is documented, not isolated; `AGENTS.md:88` (a machine-written block) and the front matter of `src/lib/SKILL.md` still say 'sandboxes' until agent-docs is rerun; Kevin may prefer the `## About` heading back in `llms.txt` (a one-line revert in `intro`, which the guard's check would then refuse).
+
+## 2026-11-10: `pnpm check` type-checks `src/` again; toolchain pins made exact (improve/020-typecheck-and-pins, Claude Code)
+
+- **Type**: chore, plan 020, cut from feat/i18n 4025230
+- **Changed**: `package.json` (engines `24.x`, `check` is `astro check` alone, `@astrojs/mdx` removed, `@astrojs/check` 0.9.12 and `typescript` 5.9.3 exact), `pnpm-lock.yaml` (by `pnpm install`), `pnpm-workspace.yaml` (`engineStrict: true`, mdx release-age exclusion removed), `.npmrc` deleted, `tsconfig.json` (new, Astro base preset, `src/` only), `src/components/Header.astro` (`aria-pressed={i === 0 ? 'true' : 'false'}`, same two values as `String(!i)`), `docs/deploy.md`, `AGENTS.md`.
+- **Why**: `astro check` could not run on TypeScript 7 (no compiler API) and there was no tsconfig; `node >=24` and `^` ranges let the toolchain move without a commit; `@astrojs/mdx` was used nowhere.
+- **Checked**: `pnpm check` ends `Result (61 files): - 0 errors - 0 warnings - 5 hints` (before the fix: 1 error at Header.astro:31:81, the one the plan names). `pnpm build` 256 pages, all checks pass; built HTML, Markdown and text files compared with the pre-change build.
+- **Open**: five hints left as they are (cards.ts:87, About.astro x2, Home.astro x2); AGENTS.md's agent-docs auto block still prints the old check script until the scaffold is rerun.
+
+
+## 2026-11-10: a GitHub workflow runs the checks on every pull request and push to main (improve/021-ci-workflow, executor agent)
+
+- **Type**: feature, plan 021, cut from cce834f (improve/020) with improve/011 merged in
+- **Changed**: `.github/workflows/check.yml` (new), `docs/deploy.md` (one bullet under Build), `memory.md`.
+- **Why**: no check ran before a build on the host. The workflow uses the pinned Node (`.nvmrc`, 24) and pnpm 11.15.1 (`packageManager`), no secret, no deploy.
+- **Steps**: install, `pnpm test`, `pnpm check`, `check-facts.mjs`, `check-negotiation.mjs`, `lock-check.mjs`, `pnpm build`, then `check-release.mjs dist/index.html` (needs the built page).
+- **Checked**: each command by hand in the worktree (test 10 of 10, check 0 errors, facts, negotiation 4 routes 16 cases, lock-check 3024 files, build 256 pages all checks pass, check-release 7 cases on dist/index.html and dist/de.html); the YAML parses with the expected keys and steps.
+- **Open**: not pushed, so the workflow first runs on GitHub when Kevin pushes this branch; Actions minutes on a private repository count against the monthly allowance; check-facts, check-negotiation and check-release run as workflow steps, not from `pnpm test` (no test file in this plan's scope).
+
+## 2026-11-10: the workflow calls the checks this branch has (improve/p2-checks, plan 021 follow-up)
+
+- **Type**: fix
+- **Changed**: `.github/workflows/check.yml`, `docs/deploy.md`, `memory.md`.
+- **Why**: the workflow ran `scripts/check-facts.mjs`, which exists only on another branch; here plan 011's check is `scripts/facts.test.mjs`, run by `pnpm test`, so that step would have failed on GitHub.
+- **Checked**: `pnpm test` 15 pass, 0 fail; `pnpm check` 0 errors; `check-negotiation.mjs` 4 routes 16 cases; `lock-check.mjs` 3024 files; `phone-memory.mjs --check` and `i18n-extract.mjs --check` exit 0; `check-release.mjs dist/index.html` 7 cases pass; the YAML parses with the expected keys and nine run steps.
+- **Open**: not pushed, so the workflow has never run on GitHub; the action majors (checkout v7, setup-node v7, pnpm/action-setup v6) were read from GitHub's releases API and are untested until the first run.
+
+## 2026-11-10: one JPEG reader, share-tag check and HTTP helper for the guard and the deployed checks (improve/p2-checks, plan 025)
+
+- **Type**: refactor
+- **Changed**: `scripts/lib/checks.mjs`, `scripts/lib/http.mjs`, `scripts/lib/checks.test.mjs` (new); `scripts/verify-build.mjs`, `scripts/check-seo.mjs`, `scripts/smoke.mjs`, `scripts/SKILL.md`, `memory.md`.
+- **Why**: three copies of the same checks had drifted: only one script knew both preview tokens, the SEO check read `sitemap-0.xml` not the index and followed redirects with the token attached, and the smoke check matched redirect targets by suffix.
+- **Checked**: `pnpm test` 19 pass, 0 fail (15 before); `pnpm build` 256 pages, 248 sitemap URLs, all checks pass; the smoke check on production prints the same output before and after; a seeded `twitter:card` fault in `dist/about.html` is caught by the guard, then restored.
+- **Open**: the SEO check against a local serve is the reviewer's step; not run against a protected preview.
+
+## 2026-11-10: the franchise name split inside the word is caught (improve/p2-checks, plan 031)
+
+- **Type**: fix
+- **Changed**: `scripts/rules.mjs` (one pattern), `scripts/rules.test.mjs` (one test appended), `memory.md`.
+- **Why**: the shared content rules let a space, hyphen or underscore sit inside two of the three banned names but not the third, so that name written with a split in the middle passed both the sync and the release guard, in text and in paths.
+- **Checked**: the new test failed alone before the fix (19 pass, 1 fail); after it `pnpm test` 20 pass, 0 fail; the sync check prints `in sync`; `pnpm build` 256 pages, all checks pass.
+- **Open**: not pushed.

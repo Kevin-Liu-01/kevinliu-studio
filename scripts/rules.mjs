@@ -18,7 +18,7 @@ export function normalize(text) {
 }
 
 // read on normalize(text) and on normalize(path)
-export const NAMES = [[/poke(mon|ball|dex)|\bpoke (mon|ball|dex)|nintendo|game ?freak/i, 'franchise name']];
+export const NAMES = [[/poke(mon|ball|dex)|\bpoke (mon|ball|dex)|nintendo|\bnin tendo|game ?freak/i, 'franchise name']];
 // read on the text as written (normalizing would break these shapes)
 export const RAW = [
   [/\/api\/(submissions|emails)\b/i, 'OMMC participant route'],

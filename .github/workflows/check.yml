@@ -1,0 +1,46 @@
+# Runs on every pull request and every push to main: the tests, the type check, the checks that read only the
+# repository, and a full build with the release guard. It needs no secret and no rounds folder. Vercel builds and
+# deploys on its own; this only reports.
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      # pnpm at the version package.json names in "packageManager"
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Tests
+        run: pnpm test
+      - name: Types
+        run: pnpm check
+      - name: Markdown negotiation routes
+        run: node scripts/check-negotiation.mjs
+      - name: Synced folders match the lock
+        run: node scripts/lock-check.mjs
+      - name: Phone patches are in the synced files
+        run: node scripts/phone-memory.mjs --check
+      - name: The translation source matches the cards and site.ts
+        run: node scripts/i18n-extract.mjs --check
+      - name: Build and release guard
+        run: pnpm build
+      - name: Release script in the built page
+        run: node scripts/check-release.mjs dist/index.html

@@ -27,3 +27,4 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
   skill; the procedure is in `docs/performance.md`.
 - `smoke.mjs` takes `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)"` for a
   protected preview.
+- `lib/checks.mjs` (the JPEG reader, the share-tag check, the sitemap's least page count per language) and `lib/http.mjs` (preview bypass headers, one request without following redirects, redirects followed by hand) are shared by `verify-build.mjs`, `check-seo.mjs` and `smoke.mjs`; `lib/checks.test.mjs` tests both. `check-seo.mjs` takes `VERCEL_AUTOMATION_BYPASS_SECRET` too now.

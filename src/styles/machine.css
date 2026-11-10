@@ -10,8 +10,8 @@
    In the human view the forms are display:none and the wrappers display:contents, both !important, so no rule of the
    room's (a pill, a tile) can give them a box: the human view paints as if they were not there. The face is fetched at
    idle after the human view has loaded (or preloaded when a page opens in the Machine view), so the human view's first
-   paint is unchanged and a switch finds it ready; it blocks rather than swaps, so no text reflows when it lands. */
-@font-face { font-family: 'Katagami Mono'; src: url(/fonts/katagami-mono-site.woff2) format('woff2'); font-weight: 100 700; font-display: block; }
+   paint is unchanged and a switch finds it ready; it blocks rather than swaps, so no text reflows when it lands.
+   Its @font-face rule is in Base.astro's inline style, where the file is named by content address. */
 :root { --mono: 'Katagami Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
 
 :root:not([data-mode='machine']) .mx { display: none !important; }

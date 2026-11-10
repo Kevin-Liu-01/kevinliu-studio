@@ -18,6 +18,9 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   title, a description of 50 to 170 characters, a production canonical (the 404 page is noindex instead), an existing
   share image and loop, parsing JSON-LD or a Markdown twin; on any broken local reference or a link that `<base>`
   would misroute; on location metadata in any image, video or audio file; and on banned names or routes.
+- `pnpm check` runs `astro check` (TypeScript 5.9, `tsconfig.json` on Astro's base preset, `src/` only). It is not part
+  of `pnpm build`; CI runs it.
+- `.github/workflows/check.yml` runs on every pull request and every push to `main`: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm check`, `node scripts/check-negotiation.mjs`, `node scripts/lock-check.mjs`, `node scripts/phone-memory.mjs --check`, `node scripts/i18n-extract.mjs --check`, `pnpm build` (with the release guard) and `node scripts/check-release.mjs dist/index.html`. It needs no secret and deploys nothing; Vercel deploys as before.
 - `node scripts/smoke.mjs <base-url>` checks a deployed copy: every route answers 200 with a canonical, Markdown
   negotiation works, the text files, share files and redirects answer, and a miss is a 404. Set
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
@@ -28,8 +31,8 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   twin is served when `text/markdown` comes before any `text/html` in `Accept` and is not `q=0`;
   `node scripts/check-negotiation.mjs` checks the rule without a deployment),
   the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
-- Caching: `_astro/` and `fonts/` are immutable; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
-  with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; media under those folders keeps a day
+- Caching: `_astro/` is immutable, and so is a `fonts/` file asked for with `?v=`; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
+  with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; the `/ex/borders/` and `/ex/fx/` drawings asked for with `?v=` are immutable as well (`scripts/cache-rules.test.mjs`); media under those folders keeps a day
   with a week of stale-while-revalidate; pages revalidate.
 - A protected preview: `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)" node
   scripts/smoke.mjs <url>`; agent-browser takes the same token as the `x-vercel-trusted-oidc-idp-token` header.
