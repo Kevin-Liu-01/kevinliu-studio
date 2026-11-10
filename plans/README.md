@@ -49,7 +49,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 
 ## Reconcile (2026-11-09, after the P1 run)
 
-- **P1 (001-010): all DONE.** They ship in the release after the translations-only one (Kevin, 11-09, in the release session); `improve/p1-on-next` stays as that release's base, with release/next merged in before it ships. Each branch passed its own gates in its own worktree. All ten are merged onto
+- **P1 (001-010): all DONE.** They ship in the release after the translations-only one (Kevin, 11-09, in the release session); `improve/p1-on-next` stays as that release's base, with release/next merged in before it ships. feat/i18n `4025230` (on top of a1ff84c) lands 004's llms sentence, translated, with a `{home}` placeholder per language. Each branch passed its own gates in its own worktree. All ten are merged onto
   release/next `0d3af36` as `improve/p1-on-next` `a1ff84c` (worktree `~/repos/kevinliu-studio-p1`), where sync
   --check, lock-check (3024 files), `pnpm test` (10 of 10), check-negotiation (4 routes, 16 cases), check-release
   (7 cases on four pages), phone-memory --check (6 files) and `pnpm build` (256 pages, all checks pass) all pass.
