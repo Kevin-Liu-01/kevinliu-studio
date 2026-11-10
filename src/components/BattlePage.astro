@@ -76,6 +76,7 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 {railCss && <style is:inline set:html={railCss} />}
 {fixScript && <script is:inline set:html={fixScript} />}
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>
+<script is:inline>/* a boot that never finishes (a script that will not load, an error before the first frame) un-hides the page after 8 s with a reason in the alert, so the alert and Leave can be reached; a boot that finishes first is left alone */(function(d,wait){var asked=false;function check(){asked=false;if(d.dataset.boot===undefined)return;delete d.dataset.boot;var e=document.getElementById('error');if(e&&!e.textContent)e.textContent='The battle could not start. Reload the page, or Leave.'}function later(ev){if(asked||d.dataset.boot===undefined)return;if(ev.type==='error'&&!(ev instanceof ErrorEvent)&&!(ev.target&&ev.target.tagName==='SCRIPT'))return;asked=true;wait(check,8000)}addEventListener('error',later,true);addEventListener('unhandledrejection',later)})(document.documentElement,setTimeout.bind(window))</script>
 <Release />
 <Fragment set:html={battlePage.head} />
 <Analytics />

@@ -193,7 +193,7 @@ let leadersNow = [], mapNow, said = new Set();
 const store = createStore();
 const plan = createPlan(store, { specials: q.get('specials') !== 'off', repeats: q.get('repeats') !== 'off' });
 const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
-let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
+let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
 let layout = null, switching = null;
 
 // ============================================================ sound (r4/sound, INTEGRATION.md section 3)
@@ -904,10 +904,25 @@ addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout((
 
 // ============================================================ starting a battle: the deal, then the leads' entrances
 const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };
+// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that
+// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)
+let keptError = '';
+function bootFailed(err) {
+  if (document.documentElement.dataset.boot === undefined) return;
+  delete document.documentElement.dataset.boot;
+  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;
+}
 async function start(p, replay = false, resume = false) {
   let next;
   try { next = sd.start({ team: p.team, rival: p.rival, seed: p.seed, log: replay || resume ? p.log : undefined }); }
-  catch (err) { $('#error').textContent = String(err.message ?? err); if (!match) start(DEFAULT); return; }
+  catch (err) {
+    const retry = (replay || resume) && p.log;
+    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;
+    $('#error').textContent = String(err.message ?? err);
+    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);
+    else keptError = '';
+    return;
+  }
   const my = ++gen;
   director.stop();
   clearTimeout(rushT); pace?.unrush();
@@ -920,7 +935,7 @@ async function start(p, replay = false, resume = false) {
   panel = null; kitItem = null;
   $('#panel').hidden = true;
   $('#result').hidden = true;
-  $('#error').textContent = '';
+  $('#error').textContent = keptError; keptError = '';
   hud.bind(match);
   lastShot = null;
   store.begin(`${match.team.join(',')}|${match.rival.join(',')}|${match.seed}`, resume);
@@ -1000,8 +1015,8 @@ async function runFixture(n) {
 // ============================================================ boot
 const first = sd.parseHash(location.hash);
 const resuming = Boolean(first.log) && hashParams.get('resume') === '1';
-if (q.get('fixture')) runFixture(q.get('fixture'));
-else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);
+if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);
+else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);
 /** The preview recorder's hook (?debug only): one move's scene, as replayLast plays one, from its card in play. */
 async function previewScene(s, o = {}) {
   const c = runtime.compileScene(s);
