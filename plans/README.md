@@ -47,6 +47,44 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 | [029](029-move-previews-on-card-pages.md) | Direction: a card page's Moves list shows each move as the battle plays it | P2 | S–M | — | TODO |
 | [030](030-claude-of-tanks-footage.md) | Direction: go or no-go on Kevin's October Claude of Tanks footage in the battle | P3 | S–M (spike) | reads 026's result | TODO |
 
+## Reconcile (2026-11-09, after the P1 run)
+
+- **P1 (001-010): all DONE.** Each branch passed its own gates in its own worktree. All ten are merged onto
+  release/next `0d3af36` as `improve/p1-on-next` `a1ff84c` (worktree `~/repos/kevinliu-studio-p1`), where sync
+  --check, lock-check (3024 files), `pnpm test` (10 of 10), check-negotiation (4 routes, 16 cases), check-release
+  (7 cases on four pages), phone-memory --check (6 files) and `pnpm build` (256 pages, all checks pass) all pass.
+  Integration fixes made there: the i18n language pages joined `GT_ALLOWED` (001); the q-value Accept rule and
+  Vary cover the seven language routes (004); the phone team restore covers the language homes (006). 004's llms
+  sentence did not land: it now lives in `src/i18n/en/ui.json` `twin.everyPageTwin`, and release/next stops a build
+  on an untranslated English change, so the i18n lane owns it.
+- **No BLOCKED plans.** Three needed one revision each: 005 (its wall check used resource timing, which the wall's
+  250-entry buffer hides; it now reads `Sound.stats().files` after a real mouse press), 007 (machine-check's 8 moved
+  pairs exist on an unmodified cac5d2b build), 009 (agent-browser's `set device` gives no coarse pointer).
+- **Every TODO (011-030) has drifted** against the code it will meet: feat/i18n (Kevin-approved for the next release)
+  moved the pages to `src/views/*`, routes strings through `src/i18n/en/ui.json`, and rewrote `twins.ts`,
+  `Base.astro`, `vercel.json`, `smoke.mjs` and `verify-build.mjs`; P1 changed `scripts/sync.mjs`, the lock,
+  `phone-memory.mjs` and `package.json`. Spot-checked findings are all still present: 011 (`FACTS[3]` by position,
+  `twins.ts:26`), 012 (`/fonts/katagami-sans-site.woff2` unversioned, immutable), 013 (`posters.json` not synced),
+  015 (round sheets on every card page, `Base.astro`), 020 (no tsconfig, TypeScript 7), 021 (no workflow), 024.
+  Refresh each plan's excerpts and `Planned at` against `improve/p1-on-next` (or main once the release lands) before
+  executing, and cut branches from there, not from `c6245d9`.
+- **Unblocked by P1:** 021 (needs 001, 003), 012 and 024 (after 004), 019 then 022 (after 005), 018 then 023
+  (after 008), 025 (after 001, 004). 026's route choice should read 009's world cap.
+
+### Lessons for the next executors
+
+- Extract a plan's code blocks by script, byte for byte: 001's blocks hold soft hyphens, zero-width characters,
+  a decomposed accent and a non-breaking space.
+- A phone check needs Playwright Chromium with `devices['iPhone 14']` (assert `(pointer: coarse)` first);
+  agent-browser's device emulation reports a fine pointer.
+- On the wall, count sound files with `Sound.stats().files`, not resource timing.
+- machine-check flags 8 moved pairs on release/next itself (the header `.seg` on phones, the claude-of-tanks card
+  stand); compare against a baseline build rather than requiring 0.
+- An English `ui.json` change fails the build until `pnpm i18n:translate` runs (gt-lock.json); new strings go to the
+  i18n lane.
+- Every plan appends to `memory.md`, so parallel branches always conflict there; resolve by keeping both. Lock
+  conflicts resolve by re-running the sync.
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale: finding
 fixed independently or approach abandoned)
 
