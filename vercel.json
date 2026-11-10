@@ -32,6 +32,7 @@
     { "src": "^/(about|cards|battle|battle/arena|cards/[\\w-]+)$", "has": [{ "type": "header", "key": "accept", "value": "(.*)text/markdown(.*)" }], "dest": "/$1.md" },
     { "src": "^/(es|fr|de|pt|ja|ko|zh)$", "has": [{ "type": "header", "key": "accept", "value": "(.*)text/markdown(.*)" }], "dest": "/$1/index.md" },
     { "src": "^/((?:es|fr|de|pt|ja|ko|zh)/(?:about|cards|battle|battle/arena|cards/[\\w-]+))$", "has": [{ "type": "header", "key": "accept", "value": "(.*)text/markdown(.*)" }], "dest": "/$1.md" },
+    { "src": "^/(es|fr|de|pt|ja|ko|zh)$", "dest": "/$1.html" },
 
     { "handle": "filesystem" },
     { "src": "^/(.+)$", "dest": "/$1.html", "check": true },
