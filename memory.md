@@ -434,3 +434,28 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Changed**: `src/components/Header.astro` (the sound key shows on `/cards/<id>`, one spacer stays for the pause key's room), `src/views/Card.astro` (one inline script: nothing is fetched until a trusted press of the card or of the key; then the player by content address, `manifest.gallery.json` and the card's `sig:<id>` group), `docs/sound.md` (one paragraph under "Where it is wired"), `memory.md`.
 - **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `pnpm test` pass 10, fail 0. Built pages: `id="sound"` once and one spacer on the three card pages checked, none and two spacers on about, cards, 404 and es/about, once on index. `data-player="/sound/sound.js?v=` once on three card pages; no `boot.gallery.js` on the card page; no sound `<link>`; the script parses, one `import(`, no `fetch(`. Note: `grep -c 'sound.js'` prints 1 on about, cards and 404 because the header's existing script comment names sound.js; no player is loaded there.
 - **Open**: the reviewer's browser checks (no sound file before a gesture, the header's positions, the paint recording); the first press can be silent on a cold load; a keyboard cannot press the card (it is not a control).
+## 2026-11-10: the 26-card battle routes, corrected (spike, improve plan 026, Claude Code)
+
+- **Type**: spike (correction of the entry "the 26-card battle routes, measured")
+- **Changed**: nothing that ships. The result document `plans/results/026-battle-26-cards.md` on `improve/audit` is rewritten in place (Revision 1).
+- **What the first entry got wrong**: it said to rebuild only `engine.js`. The battle page's engine is inside `kit.js`
+  (`window.showdown`; `vendor/battle/mat/index.html` loads `media.js` and `kit.js`, never `engine.js`). `engine.js` is
+  build-only on the site (the roster for `cards.ts`), so an engine-only rebuild would open Battle buttons for teams the page
+  refuses. Every route needs a rebuilt kit, with `engine.js` rebuilt in the same step.
+- **Recommendation**: Route C redefined: a kit rebuilt from the committed tree with the 26-card engine, the eight on default
+  scenes until their own scenes pass the page flash scan; its first gate is the page flash scan over the 18 fielded cards.
+- **Measured**: of the 186 files the shipped kit was built from (`r4/play/vendor/SOURCES.md`), 116 differ in the committed
+  tree (93 of 133 scenes, 7 of 10 broadcast/src, 7 of 8 engine, 5 of 16 runtime, 4 of 19 other). Last page flash readings:
+  next-a (committed = working tree, 2026-11-04) sandbox-arena 86 of 104 variants over the limit, sigil-ui 85 of 99,
+  dedalus-terminal 67 of 109, ariadne 252 margin rows in an older run; next-b committed scenes have no reading, the fixed
+  working-tree copies 40 open rows. Kit builds in scratch from copies of `.work/mat/build.mjs` and `.work/study/bundle.mjs`
+  (entry files re-pointed to the export): (a) eight unregistered 730,959 bytes, `"ommc"` 1, `"katagami"` 14, phone-patch
+  anchor 1, `FIGHTERS.length` 26; (b) eight registered 811,308 bytes, `"ommc"` 13, anchor 1, validator 104/104, 26/26, 26/26,
+  0 problems. Both `media.js` hold 18 cards. Arena: the eight are in `r4/stage` under `roster.next` and need adding to
+  `roster.fields` before `build.mjs` puts them in the Arena manifest.
+- **Open**: 7 questions for Kevin (battle-r4b's scene work, default scenes, machine time for the 18-card re-check, the 12 move names,
+  the four hooks, who builds and when the pin moves, saved replays). Built kits are in `~/k7-rescue/improve-audit/lane-d/kit-026/a/` and `b/`.
+- **Run by the reviewer** (kit (a) swapped into a copy of the build, Playwright Chromium, Auto): a Mat battle between six staged
+  cards plays to its result with no page error (404s: the eight's gallery grounds and move thumbnails); in the Arena a staged
+  lead has no figure and the battle never leaves its entrance (150 s), while fielded cards play; the same teams and seed give
+  a different battle than today's kit (Defeat in 9 turns, Victory in 12), so saved replays change with any kit rebuild.
