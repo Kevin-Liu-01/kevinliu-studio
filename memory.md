@@ -427,3 +427,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   none of the eight has a shader world, so fielding them adds no WebGL context under plan 009's two-world cap.
 - **Open**: 6 questions for Kevin (battle-r4b's work, machine time, default scenes, the 12 move names, who builds, the
   four trait hooks).
+## 2026-11-10: a card page plays its card's own sound on the visitor's press (improve plan 028, Claude Code)
+
+- **Type**: feature
+- **Asked**: improve plan 028.
+- **Changed**: `src/components/Header.astro` (the sound key shows on `/cards/<id>`, one spacer stays for the pause key's room), `src/views/Card.astro` (one inline script: nothing is fetched until a trusted press of the card or of the key; then the player by content address, `manifest.gallery.json` and the card's `sig:<id>` group), `docs/sound.md` (one paragraph under "Where it is wired"), `memory.md`.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `pnpm test` pass 10, fail 0. Built pages: `id="sound"` once and one spacer on the three card pages checked, none and two spacers on about, cards, 404 and es/about, once on index. `data-player="/sound/sound.js?v=` once on three card pages; no `boot.gallery.js` on the card page; no sound `<link>`; the script parses, one `import(`, no `fetch(`. Note: `grep -c 'sound.js'` prints 1 on about, cards and 404 because the header's existing script comment names sound.js; no player is loaded there.
+- **Open**: the reviewer's browser checks (no sound file before a gesture, the header's positions, the paint recording); the first press can be silent on a cold load; a keyboard cannot press the card (it is not a control).

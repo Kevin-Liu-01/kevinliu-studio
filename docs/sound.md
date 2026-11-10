@@ -23,6 +23,12 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 - Home: `/sound/boot.gallery.js` (module, before `gallery.js`) sets `globalThis.Sound` and binds `#sound`.
   `gallery.js` and `rituals.js` carry the hooks from r4/sound `INTEGRATION.md` section 2, applied by the sync as
   anchored patches. Each call goes through `globalThis.Sound?.`, so a page whose sound fails behaves as before.
+- A card page (`/cards/<id>`, in every language): the header's speaker key is there too, and a press on the card
+  plays `card.lift` and that card's `sig.<id>.lift`. Nothing under `/sound/` is fetched before the visitor's first
+  press of the card (or of the key, turning sound on): the page's inline script (`src/views/Card.astro`) then
+  imports the player by its content address with `manifest.gallery.json` and the card's own `sig:<id>` group, and
+  sets `globalThis.Sound` as the home page does. It does not use `bindToggle`, which would load the gallery's whole
+  kit. In the Machine view the card is not shown, so only the key works.
 - Battle: round 5 (r4/play 42ff51c7, `SPEC.md` section 10) wires INTEGRATION.md section 3 in `shared/battle.js`: a
   dynamic import of `/sound/sound.js` with `manifest.battle.json`, the rail's speaker key (N) bound to the same saved
   choice, and every board moment and scene cue on the stage's own clock. It fetches the player and the manifest at load

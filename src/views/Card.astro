@@ -8,6 +8,7 @@ import { graph, page, work } from '../lib/schema';
 import { cardRecord, cardLabel, recordHtml, cardBlocks, mdHtml, BX } from '../lib/machine';
 import { asciiArt } from '../lib/ascii';
 import { SITE } from '../lib/site';
+import { versioned } from '../lib/assets';
 
 interface Props { f: Fighter; code: string }
 const { f, code } = Astro.props;
@@ -48,6 +49,7 @@ const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sh
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
     <div class="stand"><Fragment set:html={roomIn(card(f, { id: `c-${f.id}`, focusable: false }), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
     <script is:inline set:html={FRAMED} />
+    <script is:inline data-player={versioned('/sound/sound.js')}>/* the card's own sound, on the visitor's press (docs/sound.md): the player, its manifest and this card's cues are fetched at the first press of the card while sound is wanted, or when the header's key turns sound on, never before; in the Machine view the card is not shown, so only the key works */(function(){var d=document.documentElement,id=d.dataset.card,key=document.getElementById('sound'),card=document.querySelector('.cardpage .stand .card'),src=document.currentScript.dataset.player,K='kevin-liu-studio:sound',S=null,loading=null;if(!key||!card||!id)return;function pref(){try{var k=localStorage.getItem(K);return k==='on'||k===null&&!matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}}function show(on){key.setAttribute('aria-pressed',String(on));d.dataset.sound=on?'on':'off'}function boot(ev){if(!loading)loading=import(src).then(function(m){return m.default.init({manifest:new URL('/sound/manifest.gallery.json',location.origin).href,page:'gallery',groups:['sig:'+id]})}).then(function(p){S=self.Sound=p;show(S.enabled);S.on('change',show);S.unlock(ev);return S}).catch(function(){loading=null;return null});return loading}function lift(){S.play('card.lift',{waitMs:900});S.play('lift',{card:id,waitMs:900})}card.addEventListener('pointerdown',function(e){if(e.button)return;if(S)lift();else if(pref())boot(e).then(function(s){if(s)lift()})});key.addEventListener('click',function(e){var on=!(S?S.enabled:pref());if(S)S.setEnabled(on);else{show(on);try{localStorage.setItem(K,on?'on':'off')}catch(x){}}if(on)boot(e).then(function(s){if(s)s.play('ui.sound.on',{force:true,waitMs:900})})});function fresh(){if(!S)show(pref())}addEventListener('storage',function(e){if(e.key===K)fresh()});addEventListener('pageshow',function(e){if(e.persisted)fresh()})})()</script>
     <article class="info">
       <div class="sw hw"><h1>{f.title}</h1><Fragment set:html={hd(`# ${f.title}`)} /></div>
       <p class="cp-what sw"><span class="hx">{answer}</span><span class="mx">{answer}</span></p>
