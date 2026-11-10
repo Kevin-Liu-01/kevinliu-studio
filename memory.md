@@ -353,3 +353,20 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: nothing enforced "never edit the synced folders by hand" without the rounds folder; a hand edit, a stray file or a stopped sync's .tmp would build and deploy. The sync also removed any path the previous lock named, and wrote the lock in place.
 - **Checked**: `node scripts/lock-check.mjs` passes on 3024 files and fails on a stray file in public/ex (removed after); `pnpm test` 10 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` runs lock-check first.
 - **Open**: AGENTS.md's agent-docs auto block still prints the old build script until `agent-docs scaffold` is rerun.
+## 2026-11-09: a cue before the context is unlocked fetches nothing (plan 005, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (two pairs on the sound.js entry), `public/sound/sound.js` and `sync.lock.json`
+  (rewritten by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Why**: on /battle the player makes its context at load (resumeAtLoad), so cues played before any gesture (the deal,
+  the leads' entrances) passed playCue's check, fetched and decoded files, and were dropped by the suspended context.
+  playCue and stinger now return unless the context is unlocked.
+- **Measured** (production build, local preview): /battle with no input, 25 s: 0 files under /sound/out/ (plan baseline:
+  10); after one click on #app: 127. Home page, a real mouse down/up on the first card (two presses, 8 s): 69 files
+  loaded on the unpatched sound.js and 69 on the patched one, 0 before the press.
+- **Check note**: the plan's home-page check (`agent-browser click ".wall .card"`, then count resource-timing entries
+  under /sound/out/) cannot tell fixed from broken: that click did not reach a card press, and the home page's many
+  images fill the 250-entry resource-timing buffer, so late sound requests never appear in it. The check that works is a
+  real mouse move/down/up at (196, 250) (`agent-browser mouse move|down|up`) and `Object.keys(Sound.stats().files).length`.
+  The /battle counts are unaffected (127 after the click shows the buffer was not full there).
+- **Open**: the rounds should take this upstream (the request in plan 005).

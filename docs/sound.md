@@ -28,4 +28,4 @@ ledger and the generation receipts stay in the rounds and never come here; the s
   choice, and every board moment and scene cue on the stage's own clock. It fetches the player and the manifest at load
   (`resumeAtLoad`) and the sounds at the first gesture on the page, or at load where the browser already lets the page
   play. A sync transform keeps that promise: `sound.js`'s `unlock()` treated a cue played before any gesture as one and
-  fetched every wanted group, about 240 files and 2.3 MB, while every such cue was dropped.
+  fetched every wanted group, about 240 files and 2.3 MB, while every such cue was dropped. A second transform makes a cue asked for while the context is not yet unlocked return without fetching its file (the deal and the leads' entrances fetched 10 files with no gesture).

@@ -459,7 +459,7 @@ function playCue(id, c, o) {
   const t = performance.now();
   const prior = S.last.get(key);
   if (!o.force && prior && t - prior.at < (o.cooldownMs ?? c.cooldownMs ?? 60)) { S.stats.drops.cooldown++; return null; }
-  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx) return null; }
+  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx || !S.unlocked) return null; } // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)
   const k = pickVariant(id, c, o);
   S.last.set(key, { at: t });
   const file = c.files[k];
@@ -1088,7 +1088,7 @@ async function intensity(level, o = {}) {
  * the theme over the 260 ms before it (scene() does); stingers bypass the duck. */
 function stinger(id, o = {}) {
   const c = S.m?.cues[id];
-  if (!c || !S.enabled || !S.ctx) return null;
+  if (!c || !S.enabled || !S.ctx || !S.unlocked) return null; // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)
   // a variant other than the last, one already here first (decoded, or its bytes fetched for next time); the next
   // one's bytes are fetched, not decoded, and a stinger lets its PCM go when it ends (the fix step after the judges'
   // second pass, the engineer judge: every fanfare variant stayed decoded for the visit, and a cost 4 fanfare at the
