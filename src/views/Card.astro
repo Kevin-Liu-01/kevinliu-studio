@@ -37,12 +37,16 @@ const art = await asciiArt(f.id, 48);
 // (.sl) is one panel of its twin lines laid over the whole list, so its lines share the room its tiles take
 const hd = (md: string) => `<p class="mx" aria-hidden="true">${mdHtml(md)}</p>`;
 const facts = factLines(f);
+// the card style this card prints in (markup.js writes data-card-style on a styled card), so Base links that
+// style's sheet and no other
+const cardStyle = (card(f).match(/\sdata-card-style="([\w-]+)"/) ?? [])[1] ?? null;
 // "Numbers pinned at <sha>, <date>.": the sentence in the language around the commit's link
 const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sha: '\u0000', date: pinned.date ?? '' }).split('\u0000') : [];
 ---
 <Base
   seo={{ title: f.title, description, path: cardPath(f, code), og: f.id, imageAlt: l.t('card.imageAlt', { title: f.title, answer }), jsonld }}
   room
+  cardStyle={cardStyle}
   html={{ 'data-card': f.id }}
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
