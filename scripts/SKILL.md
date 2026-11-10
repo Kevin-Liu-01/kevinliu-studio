@@ -11,6 +11,7 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
 - `phone-memory.mjs`: the patches that keep a phone's tab under its memory limit. Add one as an anchored pair in `PHONE`;
   restore the patched files from git and run `node scripts/phone-memory.mjs` to re-apply all of them without the rounds.
 - `verify-build.mjs`: a new site-wide rule goes here so it fails the build, not in a checklist.
+- `rules.mjs`: the content rules, read by `sync.mjs` and `verify-build.mjs` alike. A new banned name or allowed path goes here, with a case in `rules.test.mjs` (`pnpm test`).
 - `smoke.mjs`: runs against a deployment; add a route here when a page is added.
 - `check-seo.mjs`: runs against a deployment or a local serve of dist; every sitemap page and the 404 for share tags, a
   200 1200 x 630 JPEG share image with alt, JSON-LD and its twin, and every link (`--external` for outside links,

@@ -8,7 +8,7 @@
 // every round file scripts/phone-memory.mjs patches carries its patches (a phone's tab stays under its memory limit).
 import fs from 'node:fs';
 import path from 'node:path';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
@@ -37,10 +37,6 @@ for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg
   if (!exists(need)) fail(need, 'missing');
 }
 
-const GT = /general\s?translation|generaltranslation/i;
-// the wall and the cards index print every card, Atlas's line among them
-const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js', '/ex/face.gen.js']);
-const BANNED = [[/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'], [/\/api\/(submissions|emails)\b/, 'OMMC participant route'], [/xi-api-key|\bsk_[a-f0-9]{40,}\b/i, 'key shape']];
 
 // width and height from a JPEG's start-of-frame marker
 function jpegSize(b) {
@@ -157,16 +153,10 @@ for (const f of htmls) {
   }
 }
 
+// the content rules (scripts/rules.mjs), on every built file and its path: the same scan the sync runs on the way in
 for (const f of files) {
   const p = rel(f);
-  if (/\.(html|md|txt|js|css|json|svg|xml)$/.test(f)) {
-    const t = fs.readFileSync(f, 'utf8');
-    for (const [re, why] of BANNED) if (re.test(t)) fail(p, why);
-    if (GT.test(t) && !GT_PAGES.has(p) && !/\/atlas[./]/.test(p)) fail(p, 'General Translation outside the Atlas card');
-  } else if (MEDIA.test(f)) {
-    const where = hasLocation(fs.readFileSync(f));
-    if (where) fail(p, where);
-  }
+  for (const why of scanBuffer(p, fs.readFileSync(f))) fail(p, why);
 }
 
 const sitemap = files.filter((f) => /sitemap-\d+\.xml$/.test(f)).map((f) => fs.readFileSync(f, 'utf8')).join('');

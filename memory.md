@@ -293,3 +293,15 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: one set of content rules for the sync and the guard (improve/001-scan-rules-module-and-tests, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/rules.mjs, scripts/rules.test.mjs (new); scripts/sync.mjs, scripts/verify-build.mjs, package.json,
+  docs/sync.md, scripts/SKILL.md, AGENTS.md, memory.md.
+- **Why**: the sync's scan and the release guard each had their own copy of the rules and the copies had drifted; names
+  written with entities, escapes, accents, hyphens, underscores, odd spaces or "dex" passed, and file names were never read.
+- **Checked**: `pnpm test` 8 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` ends
+  `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; a probe file holding `General&nbsp;Translation`
+  in a copy of dist fails with exit 1; no change under public, vendor or sync.lock.json.
+- **Open**: plans 002 and 003 also edit scripts/sync.mjs.

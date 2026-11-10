@@ -76,7 +76,10 @@ which anchor moved.
 Every synced file is scanned. Text files fail on franchise names, the OMMC participant routes, the ElevenLabs header
 and API-key shapes, and on General Translation anywhere except the Atlas card's records. Images, video and audio fail on location metadata
 (`scripts/location.mjs`: GPS in EXIF for JPEG, AVIF, WebP and PNG, GPS in XMP, and the MP4 and QuickTime location
-atoms). The release guard runs the same check on `dist`.
+atoms). The rules live in `scripts/rules.mjs`, and the release guard reads `dist` with the same function
+(`scanBuffer`), so the two cannot drift. Names are matched on a normalized text: entities and escapes decoded,
+accents off, and every run of spaces, hyphens and underscores read as one space. Each file's path is read too.
+`pnpm test` runs the rules' tests (`scripts/rules.test.mjs`).
 
 ## Pins
 

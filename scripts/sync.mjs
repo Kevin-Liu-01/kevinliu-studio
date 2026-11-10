@@ -17,7 +17,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
 import { CLOSED } from '../src/lib/closed-repos.mjs';
 
@@ -320,32 +320,7 @@ const BINARY = {
   'public/battle/r3/media-moves/elo/mcp-server.webp': paintOut(760, 830),
 };
 
-// ---------- the scan ----------
-const TEXT = /\.(js|mjs|css|html|json|md|txt|svg)$/;
-const BANNED = [
-  [/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'],
-  [/\/api\/(submissions|emails)\b/, 'OMMC participant route'],
-  [/xi-api-key/i, 'ElevenLabs header'],
-  [/\bsk_[a-f0-9]{40,}\b/, 'API key shape'],
-];
-// General Translation appears only in the Atlas card's own records: the shared card data files print every card.
-const GT = /general\s?translation|generaltranslation/i;
-const GT_OK = new Set(['public/ex/fighters.js', 'public/ex/media.gen.js', 'public/ex/face.gen.js', 'vendor/ex/face.gen.js', 'vendor/ex/roster/battle-roster.json', 'vendor/ex/copy/overrides.json']);
-
-function scan(dest, buf) {
-  const hits = [];
-  if (TEXT.test(dest)) {
-    const t = buf.toString('utf8');
-    for (const [re, why] of BANNED) if (re.test(t)) hits.push(why);
-    if (GT.test(t) && !GT_OK.has(dest) && !/\/atlas[./]/.test(dest)) hits.push('General Translation outside the Atlas card');
-  } else {
-    const t = buf.toString('latin1');
-    if (/xi-api-key/i.test(t) || /sk_[a-f0-9]{40,}/.test(t)) hits.push('key shape in binary');
-    const where = MEDIA.test(dest) && hasLocation(buf);
-    if (where) hits.push(where);
-  }
-  return hits;
-}
+// ---------- the scan: scripts/rules.mjs, the same rules the release guard reads dist with ----------
 
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
@@ -378,7 +353,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
         if (PHONE[dest]) buf = Buffer.from(PHONE[dest](buf.toString('utf8')));
         if (BINARY[dest]) buf = await BINARY[dest](buf);
       } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
-      for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);
+      for (const h of scanBuffer(dest, buf)) problems.push(`${dest}: ${h}`);
       if (at === undefined && !ADMIT && prev.stages[stage]?.list?.[dest]?.sha256 !== sha(buf)) problems.push(`${dest}: ${rel(ROUNDS, src)} is not in the ${stage} pin ${PIN[stage]} and is ${prev.stages[stage]?.list?.[dest] ? 'not the bytes the lock records' : 'new'} (look at it, then --admit-unpinned)`);
       files[dest] = { src: rel(ROUNDS, src), sha256: sha(buf), bytes: buf.length };
       const abs = path.join(REPO, dest);
