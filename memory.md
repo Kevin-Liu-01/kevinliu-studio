@@ -347,3 +347,8 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   the language key; every language clean from 600 to 1100 px and at 390 and 320), the wall's pack flow in six languages
   (no hang, 20/20 pings), card framing 26/26, translated battles to their result, sound gate 10 files before a tap.
   Evidence: ~/k7-rescue/release-next/checks/i18n-*, final-widths.
+- **Shipped** (2026-11-09): Kevin said "Yes, push main". main fast-forwarded c6245d9 to d3fc558; production deployment
+  `kevinliu-studio-bpspo4ajg` (dpl_oa7hzrbwF1xYPd1HUtb4EZRDtLZs) Ready on www.kevinliu.studio, .biz and kevin-liu.tech;
+  smoke.mjs passes on www; live /, /es, /ja, /ja/about, /de/battle, /fr/cards/katagami and /battle byte-identical to
+  the checked build. Rollback: `kevinliu-studio-5o2libd3l` (c6245d9), docs/deploy.md. This record is committed on
+  release/next and not pushed (a push would redeploy the same site); it ships with the next release.
