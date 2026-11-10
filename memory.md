@@ -293,3 +293,17 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: the battle gives back shader worlds and warm-up bytes on a phone (improve/009-battle-phone-memory, Claude Code)
+
+- **Type**: perf
+- **Changed**: `scripts/phone-memory.mjs` (two `PHONE` entries), `public/battle/shared/runtime.js` and
+  `public/battle/shared/battle.js` (by the sync), `sync.lock.json`, `docs/performance.md`, `docs/sync.md`.
+- **Rationale**: a visit kept one WebGL2 context per card with a world and every warmed clip's Blob, and the cards' live
+  prints ran behind the result and the Log. A touch screen or small-memory device now keeps two worlds, the warm-up keeps no
+  bytes, the prints pause at the result and under the Log.
+- **Measured**: 150 s Auto battle, Chromium with the iPhone 14 descriptor (coarse pointer true): stage canvases 3 → 2.
+  WebKit soak (pages only): glLive 2 → 2; contentMB and gpuMB moved with machine load. Pause check: true under the Log,
+  false after.
+- **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
+  `groundG.paused` at the result and Log; the reviewer appends it.

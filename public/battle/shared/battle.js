@@ -791,6 +791,7 @@ function showResult() {
   M.resultAt = performance.now();
   M.phase = 'result';
   app.dataset.phase = 'result';
+  if (groundG) groundG.paused = true; // kevinliu.studio phone memory: the cards' live prints stop behind the result and the Log (scripts/phone-memory.mjs)
   const st = match.state;
   const win = st.winner;
   const r = $('#result');
@@ -825,9 +826,10 @@ function openLog() {
   hud.writeLog(list);
   d.showModal();
   stage.hold(true); layout.hold(true);
+  if (groundG) groundG.paused = true;
   list.lastElementChild?.scrollIntoView({ block: 'end' });
 }
-$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); });
+$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); if (groundG && match?.state.phase !== 'over') groundG.paused = false; });
 $('#log-close').onclick = () => $('#log').close();
 $('#logb').onclick = openLog;
 
@@ -912,6 +914,7 @@ async function start(p, replay = false, resume = false) {
   director.stop();
   clearTimeout(rushT); pace?.unrush();
   match = next;
+  if (groundG) groundG.paused = false;
   // a new hand stops the last one's sound and loads this one's six cards (a hand replaced before the import lands does nothing)
   soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });
   for (const id of [...match.team, ...match.rival]) groundCards.add(id);

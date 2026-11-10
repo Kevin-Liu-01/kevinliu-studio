@@ -118,6 +118,9 @@ What held the memory, measured in WebKit at iPhone 14 (390 x 844 at 3x):
 | All 26 cards' pictures fetched and decoded at idle | about 30 MB decoded before any scroll | Stay lazy on a touch screen |
 | The battle's media preload kept a detached `<video preload="auto">` per clip | a decoder per clip until a collection | Drops its source once its first frame loads |
 | Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again |
+| The battle's stage kept every card's cutscene world (a WebGL2 canvas each) once linked | a context per card with a world, up to 12 across a visit | On a touch screen or a small-memory device only the world going out and the one coming in are kept |
+| The battle's media warm-up kept every fetched clip and picture as a Blob | the bytes of every warmed file, up to 111 MB of scene media | The Blob is dropped once it arrives |
+| The cards' live prints drew behind the result and under the Log | a frame loop with nothing to show | They pause there |
 
 ### How it was measured
 
@@ -160,6 +163,16 @@ rose 307 → 864 MB on the fix and 538 → 1,272 MB before; WebKit's low-memory 
 within 5 s. So a rising soak on desktop WebKit is not a leak by itself: send the warning and see what stays. The Arena itself holds about
 400 MB of WebContent and two WebGL contexts (the battle round's board and broadcast kit); that is the next place to
 look, in r4/play.
+
+
+2026-11-09, the battle on a phone (plan 009). Before and after, one 150 s Auto battle (`?auto=1`, seed 30, three against
+three), Chromium with Playwright's iPhone 14 descriptor (touch, mobile; `(pointer: coarse)` true): world canvases on the
+stage 3 → 2, phase `result` in both. The soak's WebKit iPhone 14 profile (`/battle`, `/battle/arena` at rest, no battle
+played, so the cap and the Blobs are not exercised): live GL contexts 2 → 2 on both pages; WebContent 231 → 213 MB and
+203 → 229 MB; GPU process 686 → 903 MB and 599 → 731 MB. Those last four moved with the load of this Mac (load average
+above 400, other builds running) and are not a result of the change. The pause check (Chromium, same descriptor): the
+prints were running at rest (`paused` false), `paused` true with the Log open and false after it closed. The Blob
+saving was not measured separately.
 
 ### The Machine view (2026-11-07)
 

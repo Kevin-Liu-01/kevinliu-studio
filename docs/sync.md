@@ -65,7 +65,7 @@ which anchor moved.
 - `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and
   the density at 1.5 on a touch screen or a small-memory device, and gives an off-screen card's canvases back;
   `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `battle/vendor/broadcast/kit.js`
-  lets each preloaded clip drop its source once its first frame loads. When the rounds are not at hand,
+  lets each preloaded clip drop its source once its first frame loads; `battle/shared/runtime.js` keeps two shader worlds on a phone and drops each warm-up Blob; `battle/shared/battle.js` pauses the card prints at the result and under the Log. When the rounds are not at hand,
   `node scripts/phone-memory.mjs` applies them to the synced files in place (only to bytes `sync.lock.json` records)
   and updates the lock; the release guard fails a build whose files lack them.
 - Binary (`BINARY`): the two Elo API captures have their Lifecycle paragraph, which names General Translation's email
