@@ -65,7 +65,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
   for a reduced-motion pack.
 - `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and
   the density at 1.5 on a touch screen or a small-memory device, and gives an off-screen card's canvases back;
-  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `battle/vendor/broadcast/kit.js`
+  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `ex/gallery.js` adds no prerender of the battle there, and `ex/rituals.js` reads only the battle's acceptance at idle and builds the opening cast at the press; `battle/vendor/broadcast/kit.js`
   lets each preloaded clip drop its source once its first frame loads. When the rounds are not at hand,
   `node scripts/phone-memory.mjs` applies them to the synced files in place (only to bytes `sync.lock.json` records)
   and updates the lock; the release guard fails a build whose files lack them.

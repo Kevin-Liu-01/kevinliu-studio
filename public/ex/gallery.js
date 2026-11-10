@@ -507,7 +507,8 @@
       prerendered = url;
       const old = $('#prerender');
       if (old) old.remove();
-      if (url && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+      // kevinliu.studio phone memory: no battle prerender on a touch screen or a small-memory device (scripts/phone-memory.mjs)
+      if (url && !(matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4) && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
         // at idle, so the add that completes the teams never shares its frame with the rule
         (globalThis.requestIdleCallback || setTimeout)(() => {
           if (prerendered !== url || $('#prerender')) return;
