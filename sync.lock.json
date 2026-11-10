@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T02:18:48.682Z",
+ "synced": "2026-11-10T08:37:31.798Z",
  "stages": {
   "cards": {
-   "files": 1033,
-   "bytes": 107534200,
+   "files": 1034,
+   "bytes": 107539808,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -5166,6 +5166,11 @@
      "src": "r4/ex/copy/overrides.json",
      "sha256": "210cddfa6a3e8855e4a20e56ddf7c5d6bffa084ba498b402885e3a099984204b",
      "bytes": 134646
+    },
+    "vendor/ex/posters/posters.json": {
+     "src": "r4/ex/posters/posters.json",
+     "sha256": "2e18cd35ee6005b922c80cb7480f426e0afe411d7d770fe6f564b52c0c4afbca",
+     "bytes": 5608
     },
     "public/ex/face.gen.js": {
      "src": "r4/ex/face.gen.js",
