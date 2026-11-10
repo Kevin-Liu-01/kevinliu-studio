@@ -41,6 +41,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 | [023](023-battle-first-paint-and-pops.md) | The battle's known pops and slow first paint: captures, two small fixes, a written recommendation | P3 | M | — (after 008, 018; same entries) | TODO |
 | [024](024-agent-files-and-docs-drift.md) | `llms.txt` follows its convention; sitemap dates cover what a page prints; five doc lines corrected | P3 | S | 004 | TODO |
 | [025](025-checks-share-helpers.md) | The smoke, SEO and guard checks share one HTTP helper and one JPEG reader | P3 | S | — (after 001, 004; same files) | TODO |
+| [031](031-split-name-spellings.md) | A franchise name split inside the word (`Nin-tendo`, `nin_tendo`) is caught, in text and in paths | P3 | S | 001 | TODO (found by the review of 001) |
 | [026](026-battle-26-cards-spike.md) | Direction: a measured choice of how the battle gets from 18 cards to 26 | P1 | M (spike) | — | TODO |
 | [027](027-real-logos-decisions.md) | Direction: every open logo question on one sheet for Kevin, then the logo contrast gate | P2 | S + M | waits for the session writing r4/ex | TODO |
 | [028](028-card-page-sound.md) | Direction: a card page plays its card's own sound on the visitor's press | P2 | M | — (re-check after 005) | TODO |
@@ -84,6 +85,25 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
   i18n lane.
 - Every plan appends to `memory.md`, so parallel branches always conflict there; resolve by keeping both. Lock
   conflicts resolve by re-running the sync.
+
+## Lanes for the remaining plans (2026-11-10)
+
+Kevin asked for everything left to be carried out. The audit session (this index's owner) started four lane
+sessions. Each lane refreshes its plans against the code they now meet, dispatches a cheaper executor per plan,
+reviews it, and stacks one commit per plan on one lane branch in one worktree. Base for every lane: `4025230`
+(feat/i18n, which holds the ten P1 plans), or the tip of `feat/i18n` if it has moved and still contains `4025230`.
+Lanes edit only their own plan files and `plans/results/`; the audit session keeps this index and commits here.
+
+| Lane | Branch | Worktree | Plans, in order | Preview ports |
+| --- | --- | --- | --- | --- |
+| A, checks and agent files | `improve/p2-checks` | `~/repos/kevinliu-studio-p2a` | 011, 012, 024, 020, 021, 025, 031 | 4411 to 4419 |
+| B, wall and card pages | `improve/p2-wall` | `~/repos/kevinliu-studio-p2b` | 013, 015, 014, 016, 017 | 4421 to 4429 |
+| C, battle and sound | `improve/p2-battle` | `~/repos/kevinliu-studio-p2c` | 018, 019, 022, 023 | 4431 to 4439 |
+| D, direction | `improve/direction` | `~/repos/kevinliu-studio-dir` | 026, 028, 029, 030, then 027 if the r4/ex session has finished | 4441 to 4449 |
+
+Lanes B and C both add anchored pairs to `scripts/sync.mjs` and rewrite `sync.lock.json`; every lane appends to
+`memory.md`. Those conflicts are expected when the lanes are merged: keep both memory entries, keep both sets of
+pairs, and re-run the sync for the lock.
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale: finding
 fixed independently or approach abandoned)
