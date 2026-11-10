@@ -24,7 +24,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 | [006](006-phone-keeps-team-after-back.md) | A phone keeps the Pick Three team after Back | P1 | S | — (land 010 with or before it) | TODO |
 | [010](010-wall-phone-no-prerender.md) | On a phone the wall does not prerender the battle or build its cast before a press | P1 | M | — | TODO |
 | [009](009-battle-phone-memory.md) | On a phone the battle gives back shader worlds and warm-up bytes, and stops idle prints | P1 | M | — | TODO |
-| [008](008-battle-links-fail-visibly.md) | A battle link that cannot start says why, and never leaves a blank page | P1 | S | — | TODO |
+| [008](008-battle-links-fail-visibly.md) | A battle link that cannot start says why, and never leaves a blank page | P1 | S | — | DONE (`improve/008-battle-links-fail-visibly` 93a2013; six address cases show the page with a reason, none blank; sync in sync, build passes; upstream lines in rounds r4/play/REQUESTS.md) |
 | [007](007-machine-view-headings-for-screen-readers.md) | The Machine view keeps headings and the home link for screen readers | P1 | S | — | TODO |
 | [011](011-about-questions-by-key.md) | Striking a fact cannot put the wrong answer under a question on /about | P2 | S | — | TODO |
 | [012](012-content-addressed-fonts-and-media.md) | The two site faces are named by content address; only such files are cached for a year | P2 | S | — (after 004; same files) | TODO |
