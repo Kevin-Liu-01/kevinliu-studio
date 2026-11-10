@@ -661,3 +661,26 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Checked**: candidates read from rounds `20496336` with `git show HEAD:` only (8 files, byte counts match the plan); the sheet has 32 `<img` lines, no `<script`, no `http` in any `src` or `href`.
 - **Open**: Kevin's answers, then Part 2 (the request block and the E15 re-measure) once the cards' session has committed.
 - **Looked at by the reviewer**: the sheet rendered locally from `file://` with no request off the disk; all eight candidates show at 20 and 44 px and enlarged.
+
+## 2026-11-10: ship check of the audit release candidate 259ae60 (release/next, Claude Code)
+
+- **Type**: release check
+- **Candidate**: be85bbf + improve/p2-on-i18n a95d4f5 (audit plans 011 to 028, 030, 031; merge 08324f0) + the AGENTS.md command
+  block refreshed by agent-docs (259ae60). The scaffold also proposed four new SKILL.md files; none were added (a
+  `src/pages/SKILL.md` would publish as a page). Plan 029 stays out until `pnpm i18n:translate` runs.
+- **Gates**: sync in sync; `pnpm test` 20/20; `pnpm check` 0 errors; negotiation 16 cases; phone-memory; i18n-extract;
+  build `256 pages, 248 sitemap URLs, 3565 files`; check-release 7 cases.
+- **Preview** `kevinliu-studio-gdb07hq62`: Vercel took Node 24 from `engines` (the project setting says 26.x; the build cache
+  was skipped once) and installed from the frozen lockfile; smoke and check-seo (249 pages, 490 links) pass; `?v=`
+  addresses get a year and the same file without it max-age=0; fx SVGs a day without `?v=` and a year with it, so `has`
+  and `missing` work; eight files byte-identical to the local build. GitHub action tags checkout v7, setup-node v7 and
+  pnpm/action-setup v6 exist; the workflow first runs on push.
+- **Browser checks against production** (~/k7-rescue/release-next/checks/p2-*):
+  - Function: 9 of 9 pass, including plan 018's gate (one h1, h2 at the result, 28 live writes, reduced-motion rail 0s), and 016 (P only from the dock; rival group; both status halves translated; no hang on /es and /pt).
+  - Layout: 6 of 6 pass in Chromium and WebKit. Mat slips are 0-pixel different; card headers have no overflow at 320 to 1440 in four languages.
+  - Memory: 5 of 5 pass on the iPhone 14 profile:
+    - Home loads 61 pictures and 3.0 MB, against 85 and 3.9 MB.
+    - Battle sound kits after three hands: 26.2/27.1/27.6 MB, against 26.2/32.5/39.3 MB.
+    - Arena and the five-minute soak are within noise.
+- **Open**: plan 019's back-forward restore could only be simulated (headless browsers never restore from that cache); no
+  real phone, Safari or screen reader; negotiated Markdown has no canonical Link header (also on production).
