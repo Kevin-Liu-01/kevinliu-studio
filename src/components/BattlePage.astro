@@ -70,6 +70,8 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <base href={`/battle/${mode}/`} />
 <Seo title={title} description={description} path={path} share={share} imageAlt={alt} jsonld={jsonld} twin={`${path}.md`} />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 {faceCss && <style is:inline set:html={faceCss} />}
 {railCss && <style is:inline set:html={railCss} />}
 {fixScript && <script is:inline set:html={fixScript} />}

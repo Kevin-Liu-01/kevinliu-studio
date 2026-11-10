@@ -127,8 +127,10 @@ var o=M.sheet;M.sheet=function(f,m){return S[f.id]||o(f,m)};
 var P=${JSON.stringify(l.p('/'))};["pushState","replaceState"].forEach(function(k){var f=history[k];history[k]=function(s,t,u){if(typeof u==="string"){if(/^\\/cards\\//.test(u))u=P+u;else if(/^\\/(?=[?#]|$)/.test(u))u=P+u.slice(1);else if(u.indexOf(P+"/")===0&&/^(?:[?#]|$)/.test(u.slice(P.length+1)))u=P+u.slice(P.length+1)}return f.call(history,s,t,u)}});Object.assign(M.ADD_LABEL,${JSON.stringify(add)});
 function list(s){var p=s.split(/, | and /);return F?F.format(p):p.join(", ")}
 function tr(s){for(var i=0;i<R.length;i++){var m=R[i][0].exec(s);if(m)return R[i][1].replace(/\\$L(\\d)/g,function(_,k){return list(m[+k])}).replace(/\\$(\\d)/g,function(_,k){return m[+k]})}return null}
-function fix(n){if(n.nodeType!==1)return;var a=n.getAttribute("aria-label");if(a){var r=tr(a);if(r!==null)n.setAttribute("aria-label",r)}}
-function said(e){var s=e.textContent,r=s&&tr(s);if(r)e.textContent=r}
+/* a rule can match its own output (es and pt keep "Rival"), so each node remembers what this script wrote and skips it: no rewrite loop */
+var WA=new WeakMap(),WT=new WeakMap();
+function fix(n){if(n.nodeType!==1)return;var a=n.getAttribute("aria-label");if(a&&WA.get(n)!==a){var r=tr(a);if(r!==null&&r!==a){WA.set(n,r);n.setAttribute("aria-label",r)}}}
+function said(e){var s=e.textContent;if(!s||WT.get(e)===s)return;var r=tr(s);if(r&&r!==s){WT.set(e,r);e.textContent=r}}
 function go(){new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==="attributes")fix(m.target);else{var e=m.target.nodeType===1?m.target:m.target.parentElement;if(e&&(e.id==="status"||e.id==="ins-status"))said(e);else m.addedNodes.forEach(function(n){if(n.nodeType===1){fix(n);n.querySelectorAll&&n.querySelectorAll("[aria-label]").forEach(fix)}})}})}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["aria-label"]})}
 if(document.body)go();else document.addEventListener("DOMContentLoaded",go)})();
 `;

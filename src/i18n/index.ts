@@ -10,6 +10,10 @@ import * as cardLib from '../lib/cards';
 import * as site from '../lib/site';
 import enUi from './en/ui.json';
 import enContent from './en/content.json';
+import enUiRaw from './en/ui.json?raw';
+import enContentRaw from './en/content.json?raw';
+import gtLock from '../../gt-lock.json';
+import crypto from 'node:crypto';
 
 export { DEFAULT, LOCALES, localeOf, lp, split };
 export const CODES: string[] = LOCALES.map((l) => l.code);
@@ -18,6 +22,15 @@ type Tree = { [k: string]: unknown };
 const FILES = import.meta.glob('./*/*.json', { eager: true, import: 'default' }) as Record<string, Tree>;
 const fileOf = (gt: string, name: string) => FILES[`./${gt}/${name}.json`];
 const fresh = source({ ...cardLib, ...site }) as Tree;
+
+// gt-lock.json records the hash of each English file General Translation translated (versionId). An English file that
+// no longer matches it (edited by hand, or re-extracted without translating) would ship the old translations of strings
+// that changed, so the build stops instead: run `pnpm i18n:translate`, or restore the file.
+for (const [name, raw] of [['ui', enUiRaw], ['content', enContentRaw]] as const) {
+  const entry = gtLock.entries.find((e) => Object.values(e.translations).some((x) => x.fileName.endsWith(`/${name}.json`)));
+  const hash = crypto.createHash('sha256').update(raw).digest('hex');
+  if (entry?.versionId !== hash) throw new Error(`i18n: src/i18n/en/${name}.json changed after its translations were made (gt-lock.json); run pnpm i18n:translate, or restore the file`);
+}
 
 const marks = (s: string) => [...s.matchAll(/\{\w+\}|\]\([^)]*\)/g)].map((m) => m[0]).sort().join('|');
 const warned = new Set<string>();
