@@ -70,8 +70,9 @@ How it holds:
   it loads, paints or decodes. The pack's fan paints no posters. The wall's first-paint hold waits on no picture and
   fetches none ahead. The world canvas, stage and lens are hidden.
 - Headings keep one text: a heading's twin line is laid over the heading's own box (`.hw`), so every page still has
-  one h1 and crawlers read one title. A card page's lists are one framed panel each (`.sl`), so their lines share the
-  room their tiles take.
+  one h1 and crawlers read one title. In the Machine view the heading's text is cleared, not hidden, and its twin
+  line is `aria-hidden`, so a screen reader finds the same headings in both views. A card page's lists are one framed
+  panel each (`.sl`), so their lines share the room their tiles take.
 - Frames are characters, not borders: a `.bx` element's top and bottom are long rows of `─` cut to the box, its sides
   columns of `│` under their corners. Nothing is measured; the box sets the frame.
 - Katagami Mono (`public/fonts/katagami-mono-site.woff2`, 21.7 KB) is fetched at idle after a Human page loads and

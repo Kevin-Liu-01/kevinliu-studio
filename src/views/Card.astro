@@ -35,7 +35,7 @@ const tw = cardBlocks(f, code);
 const art = await asciiArt(f.id, 48);
 // a heading in the Machine view is its twin line laid over the heading's own box, so it keeps the page's one h1; a list
 // (.sl) is one panel of its twin lines laid over the whole list, so its lines share the room its tiles take
-const hd = (md: string) => `<p class="mx">${mdHtml(md)}</p>`;
+const hd = (md: string) => `<p class="mx" aria-hidden="true">${mdHtml(md)}</p>`;
 const facts = factLines(f);
 // "Numbers pinned at <sha>, <date>.": the sentence in the language around the commit's link
 const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sha: '\u0000', date: pinned.date ?? '' }).split('\u0000') : [];
