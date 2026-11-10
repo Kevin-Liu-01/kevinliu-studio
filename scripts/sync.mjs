@@ -27,8 +27,9 @@ const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS_GIT = path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
 const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
-// final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1)
-const PIN = { cards: '30e69931', sound: '30e69931', battle: '42ff51c7' };
+// final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1), and on it the battle's string table
+// and the HUD's card-text overrides (0a919baa, branch play/strings-on-42ff51c7: round 5 with shared/strings.js, no round 6)
+const PIN = { cards: '30e69931', sound: '30e69931', battle: '0a919baa' };
 const CHECK = process.argv.includes('--check');
 // a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
 const ADMIT = process.argv.includes('--admit-unpinned');
@@ -223,7 +224,7 @@ const TRANSFORMS = {
     // pointer press on them already does (r4/play SPEC.md: "the speed buttons never skip")
     ["  if (stage.playing && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); e.stopPropagation(); skip(); return; }", "  if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)"],
     // the page's h1 is its wordmark (src/lib/battle.ts); the result's title is the next level down
-    ["  el('h1', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat');", "  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)"],
+    ["  el('h1', '', r, txt(win === 'draw' ? 'result.draw' : win === 'player' ? 'result.victory' : 'result.defeat'));", "  el('h2', '', r, txt(win === 'draw' ? 'result.draw' : win === 'player' ? 'result.victory' : 'result.defeat')); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)"],
     // a replay that a new battle overtakes leaves that battle's state alone, and one that throws unlocks the console
     ["  if (busy || !lastShot?.scene) return;\n  busy = true; render();\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };", "  if (busy || !lastShot?.scene) return;\n  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)\n  busy = true; render();\n  try {\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };"],
     ["  await stage.play(s, c, {});\n  delete app.dataset.scene;\n  busy = false; render();\n}\n$('#replay').onclick = () => replayLast();", "  await stage.play(s, c, {});\n  } finally {\n    if (app.dataset.scene === 'replay') delete app.dataset.scene;\n    if (my === gen) { busy = false; render(); }\n  }\n}\n$('#replay').onclick = () => replayLast();"],

@@ -8,7 +8,8 @@ import { ico, ensureIcons, STATUS_INFO } from './icons.js';
 import { words } from './plan.js';
 
 const SIDES = ['player', 'rival'];
-const STAT = { atk: 'Reach', def: 'Proof', spd: 'Pace' };
+import { t as txt, word, engineWords, cardText } from './strings.js';
+const STAT = { get atk() { return txt('stat.atk'); }, get def() { return txt('stat.def'); }, get spd() { return txt('stat.spd'); } };
 const STAT_ICON = { atk: 'atk', def: 'def', spd: 'spd' };
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const el = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; parent?.append(e); return e; };
@@ -67,7 +68,12 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   /** A multiplier as a chip. Its arrow is the number's direction; its colour is what it means for you: a rival's
    *  multiplier that helps the rival is red (side 'rival'), the home bonus is gold either way. */
   const multChip = (m, label = '', side = 'player', kind = '') => `<span class="hx" data-tone="${kind || povTone(m, side)}">${ico(tone(m) === 'up' ? 'strong' : tone(m) === 'down' ? 'weak' : 'even')}<b>${times(m)}</b>${label ? `<i>${esc(label)}</i>` : ''}</span>`;
-  const ringWord = (m) => ({ up: 'Strong', down: 'Resisted', even: 'Even' })[tone(m)];
+  const ringWord = (m) => txt(`ring.${tone(m)}`);
+  /** A discipline's name as the page prints it (the engine knows it by its English name). */
+  const dname = (x) => word('discipline', x);
+  /** "2" or "2 to 5" (the tooltips' words), "2–5" (the compact chips'). */
+  const span = (lo, hi) => (lo === hi ? String(lo) : txt('range', { lo, hi }));
+  const dash = (lo, hi) => (lo === hi ? String(lo) : txt('range.short', { lo, hi }));
 
   // ======================================================== the plates: one per card in play
   const plates = {};
@@ -78,9 +84,9 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   for (const side of SIDES) {
     const p = el('section', 'plate', root);
     p.dataset.side = side;
-    p.setAttribute('aria-label', side === 'player' ? 'Your card in play' : 'Rival card in play');
+    p.setAttribute('aria-label', txt(side === 'player' ? 'plate.aria.you' : 'plate.aria.rival'));
     p.innerHTML = `
-      <header class="pl-head"><span class="pl-side">${side === 'player' ? 'You' : 'Rival'}</span><b class="pl-name"></b><span class="pl-disc"></span></header>
+      <header class="pl-head"><span class="pl-side">${esc(txt(side === 'player' ? 'side.you' : 'side.rival'))}</span><b class="pl-name"></b><span class="pl-disc"></span></header>
       <div class="pl-hp" data-band="ok"><i class="pl-ghost"></i><i class="pl-fill"></i><span class="pl-hpnum"><b></b><small></small></span></div>
       <div class="pl-chips"></div>
       <footer class="pl-foot"><span class="pl-trait"></span><span class="pl-kit"></span></footer>
@@ -98,8 +104,8 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (P.uid !== f.uid) {
       P.uid = f.uid;
       P.name.textContent = title(f.id);
-      P.disc.innerHTML = d.disciplines.map((x) => `<span class="pd" style="--d:${K.DISCIPLINE_COLOR[x]}" data-tip="disc:${x}" tabindex="0" role="img" aria-label="${x}">${disc(x)}</span>`).join('');
-      P.trait.innerHTML = `<span class="pt" data-tip="trait:${f.id}" tabindex="0">${ico('trait')}<i>Trait</i><b>${esc(d.trait.name)}</b></span>`;
+      P.disc.innerHTML = d.disciplines.map((x) => `<span class="pd" style="--d:${K.DISCIPLINE_COLOR[x]}" data-tip="disc:${x}" tabindex="0" role="img" aria-label="${esc(dname(x))}">${disc(x)}</span>`).join('');
+      P.trait.innerHTML = `<span class="pt" data-tip="trait:${f.id}" tabindex="0">${ico('trait')}<i>${esc(txt('plate.trait'))}</i><b>${esc(d.trait.name)}</b></span>`;
       P.hpShown = -1;
     }
     // HP: the fill moves at once, the ghost drains after it (350 ms, the client convention), the number counts
@@ -113,14 +119,14 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     P.hpb.textContent = String(f.hp);
     P.hps.textContent = ` / ${f.maxHp}`;
     P.hp.setAttribute('role', 'img');
-    P.hp.setAttribute('aria-label', `${f.hp} of ${f.maxHp} HP`);
+    P.hp.setAttribute('aria-label', txt('hp.aria', { hp: f.hp, max: f.maxHp }));
     // chips: condition, stat stages, barrier, crit boost
     const parts = [];
     if (f.status) { const s = STATUS_INFO[f.status]; parts.push(chip(ico(f.status), s.short, 'status', `status:${f.status}`).replace('class="pc"', `class="pc" style="--s:${s.color}"`)); }
     // a stat shows only once a stage has moved it, by name, with its multiplier (green up, red down)
     for (const k of ['atk', 'def', 'spd']) {
       const n = f.stages[k];
-      if (n) parts.push(chip(K.icon(STAT_ICON[k]), `${STAT[k]} ${n > 0 ? '+' : '−'}${Math.abs(n)}`, povTone(stageMult(n), side), `stage:${k}:${n}`, `<i>${times(stageMult(n))}</i>`));
+      if (n) parts.push(chip(K.icon(STAT_ICON[k]), esc(txt('stat.stage', { stat: STAT[k], n: `${n > 0 ? '+' : '−'}${Math.abs(n)}` })), povTone(stageMult(n), side), `stage:${k}:${n}`, `<i>${times(stageMult(n))}</i>`));
     }
     if (f.barrier > 0) parts.push(chip(ico('barrier'), `${Math.round(f.barrier * 100)}%`, povTone(2, side), `barrier:${f.barrier}`));
     if (f.critBoost > 0) parts.push(chip(ico('crit'), `+${Math.round(f.critBoost * 100)}%`, povTone(2, side), `crit:${f.critBoost}`));
@@ -130,17 +136,17 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     // the Kit: uses left this battle (the Kit panel and its tooltips list the items)
     const used = hud.match?.state.stats[side].items ?? 0, left = Math.max(0, 2 - used);
     const kit = side === 'player'
-      ? `<button type="button" class="pk-left" data-tip="kit:${side}" aria-label="Kit: ${left} of 2 uses left" data-none="${left === 0}">${ico('bag')}<i>Kit</i><b>${left}/2</b></button>`
-      : `<span class="pk-left" data-tip="kit:${side}" tabindex="0" role="img" aria-label="Rival's Kit: ${left} of 2 uses left" data-none="${left === 0}">${ico('bag')}<i>Kit</i><b>${left}/2</b></span>`;
+      ? `<button type="button" class="pk-left" data-tip="kit:${side}" aria-label="${esc(txt('kit.aria.you', { n: left }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/2</b></button>`
+      : `<span class="pk-left" data-tip="kit:${side}" tabindex="0" role="img" aria-label="${esc(txt('kit.aria.rival', { n: left }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/2</b></span>`;
     if (P.kit.dataset.k !== kit) { P.kit.dataset.k = kit; P.kit.innerHTML = kit; }
     P.el.dataset.quiet = parts.length ? 'false' : 'true';
     // the rival's moves you have seen, each with what it does to your card in play (red when it hits you hard)
     if (side === 'rival') {
       const mine = v.sides.player.team[v.sides.player.active];
       const seen = d.moves.map((mv, i) => ({ mv, i })).filter((x) => seenMoves.has(`${f.uid}:${x.i}`));
-      const html2 = seen.length ? `<i class="ps-label">Seen</i>${seen.map(({ mv, i }) => { const rg = mine && mv.power > 0 ? ringOf(f.id, mine.id, mv) : 1; return `<span class="ps" data-tip="rmove:${i}" tabindex="0" data-tone="${mv.power > 0 ? povTone(rg, 'rival') : 'even'}">${disc(mv.discipline)}<b>${esc(mv.name)}</b>${mv.power > 0 ? `<em>${times(rg)}</em>` : ''}</span>`; }).join('')}` : '';
+      const html2 = seen.length ? `<i class="ps-label">${esc(txt('plate.seen'))}</i>${seen.map(({ mv, i }) => { const rg = mine && mv.power > 0 ? ringOf(f.id, mine.id, mv) : 1; return `<span class="ps" data-tip="rmove:${i}" tabindex="0" data-tone="${mv.power > 0 ? povTone(rg, 'rival') : 'even'}">${disc(mv.discipline)}<b>${esc(mv.name)}</b>${mv.power > 0 ? `<em>${times(rg)}</em>` : ''}</span>`; }).join('')}` : '';
       P.seen.dataset.many = String(seen.length > 1);
-      const row = html2 || '<i class="ps-label">Seen</i><span class="ps-none">no moves yet</span>';
+      const row = html2 || `<i class="ps-label">${esc(txt('plate.seen'))}</i><span class="ps-none">${esc(txt('plate.seen.none'))}</span>`;
       if (P.seen.dataset.k !== row) { P.seen.dataset.k = row; P.seen.innerHTML = row; P.seen.hidden = false; }
     }
   }
@@ -183,18 +189,18 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   function drawTurn(state, busy) {
     if (!state) return;
     const me = activeOf('player'), foe = activeOf('rival');
-    const phase = state.phase === 'over' ? (state.winner === 'player' ? 'Victory' : state.winner === 'rival' ? 'Defeat' : 'Draw')
-      : state.phase === 'replace' && state.pending?.includes('player') ? 'Send in a card' : busy ? 'Playing the turn' : 'Your move';
+    const phase = esc(txt(state.phase === 'over' ? (state.winner === 'player' ? 'result.victory' : state.winner === 'rival' ? 'result.defeat' : 'result.draw')
+      : state.phase === 'replace' && state.pending?.includes('player') ? 'turn.sendIn' : busy ? 'turn.playing' : 'turn.yourMove'));
     let first = '';
     if (me && foe && state.phase === 'command') {
       const a = engine.effectiveSpeed(me), b = engine.effectiveSpeed(foe);
-      const who = a > b ? 'You act first' : a < b ? 'Rival acts first' : 'Speed tie';
-      const short = a > b ? 'You first' : a < b ? 'Rival first' : 'Tie';
-      const pair = a >= b ? `you ${Math.round(a)}, rival ${Math.round(b)}` : `rival ${Math.round(b)}, you ${Math.round(a)}`;
-      first = `<span class="tt-first" data-tone="${a > b ? 'up' : a < b ? 'down' : 'even'}" data-tip="order" tabindex="0">${ico('priority')}<b class="tt-long">${who}</b><b class="tt-short">${short}</b><i>Pace: ${pair}</i></span>`;
+      const w = a > b ? 'you' : a < b ? 'rival' : 'tie';
+      const who = esc(txt(`turn.first.${w}`)), short = esc(txt(`turn.first.${w}.short`));
+      const pair = txt(a >= b ? 'turn.pace.youFirst' : 'turn.pace.rivalFirst', { you: Math.round(a), rival: Math.round(b) });
+      first = `<span class="tt-first" data-tone="${a > b ? 'up' : a < b ? 'down' : 'even'}" data-tip="order" tabindex="0">${ico('priority')}<b class="tt-long">${who}</b><b class="tt-short">${short}</b><i>${esc(txt('turn.pace', { pair }))}</i></span>`;
     }
     const shown = busy && state.phase !== 'over' ? Math.max(1, state.turn - 1) : state.turn;
-    const html = `${ico('turn')}<b class="tt-turn"><span class="tt-word">Turn </span><span class="tt-t">T</span>${shown}</b><span class="tt-phase" data-busy="${busy}">${phase}</span>${first}`;
+    const html = `${ico('turn')}<b class="tt-turn"><span class="tt-word">${esc(txt('turn.word'))}</span><span class="tt-t">${esc(txt('turn.t'))}</span>${shown}</b><span class="tt-phase" data-busy="${busy}">${phase}</span>${first}`;
     if (turnTab.dataset.k !== html) { turnTab.dataset.k = html; turnTab.innerHTML = html; }
     const ph = state.phase === 'over' ? 'over' : busy ? 'busy' : 'you';
     if (ph === 'you' && beatTurn !== state.turn && !reduced() && beatTurn !== -1) turnTab.animate([{ transform: 'scale(1.12)', boxShadow: '0 0 0 6px oklch(55% 0.15 255 / .35)' }, { transform: 'none', boxShadow: '0 0 0 0 oklch(55% 0.15 255 / 0)' }], { duration: 320, delay: 360, fill: 'backwards', easing: 'cubic-bezier(.2,.9,.1,1)' });
@@ -204,62 +210,68 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
 
   // ======================================================== the battle log: turn headers, icons, multipliers, receipts
   const logEl = el('aside', 'blog', root);
-  logEl.setAttribute('aria-label', 'Battle log');
-  logEl.innerHTML = `<header class="blog-head">${ico('log')}<b>Battle log</b></header><ol class="blog-list" aria-live="off"></ol>`;
+  logEl.setAttribute('aria-label', txt('log.title'));
+  logEl.innerHTML = `<header class="blog-head">${ico('log')}<b>${esc(txt('log.title'))}</b></header><ol class="blog-list" aria-live="off"></ol>`;
   const logList = logEl.querySelector('.blog-list');
   const entries = [];
   const who = (uid) => title(hud.match?.cardOf(uid) ?? uid);
   /** "Your Glyphfield", "Rival's Prototemplate": every log line says whose card it is. */
-  const owned = (uid) => `${sideOfUid(uid) === 'player' ? 'Your' : 'Rival’s'} ${who(uid)}`;
+  const owned = (uid) => txt(sideOfUid(uid) === 'player' ? 'log.yours' : 'log.rivals', { card: who(uid) });
   /** A trait's line in words a player reads at once. */
   const traitLine = (e) => {
     const d = words(e.detail ?? '');
-    const said = { 'Per-Rule Cap': `takes at most ${d.replace(/[^\d]/g, '')} from one hit`, Deterministic: 'never misses', Seeded: 'has no damage spread', Preloaded: 'moves first (priority +1)', Cached: 'moves first (priority +1)', Relaunch: 'holds on at 1 HP', 'Hidden Grader': 'ignores barrier and raised Proof', Upset: `hits up a class (${d})`, Variable: `sets its weight (${d})` }[e.trait];
+    const k = TRAIT_SAYS[e.trait], said = k ? txt(k, { n: d.replace(/[^\d]/g, ''), d }) : undefined;
     // a trait with nothing to say is an immunity the engine announces (the condition did not land)
-    return `<b class="lg-tr">${esc(e.trait)}</b> · ${esc(owned(e.fighter))} ${esc(said ?? (d || 'shrugs the condition off'))}`;
+    return txt('log.trait', { trait: `<b class="lg-tr">${esc(e.trait)}</b>`, who: esc(owned(e.fighter)), does: esc(said ?? (d ? engineWords(d) : txt('log.trait.immune'))) }, undefined, true);
   };
   /** The receipt with its bare constant named. */
-  const receiptWords = (line) => words(line).replace(/(\d+\/\d+) × ([\d.]+)(?= [×=])/, '$1 × $2 scale');
+  const receiptWords = (line) => words(line)
+    // the engine's factor names (the kit's receiptLine), then the bare constant named
+    .replace(/ capped at half HP/, () => ` ${txt('receipt.capped')}`)
+    .replace(/\b(home|ring|finisher|upset|compounding|spread|critical|hits|barrier|guard|relaunch)\b/g, (w) => txt(`receipt.${w}`))
+    .replace(/(\d+\/\d+) × ([\d.]+)(?= [×=])/, (m0, a, b) => `${a} × ${b} ${txt('receipt.scale')}`);
   const sideOfUid = (uid) => (String(uid).startsWith('rival') ? 'rival' : 'player');
-  const tag = (side) => `<i class="lg-side" data-side="${side}">${side === 'player' ? 'You' : 'Rival'}</i>`;
+  const tag = (side) => `<i class="lg-side" data-side="${side}">${esc(txt(side === 'player' ? 'side.you' : 'side.rival'))}</i>`;
   const pct = (n, max) => (max ? `${Math.round((100 * n) / max)}%` : '');
   /** One event as a log entry ({ turn, side, icon, html, receipt }), or null for an event the log leaves out. */
   function entryOf(e, v) {
     const maxOf = (uid) => { const s = v?.sides[sideOfUid(uid)]; return s?.team.find((t) => t.uid === uid)?.maxHp ?? 0; };
     switch (e.kind) {
-      case 'move': return { turn: e.turn, side: e.side, icon: disc(e.move.discipline === 'Neutral' ? 'infra' : e.move.discipline), cls: 'lg-move', html: `${tag(e.side)}<b>${esc(title(e.card))}</b> uses <b class="lg-mv" style="--d:${K.DISCIPLINE_COLOR[e.move.discipline] ?? '#999'}">${esc(e.move.name)}</b>` };
+      case 'move': return { turn: e.turn, side: e.side, icon: disc(e.move.discipline === 'Neutral' ? 'infra' : e.move.discipline), cls: 'lg-move', html: txt('log.move', { side: tag(e.side), card: `<b>${esc(title(e.card))}</b>`, move: `<b class="lg-mv" style="--d:${K.DISCIPLINE_COLOR[e.move.discipline] ?? '#999'}">${esc(e.move.name)}</b>` }, undefined, true) };
       case 'hit': {
         const r = e.receipt, extra = [];
         // each chip coloured for you: the rival's bonuses red, what cut the rival's hit green
         if (tone(e.effectiveness) !== 'even') extra.push(multChip(e.effectiveness, ringWord(e.effectiveness), e.side));
-        if (r?.finisher > 1) extra.push(multChip(r.finisher, 'Finisher', e.side));
-        if (r?.home > 1) extra.push(multChip(r.home, 'Home', e.side, 'home'));
-        if (e.crit) extra.push(`<span class="hx" data-tone="crit">${ico('crit')}<b>×1.5</b><i>Critical</i></span>`);
-        if (e.hits > 1) extra.push(`<span class="hx" data-tone="even">${ico('hits')}<b>${e.hits}</b><i>hits</i></span>`);
+        if (r?.finisher > 1) extra.push(multChip(r.finisher, txt('chip.finisher'), e.side));
+        if (r?.home > 1) extra.push(multChip(r.home, txt('chip.home'), e.side, 'home'));
+        if (e.crit) extra.push(`<span class="hx" data-tone="crit">${ico('crit')}<b>×1.5</b><i>${esc(txt('chip.critical'))}</i></span>`);
+        if (e.hits > 1) extra.push(`<span class="hx" data-tone="even">${ico('hits')}<b>${e.hits}</b><i>${esc(txt('chip.hits', { n: e.hits }, e.hits))}</i></span>`);
         const cut = e.side === 'rival' ? 'up' : 'down';
-        if (r?.barrier) extra.push(`<span class="hx" data-tone="${cut}">${ico('barrier')}<b>−${r.barrier}</b><i>Barrier</i></span>`);
-        if (r?.guard) extra.push(`<span class="hx" data-tone="${cut}">${ico('guard')}<b>−${r.guard}</b><i>Guard</i></span>`);
+        if (r?.barrier) extra.push(`<span class="hx" data-tone="${cut}">${ico('barrier')}<b>−${r.barrier}</b><i>${esc(txt('chip.barrier'))}</i></span>`);
+        if (r?.guard) extra.push(`<span class="hx" data-tone="${cut}">${ico('guard')}<b>−${r.guard}</b><i>${esc(txt('chip.guard'))}</i></span>`);
         // the row is tinted by the card that was hit
-        return { turn: e.turn, side: sideOfUid(e.target), icon: ico('power'), cls: 'lg-hit', html: `<b>${esc(owned(e.target))}</b> takes <b class="lg-dmg">${e.damage}</b> <small>(${pct(e.damage, maxOf(e.target))})</small>${e.ko ? ' and is out' : ''}${extra.length ? `<span class="lg-x">${extra.join('')}</span>` : ''}`, receipt: receiptWords(r?.line ?? '') };
+        return { turn: e.turn, side: sideOfUid(e.target), icon: ico('power'), cls: 'lg-hit', html: `${txt(e.ko ? 'log.hit.out' : 'log.hit', { target: `<b>${esc(owned(e.target))}</b>`, damage: `<b class="lg-dmg">${e.damage}</b>`, share: `<small>(${pct(e.damage, maxOf(e.target))})</small>` }, undefined, true)}${extra.length ? `<span class="lg-x">${extra.join('')}</span>` : ''}`, receipt: receiptWords(r?.line ?? '') };
       }
-      case 'miss': return { turn: e.turn, side: e.side, icon: ico('accuracy'), cls: 'lg-miss', html: `${esc(e.move.name)} misses <b>${esc(owned(e.target))}</b> <small>(${Math.round(e.accuracy * 100)}% to hit)</small>` };
+      case 'miss': return { turn: e.turn, side: e.side, icon: ico('accuracy'), cls: 'lg-miss', html: txt('log.miss', { move: esc(e.move.name), target: `<b>${esc(owned(e.target))}</b>`, chance: `<small>${esc(txt('log.miss.chance', { n: Math.round(e.accuracy * 100) }))}</small>` }, undefined, true) };
       case 'status': {
         if (e.change === 'continue') return null;
         const s = STATUS_INFO[e.status];
-        const word = { applied: `is hit with <b style="color:${s.color}">${s.label}</b>`, tick: `loses <b class="lg-dmg">${e.damage}</b> to ${s.label.toLowerCase()}`, skip: e.status === 'sleep' ? 'is asleep and skips its move' : 'is stunned and loses its move', cleared: `is clear of ${s.label.toLowerCase()}` }[e.change] ?? e.change;
-        return { turn: e.turn, side: e.side, icon: `<span class="lg-st" style="--s:${s.color}">${ico(e.status)}</span>`, cls: 'lg-status', html: `<b>${esc(owned(e.fighter))}</b> ${word}` };
+        const key = { applied: 'log.status.applied', tick: 'log.status.tick', skip: e.status === 'sleep' ? 'log.status.asleep' : 'log.status.stunned', cleared: 'log.status.cleared' }[e.change];
+        const who = `<b>${esc(owned(e.fighter))}</b>`;
+        return { turn: e.turn, side: e.side, icon: `<span class="lg-st" style="--s:${s.color}">${ico(e.status)}</span>`, cls: 'lg-status', html: key ? txt(key, { who, status: `<b style="color:${s.color}">${esc(s.label)}</b>`, damage: `<b class="lg-dmg">${e.damage}</b>`, name: esc(s.lower) }, undefined, true) : `${who} ${e.change}` };
       }
       case 'effect': {
         const t = e.effect;
-        if (t === 'heal' || t === 'drain') return { turn: e.turn, side: e.side, icon: ico(t), cls: 'lg-heal', html: `<b>${esc(owned(e.fighter))}</b> ${t === 'drain' ? 'drains' : 'recovers'} <b class="lg-heal-n">+${e.amount}</b> HP` };
-        if (t === 'recoil') return { turn: e.turn, side: e.side, icon: ico('recoil'), cls: 'lg-hit', html: `<b>${esc(owned(e.fighter))}</b> takes <b class="lg-dmg">${e.amount}</b> recoil` };
-        if (t === 'barrier') return { turn: e.turn, side: e.side, icon: ico('barrier'), cls: 'lg-up', html: `<b>${esc(owned(e.fighter))}</b> raises a barrier <span class="hx" data-tone="${povTone(2, e.side)}"><b>${Math.round(e.amount * 100)}%</b><i>blocked</i></span>` };
-        if (t === 'critUp') return { turn: e.turn, side: e.side, icon: ico('crit'), cls: 'lg-up', html: `<b>${esc(owned(e.fighter))}</b> lines up a critical <span class="hx" data-tone="${povTone(2, e.side)}"><b>+${Math.round(e.amount * 100)}%</b><i>crit</i></span>` };
+        const who = `<b>${esc(owned(e.fighter))}</b>`;
+        if (t === 'heal' || t === 'drain') return { turn: e.turn, side: e.side, icon: ico(t), cls: 'lg-heal', html: txt(t === 'drain' ? 'log.drain' : 'log.heal', { who, n: `<b class="lg-heal-n">+${e.amount}</b>` }, undefined, true) };
+        if (t === 'recoil') return { turn: e.turn, side: e.side, icon: ico('recoil'), cls: 'lg-hit', html: txt('log.recoil', { who, n: `<b class="lg-dmg">${e.amount}</b>` }, undefined, true) };
+        if (t === 'barrier') return { turn: e.turn, side: e.side, icon: ico('barrier'), cls: 'lg-up', html: txt('log.barrier', { who, chip: `<span class="hx" data-tone="${povTone(2, e.side)}"><b>${Math.round(e.amount * 100)}%</b><i>${esc(txt('chip.blocked'))}</i></span>` }, undefined, true) };
+        if (t === 'critUp') return { turn: e.turn, side: e.side, icon: ico('crit'), cls: 'lg-up', html: txt('log.critUp', { who, chip: `<span class="hx" data-tone="${povTone(2, e.side)}"><b>+${Math.round(e.amount * 100)}%</b><i>${esc(txt('chip.crit'))}</i></span>` }, undefined, true) };
         const k = t.slice(0, 3), n = e.stage ?? e.amount;
         // the stage it reached, so a capped raise never claims more than it did
-        return { turn: e.turn, side: e.side, icon: K.icon(k), cls: 'lg-up', html: `<b>${esc(owned(e.fighter))}</b>: ${STAT[k]} rises to <span class="hx" data-tone="${povTone(2, e.side)}">${ico('up')}<b>${n > 0 ? '+' : ''}${n}</b><i>${times(stageMult(n))}</i></span>` };
+        return { turn: e.turn, side: e.side, icon: K.icon(k), cls: 'lg-up', html: txt('log.stat', { who, stat: esc(STAT[k]), chip: `<span class="hx" data-tone="${povTone(2, e.side)}">${ico('up')}<b>${n > 0 ? '+' : ''}${n}</b><i>${times(stageMult(n))}</i></span>` }, undefined, true) };
       }
-      case 'switch': return { turn: e.turn, side: e.side, icon: ico('switch'), cls: 'lg-switch', html: `${tag(e.side)}<b>${esc(title(e.card))}</b> ${e.reason === 'lead' ? 'leads' : e.reason === 'replace' ? 'is sent in' : 'switches in'}` };
+      case 'switch': return { turn: e.turn, side: e.side, icon: ico('switch'), cls: 'lg-switch', html: txt(e.reason === 'lead' ? 'log.switch.lead' : e.reason === 'replace' ? 'log.switch.sentIn' : 'log.switch.in', { side: tag(e.side), card: `<b>${esc(title(e.card))}</b>` }, undefined, true) };
       case 'trait': {
         // a trait that says the same thing again (Seeded on every hit) is written once
         const k = `${e.fighter}|${e.trait}|${e.detail ?? ''}`;
@@ -267,10 +279,10 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
         traitsSaid.add(k);
         return { turn: e.turn, side: e.side, icon: ico('trait'), cls: 'lg-trait', html: traitLine(e) };
       }
-      case 'guard': return { turn: e.turn, side: e.side, icon: ico('guard'), cls: 'lg-up', html: `<b>${esc(owned(e.fighter))}</b> guards <span class="hx" data-tone="${povTone(2, e.side)}"><b>×0.5</b><i>damage this turn</i></span>` };
-      case 'item': return { turn: e.turn, side: e.side, icon: ico(e.item), cls: 'lg-item', html: `${tag(e.side)}<b>${esc(e.name)}</b> on <b>${esc(owned(e.target))}</b> <small>${esc(words(e.detail))}</small>` };
-      case 'ko': return { turn: e.turn, side: e.side, icon: ico('ko'), cls: 'lg-ko', html: `<b>${esc(e.side === 'player' ? 'Your' : 'Rival’s')} ${esc(title(e.card))}</b> is out` };
-      case 'result': return { turn: e.turn, side: 'none', icon: ico('turn'), cls: 'lg-result', html: `<b>${e.winner === 'draw' ? 'Draw' : e.winner === 'player' ? 'Victory' : 'Defeat'}</b> in ${e.turns} turns` };
+      case 'guard': return { turn: e.turn, side: e.side, icon: ico('guard'), cls: 'lg-up', html: txt('log.guard', { who: `<b>${esc(owned(e.fighter))}</b>`, chip: `<span class="hx" data-tone="${povTone(2, e.side)}"><b>×0.5</b><i>${esc(txt('chip.guardTurn'))}</i></span>` }, undefined, true) };
+      case 'item': return { turn: e.turn, side: e.side, icon: ico(e.item), cls: 'lg-item', html: txt('log.item', { side: tag(e.side), item: `<b>${esc(e.name)}</b>`, target: `<b>${esc(owned(e.target))}</b>`, detail: `<small>${esc(engineWords(words(e.detail)))}</small>` }, undefined, true) };
+      case 'ko': return { turn: e.turn, side: e.side, icon: ico('ko'), cls: 'lg-ko', html: txt('log.ko', { who: `<b>${esc(txt(e.side === 'player' ? 'log.yours' : 'log.rivals', { card: title(e.card) }))}</b>` }, undefined, true) };
+      case 'result': return { turn: e.turn, side: 'none', icon: ico('turn'), cls: 'lg-result', html: txt('log.result', { result: `<b>${esc(txt(e.winner === 'draw' ? 'result.draw' : e.winner === 'player' ? 'result.victory' : 'result.defeat'))}</b>`, n: e.turns }, e.turns, true) };
       default: return null;
     }
   }
@@ -279,7 +291,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     entries.push(x);
     if (x.turn !== lastTurn) {
       lastTurn = x.turn;
-      const h = el('li', 'lg-turn', logList, `${ico('turn')}<b>Turn ${x.turn}</b>`);
+      const h = el('li', 'lg-turn', logList, `${ico('turn')}<b>${esc(txt('log.turn', { n: x.turn }))}</b>`);
       h.dataset.turn = String(x.turn);
     }
     const li = el('li', `lg ${x.cls ?? ''}`, logList, `<span class="lg-i">${x.icon}</span><span class="lg-t">${x.html}</span>`);
@@ -294,7 +306,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     list.textContent = '';
     let t = -1;
     for (const x of entries) {
-      if (x.turn !== t) { t = x.turn; el('li', 'lg-turn', list, `${ico('turn')}<b>Turn ${t}</b>`); }
+      if (x.turn !== t) { t = x.turn; el('li', 'lg-turn', list, `${ico('turn')}<b>${esc(txt('log.turn', { n: t }))}</b>`); }
       const li = el('li', `lg ${x.cls ?? ''}`, list, `<span class="lg-i">${x.icon}</span><span class="lg-t">${x.html}</span>`);
       li.dataset.side = x.side;
       if (x.receipt) { const r = el('code', 'lg-r', li); r.textContent = x.receipt; }
@@ -311,8 +323,8 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   function callMultiplier(hit, rect) {
     if (!hit) return;
     const rows = [];
-    if (tone(hit.effectiveness) !== 'even') rows.push(`<span class="mcx" data-tone="${povTone(hit.effectiveness, hit.side)}">${ico(tone(hit.effectiveness) === 'up' ? 'strong' : 'weak')}<b>${times(hit.effectiveness)}</b><i>${hit.effectiveness > 1 ? 'Strong' : 'Resisted'}</i></span>`);
-    if (hit.crit) rows.push(`<span class="mcx" data-tone="crit">${ico('crit')}<b>×1.5</b><i>Critical</i></span>`);
+    if (tone(hit.effectiveness) !== 'even') rows.push(`<span class="mcx" data-tone="${povTone(hit.effectiveness, hit.side)}">${ico(tone(hit.effectiveness) === 'up' ? 'strong' : 'weak')}<b>${times(hit.effectiveness)}</b><i>${esc(txt(hit.effectiveness > 1 ? 'ring.up' : 'ring.down'))}</i></span>`);
+    if (hit.crit) rows.push(`<span class="mcx" data-tone="crit">${ico('crit')}<b>×1.5</b><i>${esc(txt('chip.critical'))}</i></span>`);
     if (!rows.length) return;
     callout.innerHTML = rows.join('');
     // where it reads: under the scene's own number and receipt when a full scene holds the screen (the next frame, once
@@ -359,24 +371,24 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       const ring = tgt ? ringOf(att.id, tgt.id, m) : 1, home = homeOf(att.id, m);
       const rng = tgt && nums.power > 0 ? rangeOf(att, tgt, i, m.axis ? 600 : undefined) : null;
       const fx = [];
-      if (m.priority) fx.push(`<span class="tc">${ico('priority')}Priority ${m.priority > 0 ? '+' : ''}${m.priority}</span>`);
-      if (m.hits) fx.push(`<span class="tc">${ico('hits')}${m.hits.min === m.hits.max ? m.hits.min : `${m.hits.min} to ${m.hits.max}`} hits</span>`);
-      if (m.effect) { const s = STATUS_INFO[m.effect.type]; fx.push(`<span class="tc" style="--s:${s.color}">${ico(m.effect.type)}${s.label} ${Math.round(m.effect.chance * 100)}%</span>`); }
-      if (m.selfEffect) fx.push(`<span class="tc" data-tone="${m.selfEffect.type === 'recoil' ? 'down' : 'up'}">${ico(selfIcon(m.selfEffect.type))}${selfWord(m.selfEffect)}</span>`);
-      if (m.critChance) fx.push(`<span class="tc">${ico('crit')}Critical ${Math.round(m.critChance * 100)}%</span>`);
-      if (m.piercing) fx.push(`<span class="tc">${ico('pierce')}Pierces ${Math.round(m.piercing * 100)}% of barrier</span>`);
-      if (m.executeThreshold) fx.push(`<span class="tc">${ico('execute')}×1.3 under ${Math.round(m.executeThreshold * 100)}% HP</span>`);
-      if (m.adapts) fx.push(`<span class="tc">${ico('adapts')}Takes its card's better discipline</span>`);
-      if (m.axis) fx.push(`<span class="tc">${ico('axis')}Weight axis ${m.axis.min} to ${m.axis.max}</span>`);
+      if (m.priority) fx.push(`<span class="tc">${ico('priority')}${esc(txt('tip.priority', { n: `${m.priority > 0 ? '+' : ''}${m.priority}` }))}</span>`);
+      if (m.hits) fx.push(`<span class="tc">${ico('hits')}${esc(txt('tip.hits', { n: span(m.hits.min, m.hits.max) }, m.hits.max))}</span>`);
+      if (m.effect) { const s = STATUS_INFO[m.effect.type]; fx.push(`<span class="tc" style="--s:${s.color}">${ico(m.effect.type)}${esc(txt('tip.effect', { status: s.label, n: Math.round(m.effect.chance * 100) }))}</span>`); }
+      if (m.selfEffect) fx.push(`<span class="tc" data-tone="${m.selfEffect.type === 'recoil' ? 'down' : 'up'}">${ico(selfIcon(m.selfEffect.type))}${esc(selfWord(m.selfEffect))}</span>`);
+      if (m.critChance) fx.push(`<span class="tc">${ico('crit')}${esc(txt('tip.critical', { n: Math.round(m.critChance * 100) }))}</span>`);
+      if (m.piercing) fx.push(`<span class="tc">${ico('pierce')}${esc(txt('tip.pierces', { n: Math.round(m.piercing * 100) }))}</span>`);
+      if (m.executeThreshold) fx.push(`<span class="tc">${ico('execute')}${esc(txt('tip.execute', { n: Math.round(m.executeThreshold * 100) }))}</span>`);
+      if (m.adapts) fx.push(`<span class="tc">${ico('adapts')}${esc(txt('tip.adapts'))}</span>`);
+      if (m.axis) fx.push(`<span class="tc">${ico('axis')}${esc(txt('tip.axis', { min: m.axis.min, max: m.axis.max }))}</span>`);
       const desc = moveDesc(m, nums.accuracy), about = cardMoveText(att.id, m);
       const pp = att.pp[i];
       return `<div class="tp-move">
         <video class="tp-vid" muted loop playsinline preload="none" data-src="${PREVIEWS}${att.id}.${m.id}.webm" poster="${PREVIEWS}${att.id}.${m.id}.webp"></video>
         <div class="tp-body">
-          <header><span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[m.discipline]}">${disc(m.discipline)}<i>${m.discipline}</i></span><b>${esc(m.name)}</b><span class="tp-cat">${nums.power > 0 ? `${ico('power')}Attack` : `${ico('support')}Support`}</span></header>
-          <div class="tp-nums">${nums.power > 0 ? `<span>${ico('power')}<b>${nums.power}</b><i>power</i></span>` : ''}<span>${ico('accuracy')}${nums.accuracy > m.accuracy + 1e-9 ? `<s>${Math.round(m.accuracy * 100)}%</s>` : ''}<b>${Math.round(nums.accuracy * 100)}%</b><i>to hit${nums.accuracy > m.accuracy + 1e-9 ? `, ${esc(d.trait.name)}` : ''}</i></span><span data-low="${pp <= Math.ceil(m.pp / 4)}">${ico('pp')}<b>${pp}/${m.pp}</b><i>PP</i></span></div>
-          ${nums.power > 0 && tgt ? `<div class="tp-vs">${multChip(ring, `${ringWord(ring)} vs ${title(tgt.id)}`, side)}${home > 1 ? multChip(home, 'Home discipline', side, 'home') : ''}</div>` : ''}
-          ${rng ? `<p class="tp-dmg">${ico('power')}<b>${rng.lo === rng.hi ? rng.lo : `${rng.lo}–${rng.hi}`}</b> damage, <b>${rng.pctLo === rng.pctHi ? rng.pctLo : `${rng.pctLo}–${rng.pctHi}`}%</b> of ${esc(title(tgt.id))}'s HP${rng.ko ? ` <em data-ko="${rng.ko}">${ico('ko')}${rng.ko === 'sure' ? 'Knocks out' : rng.accuracy < 1 && rng.lo >= tgt.hp ? 'Knocks out if it hits' : 'May knock out'}</em>` : rng.relaunch && rng.hi >= tgt.hp ? ` <em data-ko="maybe">${ico('trait')}Relaunch leaves it at 1 HP</em>` : ''}</p>` : ''}
+          <header><span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[m.discipline]}">${disc(m.discipline)}<i>${esc(dname(m.discipline))}</i></span><b>${esc(m.name)}</b><span class="tp-cat">${nums.power > 0 ? `${ico('power')}${esc(txt('tip.attack'))}` : `${ico('support')}${esc(txt('tip.support'))}`}</span></header>
+          <div class="tp-nums">${nums.power > 0 ? `<span>${ico('power')}<b>${nums.power}</b><i>${esc(txt('tip.power'))}</i></span>` : ''}<span>${ico('accuracy')}${nums.accuracy > m.accuracy + 1e-9 ? `<s>${Math.round(m.accuracy * 100)}%</s>` : ''}<b>${Math.round(nums.accuracy * 100)}%</b><i>${esc(nums.accuracy > m.accuracy + 1e-9 ? txt('tip.toHit.trait', { trait: d.trait.name }) : txt('tip.toHit'))}</i></span><span data-low="${pp <= Math.ceil(m.pp / 4)}">${ico('pp')}<b>${pp}/${m.pp}</b><i>${esc(txt('tip.pp'))}</i></span></div>
+          ${nums.power > 0 && tgt ? `<div class="tp-vs">${multChip(ring, txt('tip.vs', { ring: ringWord(ring), card: title(tgt.id) }), side)}${home > 1 ? multChip(home, txt('tip.home'), side, 'home') : ''}</div>` : ''}
+          ${rng ? `<p class="tp-dmg">${ico('power')}${txt('tip.damage', { dmg: `<b>${dash(rng.lo, rng.hi)}</b>`, pct: `<b>${esc(txt('pct', { n: dash(rng.pctLo, rng.pctHi) }))}</b>`, card: esc(title(tgt.id)) }, undefined, true)}${rng.ko ? ` <em data-ko="${rng.ko}">${ico('ko')}${esc(txt(rng.ko === 'sure' ? 'tip.ko.sure' : rng.accuracy < 1 && rng.lo >= tgt.hp ? 'tip.ko.ifHits' : 'tip.ko.maybe'))}</em>` : rng.relaunch && rng.hi >= tgt.hp ? ` <em data-ko="maybe">${ico('trait')}${esc(txt('tip.relaunch'))}</em>` : ''}</p>` : ''}
           ${fx.length ? `<div class="tp-fx">${fx.join('')}</div>` : ''}
           ${about ? `<p class="tp-about">${esc(about)}</p>` : ''}
           ${desc ? `<p class="tp-desc">${esc(desc)}</p>` : ''}
@@ -385,43 +397,47 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (kind === 'disc') {
       const i = RING.indexOf(a);
       const strong = RING[(i + 1) % RING.length], weak = RING[(i - 1 + RING.length) % RING.length];
-      return `<div class="tp-small"><header><span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[a]}">${disc(a)}</span><b>${a}</b></header>
-        <p class="tp-row">Its attacks: ${multChip(1.5, `on ${strong}`)} ${multChip(0.67, `on ${weak}`)}</p>
-        <p class="tp-row">Hits on it: ${multChip(1.5, `from ${weak}`)} ${multChip(0.67, `from ${strong}`)}</p>
-        <p class="tp-note">A card's own discipline adds ×1.2 to its moves of that discipline.</p></div>`;
+      return `<div class="tp-small"><header><span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[a]}">${disc(a)}</span><b>${esc(dname(a))}</b></header>
+        <p class="tp-row">${txt('tip.disc.attacks', { up: multChip(1.5, txt('tip.disc.on', { d: dname(strong) })), down: multChip(0.67, txt('tip.disc.on', { d: dname(weak) })) }, undefined, true)}</p>
+        <p class="tp-row">${txt('tip.disc.hits', { up: multChip(1.5, txt('tip.disc.from', { d: dname(weak) })), down: multChip(0.67, txt('tip.disc.from', { d: dname(strong) })) }, undefined, true)}</p>
+        <p class="tp-note">${esc(txt('tip.disc.note'))}</p></div>`;
     }
-    if (kind === 'status') { const s = STATUS_INFO[a]; return `<div class="tp-small"><header><span class="tp-st" style="--s:${s.color}">${ico(a)}</span><b>${s.label}</b></header><p class="tp-desc">${s.text}</p></div>`; }
-    if (kind === 'stage') { const n = Number(b); return `<div class="tp-small"><header>${K.icon(a)}<b>${STAT[a]} ${n > 0 ? '+' : '−'}${Math.abs(n)}</b>${multChip(stageMult(n))}</header><p class="tp-desc">${{ atk: 'Its damage', def: 'Damage it takes is divided by this', spd: 'Its turn order' }[a]}: ${times(stageMult(n))}. Stages run from −3 (×0.4) to +3 (×2.5).</p></div>`; }
-    if (kind === 'stat') return `<div class="tp-small"><header>${K.icon(a)}<b>${STAT[a]} ${b}</b></header><p class="tp-desc">${{ atk: 'Reach: how hard its moves hit.', def: 'Proof: how much damage it shrugs off.', spd: 'Pace: who moves first.' }[a]} No stage change; stages run from −3 (×0.4) to +3 (×2.5).</p></div>`;
-    if (kind === 'barrier') return `<div class="tp-small"><header>${ico('barrier')}<b>Barrier ${Math.round(Number(a) * 100)}%</b></header><p class="tp-desc">The next hit on this card loses ${Math.round(Number(a) * 100)}% of its damage, then the barrier is gone.</p></div>`;
-    if (kind === 'crit') return `<div class="tp-small"><header>${ico('crit')}<b>Critical +${Math.round(Number(a) * 100)}%</b></header><p class="tp-desc">Its next move is ${Math.round(Number(a) * 100)} points likelier to be critical (×1.5), up to 80%. Most moves start at 8%.</p></div>`;
-    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">Trait</span></header><p class="tp-desc">${esc(words(d.trait.rule))}</p></div>`; }
+    if (kind === 'status') { const s = STATUS_INFO[a]; return `<div class="tp-small"><header><span class="tp-st" style="--s:${s.color}">${ico(a)}</span><b>${esc(s.label)}</b></header><p class="tp-desc">${esc(s.text)}</p></div>`; }
+    if (kind === 'stage') { const n = Number(b); return `<div class="tp-small"><header>${K.icon(a)}<b>${esc(txt('stat.stage', { stat: STAT[a], n: `${n > 0 ? '+' : '−'}${Math.abs(n)}` }))}</b>${multChip(stageMult(n))}</header><p class="tp-desc">${esc(txt('tip.stage', { what: txt(`tip.stage.${a}`), m: times(stageMult(n)) }))}</p></div>`; }
+    if (kind === 'stat') return `<div class="tp-small"><header>${K.icon(a)}<b>${esc(txt('stat.stage', { stat: STAT[a], n: b }))}</b></header><p class="tp-desc">${esc(txt('tip.stat', { what: txt(`tip.stat.${a}`) }))}</p></div>`;
+    if (kind === 'barrier') return `<div class="tp-small"><header>${ico('barrier')}<b>${esc(txt('tip.barrier.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.barrier', { n: Math.round(Number(a) * 100) }))}</p></div>`;
+    if (kind === 'crit') return `<div class="tp-small"><header>${ico('crit')}<b>${esc(txt('tip.crit.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.crit', { n: Math.round(Number(a) * 100) }))}</p></div>`;
+    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">${esc(txt('plate.trait'))}</span></header><p class="tp-desc">${esc(cardText(a, 'trait.rule', words(d.trait.rule)))}</p></div>`; }
     if (kind === 'item') {
       const it = engine.itemById(a);
-      return `<div class="tp-small"><header>${ico(a)}<b>${esc(it.name)}</b><span class="tp-cat">${esc(words(it.short))}</span></header><p class="tp-desc">${esc(ITEM_TEXT[a] ?? '')}</p><p class="tp-note">${ico('priority')}Acts before any move, and uses the turn. Two items a battle.</p></div>`;
+      return `<div class="tp-small"><header>${ico(a)}<b>${esc(it.name)}</b><span class="tp-cat">${esc(engineWords(words(it.short)))}</span></header><p class="tp-desc">${esc(txt(`item.${a}`))}</p><p class="tp-note">${ico('priority')}${esc(txt('tip.item.note'))}</p></div>`;
     }
-    if (kind === 'kit') { const used = hud.match?.state.stats[a].items ?? 0; return `<div class="tp-small"><header>${ico('bag')}<b>Kit</b></header><p class="tp-desc">${Math.max(0, 2 - used)} of 2 item uses left this battle. Each of the nine items can be used once.</p></div>`; }
+    if (kind === 'kit') { const used = hud.match?.state.stats[a].items ?? 0; return `<div class="tp-small"><header>${ico('bag')}<b>${esc(txt('kit.word'))}</b></header><p class="tp-desc">${esc(txt('tip.kit', { n: Math.max(0, 2 - used) }, Math.max(0, 2 - used)))}</p></div>`; }
     if (kind === 'bench') {
       const s = hud.match?.state.sides[a], t = s?.team[Number(b)];
       if (!t) return '';
       const d = def(t.id), other = activeOf(a === 'player' ? 'rival' : 'player');
       const best = other ? Math.max(...d.moves.map((mv) => ringOf(t.id, other.id, mv))) : 1;
-      return `<div class="tp-small"><header><b>${esc(title(t.id))}</b><span class="tp-cat">${t.hp <= 0 ? 'Out' : `${t.hp}/${t.maxHp} HP`}</span></header><p class="tp-row">${d.disciplines.map((x) => `<span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}<i>${x}</i></span>`).join('')}${t.status ? `<span class="tc" style="--s:${STATUS_INFO[t.status].color}">${ico(t.status)}${STATUS_INFO[t.status].label}</span>` : ''}</p>${other && t.hp > 0 ? `<p class="tp-row">Best move into ${esc(title(other.id))}: ${multChip(best)}</p>` : ''}</div>`;
+      return `<div class="tp-small"><header><b>${esc(title(t.id))}</b><span class="tp-cat">${esc(t.hp <= 0 ? txt('chip.out') : txt('hp.short', { hp: t.hp, max: t.maxHp }))}</span></header><p class="tp-row">${d.disciplines.map((x) => `<span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}<i>${esc(dname(x))}</i></span>`).join('')}${t.status ? `<span class="tc" style="--s:${STATUS_INFO[t.status].color}">${ico(t.status)}${esc(STATUS_INFO[t.status].label)}</span>` : ''}</p>${other && t.hp > 0 ? `<p class="tp-row">${txt('tip.bench.best', { card: esc(title(other.id)), chip: multChip(best) }, undefined, true)}</p>` : ''}</div>`;
     }
-    if (kind === 'order') { const me = activeOf('player'), foe = activeOf('rival'); if (!me || !foe) return ''; return `<div class="tp-small"><header>${ico('priority')}<b>Turn order</b></header><p class="tp-row">${K.icon('spd')}Pace now: ${esc(title(me.id))} <b>${Math.round(engine.effectiveSpeed(me))}</b>, ${esc(title(foe.id))} <b>${Math.round(engine.effectiveSpeed(foe))}</b></p><p class="tp-desc">The faster card's move goes first. Switching and items go before any move, Guard next, then a move with priority.</p></div>`; }
-    if (kind === 'speed') return `<div class="tp-small"><header>${ico('speed')}<b>Battle speed</b></header><p class="tp-desc">How fast scenes play. Space, Enter or a tap skips to the hit, a second press to the end.</p></div>`;
+    if (kind === 'order') { const me = activeOf('player'), foe = activeOf('rival'); if (!me || !foe) return ''; return `<div class="tp-small"><header>${ico('priority')}<b>${esc(txt('tip.order.head'))}</b></header><p class="tp-row">${K.icon('spd')}${txt('tip.order.pace', { you: esc(title(me.id)), youN: `<b>${Math.round(engine.effectiveSpeed(me))}</b>`, rival: esc(title(foe.id)), rivalN: `<b>${Math.round(engine.effectiveSpeed(foe))}</b>` }, undefined, true)}</p><p class="tp-desc">${esc(txt('tip.order'))}</p></div>`; }
+    if (kind === 'speed') return `<div class="tp-small"><header>${ico('speed')}<b>${esc(txt('tip.speed.head'))}</b></header><p class="tp-desc">${esc(txt('tip.speed'))}</p></div>`;
     return '';
   }
-  const shortSelf = (fx) => ({ atkUp: `Reach +${fx.amount}`, defUp: `Proof +${fx.amount}`, spdUp: `Pace +${fx.amount}`, critUp: 'Crit up', barrier: `Barrier ${Math.round(fx.amount * 100)}%`, heal: `Heal ${fx.amount}`, drain: 'Drain', recoil: 'Recoil' })[fx.type] ?? fx.type;
+  const shortSelf = (fx) => {
+    if (fx.type === 'atkUp' || fx.type === 'defUp' || fx.type === 'spdUp') return txt('short.stat', { stat: STAT[fx.type.slice(0, 3)], n: fx.amount });
+    const k = { critUp: 'short.critUp', barrier: 'short.barrier', heal: 'short.heal', drain: 'short.drain', recoil: 'short.recoil' }[fx.type];
+    return k ? txt(k, { n: fx.type === 'barrier' ? Math.round(fx.amount * 100) : fx.amount }) : fx.type;
+  };
   const selfIcon = (t) => ({ atkUp: 'up', defUp: 'up', spdUp: 'up', critUp: 'crit', barrier: 'barrier', heal: 'heal', drain: 'drain', recoil: 'recoil' })[t] ?? 'support';
   const selfWord = (fx) => {
-    const c = fx.chance < 1 ? ` ${Math.round(fx.chance * 100)}%` : '';
-    if (fx.type === 'atkUp' || fx.type === 'defUp' || fx.type === 'spdUp') return `${STAT[fx.type.slice(0, 3)]} +${fx.amount}${c}`;
-    if (fx.type === 'critUp') return `Critical +${Math.round(fx.amount * 100)}%${c}`;
-    if (fx.type === 'barrier') return `Barrier ${Math.round(fx.amount * 100)}%${c}`;
-    if (fx.type === 'heal') return `Heals ${fx.amount} HP${c}`;
-    if (fx.type === 'drain') return `Drains ${Math.round(fx.amount * 100)}% of damage${c}`;
-    if (fx.type === 'recoil') return `Recoil ${Math.round(fx.amount * 100)}% of damage`;
+    const c = fx.chance < 1 ? txt('self.chance', { n: Math.round(fx.chance * 100) }) : '';
+    if (fx.type === 'atkUp' || fx.type === 'defUp' || fx.type === 'spdUp') return txt('self.stat', { stat: STAT[fx.type.slice(0, 3)], n: fx.amount, chance: c });
+    if (fx.type === 'critUp') return txt('self.critical', { n: Math.round(fx.amount * 100), chance: c });
+    if (fx.type === 'barrier') return txt('self.barrier', { n: Math.round(fx.amount * 100), chance: c });
+    if (fx.type === 'heal') return txt('self.heals', { n: fx.amount, chance: c });
+    if (fx.type === 'drain') return txt('self.drains', { n: Math.round(fx.amount * 100), chance: c });
+    if (fx.type === 'recoil') return txt('self.recoil', { n: Math.round(fx.amount * 100) });
     return fx.type;
   };
   const moveDesc = (mv, acc = mv.accuracy) => {
@@ -589,7 +605,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       const x0 = Math.max(g, r.left), y0 = Math.max(g, r.top), x1 = Math.min(W - g, r.right), y1 = Math.min(H - g, r.bottom);
       aimEl.style.translate = `${Math.round(x0)}px ${Math.round(y0)}px`;
       aimEl.style.width = `${Math.round(Math.max(24, x1 - x0))}px`; aimEl.style.height = `${Math.round(Math.max(24, y1 - y0))}px`;
-      aimEl.innerHTML = `<i></i><i></i><i></i><i></i>${nums.power > 0 ? `<span class="aim-chip" data-tone="${tone(ring)}">${tone(ring) !== 'even' ? ico(ring > 1 ? 'strong' : 'weak') : ''}<b>${times(ring)}</b>${rng ? `<em>${rng.pctLo === rng.pctHi ? rng.pctLo : `${rng.pctLo}–${rng.pctHi}`}%${rng.ko ? ` · ${rng.ko === 'sure' ? 'KO' : 'KO?'}` : ''}</em>` : ''}</span>` : `<span class="aim-chip" data-tone="even"><b>Support</b></span>`}`;
+      aimEl.innerHTML = `<i></i><i></i><i></i><i></i>${nums.power > 0 ? `<span class="aim-chip" data-tone="${tone(ring)}">${tone(ring) !== 'even' ? ico(ring > 1 ? 'strong' : 'weak') : ''}<b>${times(ring)}</b>${rng ? `<em>${esc(txt('pct', { n: dash(rng.pctLo, rng.pctHi) }))}${rng.ko ? ` · ${esc(txt(rng.ko === 'sure' ? 'aim.ko' : 'aim.ko.maybe'))}` : ''}</em>` : ''}</span>` : `<span class="aim-chip" data-tone="even"><b>${esc(txt('tip.support'))}</b></span>`}`;
       aimEl.dataset.on = 'true';
       aimEl.dataset.mode = hud.layout?.mode ?? '';
       aimEl.dataset.ko = rng?.ko ?? '';
@@ -608,8 +624,11 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   // ======================================================== the console's rows (battle.js prints them)
   /** One move button's inside: discipline, name, the multiplier into the card across (green or red, with the number),
    *  power, accuracy, PP pips and the move's effect icons. */
-  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own. */
+  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own; a page's
+   *  translation of them first (shared/strings.js cardText, `card.<id>.move.<move name>.feature`), as it gives it. */
   function cardMoveText(id, m) {
+    const own = cardText(id, `move.${m.name}.feature`);
+    if (own !== undefined) return own;
     const ex = globalThis.EX_CARD?.fighter(id), mv = ex?.moves.find((x) => x.name === m.name);
     // (the battle's own lines are fragments: each ends with a period, as the card's sentences do)
     const t = words((mv ?? m).feature ?? '').trim();
@@ -619,13 +638,13 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   function moveInner(m, i, id) {
     // the move's properties as short labelled chips (two at most on the button; the tooltip lists them all)
     const flags = [];
-    if (m.priority) flags.push(`${ico('priority')}Prio ${m.priority > 0 ? '+' : ''}${m.priority}`);
-    if (m.effect) flags.push(`<span style="color:${STATUS_INFO[m.effect.type].color}">${ico(m.effect.type)}</span>${STATUS_INFO[m.effect.type].label} ${Math.round(m.effect.chance * 100)}%`);
-    if (m.selfEffect) flags.push(`${ico(selfIcon(m.selfEffect.type))}${shortSelf(m.selfEffect)}`);
-    if (m.hits) flags.push(`${ico('hits')}${m.hits.min === m.hits.max ? m.hits.min : `${m.hits.min}–${m.hits.max}`} hits`);
-    if (m.executeThreshold) flags.push(`${ico('execute')}Finisher`);
-    if (m.critChance) flags.push(`${ico('crit')}Crit ${Math.round(m.critChance * 100)}%`);
-    if (m.piercing) flags.push(`${ico('pierce')}Pierce`);
+    if (m.priority) flags.push(`${ico('priority')}${esc(txt('flag.prio', { n: `${m.priority > 0 ? '+' : ''}${m.priority}` }))}`);
+    if (m.effect) flags.push(`<span style="color:${STATUS_INFO[m.effect.type].color}">${ico(m.effect.type)}</span>${esc(txt('tip.effect', { status: STATUS_INFO[m.effect.type].label, n: Math.round(m.effect.chance * 100) }))}`);
+    if (m.selfEffect) flags.push(`${ico(selfIcon(m.selfEffect.type))}${esc(shortSelf(m.selfEffect))}`);
+    if (m.hits) flags.push(`${ico('hits')}${esc(txt('tip.hits', { n: dash(m.hits.min, m.hits.max) }, m.hits.max))}`);
+    if (m.executeThreshold) flags.push(`${ico('execute')}${esc(txt('chip.finisher'))}`);
+    if (m.critChance) flags.push(`${ico('crit')}${esc(txt('flag.crit', { n: Math.round(m.critChance * 100) }))}`);
+    if (m.piercing) flags.push(`${ico('pierce')}${esc(txt('flag.pierce'))}`);
     return `<span class="move-head">${disc(m.discipline)}<span class="move-name">${esc(m.name)}</span><span class="move-ring"></span></span>
       <span class="move-stats"><span class="ms-pow">${ico('power')}<b></b></span><span class="ms-acc">${ico('accuracy')}<b></b></span><span class="ms-flags">${flags.slice(0, 2).map((f) => `<span class="mf">${f}</span>`).join('')}</span></span>
       <span class="move-pp"><span class="pp-bar"><i></i></span><b></b></span>
@@ -648,12 +667,12 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     b.querySelector('.move-pp').dataset.low = String(pp <= Math.ceil(m.pp / 4));
     b.querySelector('.move-pp').dataset.mid = String(pp > Math.ceil(m.pp / 4) && pp <= Math.ceil(m.pp / 2));
     const re = b.querySelector('.move-ring');
-    const rt = nums.power > 0 && tone(ring) !== 'even' ? `${ico(ring > 1 ? 'strong' : 'weak')}<b>${times(ring)}</b>` : nums.power > 0 ? `<b>×1</b>` : `${ico('support')}<b>Support</b>`;
+    const rt = nums.power > 0 && tone(ring) !== 'even' ? `${ico(ring > 1 ? 'strong' : 'weak')}<b>${times(ring)}</b>` : nums.power > 0 ? `<b>×1</b>` : `${ico('support')}<b>${esc(txt('tip.support'))}</b>`;
     if (re.dataset.k !== rt) { re.dataset.k = rt; re.innerHTML = rt; }
     b.dataset.ring = nums.power > 0 ? tone(ring) : 'support';
     const rng = foe && nums.power > 0 ? rangeOf(me, foe, i, m.axis ? 600 : undefined) : null;
     const dm = b.querySelector('.move-dmg');
-    const dh = rng ? `<b>${rng.pctLo === rng.pctHi ? rng.pctLo : `${rng.pctLo}–${rng.pctHi}`}%</b>${rng.ko ? `<em>${rng.ko === 'sure' ? 'KO' : 'KO?'}</em>` : ''}` : '';
+    const dh = rng ? `<b>${esc(txt('pct', { n: dash(rng.pctLo, rng.pctHi) }))}</b>${rng.ko ? `<em>${esc(txt(rng.ko === 'sure' ? 'aim.ko' : 'aim.ko.maybe'))}</em>` : ''}` : '';
     if (dm.dataset.k !== dh) { dm.dataset.k = dh; dm.innerHTML = dh; }
     dm.dataset.ko = rng?.ko ?? '';
     b.dataset.tip = `move:${i}`;
@@ -669,19 +688,19 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     const takes = other ? Math.max(1e-9, ...def(other.id).moves.filter((mv) => mv.power > 0).map((mv) => ringOf(other.id, f.id, mv))) : 1;
     const r = f.maxHp ? f.hp / f.maxHp : 0;
     const art = K.subjectOf?.(f.id)?.src || posterOf(f.id);
-    return `<span class="bn-art" style="--c:${K.accent(f.id)}"><img alt="" loading="lazy" decoding="async" src="${art}"></span><span class="bn-head"><b>${esc(title(f.id))}</b>${d.disciplines.map((x) => `<span class="bn-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}</span>`).join('')}${f.status ? `<span class="bn-st" style="--s:${STATUS_INFO[f.status].color}">${ico(f.status)}${STATUS_INFO[f.status].short}</span>` : ''}</span>
+    return `<span class="bn-art" style="--c:${K.accent(f.id)}"><img alt="" loading="lazy" decoding="async" src="${art}"></span><span class="bn-head"><b>${esc(title(f.id))}</b>${d.disciplines.map((x) => `<span class="bn-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}</span>`).join('')}${f.status ? `<span class="bn-st" style="--s:${STATUS_INFO[f.status].color}">${ico(f.status)}${esc(STATUS_INFO[f.status].short)}</span>` : ''}</span>
       <span class="bn-hp" data-band="${hpBand(f.hp, f.maxHp)}"><i style="transform:scaleX(${r})"></i></span>
-      <span class="bn-foot"><span>${f.hp}/${f.maxHp} HP</span>${other ? `<span class="bn-mx"><span class="hx" data-tone="${tone(best)}">${ico(tone(best) === 'up' ? 'strong' : tone(best) === 'down' ? 'weak' : 'even')}<b>${times(best)}</b><i>deals</i></span><span class="hx" data-tone="${tone(1 / takes)}">${ico(tone(takes) === 'up' ? 'strong' : tone(takes) === 'down' ? 'weak' : 'even')}<b>${times(takes)}</b><i>takes</i></span></span>` : ''}</span>`;
+      <span class="bn-foot"><span>${esc(txt('hp.short', { hp: f.hp, max: f.maxHp }))}</span>${other ? `<span class="bn-mx"><span class="hx" data-tone="${tone(best)}">${ico(tone(best) === 'up' ? 'strong' : tone(best) === 'down' ? 'weak' : 'even')}<b>${times(best)}</b><i>${esc(txt('bench.deals'))}</i></span><span class="hx" data-tone="${tone(1 / takes)}">${ico(tone(takes) === 'up' ? 'strong' : tone(takes) === 'down' ? 'weak' : 'even')}<b>${times(takes)}</b><i>${esc(txt('bench.takes'))}</i></span></span>` : ''}</span>`;
   }
   /** A Kit row: the item's icon, name, effect, and why it is unavailable. */
   function itemInner(it, ok, why) {
-    return `<span class="it-ic" data-kind="${ITEM_KIND[it.id] ?? 'heal'}">${ico(it.id, 'it-i')}</span><span class="it-t"><b>${esc(it.name)}</b><span>${esc(words(it.short))}${BOOSTS.has(it.id) ? boostMult(it.id) : ''}</span>${!ok && why ? `<em>${esc(why)}</em>` : ''}</span>`;
+    return `<span class="it-ic" data-kind="${ITEM_KIND[it.id] ?? 'heal'}">${ico(it.id, 'it-i')}</span><span class="it-t"><b>${esc(it.name)}</b><span>${esc(engineWords(words(it.short)))}${BOOSTS.has(it.id) ? boostMult(it.id) : ''}</span>${!ok && why ? `<em>${esc(why)}</em>` : ''}</span>`;
   }
   /** What a boost would multiply the stat by from where the card in play stands (×2 from even, ×1.67 from +1). */
   const boostMult = (id) => { const me = activeOf('player'), k = { overclock: 'atk', firewall: 'def', 'turbo-mode': 'spd' }[id]; const n = me?.stages?.[k] ?? 0; const m = stageMult(Math.min(3, n + 2)) / stageMult(n); return m > 1.001 ? ` → ×${Math.round(m * 100) / 100}` : ''; };
   /** An item nothing needs now (or already used), folded into the Kit's last row: its icon, its tooltip. */
   function itemChip(it) {
-    return `<span class="it-chip" data-kind="${ITEM_KIND[it.id] ?? 'heal'}" data-used="${it.left <= 0}" data-tip="item:${it.id}" tabindex="0" role="img" aria-label="${esc(it.name)}${it.left <= 0 ? ', used' : ', not needed now'}">${ico(it.id)}</span>`;
+    return `<span class="it-chip" data-kind="${ITEM_KIND[it.id] ?? 'heal'}" data-used="${it.left <= 0}" data-tip="item:${it.id}" tabindex="0" role="img" aria-label="${esc(txt(it.left <= 0 ? 'item.used' : 'item.notNeeded', { name: it.name }))}">${ico(it.id)}</span>`;
   }
 
   /** A card's poster, from the gallery folder the page names (meta gallery), so the site's own paths hold. */
@@ -694,8 +713,8 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     for (const s of SIDES) { plates[s].uid = ''; plates[s].hpShown = -1; }
     // the log opens with both lineups: each card, its disciplines, its HP
     const line = (side) => match.state.sides[side].team.map((f) => `<span class="lg-card">${def(f.id).disciplines.map(disc).join('')}<b>${esc(title(f.id))}</b><small>${f.maxHp}</small></span>`).join('');
-    const head = el('li', 'lg-lineup', logList, `<span class="lg-side" data-side="player">You</span>${line('player')}<span class="lg-side" data-side="rival">Rival</span>${line('rival')}`);
-    head.setAttribute('aria-label', 'Lineups');
+    const head = el('li', 'lg-lineup', logList, `<span class="lg-side" data-side="player">${esc(txt('side.you'))}</span>${line('player')}<span class="lg-side" data-side="rival">${esc(txt('side.rival'))}</span>${line('rival')}`);
+    head.setAttribute('aria-label', txt('log.lineups'));
   };
   hud.setLayout = (l) => { hud.layout = l; root.dataset.mode = l?.mode ?? ''; place(); };
   hud.place = place;
@@ -741,18 +760,8 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   return hud;
 }
 
+/** The traits whose log line says what they did (the engine knows each by its English name). */
+const TRAIT_SAYS = { 'Per-Rule Cap': 'log.trait.perRuleCap', Deterministic: 'log.trait.deterministic', Seeded: 'log.trait.seeded', Preloaded: 'log.trait.preloaded', Cached: 'log.trait.cached', Relaunch: 'log.trait.relaunch', 'Hidden Grader': 'log.trait.hiddenGrader', Upset: 'log.trait.upset', Variable: 'log.trait.variable' };
 /** Each item's kind, for its icon's colour: restores, a cure, the three boosts, a revive. */
 const BOOSTS = new Set(['overclock', 'firewall', 'turbo-mode']);
 const ITEM_KIND = { 'code-snippet': 'heal', 'api-key': 'heal', 'server-patch': 'heal', 'system-restore': 'heal', debugger: 'cure', overclock: 'boost', firewall: 'boost', 'turbo-mode': 'boost', rollback: 'revive' };
-/** What each item does, in full (the engine's short strings are the chip; this is the tooltip). */
-const ITEM_TEXT = {
-  'code-snippet': 'Restores 20 HP to one of your cards.',
-  'api-key': 'Restores 50 HP to one of your cards.',
-  'server-patch': 'Restores 150 HP to one of your cards.',
-  'system-restore': 'Restores one of your cards to full HP.',
-  debugger: 'Clears burn, poison, sleep or stun from one of your cards.',
-  overclock: 'Raises one card’s Reach two stages (from even, ×2 damage), up to +3.',
-  firewall: 'Raises one card’s Proof two stages (from even, ×2 toughness), up to +3.',
-  'turbo-mode': 'Raises one card’s Pace two stages (from even, ×2 speed), up to +3.',
-  rollback: 'Brings one knocked-out card back with half its HP.',
-};

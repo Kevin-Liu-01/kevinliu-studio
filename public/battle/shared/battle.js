@@ -8,6 +8,7 @@ import { install, Stage, Director, boardShort } from './runtime.js';
 import { createStore, createPlan } from './plan.js';
 import { leaderData, leadersFor, faceOf, POSE } from './leaders.js';
 import { createHud, tone as hudTone } from './hud.js';
+import { t as txt, list as listOf, override, word, sceneWords } from './strings.js';
 
 /** Each layout's code and sheet, loaded once: the mode on screen at boot, the other once the battle is under way. */
 const MODES = { mat: () => import('../mat/board.js').then((m) => m.MatBoard), arena: () => import('../arena/board.js').then((m) => m.ArenaBoard) };
@@ -153,7 +154,7 @@ function cutinSet(side, text = '', face = true) {
   c.style.setProperty('--accent', t.accent);
   Object.assign(c.face.style, { backgroundImage: f.image, backgroundSize: f.size, backgroundPosition: f.position, width: `${f.w}px`, height: `${f.h}px` });
   c.dataset.face = face ? 'true' : 'false';
-  c.name.textContent = `${t.name}, ${t.title}`;
+  c.name.textContent = txt('leader.nameTitle', { name: t.name, title: t.title });
   c.line.textContent = text;
   c.dataset.line = text ? 'true' : 'false';
   // where it stands: the layout's place for it, or the top corner on its side
@@ -178,7 +179,7 @@ function cutout(side, now = false) {
 }
 /** A leader's line: the console's line on a phone, the cut-in while a scene holds the screen, else its plate. */
 function onQuote(qt) {
-  if (narrow()) { say(`${qt.name}: ${qt.text}`, 2200); return false; }
+  if (narrow()) { say(txt('say.quote', { name: qt.name, text: qt.text }), 2200); return false; }
   if (!staging || staging.box) return true;
   if (staging.started) return !cutin(qt.side, qt.text, 2200, cutins[qt.side]?.dataset.face === 'true' && cutins[qt.side].style.opacity !== '0');
   if (qt.side !== staging.side) return true;
@@ -362,7 +363,7 @@ async function nextLayout(name, dealing) {
     for (const l of document.querySelectorAll('link[data-mode]')) l.media = l.dataset.mode === name ? 'all' : 'not all';
     layout?.unmount();
     layout = next; mode = name;
-    document.title = TITLES[name];
+    document.title = override(`title.${name}`) ?? TITLES[name];
     for (const m of Object.keys(MODES)) $(`#mode-${m}`).setAttribute('aria-pressed', String(m === name));
     next.mount($('#board'), c);
     hud.setLayout(next);
@@ -473,10 +474,10 @@ function onEvent(e) {
   hud.draw(view);
   hud.event(e, view);
   const who = (uid) => title(match?.cardOf(uid) ?? uid);
-  if (e.kind === 'hit') live(`${e.move.name}, ${e.damage} to ${who(e.target)}.`);
-  else if (e.kind === 'miss') live(`${e.move.name} missed.`);
-  else if (e.kind === 'switch' && e.reason !== 'lead') live(`${title(e.card)} in for ${e.side === 'player' ? 'you' : 'the rival'}.`);
-  else if (e.kind === 'ko') live(`${title(e.card)} is out.`);
+  if (e.kind === 'hit') live(txt('live.hit', { move: e.move.name, damage: e.damage, target: who(e.target) }));
+  else if (e.kind === 'miss') live(txt('live.miss', { move: e.move.name }));
+  else if (e.kind === 'switch' && e.reason !== 'lead') live(txt(e.side === 'player' ? 'live.switch.you' : 'live.switch.rival', { card: title(e.card) }));
+  else if (e.kind === 'ko') live(txt('live.out', { card: title(e.card) }));
   // Final Turns: the first knockout fetches its theme, and a side down to its last card changes into it
   if (e.kind === 'ko' && Sound) {
     Sound.intensity(0);
@@ -491,6 +492,8 @@ function onShot(shot, phase) {
   switch (phase) {
     case 'plan':
       if (s.receipt) s.receipt = hud.receiptWords(s.receipt);
+      // the kit's own scene words (Miss, KO, Guard, a condition, the result), in the page's strings
+      sceneWords(s);
       shot.rec = { kind: s.kind, card: s.card, move: s.move?.id, variant: shot.variant, board: shot.board, framing: shot.framing ?? '', cut: Boolean(shot.cut), finish: Boolean(shot.finish), stops: shot.stops, t: performance.now(), duration: shot.compiled.duration, impact: shot.compiled.impact };
       M.shots.push(shot.rec);
       // every full attack brings its leader on; a scene in a band leaves the leaders' lines on the board
@@ -633,9 +636,9 @@ function render() {
       b.style.setProperty('--d', K.DISCIPLINE_COLOR[m.discipline] ?? '#999');
       b.innerHTML = hud.moveInner(m, i, me.id);
       b.onclick = () => command(m.axis ? { kind: 'move', index: i, wght: 600 } : { kind: 'move', index: i });
-      const show = (e) => { b.toggleAttribute('data-keyed', e?.type === 'focus' && hud.keyedRecently()); sayRest = `${m.name}: ${hud.cardMoveText(me.id, m)} ${DESC(m, me)}`; if (narrow()) say(sayRest); if (!busy && (e?.type !== 'focus' || hud.keyedRecently())) hud.aim(i); };
+      const show = (e) => { b.toggleAttribute('data-keyed', e?.type === 'focus' && hud.keyedRecently()); sayRest = txt('say.move', { name: m.name, about: hud.cardMoveText(me.id, m), rule: DESC(m, me) }); if (narrow()) say(sayRest); if (!busy && (e?.type !== 'focus' || hud.keyedRecently())) hud.aim(i); };
       b.addEventListener('pointerleave', () => hud.aim(null)); b.addEventListener('blur', () => hud.aim(null));
-      if (i === 0) sayRest = `${m.name}: ${hud.cardMoveText(me.id, m)} ${DESC(m, me)}`;
+      if (i === 0) sayRest = txt('say.move', { name: m.name, about: hud.cardMoveText(me.id, m), rule: DESC(m, me) });
       b.addEventListener('focus', show); b.addEventListener('pointerenter', show);
     });
     if (narrow()) say(sayRest);
@@ -645,10 +648,11 @@ function render() {
     const nums = engine.moveNumbers(me, m, m.axis ? 600 : undefined);
     const ok = legal.some((a) => a.kind === 'move' && a.index === i);
     b.setAttribute('aria-disabled', String(!can || !ok));
-    const parts = [nums.power > 0 ? `${nums.power} power` : '', `${Math.round(nums.accuracy * 100)}%`, `${me.pp[i]} of ${m.pp} PP`].filter(Boolean);
+    const parts = [nums.power > 0 ? txt('move.aria.power', { n: nums.power }) : '', txt('move.aria.accuracy', { n: Math.round(nums.accuracy * 100) }), txt('move.aria.pp', { n: me.pp[i], max: m.pp })].filter(Boolean);
     const filled = hud.moveFill(b, me, foe, m, i);
     const rg = filled.ring;
-    b.setAttribute('aria-label', `${m.name}, ${m.discipline}, ${parts.join(', ')}${nums.power > 0 && hudTone(rg) !== 'even' ? `, times ${Math.round(rg * 100) / 100} against ${title(foe.id)}` : ''}${filled.rng ? `, ${filled.rng.pctLo === filled.rng.pctHi ? filled.rng.pctLo : `${filled.rng.pctLo} to ${filled.rng.pctHi}`} percent of its HP` : ''}. ${hud.cardMoveText(me.id, m)}`);
+    const share = filled.rng ? (filled.rng.pctLo === filled.rng.pctHi ? String(filled.rng.pctLo) : txt('range', { lo: filled.rng.pctLo, hi: filled.rng.pctHi })) : '';
+    b.setAttribute('aria-label', txt('move.aria', { name: m.name, discipline: word('discipline', m.discipline), stats: listOf(parts), ring: nums.power > 0 && hudTone(rg) !== 'even' ? txt('move.aria.ring', { m: Math.round(rg * 100) / 100, foe: title(foe.id) }) : '', share: share ? txt('move.aria.share', { n: share }) : '', about: hud.cardMoveText(me.id, m) }));
   });
   moreBelow();
   $('#guard').setAttribute('aria-disabled', String(!can));
@@ -733,9 +737,9 @@ function openPanel(kind, chosen = null) {
   p.dataset.kind = kind;
   p.textContent = '';
   const head = el('div', 'panel-head', p);
-  el('b', '', head, kind === 'kit' ? (kitItem ? `${engine.itemById(kitItem).name} on` : 'Kit') : kind === 'replace' ? 'Send In' : 'Switch');
-  if (kind === 'kit') { const used = match.state.stats.player.items; const u = el('span', 'panel-uses', head); u.innerHTML = `${Math.max(0, 2 - used)} of 2 uses left this battle. Items act before moves.`; }
-  if (kind !== 'replace') { const c = el('button', 'key', head, 'Close'); c.type = 'button'; c.onclick = () => closePanel(true); }
+  el('b', '', head, kind === 'kit' ? (kitItem ? txt('panel.kitOn', { item: engine.itemById(kitItem).name }) : txt('panel.kit')) : kind === 'replace' ? txt('panel.sendIn') : txt('panel.switch'));
+  if (kind === 'kit') { const used = match.state.stats.player.items; const u = el('span', 'panel-uses', head); u.textContent = txt('panel.kitUses', { n: Math.max(0, 2 - used) }, Math.max(0, 2 - used)); }
+  if (kind !== 'replace') { const c = el('button', 'key', head, txt('panel.close')); c.type = 'button'; c.onclick = () => closePanel(true); }
   const list = el('div', 'panel-list', p);
   const team = match.state.sides.player.team;
   const bench = (f, i, ok, act) => {
@@ -765,10 +769,10 @@ function openPanel(kind, chosen = null) {
         b.dataset.tip = `item:${it.id}`;
         b.onclick = () => { kitItem = it.id; openPanel('kit'); };
       }
-      if (!usable.length) el('p', 'kit-none', list, 'Nothing in the Kit helps a card right now.');
+      if (!usable.length) el('p', 'kit-none', list, txt('kit.none'));
       if (rest.length) {
         const row = el('div', 'kit-rest', p);
-        row.innerHTML = `<span>${rest.length} not needed now</span>` + rest.map((it) => hud.itemChip(it)).join('');
+        row.innerHTML = `<span>${esc(txt('kit.rest', { n: rest.length }, rest.length))}</span>` + rest.map((it) => hud.itemChip(it)).join('');
       }
     } else {
       const it = kit.find((x) => x.id === kitItem);
@@ -800,8 +804,8 @@ function showResult() {
   r.hidden = false;
   r.textContent = '';
   const out = (s) => st.sides[s].team.filter((f) => f.hp <= 0).length;
-  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)
-  el('p', '', r, `${st.turn} turns   ${out('rival')} of 3 rival cards out   ${out('player')} of 3 yours out`);
+  el('h2', '', r, txt(win === 'draw' ? 'result.draw' : win === 'player' ? 'result.victory' : 'result.defeat')); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)
+  el('p', '', r, txt('result.summary', { turns: st.turn, rivalOut: out('rival'), yoursOut: out('player') }, st.turn));
   // on a phone the leaders' lines have no plate on the board: the winner's rides the result instead
   if (narrow() && win !== 'draw') {
     const t = leaderData(leadersNow[win === 'player' ? 0 : 1]);
@@ -809,11 +813,11 @@ function showResult() {
   }
   const keys = el('div', 'result-keys', r);
   const k = (label, f, plate = false) => { const b = el('button', plate ? 'key plate' : 'key', keys, label); b.type = 'button'; b.onclick = () => { Sound?.play('bt.ui.confirm'); f(); }; return b; };
-  const first = k('Rematch', () => start({ team: match.team, rival: match.rival, seed: (match.seed + 1) >>> 0 }), true);
-  k('New Rival', () => { const seed = (match.seed * 7 + 13) >>> 0; start({ team: match.team, rival: engine.rivalFor(match.team, seed), seed }); });
+  const first = k(txt('result.rematch'), () => start({ team: match.team, rival: match.rival, seed: (match.seed + 1) >>> 0 }), true);
+  k(txt('result.newRival'), () => { const seed = (match.seed * 7 + 13) >>> 0; start({ team: match.team, rival: engine.rivalFor(match.team, seed), seed }); });
   const log = match.record().log;
-  k('Watch Replay', () => start({ team: match.team, rival: match.rival, seed: match.seed, log, leaders: leadersNow.join(','), map: mapNow }, true));
-  el('a', 'key', keys, 'Leave').href = leaveHref();
+  k(txt('result.watchReplay'), () => start({ team: match.team, rival: match.rival, seed: match.seed, log, leaders: leadersNow.join(','), map: mapNow }, true));
+  el('a', 'key', keys, txt('result.leave')).href = leaveHref();
   if (!reduced()) r.animate([{ opacity: 0, transform: 'translate3d(0,24px,0)' }, { opacity: 1, transform: 'none' }], { duration: 360, easing: 'cubic-bezier(.2,.9,.1,1)' });
   first.focus({ preventScroll: true });
   render();
@@ -879,9 +883,9 @@ if (pace) {
   const sp = $('#speed');
   sp.innerHTML = '<svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><use href="#bi-speed"/></svg>';
   for (const s of pace.SPEEDS) {
-    const b = el('button', 'key', sp, `${s}×`);
+    const b = el('button', 'key', sp, txt('speed.key', { n: s }));
     b.type = 'button'; b.dataset.speed = String(s);
-    b.setAttribute('aria-label', `Speed ${s} times`);
+    b.setAttribute('aria-label', txt('speed.aria', { n: s }));
     // where only the speed in force shows (a phone, a narrow Arena rail), a press steps to the next
     b.onclick = () => { if ([...sp.querySelectorAll('button')].some((x) => !x.offsetParent)) { const i = pace.SPEEDS.indexOf(pace.speed); pace.setSpeed(pace.SPEEDS[(i + 1) % pace.SPEEDS.length]); } else pace.setSpeed(s); };
   }

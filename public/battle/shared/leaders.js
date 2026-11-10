@@ -6,6 +6,7 @@
 // mirrored. Yours stands with its back to you all battle long, the result included (the sheet's bottom row, poses 12
 // to 15); the rival faces you (the front rows).
 import { el } from './fx.js';
+import { leaderWords } from './strings.js';
 
 export const POSE = {
   idle: 0, breath: 1, talkClosed: 2, talkOpen: 3, command: 4, windup: 5, release: 6, hit: 7,
@@ -19,7 +20,7 @@ export const atlasUrl = (id) => new URL(`${id}.png`, BASE).href;
 
 /** The roster, and the named leaders' atlases decoded, so no pose ever waits on a picture. */
 export async function loadLeaders(ids) {
-  dataP ??= fetch(new URL('roster.json', BASE)).then((r) => r.json()).then((d) => { DATA = { atlas: d.atlas, byId: Object.fromEntries(d.trainers.map((t) => [t.id, backInward(t)])) }; });
+  dataP ??= fetch(new URL('roster.json', BASE)).then((r) => r.json()).then((d) => { DATA = { atlas: d.atlas, byId: Object.fromEntries(d.trainers.map((t) => [t.id, backInward(leaderWords(t))])) }; });
   await dataP;
   await Promise.all(ids.map((id) => {
     if (!atlases.has(id)) { const im = new Image(); im.src = atlasUrl(id); atlases.set(id, im.decode().catch(() => {})); }

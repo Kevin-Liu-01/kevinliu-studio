@@ -690,3 +690,22 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   /es/no-such-page 404. Rollback: `kevinliu-studio-bpspo4ajg` (d3fc558), docs/deploy.md. The first GitHub Actions run of
   check.yml did not start: the account is locked for a billing issue (the same annotation on turboslide), not a workflow
   error. This record is committed on release/next and not pushed.
+
+## 2026-11-10: the battle's own words in every language (feat/i18n, Claude Code)
+
+- **Type**: feature (branch, not pushed). Kevin: "CONTINUE EVERYTRHING" after choosing the strings-only backport.
+- **Rounds**: a session in the rounds repo gave round 5's battle one table of its words, branch
+  `play/strings-on-42ff51c7` (481a02cd: shared/strings.js, 271 keys plus 56 trainer lines; 0a919baa: the HUD reads
+  `card.<id>.move.<name>.feature` and `card.<id>.trait.rule` before the card's English). No round 6. English is
+  byte-identical to 42ff51c7 in both modes (its check). Keep that branch: the battle pin names its commit.
+- **Site**: battle pin 42ff51c7 -> 0a919baa (synced from an export: the 11-09 export of 30e69931 + 42ff51c7 with the
+  branch's changed files laid over it; no file deleted). `src/i18n/en/battle.json` (325 keys) is extracted from the
+  synced table, translated by GT; `/<code>/battle-strings.js` sets `BATTLE_STRINGS` before the modules, with the card
+  features (now in content.json) and trait rules. `scripts/i18n-polish.mjs` writes decimal commas and
+  `pnpm i18n:translate` saves the result to GT.
+- **Checked**: lock-check, build (256 pages) and the guard pass. Headless Chromium auto-matches to the result: es Mat
+  at 1440, ja Arena and de Mat on iPhone 14: translated turn tab, move panel descriptions, log, result keys and trainer
+  quotes, Leave to `/<code>#you=...`, tab title in the language, page width = viewport, no page errors.
+- **Open**: still English by design: card faces, move and trait names, the tooltip's move rule line (it carries
+  in-battle accuracy edits). GT wrote HP as both "PV" and "PS" in Spanish. The rounds worktree
+  `~/Documents/ChatGPT/portfolio-design-rounds/2026-10-30-strings` can go once its branch is kept elsewhere.

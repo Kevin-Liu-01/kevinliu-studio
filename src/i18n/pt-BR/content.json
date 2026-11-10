@@ -33,6 +33,12 @@
       "what": "Um editor de apresentações no navegador em que pessoas e agentes de IA editam a mesma apresentação.",
       "answer": "Turboslide é um editor de apresentações no navegador em que pessoas e agentes de IA editam a mesma apresentação.",
       "rule": "Turboslide carrega cada página antes do clique, então seu primeiro golpe após entrar em batalha tem prioridade.",
+      "features": [
+        "Pessoas e agentes de IA editam a mesma apresentação ao mesmo tempo, cada um com um ponteiro identificado pelo nome; as alterações aparecem em até um segundo.",
+        "Os slides do PowerPoint são exportados como capturas de tela, conferidas com o que aparece na tela antes de salvar, para que o arquivo fique igual ao editor.",
+        "As imagens são impressas em duas cores com um padrão de pontos de 8 por 8, e o resultado exportado é idêntico ao do editor, pixel a pixel.",
+        "Cada edição informa a versão da apresentação que usou como base. Edições feitas sobre versões antigas são recusadas, para que ninguém sobrescreva o trabalho mais recente."
+      ],
       "moves": [
         "{move} causa 30 de dano duas vezes, com 95% de chance. Pessoas e agentes de IA editam a mesma apresentação ao mesmo tempo, cada um com um cursor identificado pelo nome; as alterações aparecem em até um segundo.",
         "{move} causa 60 de dano. Os slides do PowerPoint são exportados como capturas de tela e comparados com o que aparece na tela antes de salvar, para que o arquivo fique igual ao que se vê no editor.",
@@ -44,6 +50,12 @@
       "what": "Um estúdio gratuito que transforma uma marca em peças gráficas, animações e modelos.",
       "answer": "Glyphfield é um estúdio gratuito que transforma uma marca em peças gráficas, animações e modelos.",
       "rule": "A mesma solicitação sempre gera a mesma peça gráfica, então seus golpes nunca erram.",
+      "features": [
+        "O Design Lab coloca o logotipo de uma marca sobre qualquer um dos 197 shaders em tempo real — texturas animadas pela placa de vídeo.",
+        "A ferramenta Animation transforma o texto, o logotipo e as imagens da marca em cenas com duração definida, exportadas como GIF ou MP4.",
+        "Cada ferramenta disponibiliza seu estado como código editável, e as alterações nesse código atualizam os mesmos controles visuais.",
+        "Agentes de IA criam modelos e planos de fundo com uma única requisição web e recebem uma imagem vetorial, sem precisar de navegador."
+      ],
       "moves": [
         "{move} causa 70 de dano, com 95% de chance. O Design Lab coloca o logotipo de uma marca sobre qualquer um dos 197 shaders em tempo real — texturas animadas geradas pela placa de vídeo.",
         "{move} causa 55 de dano e aumenta seu Ritmo. A ferramenta de Animação transforma o texto, o logotipo e as imagens da marca em cenas com duração definida, exportadas como GIF ou MP4.",
@@ -55,6 +67,12 @@
       "what": "Um assistente de voz que clica, digita e lê a tela do seu Mac.",
       "answer": "Jarhead é um assistente de voz que clica, digita e lê a tela do seu Mac.",
       "rule": "Jarhead reinicia após uma falha, então o primeiro golpe que o derrotaria o deixa com 1 de Vida.",
+      "features": [
+        "Em repouso, ele fica à escuta apenas do próprio nome no Mac. Antes de aceitar um comando, exige autenticação por Touch ID ou senha.",
+        "Comandos claros como \"rolar\" ou \"clicar em Salvar\" dispensam o modelo de IA e são executados em cerca de 8 ms.",
+        "Até três Jarheads extras dividem o trabalho de uma solicitação e atuam em paralelo, cada um com seu próprio modelo de IA.",
+        "Ele captura a tela, encontra um botão pelo rótulo e clica nele, usando 71 ferramentas para o Mac."
+      ],
       "moves": [
         "{move} ergue uma barreira de 40%. Em repouso, só fica à escuta do próprio nome no Mac. Antes de aceitar um comando, exige autenticação com Touch ID ou senha.",
         "{move} causa 35 de dano e age primeiro. Comandos claros como “rolar” ou “clicar em Salvar” dispensam o modelo de IA e são executados em cerca de 8 ms.",
@@ -66,6 +84,12 @@
       "what": "Uma família de fontes gratuita em cinco estilos para interfaces, leitura prolongada e código.",
       "answer": "Katagami é uma família de fontes gratuita em cinco estilos para interfaces, leitura prolongada e código.",
       "rule": "Seus pesos vão de 100 a 900, e você ajusta o Eixo de peso: quanto maior o peso, maior o dano e a chance de errar.",
+      "features": [
+        "O site desenha os contornos da palavra Katagami; arraste qualquer ponto de uma curva para mudar a forma da letra.",
+        "Cada estilo de Katagami é uma fonte variável: um arquivo com todos os pesos, além de uma versão em itálico correspondente.",
+        "Sans, Round, Text, Serif e Mono usam a mesma estrutura de base, permitindo que o controle deslizante do site transforme uma palavra passando pelos cinco estilos.",
+        "Katagami Mono, o estilo para programação, dá formas bem distintas a 0, O, 1, l e I, evitando confusões na leitura do código."
+      ],
       "moves": [
         "{move} causa 120 de dano, com 95% de chance. O site desenha a palavra Katagami em contornos; arraste qualquer ponto de uma curva para mudar a forma da letra.",
         "{move} causa 135 de dano com wght 600. Cada estilo de Katagami é uma fonte variável: um arquivo com todos os pesos, além de uma versão em itálico correspondente.",
@@ -77,6 +101,12 @@
       "what": "Um jogo gratuito de tanques no navegador: 7 contra 7 online, 33 campos de batalha destrutíveis, 13 modos.",
       "answer": "Claude of Tanks é um jogo gratuito de tanques no navegador: 7 contra 7 online, 33 campos de batalha destrutíveis, 13 modos.",
       "rule": "A simulação do jogo usa uma semente, então o dano desta carta só varia em um acerto crítico.",
+      "features": [
+        "Dispara um dardo perfurante, um dos cinco tipos de projétil, cujo impacto é calculado conforme a placa de blindagem atingida e o ângulo do acerto.",
+        "Um replay em raio X mostra por que um tanque foi destruído: o trajeto do projétil pela blindagem e as peças que ele destruiu.",
+        "Cada tanque tem um único registro com blindagem, canhão, tripulação e aparência, mantendo os mesmos dados na garagem, nos bots e na batalha.",
+        "As batalhas são de 7 contra 7 e, com uma simples opção, passam a 14 contra 14, com bots ou amigos em salas multijogador."
+      ],
       "moves": [
         "{move} causa 80 de dano, com 95% de chance, e atravessa 50% de uma barreira. Dispara um dardo perfurante, um dos cinco tipos de munição, cujo impacto é calculado conforme a placa de blindagem atingida e o ângulo do acerto.",
         "{move} causa 65 de dano e elimina um alvo com menos de 35% de vida. Um replay em raio X mostra por que um tanque foi destruído: a trajetória do projétil pela blindagem e as peças que destruiu.",
@@ -88,6 +118,12 @@
       "what": "Um organizador do Gmail que usa regras fáceis de ler e IA de baixo custo, com todas as ações reversíveis.",
       "answer": "Mailroom é um organizador do Gmail que usa regras fáceis de ler e IA de baixo custo, com todas as ações reversíveis.",
       "rule": "Regras de envio para a lixeira não são executadas se ultrapassarem o limite, então nenhum golpe tira mais da metade da sua Vida.",
+      "features": [
+        "Regras que cabem em uma tela viram filtros do Gmail, para que novas mensagens recebam marcadores assim que chegam, sem custo.",
+        "Um modelo de IA responde, em forma de probabilidades, a cinco perguntas sobre cada e-mail não coberto pelas regras, como \"exige alguma ação?\".",
+        "Pergunte com palavras simples, como \"quem ainda não me respondeu\", e receba uma busca editável do Gmail com resultados ordenados por relevância.",
+        "Cada execução começa com uma prévia e gera um comprovante. A opção Desfazer restaura marcadores, filtros e política, por completo ou por mensagem."
+      ],
       "moves": [
         "{move} causa 65 de dano e age primeiro. Regras que cabem em uma única tela viram filtros do Gmail, e novos e-mails recebem marcadores assim que chegam, sem custo.",
         "{move} causa 21 de dano cinco vezes, com 95% de chance. Um modelo de IA responde, em forma de probabilidades, a cinco perguntas sobre cada e-mail que as regras não cobrem, como “exige alguma ação?”.",
@@ -99,6 +135,12 @@
       "what": "Uma ferramenta de linha de comando para agentes de IA pesquisarem na web no seu próprio navegador.",
       "answer": "Local Search é uma ferramenta de linha de comando para agentes de IA pesquisarem na web no seu próprio navegador.",
       "rule": "Buscas repetidas retornam resultados salvos em um tempo mediano de 6,5 ms, então um golpe reutilizado age primeiro.",
+      "features": [
+        "Seu agente pesquisa na web pelo navegador que você já usa, sem um serviço de busca separado.",
+        "Os resultados chegam em JSON com uma estrutura fixa, e as falhas incluem um código de erro que orienta a ação dos agentes.",
+        "Seu benchmark de julho de 2026 registrou um tempo mediano de 148,7 ms por busca, combinando novas buscas com respostas obtidas de resultados salvos.",
+        "Cada resultado é curto, com mediana de 53,4 tokens (os fragmentos de palavras que os modelos de IA leem), permitindo que os agentes processem mais resultados."
+      ],
       "moves": [
         "{move} causa 61 de dano, com 95% de chance. Seu agente pesquisa na web pelo navegador que você já usa, sem precisar de um serviço de busca separado.",
         "{move} causa 57 de dano. Os resultados chegam em JSON com uma estrutura fixa, e as falhas trazem um código de erro que os agentes podem usar para agir.",
@@ -110,6 +152,12 @@
       "what": "Bichinhos em pixel art que ficam ao lado do seu agente de programação e mostram o que ele está fazendo.",
       "answer": "Agent Pets: Bichinhos em pixel art que ficam ao lado do seu agente de programação e mostram o que ele está fazendo.",
       "rule": "Os bichinhos repetem cada ação três vezes, então golpes com múltiplos acertos atingem o alvo três vezes.",
+      "features": [
+        "Quando está parado, o bichinho olha na direção do seu ponteiro, usando 16 poses desenhadas, uma por direção.",
+        "A animação de corrida exibe oito quadros em pixel art por 120 ms cada e mantém o último por 220 ms.",
+        "Quando seu agente precisa de você, um script local opcional faz o bichinho esperar, e o indicador permanece até você ler a mensagem.",
+        "Cada quadro mantém pelo menos 16 pixels livres ao redor do bichinho, e uma auditoria rejeita qualquer quadro em que ele toque a borda."
+      ],
       "moves": [
         "{move} causa 100 de dano e age primeiro. Quando está parado, o bichinho olha na direção do seu cursor, usando 16 poses desenhadas, uma para cada direção.",
         "{move} causa 40 de dano, de 2 a 3 vezes, com 95% de chance de acerto. A animação de corrida exibe oito quadros em pixel art por 120 ms cada e depois mantém o último por 220 ms.",
@@ -121,6 +169,12 @@
       "what": "Um serviço que atualiza diariamente os arquivos de habilidades de agentes de IA com base em suas fontes.",
       "answer": "Loop é um serviço que atualiza diariamente os arquivos de habilidades de agentes de IA com base em suas fontes.",
       "rule": "As habilidades melhoram a cada atualização, então seu Alcance aumenta a cada três turnos, até 2 vezes.",
+      "features": [
+        "Cada habilidade lista as fontes de que depende, como feeds, documentação, blogs e GitHub. Essas fontes são verificadas antes de cada atualização.",
+        "Um agente de IA lê o que mudou, pesquisa na web e reescreve a habilidade em uma nova versão.",
+        "Cada atualização mostra o antes e o depois da habilidade, com todas as linhas removidas e adicionadas destacadas para revisão.",
+        "Uma tarefa diária coloca na fila as habilidades que precisam de atualização, e processos na nuvem executam essas atualizações sem supervisão."
+      ],
       "moves": [
         "{move} causa 60 de dano e fortalece seu próximo golpe. Cada habilidade lista as fontes das quais depende, como feeds, documentação, blogs e GitHub, e cada atualização começa examinando essas fontes.",
         "{move} causa 85 de dano, com 95% de chance de acerto. Um agente de IA lê o que mudou, pesquisa na web e reescreve a habilidade em uma nova versão.",
@@ -132,6 +186,12 @@
       "what": "Um kit de código aberto e um painel para executar agentes de IA em máquinas na nuvem.",
       "answer": "Agent Machines é um kit de código aberto e um painel para executar agentes de IA em máquinas na nuvem.",
       "rule": "Máquinas paradas preservam os arquivos. Fora de jogo, mantém as alterações de atributos, mas perde os efeitos de estado.",
+      "features": [
+        "Ele cria uma máquina na nuvem para um agente, executa o trabalho, mostra os arquivos e logs e depois remove a máquina.",
+        "Uma única interface executa Claude Code, Codex, Hermes ou OpenClaw, e basta uma alteração para trocar de agente.",
+        "Uma única configuração define a nuvem, permitindo que um agente rode em Daytona, E2B, Sprites ou Vercel Sandbox.",
+        "Os agentes podem carregar qualquer uma das 161 habilidades e qualquer um dos 39 servidores de ferramentas, e o painel mostra quais foram verificados."
+      ],
       "moves": [
         "{move} aumenta sua Resistência. Inicia uma máquina na nuvem para um agente, executa o trabalho dele, mostra seus arquivos e logs e depois elimina a máquina.",
         "{move} causa 22 de dano, de 1 a 4 vezes, com 95% de chance de acerto. Uma única interface executa Claude Code, Codex, Hermes ou OpenClaw, então basta uma alteração para trocar de agente.",
@@ -143,6 +203,12 @@
       "what": "Um laboratório de design com 27 modelos de sites funcionais e seus próprios motores gráficos.",
       "answer": "Prototemplate é um laboratório de design com 27 modelos de sites funcionais e seus próprios motores gráficos.",
       "rule": "Suas animações ficam pausadas quando estão fora da tela, então, fora de jogo, recupera 6% de Vida por turno.",
+      "features": [
+        "Um buraco negro desenhado em tempo real transforma as linhas da pauta da página em arcos, e seu ponteiro também pode curvá-las.",
+        "Dez padrões animados de pontos quadrados compartilham uma única área gráfica, permitindo que uma página exiba vários ao mesmo tempo.",
+        "Glifos de oito sistemas de escrita caem como chuva e se juntam para formar a palavra \"idioma\", passando de um sistema de escrita para outro.",
+        "Um título se desfaz em glifos e se recompõe com a mesma frase no idioma seguinte, inclusive nos que se escrevem da direita para a esquerda."
+      ],
       "moves": [
         "{move} causa 85 de dano, com 90% de chance de acerto. Um buraco negro desenhado em tempo real transforma as linhas pautadas da página em arcos, e seu cursor também pode curvá-las.",
         "{move} causa 28 de dano, de 2 a 3 vezes, com 95% de chance de acerto. Dez padrões animados de pontos quadrados compartilham uma única superfície gráfica, permitindo que uma página exiba vários ao mesmo tempo.",
@@ -154,6 +220,12 @@
       "what": "Um site de aniversário que os amigos enchem de cartões e que se transforma em uma ilha 3D.",
       "answer": "bday.land é um site de aniversário que os amigos enchem de cartões e que se transforma em uma ilha 3D.",
       "rule": "A criaturinha de um amigo arremessa até cinco rabiscos, então, quando +999 de Amor acerta, os cinco atingem o alvo.",
+      "features": [
+        "Na ilha, a criaturinha de um amigo lança em você os rabiscos que ele desenhou no cartão e depois recita a mensagem dele.",
+        "O primeiro de doze jogos do festival: acerte gnomos por 45 segundos, mas nunca uma lhama.",
+        "Os amigos acessam um único link, sem precisar de conta, e montam um cartão em sete etapas, da mensagem à selfie.",
+        "O bolo tem uma vela para cada amigo. Ela acende quando você abraça a criaturinha desse amigo, mostrando quem você já encontrou."
+      ],
       "moves": [
         "{move} causa 27 de dano, de 1 a 5 vezes, com 95% de chance de acerto. Na ilha, a criaturinha de um amigo atira em você os rabiscos que ele desenhou no cartão e depois fala a mensagem dele.",
         "{move} causa 105 de dano, com 90% de chance. O primeiro de doze jogos de festival: acerte gnomos por 45 segundos, mas nunca uma lhama.",
@@ -165,6 +237,12 @@
       "what": "O site do clube de powerlifting de Princeton, com toda a identidade visual desenhada em código.",
       "answer": "Princeton Powerlifting é o site do clube de powerlifting de Princeton, com toda a identidade visual desenhada em código.",
       "rule": "As versões em kg e lb já estão na página, então alternar entre elas não faz a tela piscar, e esta carta não pode ser atordoada.",
+      "features": [
+        "O logotipo principal do clube, desenhado em código: uma cabeça de tigre sobre uma barra com anilhas, acima do nome do clube.",
+        "Um alfabeto de letras em bloco com cantos recortados, desenhadas como formas em código, para criar logotipos sem precisar de um arquivo de fonte.",
+        "84 ícones de levantamento de peso, competições e do clube, desenhados na mesma grade e com a mesma espessura de traço, além de silhuetas de agachamento, supino e levantamento terra.",
+        "Cada logotipo tem seis versões de cores para fundos escuros e claros, todas geradas pelo mesmo código para manter a consistência visual."
+      ],
       "moves": [
         "{move} causa 130 de dano. O logotipo principal do clube, desenhado em código: uma cabeça de tigre sobre uma barra com anilhas, acima do nome do clube.",
         "{move} causa 105 de dano e age primeiro. Um alfabeto de letras em bloco com cantos recortados, desenhado com formas em código, para criar logotipos tipográficos sem precisar de um arquivo de fonte.",
@@ -176,6 +254,12 @@
       "what": "Uma ferramenta de votação às cegas que classifica as opções de uma equipe com um sistema de pontuação como o do xadrez.",
       "answer": "Elo é uma ferramenta de votação às cegas que classifica as opções de uma equipe com um sistema de pontuação como o do xadrez.",
       "rule": "Elo recompensa as vitórias inesperadas, então causa mais dano a cartas com soma de atributos maior e menos às de soma menor.",
+      "features": [
+        "Cada confronto mostra duas opções identificadas por códigos de 12 caracteres, para que nenhum nome influencie o voto.",
+        "As pontuações são recalculadas a partir do registro de votos: cada opção começa com 1000 pontos, e cada voto contabilizado altera a pontuação em até 32 pontos.",
+        "Todas as 16 ações administrativas também estão disponíveis como ferramentas para agentes de IA, permitindo que um agente faça tudo o que o administrador faz.",
+        "Quem vota pode voltar a qualquer confronto e mudar a escolha; vale o voto mais recente, com um limite de 10 votos por par."
+      ],
       "moves": [
         "{move} causa 85 de dano. Cada confronto mostra duas opções identificadas por códigos de 12 caracteres, para que nenhum nome influencie quem vota.",
         "{move} causa 110 de dano, com 95% de chance. As pontuações são recalculadas a partir do registro de votos: as opções começam com 1000 pontos, e cada voto contabilizado altera a pontuação em até 32 pontos.",
@@ -187,6 +271,12 @@
       "what": "Uma mosca-das-frutas em 3D no Claude of Tanks, com a aceleração controlada por 124 neurônios simulados.",
       "answer": "CoTFly é uma mosca-das-frutas em 3D no Claude of Tanks, com a aceleração controlada por 124 neurônios simulados.",
       "rule": "Os disparos dos neurônios ajustam sua aceleração, então, após dois turnos em jogo, seu Ritmo passa a ser 1,5 vez o valor inicial.",
+      "features": [
+        "Cada um dos 124 neurônios acumula carga, perde parte dela e dispara ao ultrapassar um limiar de tensão, com cálculos em tempo real a cada milissegundo.",
+        "75 neurônios inibitórios reduzem a atividade de 49 neurônios motores por meio de 1,106 conexões mapeadas em um cérebro real de mosca, reduzindo a aceleração.",
+        "Os controles de pilotagem dão à mosca 15 segundos de açúcar: seus neurônios motores disparam mais rápido e ela conduz o veículo para mais perto dos alvos.",
+        "O tanque só dispara enquanto uma pata dianteira mantém a mira e a outra aciona o disparo, após 90 ms de deslocamento."
+      ],
       "moves": [
         "{move} causa 120 de dano, com 95% de chance. Cada um dos 124 neurônios acumula e perde carga e dispara ao ultrapassar um limiar de tensão, com cálculos em tempo real a cada milissegundo.",
         "{move} causa 75 de dano e tem 30% de chance de atordoar. 75 neurônios inibitórios silenciam 49 neurônios motores por meio de 1,106 conexões mapeadas no cérebro de uma mosca real, reduzindo a aceleração.",
@@ -198,6 +288,12 @@
       "what": "Um aplicativo que simula um chat de equipe para testar agentes de IA, com avaliação de cada execução.",
       "answer": "Relay é um aplicativo que simula um chat de equipe para testar agentes de IA, com avaliação de cada execução.",
       "rule": "Uma verificação oculta lê apenas o estado final, então seus ataques ignoram barreiras e aumentos de Resistência.",
+      "features": [
+        "Escolha um modelo e uma tarefa e acompanhe cada ação que ele executa em um navegador real.",
+        "Dois modelos executam a mesma tarefa com os mesmos dados iniciais em ambientes de trabalho novos, lado a lado, cada um avaliado separadamente.",
+        "Um modelo de IA escolhe uma ação em um menu de ações visíveis, e o painel mostra a probabilidade que ele atribuiu a cada uma.",
+        "Qualquer execução gravada pode ser reproduzida na interface real, passo a passo, com suas caixas de diálogo, textos digitados e alvos."
+      ],
       "moves": [
         "{move} causa 100 de dano, com 95% de chance. Escolha um modelo e uma tarefa e acompanhe cada ação que ele realiza em um navegador real.",
         "{move} causa 45 de dano duas vezes, com 95% de chance. Dois modelos executam a mesma tarefa lado a lado, com os mesmos dados iniciais e em ambientes de trabalho novos, cada um avaliado separadamente.",
@@ -209,6 +305,12 @@
       "what": "Um jogo de defesa de torres para navegador ambientado em Princeton, com 26 fases.",
       "answer": "Princeton TD é um jogo de defesa de torres para navegador ambientado em Princeton, com 26 fases.",
       "rule": "As ondas de inimigos seguem listas fixas, então seus ataques de múltiplos golpes acertam todos eles.",
+      "features": [
+        "A melhoria final do Palmer Mortar pode ser um lançador guiado de seis módulos que dispara salvas, com mira automática ou manual.",
+        "A primeira fase, Poe Field, começa com três grupos de inimigos que surgem em momentos programados, cada um com quantidade e espaçamento definidos.",
+        "O terreno e os caminhos são desenhados uma vez e mantidos até você alterar o zoom. Assim, a cada quadro, apenas torres, inimigos e efeitos são redesenhados.",
+        "O modo livre é uma arena sem fim para testar configurações de torres, com um chefe a cada cinco rodadas."
+      ],
       "moves": [
         "{move} causa 100 de dano, com 90% de chance, e age primeiro. A melhoria final do Palmer Mortar pode ser um lançador de mísseis guiados com seis módulos que dispara salvas, com mira automática ou manual.",
         "{move} causa 45 de dano três vezes. A primeira fase, Poe Field, começa com três grupos de inimigos em intervalos programados, cada um com quantidade e espaçamento definidos.",
@@ -220,6 +322,12 @@
       "what": "Uma wiki pessoal escrita e mantida atualizada por agentes de IA a partir de fontes salvas.",
       "answer": "Kevin Wiki é uma wiki pessoal escrita e mantida atualizada por agentes de IA a partir de fontes salvas.",
       "rule": "As páginas têm links para páginas anteriores: cada golpe diferente acertado em jogo acrescenta 10% de dano, até 30%.",
+      "features": [
+        "Um grafo 3D em tempo real representa páginas públicas como pontos e seus links como linhas.",
+        "A busca roda na própria máquina, sem usar a nuvem: combina resultados por palavra-chave e significado, e um modelo de IA local os reordena.",
+        "Cole um link e peça para adicioná-lo; um agente de IA cria a página, as páginas relacionadas, os links de retorno, as citações e a entrada no índice.",
+        "O script de diagnóstico avalia a saúde da wiki de 0 a 100; o reparo automático aplica as correções seguras e executa o diagnóstico novamente para verificar o resultado."
+      ],
       "moves": [
         "{move} causa 85 de dano, com 90% de chance. Um grafo 3D em tempo real representa páginas públicas como pontos e os links entre elas como linhas.",
         "{move} causa 60 de dano e age primeiro. A busca roda na própria máquina, sem usar a nuvem: combina resultados por palavras-chave e por significado, e um modelo local de IA os reordena.",
@@ -231,6 +339,12 @@
       "what": "Um teste de desempenho que coloca dois ambientes isolados de execução de código na nuvem para disputar a mesma tarefa.",
       "answer": "Sandbox Arena é um teste de desempenho que coloca dois ambientes isolados de execução de código na nuvem para disputar a mesma tarefa.",
       "rule": "Cada execução usa um ambiente isolado novo, que é excluído ao final, por isso seus efeitos de estado são removidos a cada turno.",
+      "features": [
+        "Dois sandboxes iniciam a mesma tarefa ao mesmo tempo e transmitem seus logs lado a lado, para você acompanhar a corrida ao vivo.",
+        "Ao final de cada tarefa, o resultado é comparado com uma resposta conhecida. Assim, uma execução rápida, mas incorreta, recebe zero.",
+        "Os rankings podem ordenar os provedores pelo tempo excedido em 1 de cada 20 execuções, já que as médias escondem travamentos longos e raros.",
+        "As chaves da sua própria conta são usadas em um teste real, lidas uma única vez, expiram em dez minutos e nunca chegam aos logs nem ao sandbox."
+      ],
       "moves": [
         "{move} causa 40 de dano duas vezes, com 95% de chance. Dois ambientes isolados iniciam a mesma tarefa ao mesmo tempo e exibem seus logs lado a lado em tempo real, para você acompanhar a disputa ao vivo.",
         "{move} causa 80 de dano e finaliza um alvo com menos de 35% de vida. Ao fim de cada tarefa, o resultado é comparado com uma resposta conhecida, então uma execução rápida, mas com erros, recebe nota zero.",
@@ -242,6 +356,12 @@
       "what": "Uma anfitriã de IA com quem os convidados trocam mensagens para confirmar a chegada, cumprir missões e pedir bebidas.",
       "answer": "Ariadne é uma anfitriã de IA com quem os convidados trocam mensagens para confirmar a chegada, cumprir missões e pedir bebidas.",
       "rule": "Ignora mensagens repetidas, então golpes com múltiplos acertos só a atingem uma vez.",
+      "features": [
+        "Os convidados confirmam a chegada enviando o primeiro nome por mensagem, sem precisar de aplicativo, e recebem uma gema colorida, uma palavra secreta e uma missão.",
+        "Encontre dois convidados cujas gemas formem, com a sua, um triângulo no círculo cromático. Depois, envie os IDs deles por mensagem para ganhar 100 pontos.",
+        "Peça uma bebida por mensagem com suas próprias palavras; o pedido é identificado no cardápio e entra na fila, e você recebe uma mensagem quando ele estiver pronto.",
+        "Um telão ordena os cartões de todos os convidados por pontuação, com atualização a cada 1,5 segundos e sem perder os dados ao recarregar a página."
+      ],
       "moves": [
         "{move} causa 65 de dano e age primeiro. Os convidados confirmam a chegada enviando apenas o primeiro nome por mensagem, sem aplicativo, e recebem uma gema colorida, uma palavra secreta e uma missão.",
         "{move} causa 30 de dano três vezes, com 95% de chance. Encontre dois convidados cujas gemas formem, com a sua, um triângulo no círculo cromático e envie os IDs deles por mensagem para ganhar 100 pontos.",
@@ -253,6 +373,12 @@
       "what": "Uma biblioteca com mais de 350 componentes, todos estilizados a partir de um único arquivo Markdown.",
       "answer": "Sigil UI é uma biblioteca com mais de 350 componentes, todos estilizados a partir de um único arquivo Markdown.",
       "rule": "As predefinições são verificadas ao serem carregadas e os valores inseguros são rejeitados, por isso a carta é imune a envenenamento.",
+      "features": [
+        "Um comando aplica um dos 44 visuais completos, alterando todos os 519 valores de estilo, sem precisar editar nenhum componente.",
+        "Todos os 519 valores de estilo, das cores às animações, ficam em um único arquivo Markdown, e basta uma compilação para mudar o estilo de todos os componentes.",
+        "A configuração instala dez habilidades: arquivos de orientação que ensinam aos agentes de programação com IA os valores de estilo, os leiautes e as regras de acabamento do Sigil.",
+        "O diagnóstico executa sete verificações na configuração de um projeto, dos ajustes aos arquivos de agentes, e marca cada resultado como pass, warn ou fail."
+      ],
       "moves": [
         "{move} causa 60 de dano e assume a disciplina que causa mais dano. Um comando aplica um dos 44 visuais completos, alterando todos os 519 valores de estilo, sem precisar editar nenhum componente.",
         "{move} causa 85 de dano, com 90% de chance. Todos os 519 valores de estilo, das cores às animações, ficam em um único arquivo Markdown, e uma única compilação atualiza o visual de todos os componentes.",
@@ -264,6 +390,12 @@
       "what": "Um terminal retrô de aniversário em que senhas digitadas ativam efeitos ocultos.",
       "answer": "050525 é um terminal retrô de aniversário em que senhas digitadas ativam efeitos ocultos.",
       "rule": "As senhas são reconhecidas independentemente de maiúsculas, minúsculas ou espaços, então sua precisão aumenta em 5 pontos, até o limite de 100.",
+      "features": [
+        "Digite qualquer palavra: 143 senhas, a maioria não listada, ativam confetes, música, velas ou um novo modo de tela.",
+        "A tecla Tab completa qualquer uma das 432 palavras e comandos conhecidos, permitindo digitar uma senha com poucas teclas.",
+        "O bolo começa com quatro velas acesas; digite ou clique para acendê-las ou apagá-las. As velas acesas dão um tom quente à tela.",
+        "44 conquistas chegam como mensagens na tela enquanto você joga, e a caixa de entrada e as recompensas ficam salvas para sua próxima visita."
+      ],
       "moves": [
         "{move} causa 90 de dano, com 90% de chance. Digite qualquer palavra: 143 senhas, a maioria não listada, ativam confetes, música, velas ou um novo modo de tela.",
         "{move} causa 60 de dano e age primeiro. A tecla Tab completa qualquer uma das 432 palavras e comandos conhecidos, então bastam poucas teclas para digitar uma senha.",
@@ -275,6 +407,12 @@
       "what": "Um espaço de trabalho para pesquisadores encontrarem, lerem e escreverem artigos com a ajuda de uma IA.",
       "answer": "Sevenfold é um espaço de trabalho para pesquisadores encontrarem, lerem e escreverem artigos com a ajuda de uma IA.",
       "rule": "As três listas de busca só melhoram a classificação de um artigo, por isso seus golpes nunca encontram resistência.",
+      "features": [
+        "A busca classifica artigos por palavras-chave, significado e relevância para seu projeto ao mesmo tempo e depois combina as três listas.",
+        "Um modelo de IA lê o título, os autores e o ano de um PDF enviado e sugere vinculá-lo a um artigo correspondente já disponível na biblioteca.",
+        "Faça perguntas sobre os artigos anexados: um modelo de IA lê cada PDF na íntegra, compara os artigos e formata as expressões matemáticas.",
+        "Busca, conversa, fontes e rascunhos são visualizações de um mesmo projeto, e cada uma mantém seus resultados quando você alterna entre elas ou recarrega a página."
+      ],
       "moves": [
         "{move} causa 30 de dano três vezes, com 95% de chance. A busca classifica artigos por palavras-chave, significado e adequação ao seu projeto ao mesmo tempo e depois combina as três listas.",
         "{move} ergue uma barreira de 40%. Um modelo de IA lê o título, os autores e o ano de um PDF enviado e sugere vinculá-lo a um artigo correspondente que já esteja na biblioteca.",
@@ -286,6 +424,12 @@
       "what": "Uma ferramenta de avaliação de hackathons que distribui equipes entre jurados de forma equilibrada, em grupos de cinco.",
       "answer": "Podium é uma ferramenta de avaliação de hackathons que distribui equipes entre jurados de forma equilibrada, em grupos de cinco.",
       "rule": "Uma segunda rodada com critérios mais flexíveis sempre encontra equipes para o jurado avaliar, por isso até os golpes que erram causam metade do dano.",
+      "features": [
+        "As equipes com menos avaliações têm prioridade na visita dos avaliadores, para que todos os projetos alcancem um número suficiente de avaliações ao mesmo tempo.",
+        "Cada avaliador fica responsável por cinco equipes próximas no mesmo andar, visitadas em um único percurso para reduzir o deslocamento.",
+        "Cada avaliador escolhe e ordena as três melhores entre cinco equipes, atribuindo 3, 2 e 1 pontos, e a classificação das equipes é definida pela média.",
+        "Cada equipe é representada por um ponto que fica cinza até a primeira avaliação e ganha um tom de laranja mais vivo a cada nova avaliação, destacando as equipes ainda não avaliadas."
+      ],
       "moves": [
         "{move} causa 85 de dano. As equipes com menos avaliações recebem jurados primeiro, para que todos os projetos alcancem um número suficiente de avaliações ao mesmo tempo.",
         "{move} causa 16 de dano cinco vezes, com 95% de chance. Cada jurado avalia cinco equipes próximas no mesmo andar, em um único percurso, reduzindo o deslocamento.",
@@ -297,6 +441,12 @@
       "what": "Uma competição de matemática on-line sem fins lucrativos para equipes de estudantes de até 18 anos.",
       "answer": "OMMC é uma competição de matemática on-line sem fins lucrativos para equipes de estudantes de até 18 anos.",
       "rule": "As melhores equipes avançam para uma rodada de demonstrações, por isso, ao chegar à metade da Vida, seu Alcance aumenta para 1,5 vez o valor original.",
+      "features": [
+        "O PDF da prova abre ao lado de 25 campos de resposta, e o botão Enviar só é liberado quando todos os 25 estão preenchidos.",
+        "Até quatro estudantes podem se inscrever como uma única equipe, cada um informando idade, série e escola, ou a palavra anônimo.",
+        "Busque problemas anteriores por texto, tema e dificuldade e abra cada solução formatada quando quiser.",
+        "Cada resposta é salva no navegador enquanto você digita e recuperada do servidor quando você entra na conta, para que nada se perca."
+      ],
       "moves": [
         "{move} causa 90 de dano, com 95% de chance. O PDF da prova abre ao lado de 25 campos de resposta, e o botão Enviar só é liberado quando todos os 25 estão preenchidos.",
         "{move} causa 28 de dano, de 1 a 4 vezes, com 95% de chance. Até quatro estudantes se inscrevem em uma mesma equipe, cada um informando idade, ano escolar e escola, ou a palavra anonymous.",
@@ -308,6 +458,12 @@
       "what": "A revista da General Translation, em que cada história é uma edição com capa interativa.",
       "answer": "Atlas é a revista da General Translation, em que cada história é uma edição com capa interativa.",
       "rule": "Uma página dupla vira duas páginas, por isso seus golpes de múltiplos acertos atingem o alvo pelo menos duas vezes.",
+      "features": [
+        "A capa de cada edição é uma simulação de fluidos em tempo real, com três cores próprias, que se agita com o movimento do seu ponteiro.",
+        "Cada matéria é diagramada em páginas de revista com duas colunas de texto, e um clique vira a página em torno da lombada.",
+        "Escolha um dos nove idiomas no seletor do globo, e todos os títulos das matérias mudam para esse idioma.",
+        "Um globo desenhado com pontos gira até a cidade associada ao idioma escolhido e marca suas coordenadas; depois, só volta a ser redesenhado quando gira novamente."
+      ],
       "moves": [
         "{move} causa 90 de dano, com 95% de chance. A capa de cada edição é uma simulação de fluidos em tempo real, com uma paleta própria de três cores, que você movimenta com o cursor.",
         "{move} causa 28 de dano, de 1 a 4 vezes, com 95% de chance. Cada história é diagramada em páginas de revista com duas colunas de texto, e um clique vira cada página pela lombada.",

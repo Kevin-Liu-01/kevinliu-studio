@@ -33,6 +33,12 @@
       "what": "Ein Präsentationseditor im Browser, in dem Menschen und KI-Agenten dieselbe Präsentation bearbeiten.",
       "answer": "Turboslide ist ein Präsentationseditor im Browser, in dem Menschen und KI-Agenten dieselbe Präsentation bearbeiten.",
       "rule": "Turboslide lädt jede Seite schon vor dem Klick. Deshalb hat sein erster Spielzug nach dem Einwechseln Vorrang.",
+      "features": [
+        "Menschen und KI-Agenten bearbeiten gleichzeitig dieselbe Präsentation, jeweils mit einem namentlich gekennzeichneten Zeiger; Änderungen erscheinen innerhalb einer Sekunde.",
+        "PowerPoint-Folien werden als Bildschirmaufnahmen exportiert und vor dem Speichern mit der Bildschirmanzeige abgeglichen, damit die Datei genauso aussieht wie im Editor.",
+        "Bilder werden mithilfe eines 8 mal 8 Punkte großen Rasters zweifarbig gedruckt. Die Darstellung im Editor und der Export stimmen Pixel für Pixel überein.",
+        "Jede Änderung gibt an, auf welcher Präsentationsversion sie basiert. Änderungen auf Grundlage einer alten Version werden abgelehnt, damit niemand neuere Arbeit überschreibt."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Trefferchance zweimal 30 Schaden. Menschen und KI-Agenten bearbeiten gleichzeitig dieselbe Präsentation, jeweils mit einem eigenen, namentlich gekennzeichneten Zeiger; Änderungen sind innerhalb einer Sekunde sichtbar.",
         "{move} verursacht 60 Schaden. PowerPoint-Folien werden als Screenshots exportiert und vor dem Speichern mit der Bildschirmanzeige abgeglichen, damit die Datei der Ansicht im Editor entspricht.",
@@ -44,6 +50,12 @@
       "what": "Ein kostenloses Studio, das aus einer Marke Grafiken, Animationen und Vorlagen macht.",
       "answer": "Glyphfield ist ein kostenloses Studio, das aus einer Marke Grafiken, Animationen und Vorlagen macht.",
       "rule": "Dieselbe Anfrage liefert immer dieselbe Grafik – deshalb treffen seine Spielzüge immer.",
+      "features": [
+        "Design Lab platziert das Logo einer Marke über einem von 197 Echtzeit-Shadern – animierten Texturen, die von der Grafikkarte erzeugt werden.",
+        "Das Animationswerkzeug verwandelt Text, Logo und Bilder einer Marke in zeitlich abgestimmte Szenen, die als GIF oder MP4 exportiert werden.",
+        "Jedes Werkzeug zeigt seinen aktuellen Zustand als bearbeitbaren Code an. Änderungen im Code werden direkt in die zugehörigen visuellen Bedienelemente übernommen.",
+        "KI-Agenten erstellen Vorlagen und Hintergründe mit einer einzigen Webanfrage und erhalten eine Vektorgrafik zurück, ganz ohne Browser."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Trefferchance 70 Schaden. Design Lab platziert das Logo einer Marke über einem von 197 Live-Shadern – animierten Texturen, die von der Grafikkarte erzeugt werden.",
         "{move} verursacht 55 Schaden und erhöht sein Tempo. Das Animationswerkzeug verwandelt Text, Logo und Bilder der Marke in zeitlich abgestimmte Szenen, die als GIF oder MP4 exportiert werden.",
@@ -55,6 +67,12 @@
       "what": "Ein Sprachassistent, der auf Ihrem Mac klickt, tippt und den Bildschirminhalt liest.",
       "answer": "Jarhead ist ein Sprachassistent, der auf Ihrem Mac klickt, tippt und den Bildschirminhalt liest.",
       "rule": "Jarhead startet nach einem Absturz neu. Deshalb lässt der erste Treffer, der es ausschalten würde, noch 1 Lebenspunkt übrig.",
+      "features": [
+        "Im Ruhezustand lauscht es auf dem Mac nur auf seinen Namen. Erst nach erfolgreicher Authentifizierung per Touch ID oder Passwort nimmt es einen Befehl an.",
+        "Eindeutige Befehle wie „scrollen“ oder „auf Speichern klicken“ werden ohne Umweg über das KI-Modell in etwa 8 ms ausgeführt.",
+        "Bis zu drei zusätzliche Jarheads teilen eine Anfrage unter sich auf und arbeiten parallel, jeweils mit einem eigenen KI-Modell.",
+        "Es erstellt eine Bildschirmaufnahme, findet eine Schaltfläche anhand ihrer Beschriftung und klickt sie an. Dafür stehen ihm 71 Werkzeuge für den Mac zur Verfügung."
+      ],
       "moves": [
         "{move} errichtet eine 40%-Barriere. Im Ruhezustand reagiert Jarhead auf dem Mac nur auf seinen Namen. Bevor es einen Befehl annimmt, ist eine Authentifizierung per Touch ID oder Passwort erforderlich.",
         "{move} verursacht 35 Schaden und greift zuerst an. Eindeutige Befehle wie „scrollen“ oder „auf Speichern klicken“ umgehen das KI-Modell und werden in etwa 8 ms ausgeführt.",
@@ -66,6 +84,12 @@
       "what": "Eine kostenlose Schriftfamilie in fünf Stilen für Benutzeroberflächen, längere Texte und Code.",
       "answer": "Katagami ist eine kostenlose Schriftfamilie in fünf Stilen für Benutzeroberflächen, längere Texte und Code.",
       "rule": "Die Schriftstärken reichen von 100 bis 900. Über die Schriftstärkenachse legen Sie fest: Je kräftiger die Schrift, desto härter die Treffer – und desto häufiger geht ein Angriff daneben.",
+      "features": [
+        "Die Website zeichnet das Wort Katagami als Konturen; ziehen Sie einen beliebigen Kurvenpunkt, und der Buchstabe verändert seine Form.",
+        "Jeder Katagami-Stil ist eine variable Schriftart: eine Datei mit allen Schriftstärken, ergänzt um eine passende Kursivschrift.",
+        "Sans, Round, Text, Serif und Mono basieren auf demselben Grundgerüst. Mit dem Schieberegler der Website lässt sich ein Wort fließend durch alle fünf Stile verwandeln.",
+        "Katagami Mono, der Stil fürs Programmieren, verleiht 0, O, 1, l und I klar unterscheidbare Formen, damit sich Code ohne Verwechslungen lesen lässt."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 120 Schaden. Die Website stellt das Wort Katagami als Konturen dar. Ziehen Sie an einem beliebigen Kurvenpunkt, um den Buchstaben zu verformen.",
         "{move} verursacht bei wght 600 135 Schaden. Jeder Katagami-Stil ist eine variable Schriftart: eine Datei mit allen Schriftstärken, ergänzt durch eine passende Kursivvariante.",
@@ -77,6 +101,12 @@
       "what": "Ein kostenloses Panzerspiel im Browser: online 7 gegen 7, 33 zerstörbare Schlachtfelder, 13 Modi.",
       "answer": "Claude of Tanks ist ein kostenloses Panzerspiel im Browser: online 7 gegen 7, 33 zerstörbare Schlachtfelder, 13 Modi.",
       "rule": "Die Spielsimulation arbeitet mit einem Startwert für den Zufallsgenerator. Deshalb variiert der Schaden dieser Karte nur bei kritischen Treffern.",
+      "features": [
+        "Feuert ein panzerbrechendes Pfeilgeschoss ab, einen von fünf Munitionstypen. Seine Wirkung wird anhand der getroffenen Panzerplatte und des Auftreffwinkels berechnet.",
+        "Eine Wiederholung in Röntgenansicht zeigt, warum ein Panzer zerstört wurde: den Weg des Geschosses durch seine Panzerung und die dabei zerstörten Teile.",
+        "Für jeden Panzer sind Panzerung, Kanone, Besatzung und Aussehen in einem einzigen Datensatz hinterlegt, damit Garage, Bots und Gefecht stets auf demselben Stand sind.",
+        "Gefechte werden 7 gegen 7 ausgetragen und lassen sich mit einem Schalter auf 14 gegen 14 umstellen – mit Bots oder mit Freunden in Mehrspielerräumen."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 80 Schaden und durchdringt 50 % einer Barriere. Feuert ein panzerbrechendes Pfeilgeschoss ab, einen von fünf Munitionstypen. Seine Wirkung wird anhand der getroffenen Panzerplatte und des Auftreffwinkels berechnet.",
         "{move} verursacht 65 Schaden und erledigt ein Ziel mit weniger als 35 % Lebenspunkten. Eine Wiederholung mit Röntgenansicht zeigt, warum ein Panzer zerstört wurde: den Weg des Geschosses durch die Panzerung und die dabei zerstörten Teile.",
@@ -88,6 +118,12 @@
       "what": "Ein Gmail-Sortierer mit verständlichen Regeln und kostengünstiger KI. Alles lässt sich rückgängig machen.",
       "answer": "Mailroom ist ein Gmail-Sortierer mit verständlichen Regeln und kostengünstiger KI. Alles lässt sich rückgängig machen.",
       "rule": "Löschregeln werden nicht ausgeführt, wenn sie ihre Obergrenze überschreiten. Deshalb zieht kein Treffer mehr als die Hälfte der Lebenspunkte ab.",
+      "features": [
+        "Regeln, die auf einen Bildschirm passen, werden zu Gmail-Filtern. So erhalten neue E-Mails direkt beim Eintreffen ihre Labels – kostenlos.",
+        "Ein KI-Modell beantwortet fünf Fragen zu jeder E-Mail, die von den Regeln nicht erfasst wird, etwa „Besteht Handlungsbedarf?“, und gibt dafür Wahrscheinlichkeiten an.",
+        "Fragen Sie in einfachen Worten, etwa „Wer hat mir noch nicht geantwortet?“, und Sie erhalten eine bearbeitbare Gmail-Suche mit nach Relevanz sortierten Ergebnissen.",
+        "Jeder Durchlauf zeigt zunächst eine Vorschau und erstellt ein Ausführungsprotokoll. Mit „Rückgängig“ lassen sich Labels, Filter und Richtlinie wiederherstellen – vollständig oder für einzelne Nachrichten."
+      ],
       "moves": [
         "{move} verursacht 65 Schaden und greift zuerst an. Regeln, die auf eine Bildschirmseite passen, werden zu Gmail-Filtern. So erhalten neue E-Mails direkt beim Eingang ihre Labels – ganz ohne Kosten.",
         "{move} verursacht mit 95 % Wahrscheinlichkeit fünfmal 21 Schaden. Ein KI-Modell beantwortet fünf Fragen zu jeder E-Mail, die von den Regeln nicht erfasst wird, etwa „Besteht Handlungsbedarf?“. Die Antworten gibt es als Wahrscheinlichkeiten aus.",
@@ -99,6 +135,12 @@
       "what": "Ein Befehlszeilenwerkzeug, mit dem KI-Agenten das Web in Ihrem eigenen Browser durchsuchen.",
       "answer": "Local Search ist ein Befehlszeilenwerkzeug, mit dem KI-Agenten das Web in Ihrem eigenen Browser durchsuchen.",
       "rule": "Wiederholte Suchanfragen liefern gespeicherte Ergebnisse im Median nach 6,5 ms. Deshalb kommt ein erneut eingesetzter Spielzug zuerst zum Einsatz.",
+      "features": [
+        "Ihr Agent durchsucht das Web in Ihrem gewohnten Browser, ohne separaten Suchdienst.",
+        "Ergebnisse werden als JSON in einem festen Format geliefert. Bei Fehlern wird ein Fehlercode zurückgegeben, auf den Agenten reagieren können.",
+        "Der Benchmark vom Juli 2026 ergab eine Suchzeit von 148,7 ms im Median, bei einer Mischung aus neuen Suchanfragen und Antworten aus gespeicherten Ergebnissen.",
+        "Jedes Ergebnis ist kurz: im Median 53,4 Tokens, also die Wortbestandteile, die KI-Modelle lesen. So können Agenten mehr Ergebnisse aufnehmen."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 61 Schaden. Ihr Agent durchsucht das Web in dem Browser, den Sie bereits nutzen, ohne separaten Suchdienst.",
         "{move} verursacht 57 Schaden. Ergebnisse werden als JSON in einem einheitlichen Format geliefert. Bei Fehlern wird ein Fehlercode ausgegeben, auf den Agenten reagieren können.",
@@ -110,6 +152,12 @@
       "what": "Pixeltiere, die neben Ihrem Programmieragenten sitzen und zeigen, was er gerade tut.",
       "answer": "Agent Pets: Pixeltiere, die neben Ihrem Programmieragenten sitzen und zeigen, was er gerade tut.",
       "rule": "Die Tiere spielen jede Aktion dreimal ab. Deshalb treffen Spielzüge mit mehreren Treffern dreimal.",
+      "features": [
+        "Im Leerlauf blickt das Haustier in Richtung Ihres Mauszeigers. Dafür nutzt es 16 gezeichnete Posen, eine für jede Richtung.",
+        "Die Laufanimation zeigt acht Pixelart-Einzelbilder für jeweils 120 ms und lässt das letzte anschließend 220 ms lang stehen.",
+        "Wenn Ihr Agent Sie braucht, versetzt ein optionales lokales Skript das Haustier in einen Wartezustand. Seine Benachrichtigungsmarkierung bleibt sichtbar, bis Sie die Nachricht lesen.",
+        "In jedem Einzelbild bleiben rund um das Haustier mindestens 16 Pixel frei. Eine Prüfung weist jedes Bild zurück, in dem das Haustier den Rand berührt."
+      ],
       "moves": [
         "{move} verursacht 100 Schaden und kommt zuerst zum Zug. Ein Tier im Leerlauf blickt in Richtung Ihres Mauszeigers. Dafür gibt es 16 gezeichnete Posen, eine für jede Richtung.",
         "{move} trifft mit 95 % Wahrscheinlichkeit 2- bis 3-mal und verursacht dabei jeweils 40 Schaden. Die Laufanimation zeigt acht Pixel-Art-Einzelbilder für jeweils 120 ms und lässt das letzte anschließend 220 ms lang stehen.",
@@ -121,6 +169,12 @@
       "what": "Ein Dienst, der die Skill-Dateien von KI-Agenten täglich anhand ihrer Quellen aktualisiert.",
       "answer": "Loop ist ein Dienst, der die Skill-Dateien von KI-Agenten täglich anhand ihrer Quellen aktualisiert.",
       "rule": "Skills verbessern sich mit jeder Aktualisierung. Deshalb wächst seine Reichweite jeden dritten Zug bis auf das 2-Fache.",
+      "features": [
+        "Jede Fähigkeit listet die Quellen auf, auf denen sie basiert, etwa Feeds, Dokumentationen, Blogs und GitHub. Bei jeder Aktualisierung werden diese zuerst geprüft.",
+        "Ein KI-Agent liest die Änderungen, durchsucht das Web und erstellt eine überarbeitete Version der Fähigkeit.",
+        "Jede Aktualisierung zeigt die Fähigkeit im Vorher-nachher-Vergleich. Alle entfernten und hinzugefügten Zeilen sind zur Prüfung markiert.",
+        "Ein täglicher Auftrag reiht für jede Fähigkeit, deren Aktualisierung ansteht, einen Auftrag in die Warteschlange ein. Cloud-Prozesse arbeiten diese automatisch ab."
+      ],
       "moves": [
         "{move} verursacht 60 Schaden und verstärkt seinen nächsten Treffer. Jeder Skill führt die Quellen auf, auf denen er basiert, etwa Feeds, Dokumentation, Blogs und GitHub. Bei jeder Aktualisierung werden diese zuerst geprüft.",
         "{move} verursacht mit 95 % Wahrscheinlichkeit 85 Schaden. Ein KI-Agent liest die Änderungen, recherchiert im Web und überarbeitet den Skill zu einer neuen Version.",
@@ -132,6 +186,12 @@
       "what": "Ein Open-Source-Baukasten mit Dashboard für den Betrieb von KI-Agenten auf Cloud-Rechnern.",
       "answer": "Agent Machines ist ein Open-Source-Baukasten mit Dashboard für den Betrieb von KI-Agenten auf Cloud-Rechnern.",
       "rule": "Gestoppte Rechner behalten ihre Dateien. Außerhalb des Spiels bleiben Werteänderungen erhalten, Statuseffekte gehen jedoch verloren.",
+      "features": [
+        "Es startet einen Cloud-Rechner für einen Agenten, lässt ihn dort seine Aufgaben ausführen, zeigt seine Dateien und Protokolle und entfernt den Rechner anschließend wieder.",
+        "Eine gemeinsame Schnittstelle führt Claude Code, Codex, Hermes oder OpenClaw aus, sodass zum Wechseln des Agenten eine einzige Änderung genügt.",
+        "Die Cloud lässt sich über eine einzige Einstellung wählen, sodass ein Agent auf Daytona, E2B, Sprites oder Vercel Sandbox läuft.",
+        "Agenten können jede der 161 Fähigkeiten und jeden der 39 Werkzeugserver laden. Die Übersicht zeigt, welche davon verifiziert sind."
+      ],
       "moves": [
         "{move} erhöht seinen Nachweis. Es startet einen Cloud-Rechner für einen Agenten, lässt ihn seine Aufgaben erledigen, zeigt seine Dateien und Protokolle an und baut den Rechner anschließend wieder ab.",
         "{move} trifft mit 95 % Wahrscheinlichkeit 1- bis 4-mal und verursacht dabei jeweils 22 Schaden. Über eine gemeinsame Schnittstelle lassen sich Claude Code, Codex, Hermes oder OpenClaw ausführen. Zum Wechseln des Agenten genügt eine einzige Änderung.",
@@ -143,6 +203,12 @@
       "what": "Ein Designlabor mit 27 direkt nutzbaren Website-Designs und eigenen Grafik-Engines.",
       "answer": "Prototemplate ist ein Designlabor mit 27 direkt nutzbaren Website-Designs und eigenen Grafik-Engines.",
       "rule": "Seine Animationen pausieren außerhalb des sichtbaren Bereichs. Deshalb regeneriert es außerhalb des Spiels pro Zug 6 % Lebenspunkte.",
+      "features": [
+        "Ein in Echtzeit gezeichnetes schwarzes Loch krümmt die Linien auf der Seite zu Bögen. Mit Ihrem Mauszeiger können Sie die Linien ebenfalls verbiegen.",
+        "Zehn animierte Muster aus quadratischen Punkten teilen sich eine Grafikfläche, sodass eine Seite viele davon gleichzeitig darstellen kann.",
+        "Schriftzeichen aus acht Schriftsystemen regnen herab und fügen sich zum Wort „Sprache“ zusammen – in einer Schrift nach der anderen.",
+        "Eine Überschrift zerfällt in Schriftzeichen und setzt sich zum selben Satz in der nächsten Sprache zusammen – auch in Sprachen mit Schreibrichtung von rechts nach links."
+      ],
       "moves": [
         "{move} verursacht mit 90 % Wahrscheinlichkeit 85 Schaden. Ein in Echtzeit gezeichnetes schwarzes Loch krümmt die Lineatur der Seite zu Bögen. Auch mit Ihrem Mauszeiger können Sie die Linien verbiegen.",
         "{move} trifft mit 95 % Wahrscheinlichkeit 2- bis 3-mal und verursacht dabei jeweils 28 Schaden. Zehn animierte Muster aus quadratischen Punkten teilen sich eine Zeichenfläche, sodass eine Seite viele davon gleichzeitig darstellen kann.",
@@ -154,6 +220,12 @@
       "what": "Eine Geburtstagswebsite, die Freunde mit Karten füllen und die sich in eine 3D-Insel verwandelt.",
       "answer": "bday.land ist eine Geburtstagswebsite, die Freunde mit Karten füllen und die sich in eine 3D-Insel verwandelt.",
       "rule": "Der Blob eines Freundes wirft bis zu fünf Kritzeleien. Wenn +999 Love trifft, treffen deshalb alle fünf.",
+      "features": [
+        "Auf der Insel bewirft Sie der Blob eines Freundes mit den Kritzeleien von dessen Karte und trägt dann seine Nachricht vor.",
+        "Das erste von zwölf Festivalspielen: 45 Sekunden lang Gnome hauen, aber bloß kein Lama.",
+        "Freunde öffnen einen einzigen Link, ganz ohne Konto, und gestalten in sieben Schritten eine Karte – von der Nachricht bis zum Selfie.",
+        "Die Torte hat für jeden Freund eine Kerze. Sie leuchtet auf, sobald Sie den Blob dieses Freundes umarmen, und zeigt so, wen Sie schon gefunden haben."
+      ],
       "moves": [
         "{move} trifft mit 95 % Wahrscheinlichkeit 1- bis 5-mal und verursacht dabei jeweils 27 Schaden. Auf der Insel bewirft Sie der Blob eines Freundes mit den Kritzeleien, die dieser auf seine Karte gemalt hat, und sagt dann dessen Nachricht auf.",
         "{move} verursacht mit 90 % Wahrscheinlichkeit 105 Schaden. Das erste von zwölf Festivalspielen: 45 Sekunden lang Gnome verhauen, aber bloß kein Lama.",
@@ -165,6 +237,12 @@
       "what": "Die Website von Princetons Kraftdreikampfverein – mit einem vollständig per Code gezeichneten Markenauftritt.",
       "answer": "Princeton Powerlifting ist die Website von Princetons Kraftdreikampfverein – mit einem vollständig per Code gezeichneten Markenauftritt.",
       "rule": "kg und lb sind beide auf der Seite vorhanden, sodass beim Umschalten nichts aufblitzt. Diese Karte lässt sich nicht betäuben.",
+      "features": [
+        "Das Hauptlogo des Vereins, per Code gezeichnet: ein Tigerkopf über einer mit Gewichten bestückten Langhantel, darunter der Vereinsname.",
+        "Ein Alphabet aus Blockbuchstaben mit abgeschrägten Ecken, aus Formen im Code gezeichnet – so kommen Wortmarken ohne Schriftdatei aus.",
+        "84 Symbole für Kraftsport, Wettkämpfe und den Verein, auf einem gemeinsamen Raster mit einheitlicher Strichstärke gezeichnet, dazu ausgefüllte Symbole für Kniebeugen, Bankdrücken und Kreuzheben.",
+        "Jedes Logo gibt es in sechs Farbvarianten für dunkle und helle Hintergründe. Alle werden mit demselben Code gezeichnet und bleiben so stets einheitlich."
+      ],
       "moves": [
         "{move} verursacht 130 Schaden. Das Hauptlogo des Vereins, per Code gezeichnet: ein Tigerkopf über einer mit Gewichten bestückten Langhantel, darunter der Vereinsname.",
         "{move} verursacht 105 Schaden und ist zuerst am Zug. Ein Alphabet aus Blockbuchstaben mit abgeschrägten Ecken, aus geometrischen Formen per Code gezeichnet – so kommen Wortmarken ohne Schriftdatei aus.",
@@ -176,6 +254,12 @@
       "what": "Ein Tool für verdeckte Abstimmungen, das die Optionen eines Teams mit einem Wertungssystem wie im Schach in eine Rangfolge bringt.",
       "answer": "Elo ist ein Tool für verdeckte Abstimmungen, das die Optionen eines Teams mit einem Wertungssystem wie im Schach in eine Rangfolge bringt.",
       "rule": "Elo belohnt Überraschungssiege und trifft deshalb Karten mit höheren Gesamtwerten härter und solche mit niedrigeren Werten schwächer.",
+      "features": [
+        "Jede Paarung zeigt zwei Optionen unter zwölfstelligen Codes, damit kein Name die Abstimmenden beeinflusst.",
+        "Die Wertungen werden aus dem Abstimmungsprotokoll neu berechnet: Alle Optionen starten bei 1000 Punkten, und jede gezählte Stimme verändert die Wertung um bis zu 32 Punkte.",
+        "Alle 16 Admin-Aktionen stehen auch KI-Agenten als Werkzeuge zur Verfügung. So kann ein Agent alles tun, was auch der Admin kann.",
+        "Abstimmende können zu jeder Paarung zurückkehren und ihre Wahl ändern. Es zählt die jeweils letzte Stimme, mit bis zu 10 Stimmen pro Paar."
+      ],
       "moves": [
         "{move} verursacht 85 Schaden. Bei jedem Duell erscheinen zwei Optionen unter 12-stelligen Codes, damit kein Name die Abstimmenden beeinflusst.",
         "{move} verursacht mit 95 % Wahrscheinlichkeit 110 Schaden. Die Wertungen werden aus dem Abstimmungsprotokoll neu berechnet: Jede Option startet bei 1000, und jede gezählte Stimme verändert die Wertung um bis zu 32 Punkte.",
@@ -187,6 +271,12 @@
       "what": "Eine 3D-Fruchtfliege in Claude of Tanks, deren Schub von 124 simulierten Neuronen gesteuert wird.",
       "answer": "CoTFly ist eine 3D-Fruchtfliege in Claude of Tanks, deren Schub von 124 simulierten Neuronen gesteuert wird.",
       "rule": "Feuernde Neuronen regulieren ihren Schub, sodass ihr Tempo nach zwei Zügen im Spiel auf das 1,5-Fache steigt.",
+      "features": [
+        "Jedes der 124 Neuronen baut Ladung auf, verliert sie allmählich wieder und feuert, sobald eine Spannungsschwelle überschritten wird. All das wird jede Millisekunde in Echtzeit berechnet.",
+        "75 hemmende Neuronen dämpfen 49 antreibende Neuronen über 1,106 Verbindungen, die in einem echten Fliegenhirn kartiert wurden, und drosseln so den Antrieb.",
+        "Über die Pilotensteuerung erhält die Fliege 15 Sekunden lang Zucker: Ihre antreibenden Neuronen feuern schneller und sie fährt näher an Ziele heran.",
+        "Der Panzer schießt erst nach 90 ms Bewegung und nur, solange ein Vorderbein die Zielposition und das andere die Feuerposition hält."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 120 Schaden. Jedes der 124 Neuronen baut Spannung auf, verliert sie wieder und feuert beim Überschreiten eines Schwellenwerts. Das wird jede Millisekunde in Echtzeit berechnet.",
         "{move} verursacht 75 Schaden und betäubt mit 30 % Wahrscheinlichkeit. 75 hemmende Neuronen dämpfen die Aktivität von 49 antreibenden Neuronen über 1,106 Verbindungen, die in einem echten Fliegenhirn kartiert wurden, und verringern so den Schub.",
@@ -198,6 +288,12 @@
       "what": "Eine simulierte Teamchat-App zum Testen von KI-Agenten, bei der jeder Durchlauf bewertet wird.",
       "answer": "Relay ist eine simulierte Teamchat-App zum Testen von KI-Agenten, bei der jeder Durchlauf bewertet wird.",
       "rule": "Eine verborgene Prüfung liest nur den Endzustand aus. Deshalb ignorieren die Treffer dieser Karte Barrieren und erhöhten Nachweis.",
+      "features": [
+        "Wählen Sie ein Modell und eine Aufgabe und verfolgen Sie dann jede seiner Aktionen in einem echten Browser.",
+        "Zwei Modelle bearbeiten nebeneinander dieselbe Aufgabe mit denselben Ausgangsdaten, jeweils in einer neuen Arbeitsumgebung. Beide werden getrennt bewertet.",
+        "Ein KI-Modell wählt aus einem Menü sichtbarer Aktionen eine aus. Das Bedienfeld zeigt, welche Wahrscheinlichkeit es jeder Aktion zugewiesen hat.",
+        "Jeder aufgezeichnete Durchlauf lässt sich Schritt für Schritt in der tatsächlichen Benutzeroberfläche wiedergeben – mit allen Dialogen, Texteingaben und Zielen."
+      ],
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 100 Schaden. Wählen Sie ein Modell und eine Aufgabe und verfolgen Sie dann jede seiner Aktionen in einem echten Browser.",
         "{move} verursacht mit 95 % Wahrscheinlichkeit zweimal 45 Schaden. Zwei Modelle bearbeiten parallel dieselbe Aufgabe mit denselben Ausgangsdaten in jeweils einer neuen Arbeitsumgebung. Beide werden separat bewertet.",
@@ -209,6 +305,12 @@
       "what": "Ein Tower-Defense-Browserspiel mit 26 Leveln, das in Princeton spielt.",
       "answer": "Princeton TD ist ein Tower-Defense-Browserspiel mit 26 Leveln, das in Princeton spielt.",
       "rule": "Die Gegnerwellen folgen festen Listen. Deshalb sitzen bei den Spielzügen dieser Karte mit mehreren Treffern alle Treffer.",
+      "features": [
+        "Als letzte Ausbaustufe des Palmer Mortar steht ein Lenkwaffenwerfer mit sechs Abschussbehältern zur Wahl, der Salven abfeuert und automatisch oder von Hand ausgerichtet wird.",
+        "Das erste Level, Poe Field, beginnt mit drei zeitlich abgestimmten Gegnergruppen, jeweils mit festgelegter Anzahl und festen Abständen.",
+        "Gelände und Wege werden einmal gezeichnet und erst beim Zoomen aktualisiert. So müssen pro Bild nur Türme, Gegner und Effekte neu gezeichnet werden.",
+        "Der freie Spielmodus bietet eine endlose Arena zum Testen von Turmaufstellungen. In jeder fünften Runde erscheint ein Boss."
+      ],
       "moves": [
         "{move} verursacht mit 90 % Wahrscheinlichkeit 100 Schaden und ist zuerst am Zug. Als letzte Ausbaustufe des Palmer Mortar steht ein Lenkwaffenwerfer mit sechs Abschussbehältern zur Wahl, der automatisch oder manuell gezielte Salven abfeuert.",
         "{move} verursacht dreimal 45 Schaden. Das erste Level, Poe Field, beginnt mit drei zeitlich festgelegten Gegnergruppen – jeweils mit fester Gegnerzahl und festen Abständen.",
@@ -220,6 +322,12 @@
       "what": "Ein persönliches Wiki, das KI-Agenten anhand gespeicherter Quellen erstellen und aktuell halten.",
       "answer": "Kevin Wiki ist ein persönliches Wiki, das KI-Agenten anhand gespeicherter Quellen erstellen und aktuell halten.",
       "rule": "Seiten verlinken auf frühere Seiten: Jeder unterschiedliche Spielzug, der im Spiel trifft, erhöht den Schaden um 10%, bis maximal 30%.",
+      "features": [
+        "Ein 3D-Graph zeigt öffentliche Seiten in Echtzeit als Punkte und ihre Verknüpfungen als Linien.",
+        "Die Suche läuft lokal, ohne Cloud: Sie kombiniert Stichworttreffer mit inhaltlich passenden Ergebnissen. Anschließend sortiert ein lokales KI-Modell die Treffer neu.",
+        "Fügen Sie einen Link ein und bitten Sie darum, ihn hinzuzufügen. Ein KI-Agent erstellt die zugehörige Seite, verwandte Seiten, Rückverweise, Quellenangaben und den Indexeintrag.",
+        "Das Diagnoseskript bewertet den Zustand des Wikis auf einer Skala von 0 bis 100. Die Selbstreparatur nimmt unbedenkliche Korrekturen vor und führt das Skript zur Kontrolle erneut aus."
+      ],
       "moves": [
         "{move} verursacht mit 90% Trefferchance 85 Schaden. Ein 3D-Graph zeigt öffentliche Seiten in Echtzeit als Punkte und ihre Verknüpfungen als Linien.",
         "{move} verursacht 60 Schaden und ist zuerst am Zug. Die Suche läuft lokal und ohne Cloud: Sie kombiniert Schlüsselworttreffer mit semantischen Treffern. Anschließend bewertet ein lokales KI-Modell deren Reihenfolge neu.",
@@ -231,6 +339,12 @@
       "what": "Ein Benchmark, bei dem zwei Cloud-Code-Sandboxes mit derselben Aufgabe gegeneinander antreten.",
       "answer": "Sandbox Arena ist ein Benchmark, bei dem zwei Cloud-Code-Sandboxes mit derselben Aufgabe gegeneinander antreten.",
       "rule": "Jeder Durchlauf erhält eine neue Sandbox, die anschließend gelöscht wird. So werden jeden Zug alle Statuseffekte entfernt.",
+      "features": [
+        "Zwei Sandboxes starten dieselbe Aufgabe gleichzeitig und zeigen ihre Protokolle live nebeneinander an. So können Sie das Rennen direkt mitverfolgen.",
+        "Am Ende jeder Aufgabe wird das Ergebnis mit einer bekannten Lösung abgeglichen. Ein schneller, aber fehlerhafter Durchlauf erhält so null Punkte.",
+        "Ranglisten können Anbieter nach der Laufzeit sortieren, die nur einer von 20 Durchläufen überschreitet – denn Durchschnittswerte verbergen seltene, lange Wartezeiten.",
+        "Ihre eigenen Kontoschlüssel ermöglichen einen echten Testlauf. Sie werden nur einmal gelesen, verfallen nach zehn Minuten und gelangen weder in Protokolle noch in die Sandbox."
+      ],
       "moves": [
         "{move} verursacht mit 95% Trefferchance zweimal je 40 Schaden. Zwei Sandboxes starten gleichzeitig dieselbe Aufgabe und zeigen ihre Protokolle live nebeneinander an, sodass Sie das Rennen mitverfolgen können.",
         "{move} verursacht 80 Schaden und besiegt ein Ziel mit weniger als 35% Lebenspunkten. Zum Abschluss jeder Aufgabe wird die Ausgabe mit einer bekannten Antwort abgeglichen. Ein schneller, aber fehlerhafter Durchlauf erhält also null Punkte.",
@@ -242,6 +356,12 @@
       "what": "Ein KI-Gastgeber, bei dem Gäste per Nachricht einchecken, Quests spielen und Getränke bestellen.",
       "answer": "Ariadne ist ein KI-Gastgeber, bei dem Gäste per Nachricht einchecken, Quests spielen und Getränke bestellen.",
       "rule": "Wiederholte Nachrichten werden ignoriert, sodass ein Spielzug mit mehreren Treffern nur einmal trifft.",
+      "features": [
+        "Gäste melden sich ohne App per SMS mit ihrem Vornamen an und erhalten einen farbigen Edelstein, ein Geheimwort und eine Mission.",
+        "Finden Sie zwei Gäste, deren Edelsteine mit Ihrem ein Dreieck im Farbkreis bilden, und senden Sie deren IDs per SMS – dafür gibt es 100 Punkte.",
+        "Beschreiben Sie Ihren Getränkewunsch per SMS in eigenen Worten. Er wird einem Getränk auf der Karte zugeordnet und als Bestellung eingereiht. Sobald das Getränk fertig ist, erhalten Sie eine SMS.",
+        "Ein großer Bildschirm ordnet die Kacheln aller Gäste nach Punkten. Die Anzeige wird alle 1,5 Sekunden aktualisiert und behält ihren Stand auch nach dem Neuladen."
+      ],
       "moves": [
         "{move} verursacht 65 Schaden und ist zuerst am Zug. Gäste checken ohne App ein, indem sie ihren Vornamen per Nachricht senden. Zurück erhalten sie einen farbigen Edelstein, ein Geheimwort und eine Quest.",
         "{move} verursacht mit 95% Trefferchance dreimal je 30 Schaden. Finden Sie zwei Gäste, deren Edelsteine zusammen mit Ihrem ein Dreieck im Farbkreis bilden. Senden Sie deren IDs per Nachricht, um 100 Punkte zu erhalten.",
@@ -253,6 +373,12 @@
       "what": "Eine Bibliothek mit über 350 Komponenten, deren Gestaltung vollständig über eine einzige Markdown-Datei gesteuert wird.",
       "answer": "Sigil UI ist eine Bibliothek mit über 350 Komponenten, deren Gestaltung vollständig über eine einzige Markdown-Datei gesteuert wird.",
       "rule": "Voreinstellungen werden beim Laden geprüft und unsichere Werte abgelehnt. So ist das System vor manipulierten Werten geschützt.",
+      "features": [
+        "Ein Befehl aktiviert eines von 44 kompletten Designs und ändert alle 519 Stilwerte – ohne dass eine Komponente bearbeitet werden muss.",
+        "Alle 519 Stilwerte, von Farben bis zu Animationen, liegen in einer einzigen Markdown-Datei. Ein Kompiliervorgang gestaltet sämtliche Komponenten neu.",
+        "Bei der Einrichtung werden zehn Fähigkeiten installiert: Anleitungsdateien, die KI-Programmieragenten Sigils Stilwerte, Layouts und Regeln für den Feinschliff vermitteln.",
+        "Doctor prüft die Projekteinrichtung in sieben Punkten, von der Konfiguration bis zu den Agentendateien, und vergibt jeweils den Status pass, warn oder fail."
+      ],
       "moves": [
         "{move} verursacht 60 Schaden und übernimmt die Disziplin mit dem höchsten Schaden. Ein einziger Befehl aktiviert eines von 44 vollständigen Designs und ändert alle 519 Gestaltungswerte, ohne dass Komponenten bearbeitet werden müssen.",
         "{move} verursacht mit 90% Trefferchance 85 Schaden. Alle 519 Gestaltungswerte, von Farben bis zu Animationen, stehen in einer einzigen Markdown-Datei. Ein einziger Kompiliervorgang gestaltet sämtliche Komponenten neu.",
@@ -264,6 +390,12 @@
       "what": "Ein Retro-Geburtstagsterminal, bei dem eingegebene Passwörter versteckte Effekte auslösen.",
       "answer": "050525 ist ein Retro-Geburtstagsterminal, bei dem eingegebene Passwörter versteckte Effekte auslösen.",
       "rule": "Passwörter werden unabhängig von Groß- und Kleinschreibung sowie Leerzeichen erkannt. Dadurch steigt die Genauigkeit um 5 Punkte, bis maximal 100.",
+      "features": [
+        "Geben Sie ein beliebiges Wort ein: 143 Passwörter, die meisten davon nicht aufgelistet, lösen Konfetti, Musik, Kerzen oder einen neuen Bildschirmmodus aus.",
+        "Die Tabulatortaste vervollständigt jedes der 432 bekannten Wörter und Befehle, sodass für ein Passwort nur wenige Tastenanschläge nötig sind.",
+        "Zu Beginn brennen auf der Torte vier Kerzen. Per Texteingabe oder Klick können Sie sie anzünden oder ausblasen. Brennende Kerzen tauchen den Bildschirm in warmes Licht.",
+        "44 Erfolge treffen beim Spielen als Nachrichten auf dem Bildschirm ein. Posteingang und Belohnungen bleiben für Ihren nächsten Besuch gespeichert."
+      ],
       "moves": [
         "{move} verursacht mit 90% Trefferchance 90 Schaden. Geben Sie ein beliebiges Wort ein: 143 größtenteils nicht aufgelistete Passwörter lösen Konfetti, Musik, Kerzen oder einen neuen Bildschirmmodus aus.",
         "{move} verursacht 60 Schaden und ist zuerst am Zug. Die Tabulatortaste vervollständigt jedes der 432 bekannten Wörter und Befehle, sodass für ein Passwort nur wenige Tastenanschläge nötig sind.",
@@ -275,6 +407,12 @@
       "what": "Ein Arbeitsbereich, in dem Forschende mit einer KI wissenschaftliche Arbeiten finden, lesen und schreiben können.",
       "answer": "Sevenfold ist ein Arbeitsbereich, in dem Forschende mit einer KI wissenschaftliche Arbeiten finden, lesen und schreiben können.",
       "rule": "Drei Suchlisten können den Rang einer Arbeit nur verbessern – deshalb stoßen ihre Treffer nie auf Widerstand.",
+      "features": [
+        "Die Suche sortiert Fachartikel gleichzeitig nach Stichwörtern, Bedeutung und Relevanz für Ihr Projekt und führt dann die drei Listen zusammen.",
+        "Ein KI-Modell liest Titel, Autoren und Erscheinungsjahr einer hochgeladenen PDF-Datei aus und bietet an, sie mit einem passenden Fachartikel zu verknüpfen, der bereits in der Bibliothek vorhanden ist.",
+        "Stellen Sie Fragen zu angehängten Fachartikeln: Ein KI-Modell liest jede PDF-Datei vollständig, vergleicht die Artikel und setzt mathematische Formeln.",
+        "Suche, Chat, Quellen und Entwürfe sind Ansichten desselben Projekts. In jeder bleiben die Ergebnisse erhalten, wenn Sie die Ansicht wechseln oder die Seite neu laden."
+      ],
       "moves": [
         "{move} trifft mit 95 % Wahrscheinlichkeit dreimal für jeweils 30 Schaden. Die Suche sortiert Arbeiten gleichzeitig nach Stichwörtern, Bedeutung und Passung zu Ihrem Projekt und führt dann die drei Listen zusammen.",
         "{move} errichtet eine 40%-Barriere. Ein KI-Modell liest Titel, Autoren und Erscheinungsjahr einer hochgeladenen PDF-Datei aus und bietet an, sie mit einer passenden Arbeit zu verknüpfen, die bereits in der Bibliothek vorhanden ist.",
@@ -286,6 +424,12 @@
       "what": "Ein Bewertungswerkzeug für Hackathons, das Jurymitgliedern nach einem fairen Verfahren jeweils fünf Teams zuweist.",
       "answer": "Podium ist ein Bewertungswerkzeug für Hackathons, das Jurymitgliedern nach einem fairen Verfahren jeweils fünf Teams zuweist.",
       "rule": "Ein zweiter Durchlauf mit weniger strengen Kriterien findet immer eine Aufgabe für ein Jurymitglied – deshalb richten selbst Fehlschläge noch halben Schaden an.",
+      "features": [
+        "Die Teams mit den wenigsten Bewertungen bekommen zuerst Jurymitglieder zugewiesen, damit alle Projekte zur gleichen Zeit genügend Bewertungen erhalten.",
+        "Jedes Jurymitglied bekommt fünf benachbarte Teams auf einer Etage zugewiesen, die es auf einem einzigen Rundgang besucht. So bleiben die Wege kurz.",
+        "Jedes Jurymitglied wählt aus fünf Teams die besten drei aus und vergibt 3, 2 und 1 Punkte. Die Rangfolge der Teams ergibt sich aus ihrer durchschnittlichen Punktzahl.",
+        "Jedes Team wird als Punkt dargestellt, der bis zur ersten Bewertung grau bleibt und mit jeder Bewertung heller orange leuchtet. So fallen übersehene Teams sofort auf."
+      ],
       "moves": [
         "{move} trifft für 85 Schaden. Teams mit den wenigsten Bewertungen erhalten zuerst Besuch von der Jury, sodass alle Projekte zur gleichen Zeit genügend Bewertungen haben.",
         "{move} trifft mit 95 % Wahrscheinlichkeit fünfmal für jeweils 16 Schaden. Jedem Jurymitglied werden fünf benachbarte Teams auf einer Etage zugewiesen, die es auf einem einzigen Rundgang besucht. So bleiben die Wege kurz.",
@@ -297,6 +441,12 @@
       "what": "Ein gemeinnütziger Online-Mathematikwettbewerb für Teams aus Schülerinnen und Schülern bis einschließlich 18 Jahre.",
       "answer": "OMMC ist ein gemeinnütziger Online-Mathematikwettbewerb für Teams aus Schülerinnen und Schülern bis einschließlich 18 Jahre.",
       "rule": "Die besten Teams ziehen in eine Beweisrunde ein – deshalb steigt die Reichweite auf das 1,5-Fache, sobald die Lebenspunkte auf die Hälfte gesunken sind.",
+      "features": [
+        "Die Test-PDF öffnet sich neben 25 Antwortfeldern. Die Schaltfläche zum Absenden bleibt gesperrt, bis alle 25 ausgefüllt sind.",
+        "Bis zu vier Schüler melden sich als Team an und geben jeweils Alter, Klassenstufe und Schule oder das Wort „anonym“ an.",
+        "Durchsuchen Sie frühere Aufgaben nach Text, Thema und Schwierigkeitsgrad und öffnen Sie bei Bedarf die jeweilige typografisch aufbereitete Lösung.",
+        "Jede Antwort wird schon beim Tippen im Browser gespeichert und beim Anmelden vom Server geladen, damit nichts verloren geht."
+      ],
       "moves": [
         "{move} trifft mit 95 % Wahrscheinlichkeit für 90 Schaden. Die PDF-Datei mit den Aufgaben öffnet sich neben 25 Antwortfeldern. Die Schaltfläche „Absenden“ bleibt gesperrt, bis alle 25 ausgefüllt sind.",
         "{move} trifft mit 95 % Wahrscheinlichkeit 1- bis 4-mal für jeweils 28 Schaden. Bis zu vier Schülerinnen und Schüler treten gemeinsam als Team an und geben jeweils Alter, Klassenstufe und Schule oder das Wort anonymous an.",
@@ -308,6 +458,12 @@
       "what": "Das Magazin von General Translation: Jede Geschichte erscheint als eigene Ausgabe mit einem animierten Titelbild.",
       "answer": "Atlas ist das Magazin von General Translation: Jede Geschichte erscheint als eigene Ausgabe mit einem animierten Titelbild.",
       "rule": "Beim Umblättern einer Doppelseite bewegen sich zwei Seiten – deshalb landen Spielzüge mit mehreren Treffern mindestens zwei Treffer.",
+      "features": [
+        "Das Titelbild jeder Ausgabe ist eine Flüssigkeitssimulation in Echtzeit mit drei ausgabenspezifischen Farben, die Sie mit dem Mauszeiger in Bewegung versetzen.",
+        "Jeder Artikel ist auf Magazinseiten mit je zwei Textspalten angeordnet. Per Klick blättern Sie die Seiten um den Heftrücken um.",
+        "Wählen Sie am Drehrad des Globus eine von neun Sprachen aus, und alle Artikeltitel erscheinen in dieser Sprache.",
+        "Ein aus Punkten zusammengesetzter Globus dreht sich zur Stadt der gewählten Sprache und markiert deren Koordinaten. Anschließend wird er erst bei der nächsten Drehung wieder neu gezeichnet."
+      ],
       "moves": [
         "{move} trifft mit 95 % Wahrscheinlichkeit für 90 Schaden. Das Titelbild jeder Ausgabe ist eine interaktive Flüssigkeitssimulation mit einer eigenen Palette aus drei Farben, die Sie mit dem Mauszeiger in Bewegung versetzen.",
         "{move} trifft mit 95 % Wahrscheinlichkeit 1- bis 4-mal für jeweils 28 Schaden. Jede Geschichte ist auf Magazinseiten mit je zwei Textspalten angeordnet. Per Klick blättern die Seiten um den Buchrücken herum um.",

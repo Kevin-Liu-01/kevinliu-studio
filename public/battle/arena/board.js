@@ -12,6 +12,7 @@
 import { Leader, loadLeaders, POSE, leaderData, finalePoses } from '../shared/leaders.js';
 import { Layout, el, sv, wait, clamp, lerp, R, SIDES, other, EASE, chipsHtml, setChips, countTo, numeral, hitTags, frameOn, inkOn } from '../shared/fx.js';
 import { specials } from './specials.js';
+import { t as txt } from '../shared/strings.js';
 import { loadGround, groundNow, stage, stageAsync, project, ppm, unproject, floorH, mul3, matrix3d, grade, castAt, envelope, leaderEnv, figureMpp, FIG, LEADER, PAD } from './ground.js';
 
 const K = window.bcKit;
@@ -208,7 +209,7 @@ export class ArenaBoard extends Layout {
     this.env ??= envelopes(this.man, this.view, ctx.leaders);
     const h = host;
     h.textContent = '';
-    h.setAttribute('aria-label', 'Arena');
+    h.setAttribute('aria-label', txt('arena.aria'));
     h.dataset.map = this.map;
     this.camEl = el('div', 'arena-cam', h);
     this.shakeEl = el('div', 'arena-shake', this.camEl);
@@ -387,7 +388,7 @@ export class ArenaBoard extends Layout {
   }
   logBox() { return this.g?.log ?? null; }
   /** The turn the battle is waiting on (round 5), on the team rail. */
-  turnTo(n) { if (!this.turnEl) return; const t = `T${n}`; if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', `Turn ${n}`); }
+  turnTo(n) { if (!this.turnEl) return; const t = txt('turn.short', { n }); if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', txt('log.turn', { n })); }
   layout() {
     const ground = this.gd;
     const g = this.g = geometry(innerWidth, innerHeight, ground, this.env);
@@ -714,7 +715,7 @@ export class ArenaBoard extends Layout {
         const live = on && f.hp > 0;
         c.el.tabIndex = live ? 0 : -1;
         c.el.disabled = !live;
-        c.el.setAttribute('aria-label', `${this.ctx.title(f.id)}, ${f.hp} of ${f.maxHp} HP${f.hp > 0 ? '' : ', out'}`);
+        c.el.setAttribute('aria-label', txt(f.hp > 0 ? 'arena.card' : 'arena.card.out', { card: this.ctx.title(f.id), hp: f.hp, max: f.maxHp }));
       }
       if (!on) continue;
       const r = this.slotOf(side, f.uid);
@@ -783,7 +784,7 @@ export class ArenaBoard extends Layout {
       side.team.forEach((x, i) => this.drawPip(s, i, x, i === side.active && x.hp > 0 && Boolean(this.shown[s])));
       this.drawHand(s);
     }
-    if (this.turnEl) { const t = `T${v.turn}`; if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', `Turn ${v.turn}`); }
+    if (this.turnEl) { const t = txt('turn.short', { n: v.turn }); if (this.turnEl.textContent !== t) this.turnEl.textContent = t; this.turnEl.setAttribute('aria-label', txt('log.turn', { n: v.turn })); }
   }
   drawPad(s, f, on) {
     const P = this.pad?.[s];
@@ -822,7 +823,7 @@ export class ArenaBoard extends Layout {
     if (p.li.dataset.state !== st) p.li.dataset.state = st;
     const n = f.hp <= 0 ? 0 : Math.max(1, Math.ceil((10 * f.hp) / f.maxHp));
     if (p.n !== n) { p.n = n; [...p.ticks.children].forEach((t, k) => { t.dataset.on = k < n ? 'true' : 'false'; }); }
-    const label = `${this.ctx.title(f.id)}, ${f.hp} of ${f.maxHp} HP${out ? ', out' : active ? ', in play' : ''}`;
+    const label = txt(out ? 'arena.card.out' : active ? 'arena.card.active' : 'arena.card', { card: this.ctx.title(f.id), hp: f.hp, max: f.maxHp });
     if (p.lab.textContent !== label) p.lab.textContent = label;
   }
 
@@ -1223,7 +1224,7 @@ export class ArenaBoard extends Layout {
           return undefined;
         }
         case 'miss': {
-          if (shot.board) { this.sidestep(them); this.stamp(them, 'Miss', 'miss', 700); }
+          if (shot.board) { this.sidestep(them); this.stamp(them, txt('scene.miss'), 'miss', 700); }
           return undefined;
         }
         case 'support': {
@@ -1237,7 +1238,7 @@ export class ArenaBoard extends Layout {
           const e = shot.post[0];
           const F = this.flags[e?.side ?? side];
           if (F && !rd) this.anim(F.chips, [{ rotate: '-6deg' }, { rotate: '5deg' }, { rotate: '0deg' }], { duration: 240 });
-          if (e?.change === 'applied') { this.stamp(this.figs.get(e.fighter), e.status === 'stun' ? 'Stunned' : e.status, 'status', 700); this.leaders[e.side]?.act('taken'); }
+          if (e?.change === 'applied') { this.stamp(this.figs.get(e.fighter), txt(`stamp.${e.status}`) || e.status, 'status', 700); this.leaders[e.side]?.act('taken'); }
           return undefined;
         }
         case 'guard': { this.shield(side); this.flush(shot); return undefined; }
@@ -1256,7 +1257,7 @@ export class ArenaBoard extends Layout {
           if (verb !== 'support' && them) {
             if (!rd) this.camTo(this.frameOn(them, this.pushFor(them), them.side === 'rival' ? 0.58 : 0.42), 160, WHIP);
             // the scene's own number was the hit's one number; the figure only takes the landing (a beaten one has gone)
-            if (verb === 'miss') { this.sidestep(them); this.stamp(them, 'Miss', 'miss', 700); }
+            if (verb === 'miss') { this.sidestep(them); this.stamp(them, txt('scene.miss'), 'miss', 700); }
             else if (!them.fallen) this.recoil(them);
             // a beaten figure has already gone down under the scene: its knockout follows at once. Under Auto the
             // landing takes as long as a short attack's (the whip lands on the defender), as on the Mat

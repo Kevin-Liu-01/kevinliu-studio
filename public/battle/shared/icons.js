@@ -3,6 +3,7 @@
 // The cards' sprite (vendor/cards/card-sprite.gen.js, and r4/ex's icons through shared/excard.js) keeps the seven
 // disciplines and the four stats; this set never redraws those.
 // One inline sprite, added once; ico(name) prints a <svg><use> the way the cards' K.icon does.
+import { t as txt } from './strings.js';
 
 const S = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
 const F = 'fill="currentColor"';
@@ -65,12 +66,9 @@ export const ICONS = {
 };
 
 /** The colours each condition and item category carries (one source for the HUD, the log and the tooltips). */
-export const STATUS_INFO = {
-  burn: { label: 'Burn', short: 'BRN', color: '#e8603c', text: 'Loses 6% of its HP at the end of each turn and its Reach drops to ×0.82, for three turns.' },
-  poison: { label: 'Poison', short: 'PSN', color: '#a64ac9', text: 'Loses 8.5% of its HP at the end of each turn, for three turns.' },
-  sleep: { label: 'Sleep', short: 'SLP', color: '#7c8aa6', text: 'Skips its next move, then wakes on the one after.' },
-  stun: { label: 'Stun', short: 'STN', color: '#d9b21f', text: 'For its next three moves, each has a 1 in 4 chance of not happening.' },
-};
+/** Its words (`label` "Burn", `short` "BRN", `lower` "burn" mid-sentence, `text` the rule) come from shared/strings.js. */
+const condition = (k, color) => ({ color, get label() { return txt(`status.${k}`); }, get short() { return txt(`status.${k}.short`); }, get lower() { return txt(`status.${k}.lower`); }, get text() { return txt(`status.${k}.text`); } });
+export const STATUS_INFO = { burn: condition('burn', '#e8603c'), poison: condition('poison', '#a64ac9'), sleep: condition('sleep', '#7c8aa6'), stun: condition('stun', '#d9b21f') };
 
 let added = false;
 /** Add the sprite to the page once. */
