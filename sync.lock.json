@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-09T19:01:08.839Z",
+ "synced": "2026-11-10T01:19:55.728Z",
  "stages": {
   "cards": {
    "files": 1033,
-   "bytes": 107533897,
+   "bytes": 107534200,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -59,13 +59,13 @@
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
-     "sha256": "32718d5dff58382b6483beae62117b3017f7b693f9c1cdd29248dd36bebdbd86",
-     "bytes": 69950
+     "sha256": "6cadb1ff34ce9f2e11ded36b07205db1e1936b4c05a18b8b3bb1734031f15b3e",
+     "bytes": 70047
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "3d28f631b76eefdd96af2d6c64faeca9f0a4a71837110490c3063fb90130d9ca",
-     "bytes": 63910
+     "sha256": "c9da7604ed9a2b201039beb4ed5f2f29e22a062f25c3292efd8dcd8021c1860b",
+     "bytes": 64116
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",

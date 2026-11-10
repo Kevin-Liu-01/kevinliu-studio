@@ -46,6 +46,13 @@ export const PHONE = {
     // painted and at rest) would otherwise keep every print it ever drew
     ['          s.seen = en.isIntersecting;\n', '          s.seen = en.isIntersecting;\n          if (!s.seen && !s.active && s.box !== s.el) { hold(s); hold(s.fx); }\n'],
   ]),
+  // The wall (r4/ex gallery.js) asks the browser to prerender the whole battle the moment both teams exist
+  // (speculationrules, eagerness immediate). On a touch screen or a small-memory device that boots a second heavy
+  // page behind the wall before any press, so the rule is left out there; Play still navigates.
+  'public/ex/gallery.js': (t) => patch('gallery.js', t, [
+    ["      if (url && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {", `      // ${MARK}: no battle prerender on a touch screen or a small-memory device (scripts/phone-memory.mjs)
+      if (url && !(matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4) && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {`],
+  ]),
   // The rituals (r4/ex rituals.js) keep the next pack rastered at all times on a desktop: three full 3D card copies
   // and the packet on the stage at opacity 0.001, and their well cards in the dock. On a touch screen or a
   // small-memory device they are cut when the pack is pressed instead (the press path's own prepare()), as under
@@ -53,6 +60,11 @@ export const PHONE = {
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ['        if (packOff() || RM()) {', `        if (packOff() || RM() || LEAN) { // ${MARK} (scripts/phone-memory.mjs)`],
     ['    const live = () => !!(Ground && Ground.available);', "    const live = () => !!(Ground && Ground.available);\n    const LEAN = matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4;"],
+    // the battle's opening cast (six subjects on the stage at opacity 0.001, six leads drawn into the shared canvas) is
+    // built at idle once both teams exist; on a touch screen or a small-memory device only the battle's acceptance is
+    // read then (probe), and the press builds the cast (pointerenter on #play and entry() call warm() themselves)
+    ['own(T); idle(warm); });', 'own(T); idle(LEAN ? probe : warm); });'],
+    ['        if ((!sized || !warm()) && ++tries < 40) setTimeout(boot, 250);', '        if (LEAN && sized) { if (G.S.you.length + G.S.rival.length === 6) probe(); } else if ((!sized || !warm()) && ++tries < 40) setTimeout(boot, 250);'],
   ]),
   // The battle's media preload (r4/play vendor/broadcast/kit.js, preload()) warms each move's clips with a detached
   // <video preload="auto"> it never lets go, so every cutscene left decoders and buffers behind until a collection. Once
