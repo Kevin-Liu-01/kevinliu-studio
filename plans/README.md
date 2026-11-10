@@ -16,7 +16,7 @@ logo; (2) one battle engine with Mat and Arena; (3) ElevenLabs sound and music; 
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| [001](001-scan-rules-module-and-tests.md) | One set of content rules for the sync and the guard, normalized spellings, and the first tests (`pnpm test`) | P1 | M | — | TODO |
+| [001](001-scan-rules-module-and-tests.md) | One set of content rules for the sync and the guard, normalized spellings, and the first tests (`pnpm test`) | P1 | M | — | DONE (`improve/001-scan-rules-module-and-tests` 069fc8e; `pnpm test` 8 of 8, sync in sync, build passes; on release/next the language pages must join `GT_ALLOWED`) |
 | [002](002-sync-fails-on-unapplied-patches.md) | The sync stops when a patch never met its file; phone patches write all or nothing | P1 | S | — (after 001; same file) | TODO |
 | [003](003-lock-integrity-check.md) | Every build checks the synced folders against `sync.lock.json` | P1 | S | 001 | TODO |
 | [005](005-battle-no-sound-fetch-before-gesture.md) | The battle fetches no sound file before the first gesture | P1 | S | — | TODO |
