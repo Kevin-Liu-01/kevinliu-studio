@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { safeKey } from './lock-check.mjs';
 import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -372,7 +373,11 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     }
   }
   // a file this stage shipped last time and no longer ships leaves the repo; nothing the sync never wrote is touched
-  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) {
+    // only a plain path inside a synced folder is ever removed, whatever the previous lock says
+    if (!safeKey(dest)) { problems.push(`${dest}: sync.lock.json lists a path outside the synced folders; restore the lock (git checkout sync.lock.json)`); continue; }
+    if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  }
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
 // a patch whose file no rule shipped was never applied: the round renamed or dropped the file, and the fix it carried
@@ -397,7 +402,7 @@ for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: 
 for (const abs of removes) fs.rmSync(abs);
 // the lock changes only when the shipped files or the rounds' commit do, so a no-op rerun leaves no diff
 const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head && JSON.stringify(prev.pins) === JSON.stringify(lock.pins);
-if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
+if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(`${LOCK}.tmp`, JSON.stringify(lock, null, 1) + '\n'); fs.renameSync(`${LOCK}.tmp`, LOCK); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
 // path -> git blob id of every file under `dirs` at `commit`, or null when the rounds' checkout cannot answer

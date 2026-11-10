@@ -103,6 +103,10 @@ and each file's source path, sha-256 and size. It is rewritten only when a file 
 nothing new leaves no diff. `pnpm sync --check` exits 1 when any synced file differs from the rounds and names each one,
 so CI or a person can see the repo is behind and why.
 
+`node scripts/lock-check.mjs` needs no rounds folder: it fails when a synced file differs from the lock, is
+missing, or is not in the lock at all (a hand edit, a stray file, a `.tmp` a stopped sync left). `pnpm build` runs
+it first, so the host and CI enforce that the synced folders change only through `pnpm sync`.
+
 ## When a round finishes
 
 1. Move the stage's pin to the round's commit, then `pnpm sync` (or `ROUNDS=<export> pnpm sync`), and read the summary

@@ -313,3 +313,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: a renamed file dropped its TRANSFORMS, PHONE or BINARY patch silently (the two picture paint-outs are invisible to any text scan); the standalone phone-memory run could leave a file patched and the lock wrong; pageHead dropped tags it could not read.
 - **Checked**: `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; a temporary patch key for a missing file fails with exit 1 and the new message, then removed; `phone-memory.mjs` and `--check` exit 0 with no file changed.
 - **Open**: none.
+
+## 2026-11-09: every build checks the synced folders against the lock (improve/003-lock-integrity-check, Claude Code)
+
+- **Type**: feature
+- **Files**: scripts/lock-check.mjs, scripts/lock-check.test.mjs (new); scripts/sync.mjs, package.json, docs/sync.md, scripts/SKILL.md, memory.md.
+- **Why**: nothing enforced "never edit the synced folders by hand" without the rounds folder; a hand edit, a stray file or a stopped sync's .tmp would build and deploy. The sync also removed any path the previous lock named, and wrote the lock in place.
+- **Checked**: `node scripts/lock-check.mjs` passes on 3024 files and fails on a stray file in public/ex (removed after); `pnpm test` 10 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` runs lock-check first.
+- **Open**: AGENTS.md's agent-docs auto block still prints the old build script until `agent-docs scaffold` is rerun.
