@@ -77,6 +77,10 @@ header.top #sound[aria-pressed='true'] .off { display: none; }
 header.top .links a { white-space: nowrap; }
 @media (max-width: 419px) { html:is([lang='es'], [lang='fr'], [lang='de']) header.top .brand :is(h1, .name) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }
 @media (max-width: 379px) { html:is([lang='es'], [lang='fr'], [lang='de']) header.top.site { gap: 4px; } html:is([lang='es'], [lang='fr'], [lang='de']) header.top .links a { padding: 0 6px; } }
+/* from 640 the view switch joins the header (and the language key from 800): there a translated header (longer words,
+   or a CJK face's wider advances) needs its gaps and the keys' padding a little tighter, up to where the full spacing
+   fits again */
+@media (min-width: 640px) and (max-width: 879px) { html:not([lang='en']) header.top.site { gap: 8px; } html:not([lang='en']) header.top .links a { padding: 0 8px; } }
 
 /* ---------- footer: one line of where else Kevin is ---------- */
 .foot { padding: 32px var(--g) calc(var(--dock) + 40px); }
