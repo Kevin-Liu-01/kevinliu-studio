@@ -230,6 +230,9 @@ const TRANSFORMS = {
   // the Arena's boot rejected with the page still hidden
   'public/battle/arena/board.js': (t) => patch('board.js', t, [
     ["  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';", "  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';"],
+    // on a deal the Arena made its pads visible, laid the board out, and only then marked them hidden, so they faded
+    // out in front of the visitor at the reveal and came back with the first cards; on a deal they start hidden
+    ["    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s }, this.groundSvg);", "    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s, ...(this.ctx.dealing ? { 'data-on': 'false' } : {}) }, this.groundSvg); // kevinliu.studio: on a deal the pads start hidden, as drawSides marks them a moment later (scripts/sync.mjs)"],
   ]),
   // the card code is the wall's, served at /ex/ (the rounds' ../../../r4/ex/). A phone prints each card plain, as the
   // wall does (Kevin, 11-08, "Desktop-only frames"): a family's frame SVG layers held about 250 MB on an iPhone
