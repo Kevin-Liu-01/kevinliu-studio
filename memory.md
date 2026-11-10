@@ -416,3 +416,16 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+## 2026-11-10: card pages link a card style's sheet only when they print in it; card.css leaves its inline frost tile (improve/015-render-blocking-css-diet, Claude Code)
+
+- **Type**: perf
+- **Changed**: Part A: `src/layouts/Base.astro` (new `cardStyle` prop), `src/views/Card.astro` (names its card's style;
+  the plan's `src/pages/cards/[id].astro` is now a wrapper). Part B: `src/components/BattlePage.astro` (sets `--frost` to
+  `/ex/icons/frost.webp`), `scripts/sync.mjs` (`frost(t)` pair in the `card.css` entry), `public/ex/card.css` and
+  `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Rationale**: 25 of 26 card pages (and their language copies) waited on `breakout.css` for one Breakout card, and
+  every page carried a 30 KB base64 frost tile in `card.css` that only the battle ever painted.
+- **Measured**: `breakout.css` linked on 1 of 26 English card pages (princeton-td) and on the home page; same one card
+  in each of the 7 other languages. `card.css` gzip -9: 55045 -> 29561 bytes. Browser: both battle pages and `/de/battle`
+  compute `--frost-tile` as `url("/ex/icons/frost.webp")` and fetch it; card pages keep `image-set(...)`.
+- **Open**: the operator's look at the battle's slips (trait and move slips, both modes, still show their fine noise).
