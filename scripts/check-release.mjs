@@ -31,6 +31,8 @@ const CASES = [
   [{ you: ['katagami', 'mailroom'], rival: [], seed: 30 }, '/', 'replace /#you=katagami,mailroom&rival=&seed=30 | reload'],
   [{ you: ['katagami', 'mailroom', 'elo'], rival: ['jarhead', 'cotfly', 'loop'], seed: 7 }, '/', 'replace /#you=katagami,mailroom,elo&rival=jarhead,cotfly,loop&seed=7 | reload'],
   [{ you: [], rival: [], seed: 30 }, '/', 'reload'],
+  [{ you: ['elo'], rival: [], seed: 4 }, '/es', 'replace /es#you=elo&rival=&seed=4 | reload'],
+  [{ you: ['elo'], rival: [], seed: 4 }, '/es/cards', 'reload'],
   [null, '/battle', 'reload'],
   [{ you: ['katagami'], rival: [], seed: 30 }, '/cards/katagami', 'reload'],
 ];
