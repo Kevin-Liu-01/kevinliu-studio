@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T08:37:31.798Z",
+ "synced": "2026-11-10T08:54:09.548Z",
  "stages": {
   "cards": {
    "files": 1034,
-   "bytes": 107539808,
+   "bytes": 107509254,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -19,8 +19,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "dc4a53a807940ba60fd64ae1b5b53c82b8cac65af2ffea8e50b0112c1610c944",
-     "bytes": 142913
+     "sha256": "18f8e7baba0f3972df0cc58ccd3747868791df11fba086f72fef8efc414c662a",
+     "bytes": 112359
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",

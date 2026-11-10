@@ -424,3 +424,17 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Checked**: `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. dist/index.html and dist/de.html: 26 poster srcsets, 26 `data-plainfxset`, no fx `<img>` with `src` or `srcset`. Card pages (en, de): no `srcset="posters/` and no `data-plainfxset` attribute. Browser, 1280 wide 1x: visible wall posters `@0.5x.avif`, nat 250 = drawn 250; card page poster has no srcset and loads `katagami.webp`.
 - **Paint capture**: before 50 frames over 14.75 s -> /private/tmp/013-before; after 153 frames over 13.39 s -> /private/tmp/013-after (different machine load; a reviewer reads the frames).
 - **Open**: card pages still choose every card picture by the wall's width (the subject picture draws about 1.8 times larger than its file); wants its own decision. A phone (plain print stays, FRAMED restores the fx srcset) was not checked in a browser.
+
+## 2026-11-10: card pages link a card style's sheet only when they print in it; card.css leaves its inline frost tile (improve/015-render-blocking-css-diet, Claude Code)
+
+- **Type**: perf
+- **Changed**: Part A: `src/layouts/Base.astro` (new `cardStyle` prop), `src/views/Card.astro` (names its card's style;
+  the plan's `src/pages/cards/[id].astro` is now a wrapper). Part B: `src/components/BattlePage.astro` (sets `--frost` to
+  `/ex/icons/frost.webp`), `scripts/sync.mjs` (`frost(t)` pair in the `card.css` entry), `public/ex/card.css` and
+  `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Rationale**: 25 of 26 card pages (and their language copies) waited on `breakout.css` for one Breakout card, and
+  every page carried a 30 KB base64 frost tile in `card.css` that only the battle ever painted.
+- **Measured**: `breakout.css` linked on 1 of 26 English card pages (princeton-td) and on the home page; same one card
+  in each of the 7 other languages. `card.css` gzip -9: 55045 -> 29561 bytes. Browser: both battle pages and `/de/battle`
+  compute `--frost-tile` as `url("/ex/icons/frost.webp")` and fetch it; card pages keep `image-set(...)`.
+- **Open**: the operator's look at the battle's slips (trait and move slips, both modes, still show their fine noise).

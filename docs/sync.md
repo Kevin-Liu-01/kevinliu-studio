@@ -62,6 +62,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
   Turboslide cards use the captures that replace the dropped ones, and the Prototemplate loop points at the clip that
   exists.
 - `ex/markup.js`: the lens's Visit link carries no placeholder `#`, which `<base>` would turn into `/ex/`.
+- `ex/card.css`: the frosted slips' inline 1x tile (a 30 KB data URL, the fallback of `--frost`) is left out; every page sets `--frost` itself (`ui.css`, and `BattlePage.astro` for the battle).
 - `rituals.js` also resolves the battle page's stylesheets against that page's own `<base>`, and plays the pack reveal
   for a reduced-motion pack.
 - `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and

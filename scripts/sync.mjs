@@ -191,6 +191,12 @@ const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.
 // a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on every card
 // face (the battle prints the wall's markup.js)
 const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
+// card.css carries the frosted slips' 1x tile as a 30 KB base64 data URL, the fallback of var(--frost, ...), so the
+// sheet paints wherever the rounds serve it (r4/ex card.css, round ex.5). Every page here sets --frost (ui.css on the
+// pages Base.astro frames, BattlePage.astro on the battle), so the fallback is never painted and it leaves the
+// render-blocking sheet: about 25 KB less gzipped on every page that prints a card
+const FROST = '.card { --frost-tile: var(--frost, url("data:image/webp;base64,';
+const frost = (t) => { const a = t.indexOf(FROST), e = a < 0 ? -1 : t.indexOf('"))', a); return [e < 0 ? '<none>' : t.slice(a, e + 3), '.card { --frost-tile: var(--frost, none)']; };
 const TRANSFORMS = {
   // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
   'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
@@ -277,6 +283,7 @@ const TRANSFORMS = {
     ['.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto;', '.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto;'],
     ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
     ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
+    frost(t),
   ]),
   // nothing is fetched before the first gesture (the player's own header): a cue played before one (the battle's deal)
   // called unlock() with no event, which counted as a gesture and loaded every wanted group, about 240 files and 2.3 MB
