@@ -18,6 +18,8 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   title, a description of 50 to 170 characters, a production canonical (the 404 page is noindex instead), an existing
   share image and loop, parsing JSON-LD or a Markdown twin; on any broken local reference or a link that `<base>`
   would misroute; on location metadata in any image, video or audio file; and on banned names or routes.
+- `pnpm check` runs `astro check` (TypeScript 5.9, `tsconfig.json` on Astro's base preset, `src/` only). It is not part
+  of `pnpm build`; CI runs it.
 - `node scripts/smoke.mjs <base-url>` checks a deployed copy: every route answers 200 with a canonical, Markdown
   negotiation works, the text files, share files and redirects answer, and a miss is a 404. Set
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
