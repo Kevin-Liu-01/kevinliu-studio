@@ -595,3 +595,63 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **After**: no pad before its side's first card; a Mat-to-Arena switch still shows both pads in its first Arena frame; both pads and both flags are there once the first cards have arrived.
 - **Checked**: anchor count 1 and 1; sync ended `1 written, 0 removed`; marker counts 1 (new pair) and 1 (plan 008's pair); sync check `in sync`; phone-memory check six lines; `pnpm test` pass 10, fail 0; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass.
 - **Open**: four upstream requests to the play lane (pads and flags created hidden on a deal; hide the interface per batch, not per shot; per-card kit and `data-boot` scope; the font gate), as in the plan's "Upstream request" section; a reload in the middle of a hand was not reached in a browser.
+## 2026-11-10: the 26-card battle routes, measured (spike, asked by improve plan 026, Claude Code)
+
+- **Type**: spike
+- **Changed**: nothing that ships. The result document is `plans/results/026-battle-26-cards.md` on `improve/audit`.
+- **Recommendation**: field all 26 cards by rebuilding only `engine.js` first, because the 572 uncommitted battle-r4b
+  entries touch nothing under `engine/` or `runtime/`, while every open flash failure and the 27 to 48 hour check
+  estimate sit on the scene path; the eight then play default scenes until a scene route follows.
+- **Measured**: a committed-scene export plus the dry run's three engine files validates 104/104, 26/26, 26/26, 0 problems;
+  none of the eight has a shader world, so fielding them adds no WebGL context under plan 009's two-world cap.
+- **Open**: 6 questions for Kevin (battle-r4b's work, machine time, default scenes, the 12 move names, who builds, the
+  four trait hooks).
+## 2026-11-10: a card page plays its card's own sound on the visitor's press (improve plan 028, Claude Code)
+
+- **Type**: feature
+- **Asked**: improve plan 028.
+- **Changed**: `src/components/Header.astro` (the sound key shows on `/cards/<id>`, one spacer stays for the pause key's room), `src/views/Card.astro` (one inline script: nothing is fetched until a trusted press of the card or of the key; then the player by content address, `manifest.gallery.json` and the card's `sig:<id>` group), `docs/sound.md` (one paragraph under "Where it is wired"), `memory.md`.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `pnpm test` pass 10, fail 0. Built pages: `id="sound"` once and one spacer on the three card pages checked, none and two spacers on about, cards, 404 and es/about, once on index. `data-player="/sound/sound.js?v=` once on three card pages; no `boot.gallery.js` on the card page; no sound `<link>`; the script parses, one `import(`, no `fetch(`. Note: `grep -c 'sound.js'` prints 1 on about, cards and 404 because the header's existing script comment names sound.js; no player is loaded there.
+- **Open**: the reviewer's browser checks (no sound file before a gesture, the header's positions, the paint recording); the first press can be silent on a cold load; a keyboard cannot press the card (it is not a control).
+## 2026-11-10: the 26-card battle routes, corrected (spike, improve plan 026, Claude Code)
+
+- **Type**: spike (correction of the entry "the 26-card battle routes, measured")
+- **Changed**: nothing that ships. The result document `plans/results/026-battle-26-cards.md` on `improve/audit` is rewritten in place (Revision 1).
+- **What the first entry got wrong**: it said to rebuild only `engine.js`. The battle page's engine is inside `kit.js`
+  (`window.showdown`; `vendor/battle/mat/index.html` loads `media.js` and `kit.js`, never `engine.js`). `engine.js` is
+  build-only on the site (the roster for `cards.ts`), so an engine-only rebuild would open Battle buttons for teams the page
+  refuses. Every route needs a rebuilt kit, with `engine.js` rebuilt in the same step.
+- **Recommendation**: Route C redefined: a kit rebuilt from the committed tree with the 26-card engine, the eight on default
+  scenes until their own scenes pass the page flash scan; its first gate is the page flash scan over the 18 fielded cards.
+- **Measured**: of the 186 files the shipped kit was built from (`r4/play/vendor/SOURCES.md`), 116 differ in the committed
+  tree (93 of 133 scenes, 7 of 10 broadcast/src, 7 of 8 engine, 5 of 16 runtime, 4 of 19 other). Last page flash readings:
+  next-a (committed = working tree, 2026-11-04) sandbox-arena 86 of 104 variants over the limit, sigil-ui 85 of 99,
+  dedalus-terminal 67 of 109, ariadne 252 margin rows in an older run; next-b committed scenes have no reading, the fixed
+  working-tree copies 40 open rows. Kit builds in scratch from copies of `.work/mat/build.mjs` and `.work/study/bundle.mjs`
+  (entry files re-pointed to the export): (a) eight unregistered 730,959 bytes, `"ommc"` 1, `"katagami"` 14, phone-patch
+  anchor 1, `FIGHTERS.length` 26; (b) eight registered 811,308 bytes, `"ommc"` 13, anchor 1, validator 104/104, 26/26, 26/26,
+  0 problems. Both `media.js` hold 18 cards. Arena: the eight are in `r4/stage` under `roster.next` and need adding to
+  `roster.fields` before `build.mjs` puts them in the Arena manifest.
+- **Open**: 7 questions for Kevin (battle-r4b's scene work, default scenes, machine time for the 18-card re-check, the 12 move names,
+  the four hooks, who builds and when the pin moves, saved replays). Built kits are in `~/k7-rescue/improve-audit/lane-d/kit-026/a/` and `b/`.
+- **Run by the reviewer** (kit (a) swapped into a copy of the build, Playwright Chromium, Auto): a Mat battle between six staged
+  cards plays to its result with no page error (404s: the eight's gallery grounds and move thumbnails); in the Arena a staged
+  lead has no figure and the battle never leaves its entrance (150 s), while fielded cards play; the same teams and seed give
+  a different battle than today's kit (Defeat in 9 turns, Victory in 12), so saved replays change with any kit rebuild.
+## 2026-11-10: Claude of Tanks' October footage in the battle's moves, tested in a scratch export (spike, asked by improve plan 030, Claude Code)
+
+- **Type**: spike
+- **Changed**: nothing that ships. The result document is `plans/results/030-claude-of-tanks-footage.md` on `improve/audit`.
+- **Verdicts**: Sabot Round, One Spec and 14 v 14 GO now (data only: the manifest entry plus the nine files); Killcam GO with the kit (its scene holds a point in the clip's own pixels, `ENTRY` at `claude-of-tanks.killcam.ts:22`, and scene files change only when `kit.js` is rebuilt).
+- **Measured**: the data build needs git-ignored media, so a committed-only export fails (357 ignored entries in `r1/study-roster18` and `r2/plates`); with those cloned in, the footage changes exactly one card (`data/media.js: claude-of-tanks`), the splice leaves the other 17 cards equal and the three sync anchors match once each; the new clips are 1600 x 900 and 9,373,541 bytes in all.
+- **Run by the reviewer** (the new clips and the entry's `moves` put into a copy of the build, today's kit, Playwright Chromium, the four moves by key on the Mat): all four new clips play with no page error or failed request; Killcam's ring draws at the old clip's point, so it waits for the kit as the scene check says.
+- **Open**: 3 questions for Kevin (three clips now or all four with the kit, drop the old `*-clean.mp4` files, the optional trait clip).
+## 2026-11-10: the logo decision sheet (improve plan 027, Part 1, Claude Code)
+
+- **Type**: decision sheet
+- **Asked**: improve plan 027.
+- **Changed**: nothing that ships. The sheet is outside every repository, at `/Users/kevinliu/k7-rescue/improve-audit/logo-decisions/index.html` (it holds Kevin's portrait mark, so it is never copied into a repository or published). The questions are in `plans/results/027-logo-decisions.md` on `improve/audit`.
+- **Questions**: Kevin Wiki's logo (portrait, emblem or a new crop), 050525's logo (cursor, title or favicon wing), Podium trophy's origin, Claude of Tanks' archived shield, the Atlas monogram under the 11-01 ruling, Sevenfold's address, and the logo-contrast fix (E15).
+- **Checked**: candidates read from rounds `20496336` with `git show HEAD:` only (8 files, byte counts match the plan); the sheet has 32 `<img` lines, no `<script`, no `http` in any `src` or `href`.
+- **Open**: Kevin's answers, then Part 2 (the request block and the E15 re-measure) once the cards' session has committed.
+- **Looked at by the reviewer**: the sheet rendered locally from `file://` with no request off the disk; all eight candidates show at 20 and 44 px and enlarged.
