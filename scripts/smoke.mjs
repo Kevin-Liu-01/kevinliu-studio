@@ -24,12 +24,19 @@ for (const p of ['/llms.txt', '/llms-full.txt', '/robots.txt', '/sitemap-index.x
   const { r } = await get(p);
   if (r.status !== 200) fails.push(`${p}: ${r.status}`);
 }
-// the stylesheets, scripts and face a page names by content address are kept for a year (vercel.json)
+// what a page names by content address is kept for a year (vercel.json): its stylesheets and scripts, both faces, and
+// the frame and effect drawings whose ?v= is their own hash; the same face or drawing asked for without ?v= is not
 const { text: home } = await get('/');
-for (const u of [home.match(/\/ex\/ui\.css\?v=[0-9a-f]+/)?.[0], home.match(/\/fonts\/[\w-]+\.woff2/)?.[0]]) {
-  if (!u) { fails.push('/: no versioned /ex/ui.css or preloaded face'); continue; }
+const border = home.match(/borders\/[\w/-]+\.svg\?v=[0-9a-f]+/)?.[0];
+for (const u of [home.match(/\/ex\/ui\.css\?v=[0-9a-f]+/)?.[0], home.match(/\/fonts\/katagami-sans-site\.woff2\?v=[0-9a-f]+/)?.[0], home.match(/\/fonts\/katagami-mono-site\.woff2\?v=[0-9a-f]+/)?.[0], border && `/ex/${border}`]) {
+  if (!u) { fails.push('/: no versioned /ex/ui.css, face, Machine face or border drawing'); continue; }
   const { r } = await get(u);
-  if (!/immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u}: cache-control ${r.headers.get('cache-control')}`);
+  if (r.status !== 200 || !/immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u}: ${r.status} cache-control ${r.headers.get('cache-control')}`);
+}
+for (const u of ['/fonts/katagami-sans-site.woff2', border && `/ex/${border.split('?')[0]}`]) {
+  if (!u) continue;
+  const { r } = await get(u);
+  if (r.status !== 200 || /immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u} without ?v=: ${r.status} cache-control ${r.headers.get('cache-control')}, expected 200 and no immutable`);
 }
 const { r: nf } = await get('/no-such-page');
 if (nf.status !== 404) fails.push(`/no-such-page: ${nf.status}, expected 404`);

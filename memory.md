@@ -427,3 +427,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Checked**: every built page, twin and text file (523) is byte-identical to before; `node scripts/i18n-extract.mjs --check`
   passes, `content.json` unchanged; `pnpm test` 13 tests, 0 fail (10 before); a positional mutant fails the strike test.
 - **Open**: none.
+
+## 2026-11-10: The two site faces are named by content address; a year only where the address holds the content (improve/p2-checks, plan 012)
+
+- **Type**: perf
+- **Changed**: `src/layouts/Base.astro` (both faces through `versioned()`, the Mono `@font-face` rule moved into the inline style, `data-mono` on `<html>` for the head script's preload), `src/styles/machine.css` (Mono rule removed), `vercel.json` (`/fonts/` immutable only with `?v=`; `/ex/borders` and `/ex/fx` drawings a year with `?v=`, a day without), `scripts/cache-rules.test.mjs` (new), `scripts/verify-build.mjs` (face without `?v=` fails; a `?v=` on a face or border/fx drawing must be the file's sha-256), `scripts/smoke.mjs`, `docs/performance.md`, `docs/deploy.md`.
+- **Rationale**: a subset rebuilt under a plain address would sit in returning visitors' caches for a year; a year is now earned only by an address that holds its content.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; all four sampled pages name `katagami-mono-site.woff2?v=9fade4c28f` and `katagami-sans-site.woff2?v=8254e26517`; no `fonts/` in `dist/_astro/*.css`; `pnpm test` 15 tests, 0 fail (the new test fails 2 of 2 on the old `vercel.json`); a corrupted `fx.svg?v=` token made the guard name `is not the file's sha-256`, and the guard passed again once the file was restored; `node scripts/check-negotiation.mjs` exit 0.
+- **Open**: not deployed: the smoke check of the cache headers (`node scripts/smoke.mjs <preview>`) has not run, so Vercel's handling of the `missing` condition is unproven on a deployment; the plain picture addresses (`posters/`, `media/`) still keep a day and are not hashed; `design/` drawings carry a `?v=` that is not their own hash (a rounds matter); returning visitors fetch each face once more after this ships.

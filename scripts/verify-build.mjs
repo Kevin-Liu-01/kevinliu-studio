@@ -6,6 +6,9 @@
 // references exists in dist (resolved against its <base>), the sitemap, robots.txt and llms files exist, no image
 // carries GPS metadata, no image, video or audio file carries location metadata, no banned name or route appears, and
 // every round file scripts/phone-memory.mjs patches carries its patches (a phone's tab stays under its memory limit).
+// A face under /fonts is named with ?v=, and that token, like a /ex/borders or /ex/fx drawing's, is the file's own sha-256
+// (they are kept for a year).
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { scanBuffer } from './rules.mjs';
@@ -24,6 +27,9 @@ const exists = (p) => {
   const f = path.join(DIST, clean);
   return fs.existsSync(f) && fs.statSync(f).isFile() || fs.existsSync(f + '.html') || fs.existsSync(path.join(f, 'index.html'));
 };
+// sha-256 of a dist file, read once
+const hashes = new Map();
+const sha256 = (f) => hashes.get(f) ?? hashes.set(f, createHash('sha256').update(fs.readFileSync(f)).digest('hex')).get(f);
 
 // a phone's memory: every file scripts/phone-memory.mjs patches ships patched (a sync that dropped them, or a hand copy)
 for (const dest of Object.keys(PHONE)) {
@@ -144,6 +150,9 @@ for (const f of htmls) {
   if (/font\/woff2;base64/.test(html)) fail(page, 'a font is inlined as base64');
   // each stylesheet and deferred script a page names under /ex/ carries its content address (vercel.json caches it)
   for (const m of html.matchAll(/\s(?:href|src)="(\/ex\/[^"]+\.(?:css|js))"/g)) fail(page, `${m[1]} has no ?v= content address`);
+  // a face under /fonts is kept for a year only when it is named with its ?v= content address (vercel.json); named
+  // without it, it would be fetched again on every visit, and the face blocks text
+  for (const m of html.matchAll(/(?<![\w.-])\/fonts\/[\w-]+\.woff2(?!\?v=[0-9a-f])/g)) fail(page, `${m[0]} is named without its ?v= content address`);
   const twin = html.match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
   if (!is404(page) && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
   // every local reference, resolved the way the browser will
@@ -157,6 +166,10 @@ for (const f of htmls) {
     if (!u || /^(https?:|mailto:|data:|#|%23|javascript:|blob:)/.test(u) || u.includes('${')) continue;
     const abs = new URL(u, `https://x${base}`).pathname;
     if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);
+    // a face under /fonts, and a frame or effect drawing under /ex/borders or /ex/fx, named with ?v= is kept for a
+    // year (vercel.json), so the token must be the served file's own sha-256: a changed file then always gets a new address
+    const v = /^\/fonts\/|^\/ex\/(?:borders|fx)\/.*\.svg$/.test(abs) ? /[?&]v=([0-9a-f]+)/.exec(u)?.[1] : null;
+    if (v && exists(abs) && !sha256(path.join(DIST, abs)).startsWith(v)) fail(page, `${abs}?v=${v} is not the file's sha-256, and it is kept for a year`);
   }
   // every card prints plain with its framed print in a template right after it (frames on desktop only,
   // src/lib/cards.ts): the same card, in its family (design/card.js, data-fam), never the plain fallback markup.js prints

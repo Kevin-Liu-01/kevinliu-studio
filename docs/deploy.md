@@ -28,8 +28,8 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   twin is served when `text/markdown` comes before any `text/html` in `Accept` and is not `q=0`;
   `node scripts/check-negotiation.mjs` checks the rule without a deployment),
   the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
-- Caching: `_astro/` and `fonts/` are immutable; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
-  with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; media under those folders keeps a day
+- Caching: `_astro/` is immutable, and so is a `fonts/` file asked for with `?v=`; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
+  with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; the `/ex/borders/` and `/ex/fx/` drawings asked for with `?v=` are immutable as well (`scripts/cache-rules.test.mjs`); media under those folders keeps a day
   with a week of stale-while-revalidate; pages revalidate.
 - A protected preview: `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)" node
   scripts/smoke.mjs <url>`; agent-browser takes the same token as the `x-vercel-trusted-oidc-idp-token` header.
