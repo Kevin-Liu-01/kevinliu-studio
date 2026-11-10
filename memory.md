@@ -460,3 +460,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Steps**: install, `pnpm test`, `pnpm check`, `check-facts.mjs`, `check-negotiation.mjs`, `lock-check.mjs`, `pnpm build`, then `check-release.mjs dist/index.html` (needs the built page).
 - **Checked**: each command by hand in the worktree (test 10 of 10, check 0 errors, facts, negotiation 4 routes 16 cases, lock-check 3024 files, build 256 pages all checks pass, check-release 7 cases on dist/index.html and dist/de.html); the YAML parses with the expected keys and steps.
 - **Open**: not pushed, so the workflow first runs on GitHub when Kevin pushes this branch; Actions minutes on a private repository count against the monthly allowance; check-facts, check-negotiation and check-release run as workflow steps, not from `pnpm test` (no test file in this plan's scope).
+
+## 2026-11-10: the workflow calls the checks this branch has (improve/p2-checks, plan 021 follow-up)
+
+- **Type**: fix
+- **Changed**: `.github/workflows/check.yml`, `docs/deploy.md`, `memory.md`.
+- **Why**: the workflow ran `scripts/check-facts.mjs`, which exists only on another branch; here plan 011's check is `scripts/facts.test.mjs`, run by `pnpm test`, so that step would have failed on GitHub.
+- **Checked**: `pnpm test` 15 pass, 0 fail; `pnpm check` 0 errors; `check-negotiation.mjs` 4 routes 16 cases; `lock-check.mjs` 3024 files; `phone-memory.mjs --check` and `i18n-extract.mjs --check` exit 0; `check-release.mjs dist/index.html` 7 cases pass; the YAML parses with the expected keys and nine run steps.
+- **Open**: not pushed, so the workflow has never run on GitHub; the action majors (checkout v7, setup-node v7, pnpm/action-setup v6) were read from GitHub's releases API and are untested until the first run.

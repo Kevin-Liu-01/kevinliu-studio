@@ -20,7 +20,7 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   would misroute; on location metadata in any image, video or audio file; and on banned names or routes.
 - `pnpm check` runs `astro check` (TypeScript 5.9, `tsconfig.json` on Astro's base preset, `src/` only). It is not part
   of `pnpm build`; CI runs it.
-- `.github/workflows/check.yml` runs on every pull request and every push to `main`: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm check`, `node scripts/check-facts.mjs`, `node scripts/check-negotiation.mjs`, `node scripts/lock-check.mjs`, `pnpm build` (with the release guard) and `node scripts/check-release.mjs dist/index.html`. It needs no secret and deploys nothing; Vercel deploys as before.
+- `.github/workflows/check.yml` runs on every pull request and every push to `main`: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm check`, `node scripts/check-negotiation.mjs`, `node scripts/lock-check.mjs`, `node scripts/phone-memory.mjs --check`, `node scripts/i18n-extract.mjs --check`, `pnpm build` (with the release guard) and `node scripts/check-release.mjs dist/index.html`. It needs no secret and deploys nothing; Vercel deploys as before.
 - `node scripts/smoke.mjs <base-url>` checks a deployed copy: every route answers 200 with a canonical, Markdown
   negotiation works, the text files, share files and redirects answer, and a miss is a 404. Set
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
