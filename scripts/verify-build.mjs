@@ -46,7 +46,7 @@ const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')
 const langOf = (page) => OTHER.find((c) => page === `/${c}.html` || page.startsWith(`/${c}/`)) ?? 'en';
 // the characters each face holds (scripts/i18n-fonts.py): a translated page prints only what its faces hold
 const FACES = JSON.parse(fs.readFileSync(path.join(path.dirname(DIST), 'src/i18n/fonts.json'), 'utf8'));
-const held = (code) => new Set(Object.values(FACES).filter((f) => !f.locales.length || f.locales.length > 1 || f.locales.includes(code)).flatMap((f) => [...f.chars]));
+const held = (code, base) => new Set(Object.values(FACES).filter((f) => f.base === base || (f.locales.length && (f.locales.length > 1 || f.locales.includes(code)))).flatMap((f) => [...f.chars]));
 
 const GT = /general\s?translation|generaltranslation/i;
 // the wall and the cards index print every card, Atlas's line among them
@@ -118,9 +118,9 @@ for (const f of htmls) {
   }
   // every character a translated page shows is held by one of its faces (the language list names each language in
   // the system face and is left out)
-  if (code !== 'en' && !/<base href="\/battle\//.test(html)) {
+  if (code !== 'en') {
     const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang[ "][\s\S]*?<\/details>/g, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
-    const have = held(code), missing = new Set([...shown].filter((ch) => ch > '~' && !have.has(ch)));
+    const have = held(code, /<base href="\/battle\//.test(html) ? 'battle' : 'site'), missing = new Set([...shown].filter((ch) => ch > '~' && !have.has(ch)));
     if (missing.size) fail(page, `prints ${[...missing].slice(0, 12).join('')} that no face holds (python3 scripts/i18n-fonts.py)`);
   }
   if (is404(page)) { if (canon || !/<meta name="robots" content="noindex/.test(html)) fail(page, 'the 404 page must be noindex without a canonical'); }

@@ -57,7 +57,9 @@
     "packOnly": "パック：{list}",
     "statsSr": "体力 {hp}、射程 {atk}、耐性 {def}、速度 {spd}",
     "art": "イラスト",
-    "frame": "枠"
+    "frame": "枠",
+    "altArt": "イラスト違い",
+    "altArtN": "イラスト違い {n}"
   },
   "cards": {
     "title": "カード",

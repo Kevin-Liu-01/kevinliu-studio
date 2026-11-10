@@ -31,6 +31,9 @@ const fit = (s: string) => {
   let out = '';
   for (const x of sentences) { if ((out + x).trim().length > 160) break; out += x; }
   if (out.trim().length >= 50) return out.trim();
+  // else the sentence up to its last colon or semicolon that fits ("Kevin Liu's projects as 26 collectible cards.")
+  const clause = s.slice(0, 159).match(/^(.*)[:;：；]/)?.[1]?.trim();
+  if (clause && clause.length >= 50) return `${clause}${/[\u3000-\u9fff\uac00-\ud7af]$/.test(clause) ? '。' : '.'}`;
   const cut = s.slice(0, 159);
   return `${/\s/.test(cut) ? cut.replace(/[\s,:;]+\S*$/, '') : cut}…`;
 };

@@ -57,7 +57,9 @@
     "packOnly": "팩: {list}",
     "statsSr": "체력 {hp}, 사거리 {atk}, 내성 {def}, 속도 {spd}",
     "art": "그림",
-    "frame": "테두리"
+    "frame": "테두리",
+    "altArt": "다른 일러스트",
+    "altArtN": "다른 일러스트 {n}"
   },
   "cards": {
     "title": "카드",

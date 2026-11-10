@@ -57,7 +57,9 @@
     "packOnly": "Pacote: {list}",
     "statsSr": "Vida {hp}, Alcance {atk}, Resistência {def}, Ritmo {spd}",
     "art": "Arte",
-    "frame": "Moldura"
+    "frame": "Moldura",
+    "altArt": "Arte alternativa",
+    "altArtN": "Arte alternativa {n}"
   },
   "cards": {
     "title": "Cartas",
@@ -135,7 +137,7 @@
     "guard": "Defender",
     "switch": "Trocar",
     "kit": "Kit",
-    "auto": "Automático",
+    "auto": "Auto",
     "skips": "{key} para pular",
     "tapToSkip": "Toque para pular",
     "close": "Fechar",

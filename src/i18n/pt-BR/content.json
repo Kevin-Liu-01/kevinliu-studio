@@ -4,7 +4,7 @@
   "about": [
     "Sou engenheiro de infraestrutura e produto na [General Translation](https://generaltranslation.com), em São Francisco.",
     "Tenho 19 anos e trabalho com programação e design desde os 12. Atualmente, estudo na [Princeton University](https://www.princeton.edu).",
-    "Crio interfaces que parecem vivas, a partir de princípios fundamentais e com personalidade própria. Os pontos de atrito me ajudam a descobrir o que falta, e trato os ambientes como parte do produto. Transformo observações inusitadas em mundos úteis por meio de tipografia, habilidades e protocolos."
+    "Crio interfaces que parecem vivas, a partir de princípios fundamentais e com personalidade própria. Os pontos de atrito me ajudam a descobrir o que falta, e trato os ambientes como parte do produto. Transformo observações inusitadas em mundos úteis por meio de tipografia, skills e protocolos."
   ],
   "facts": [
     "Kevin Liu é engenheiro de infraestrutura e produto na General Translation, em São Francisco, desde julho de 2026.",
@@ -27,7 +27,7 @@
       "a": "Ele cofundou a Online Monmouth Math Competition (OMMC), uma competição de matemática sem fins lucrativos com classificação 501(c)(3), e lidera sua área de tecnologia. Foi o principal desenvolvedor dos sites da HackPrinceton e criou o Podium, sua ferramenta de avaliação. Venceu 13 hackathons consecutivos; o RecyclAIble, projeto de sua equipe, conquistou o primeiro lugar em hardware no PennApps XXIII (2022). É autor de um artigo sobre transcrição de fala para a doença de Huntington (IYRC 2023), que recebeu um prêmio da Sigma Xi, e coautor de um artigo sobre fluxo de calor em baterias de polímero de íons de lítio (IEEE MIT URTC 2024)."
     }
   ],
-  "ringRule": "Um ataque causa 1.5x de dano contra a próxima disciplina no anel e 0.67x contra a anterior; nas demais combinações, o multiplicador é 1x. Para disciplinas duplas, os multiplicadores se multiplicam.",
+  "ringRule": "Um ataque causa 1,5x de dano contra a próxima disciplina no anel e 0,67x contra a anterior; nas demais combinações, o multiplicador é 1x. Para disciplinas duplas, os multiplicadores se multiplicam.",
   "cards": {
     "turboslide": {
       "what": "Um editor de apresentações no navegador em que pessoas e agentes de IA editam a mesma apresentação.",

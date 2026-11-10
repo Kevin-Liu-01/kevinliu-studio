@@ -38,7 +38,7 @@ function warn(code: string, why: string) {
   const k = `${code}: ${why}`;
   if (warned.has(k)) return;
   warned.add(k);
-  if (warned.size <= 20) console.warn(`[i18n] ${k}`);
+  console.warn(`[i18n] ${k}`);
 }
 // the tree the page prints: `now` (the English the site prints today) with each string replaced by its translation
 // where `was` (the English that was translated) still equals `now` and the marks agree

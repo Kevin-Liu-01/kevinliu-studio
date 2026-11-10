@@ -57,7 +57,9 @@
     "packOnly": "Pack: {list}",
     "statsSr": "Health {hp}, Reach {atk}, Proof {def}, Pace {spd}",
     "art": "Art",
-    "frame": "Frame"
+    "frame": "Frame",
+    "altArt": "Alt art",
+    "altArtN": "Alt art {n}"
   },
   "cards": {
     "title": "Cards",
