@@ -476,3 +476,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: three copies of the same checks had drifted: only one script knew both preview tokens, the SEO check read `sitemap-0.xml` not the index and followed redirects with the token attached, and the smoke check matched redirect targets by suffix.
 - **Checked**: `pnpm test` 19 pass, 0 fail (15 before); `pnpm build` 256 pages, 248 sitemap URLs, all checks pass; the smoke check on production prints the same output before and after; a seeded `twitter:card` fault in `dist/about.html` is caught by the guard, then restored.
 - **Open**: the SEO check against a local serve is the reviewer's step; not run against a protected preview.
+
+## 2026-11-10: the franchise name split inside the word is caught (improve/p2-checks, plan 031)
+
+- **Type**: fix
+- **Changed**: `scripts/rules.mjs` (one pattern), `scripts/rules.test.mjs` (one test appended), `memory.md`.
+- **Why**: the shared content rules let a space, hyphen or underscore sit inside two of the three banned names but not the third, so that name written with a split in the middle passed both the sync and the release guard, in text and in paths.
+- **Checked**: the new test failed alone before the fix (19 pass, 1 fail); after it `pnpm test` 20 pass, 0 fail; the sync check prints `in sync`; `pnpm build` 256 pages, all checks pass.
+- **Open**: not pushed.

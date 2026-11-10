@@ -68,3 +68,10 @@ test('location metadata is found in EXIF, XMP and the video atoms, and nowhere e
   assert.equal(hasLocation(Buffer.from('RIFF....WEBPVP8 plain picture bytes')), null);
   assert.deepEqual(scanBuffer('public/ex/media/elo/pop.webp', Buffer.concat([Buffer.from('RIFF'), tiff(true, 0x8825)])), ['GPS in EXIF']);
 });
+
+test('a franchise name split inside the word is caught', () => {
+  const A = 'Nin', B = 'tendo';
+  for (const s of [`${A}-${B}`, `${A}_${B}`, `${A} ${B}`, `${A}&nbsp;${B}`, `${A}\n${B}`]) assert.deepEqual(hits('public/ex/x.js', `a ${s} b`), ['franchise name'], s);
+  for (const s of ['tannin tendons', 'melanin tends', 'a mannequin tendon']) assert.deepEqual(hits('public/ex/x.js', s), [], s);
+  assert.deepEqual(hits(`public/ex/${A}_${B}/a.txt`.toLowerCase(), 'fine'), ['franchise name in the path']);
+});
