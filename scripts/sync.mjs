@@ -304,7 +304,7 @@ const TRANSFORMS = {
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
     ["const BATTLE = new URL($('meta[name=\"battle\"]').content, document.baseURI).href;", after(SND + "\n  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('a, button'); if (b && !b.closest('.card, #pause, #sound, [data-mode-set], #play, #pack, .addbtn, .close')) snd('ui.tap'); });")],
     ["if (b) setMode(b.dataset.modeSet); });", "if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });"],
-    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });"],
+    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true', true); });"],
     ["if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return;", after(" snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);")],
     ["aim(c, clamp((e.clientX - r.x - 6) / (r.w - 12)), clamp((e.clientY - top - 6) / (r.h - 12)));", after(TILT)],
     ["if (!el.matches(':focus-visible') || RM()) return;", after(" snd('ui.step', { pan: pan(el) }); SND()?.load('sig:' + el.dataset.id);")],
@@ -316,9 +316,9 @@ const TRANSFORMS = {
     ["const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget';", after(" snd('team.refuse');")],
     ["if (RM() || !Ground.available) { go(); return; }", "if (RM() || !Ground.available) { snd('ui.tap'); go(); return; }"],
     // the lens's address is the card's own page here (/cards/<id>), not a folder under the page's <base>
-    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }"],
-    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`);"],
-    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else history.replaceState(null, '', '/' + location.search + location.hash);"],
+    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; } retitle();"],
+    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`); retitle();"],
+    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else { history.replaceState(null, '', '/' + location.search + location.hash); retitle(); }"],
     ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
     // the lens's frame row stays in the rounds: its buttons carry the design lanes' working names ("studio border lane,
     // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
@@ -334,6 +334,19 @@ const TRANSFORMS = {
     ["      w.classList.toggle('full', !!id);\n    });\n    const g = $('.gauge');", "      w.classList.toggle('full', !!id);\n      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }\n    });\n    const g = $('.gauge');"],
     // the lens's arrow keys step to cards the wall has not scrolled to; the card that takes focus back comes into view
     ["      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });", "      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });"],
+    // reduced motion starts the page paused (Base.astro), and the boot call saved that as the visitor's own choice; only
+    // the Pause key's press saves now
+    ["  function setPaused(on) {", "  function setPaused(on, save) {"],
+    ["    try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}", "    if (save) try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}"],
+    // a lens that Forward reopened is on its own history entry too: leaving it steps back, as a pushed lens does, where
+    // replaceState left two identical entries
+    ["        if (I.pushed && history.state && history.state.card) history.back();", "        if (history.state && history.state.card) history.back();"],
+    // the Machine view hides the lens (machine.css), so a card's history entry opens nothing there
+    ["    if (id && cards[id]) openInspect(id, { push: false });", "    if (id && cards[id] && root.dataset.mode !== 'machine') openInspect(id, { push: false });"],
+    // while the lens holds /cards/<id> the tab, the history entry and a bookmark carry that card page's own title
+    // (Seo.astro: "<card> | Kevin Liu"); the wall's own title comes back when the address does
+    ["  const titleOf = (id) => F[id].title;", after("\n  const TITLE0 = document.title;\n  const retitle = () => { const c = history.state && history.state.card; document.title = c && F[c] ? `${F[c].title} | ${TITLE0}` : TITLE0; };")],
+    ["  addEventListener('popstate', (e) => {\n    const id = e.state && e.state.card;", "  addEventListener('popstate', (e) => {\n    retitle();\n    const id = e.state && e.state.card;"],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
