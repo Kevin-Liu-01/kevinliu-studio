@@ -16,7 +16,7 @@ card to the kit; plain on phones, framed on desktop, as on the wall), adds one c
 setting (`shared/pace.js`, X), the HUD (`shared/hud.js`: plates, the log rail, multiplier call-outs, tooltips with each
 move's preview loop from `/battle/previews/`), and sound: `shared/battle.js` imports `/sound/sound.js` and plays r4/sound's
 battle slice, following the stage's clock (`SPEC.md` section 10). The rail's speaker key (N) is the site's sound
-setting (`kevin-liu-studio:sound`). The roster is still the engine's 18 cards (`vendor/battle/vendor/engine.js`).
+setting (`kevin-liu-studio:sound`). The roster is still the engine's 18 cards (`vendor/battle/vendor/engine.js`). A card page's Moves list shows the same previews, for each move the battle fields under the card's own name (`previewOf` in `src/lib/cards.ts`; 60 of the 72 moves on the 18 fielded cards on 2026-11-10).
 
 ## State on 2026-11-05
 
