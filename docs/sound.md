@@ -14,7 +14,7 @@ ledger and the generation receipts stay in the rounds and never come here; the s
   the first press on a busy machine (2026-11-05); started at idle, the press makes its own context in about 1 ms.
   Nothing plays and nothing is fetched.
 - Under `prefers-reduced-motion` sound defaults to off. A saved choice (`localStorage['kevin-liu-studio:sound']`)
-  always wins and syncs across tabs. The header's speaker button toggles it.
+  always wins and syncs across tabs. The header's speaker button toggles it. A page that comes back from the back-forward cache reads it again.
 - The gallery's music loop (`mus.gallery`) is not played: reading the wall makes no sound of its own. This is a
   reversible decision. To restore it, delete the `boot.gallery.js` transform in `scripts/sync.mjs`.
 
@@ -29,3 +29,4 @@ ledger and the generation receipts stay in the rounds and never come here; the s
   (`resumeAtLoad`) and the sounds at the first gesture on the page, or at load where the browser already lets the page
   play. A sync transform keeps that promise: `sound.js`'s `unlock()` treated a cue played before any gesture as one and
   fetched every wanted group, about 240 files and 2.3 MB, while every such cue was dropped. A second transform makes a cue asked for while the context is not yet unlocked return without fetching its file (the deal and the leads' entrances fetched 10 files with no gesture).
+- Site transforms on `sound.js` (docs/sync.md): the battle's speaker key answers with `bt.ui.toggle`; the player's own timers keep real time under the battle's clock; a manifest that fails to load is asked for again on the next gesture.

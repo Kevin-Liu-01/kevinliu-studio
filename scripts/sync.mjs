@@ -308,6 +308,23 @@ const TRANSFORMS = {
     // had the same check
     ['  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx) return null; }', '  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx || !S.unlocked) return null; } // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)'],
     ['  if (!c || !S.enabled || !S.ctx) return null;', '  if (!c || !S.enabled || !S.ctx || !S.unlocked) return null; // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)'],
+    // a page shown again from the back-forward cache missed every storage event: it reads the saved choice
+    ["      addEventListener('storage', (e) => { if (e.key === KEY && (e.newValue === 'on' || e.newValue === 'off')) setEnabled(e.newValue === 'on', { persist: false }); });\n", after("      // kevinliu.studio: a page shown again from the back-forward cache gets no storage event; it reads the saved choice (scripts/sync.mjs)\n      addEventListener('pageshow', (e) => { if (!e.persisted) return; const s = saved(); if (s !== null && s !== S.enabled) setEnabled(s, { persist: false }); });\n")],
+    // the battle's manifest has no ui.sound.on and no gallery group: its speaker key answers with bt.ui.toggle
+    ["    if (feedback) { play('ui.sound.on', { force: true, waitMs: 900 }); load('gallery'); }", "    if (feedback) { play(S.m && !S.m.cues['ui.sound.on'] && S.m.cues['bt.ui.toggle'] ? 'bt.ui.toggle' : 'ui.sound.on', { force: true, waitMs: 900 }); if (S.page !== 'battle') load('gallery'); } // kevinliu.studio: the battle answers with its own toggle cue (scripts/sync.mjs)"],
+    // the battle's clock (shared/pace.js) runs every page timer in scene time, up to four times as fast in a rush;
+    // the player's waits (a theme's stop, the eviction of a faded theme, lap changes, a prefetch) keep real time
+    ["const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];", before("// kevinliu.studio: the battle's clock (shared/pace.js) runs every page timer in scene time; the player's waits keep real time (scripts/sync.mjs)\nconst setTimeout = (fn, ms, ...a) => (globalThis.battlePace?.realTimeout ?? globalThis.setTimeout)(fn, ms, ...a);\n")],
+    // a manifest that fails (a dropped request, a 404 mid-deploy) was cached as a rejected promise: the page stayed
+    // silent until a reload and every later hover logged an unhandled rejection. The fetch checks its status, a
+    // failure clears the cache, the first-gesture loading re-arms for the next gesture, and no caller is left uncaught
+    ['      S.m = await (await fetch(url)).json();', '      const res = await fetch(url);\n      if (!res.ok) throw new Error(`manifest ${res.status}`);\n      S.m = await res.json();'],
+    ['    applyGraph();\n    return S.m;\n  })();\n  return S.mp;', '    applyGraph();\n    return S.m;\n  })().catch((e) => { S.mp = null; throw e; }); // kevinliu.studio: a manifest that failed is asked for again (scripts/sync.mjs)\n  return S.mp;'],
+    ['    });\n  });\n}\nfunction bindGestures() {', '    });\n  }).catch(() => { S.unlocked = false; if (!S.gesturesBound) { bindGestures(); S.gesturesBound = true; } }); // kevinliu.studio: the next gesture asks again (scripts/sync.mjs)\n}\nfunction bindGestures() {'],
+    ['    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest(); }', '    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest().catch(() => {}); }'],
+    ['  if (!S.m) return ensureManifest().then(() => load(group));', '  if (!S.m) return ensureManifest().then(() => load(group)).catch(() => { S.wantGroups.add(group); });'],
+    ['    ensureManifest(); // its request goes first', '    ensureManifest().catch(() => {}); // its request goes first'],
+    ["    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest();", "    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest().catch(() => {});"],
   ]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),

@@ -6,7 +6,7 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T08:44:47.029Z",
+ "synced": "2026-11-10T08:53:10.110Z",
  "stages": {
   "cards": {
    "files": 1033,
@@ -5181,12 +5181,12 @@
   },
   "sound": {
    "files": 1098,
-   "bytes": 17101785,
+   "bytes": 17102999,
    "list": {
     "public/sound/sound.js": {
      "src": "r4/sound/sound.js",
-     "sha256": "f2570f40a8421e7425216bca9c1c123737deba6bcb36c406775bad8ec206f55e",
-     "bytes": 83947
+     "sha256": "cec1c70cde5a1a8bbefb34a82fa6bd856d740f444516aad561eb1b94172f7fdc",
+     "bytes": 85161
     },
     "public/sound/boot.gallery.js": {
      "src": "r4/sound/boot.gallery.js",

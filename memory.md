@@ -423,3 +423,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Changed**: `scripts/sync.mjs` (five pairs on the battle.js entry after plan 008's; the mat.css and arena.css entries rename `.result h1 {` to `.result h2 {`, and the Mat's reduced-motion rule is restored), `public/battle/shared/battle.js`, `public/battle/mat/mat.css`, `public/battle/arena/arena.css` and `sync.lock.json` (by the sync), `docs/sync.md`.
 - **Checked**: sync --check `in sync` before and after; step 1 anchor counts 1,1,1,1,1,1,2,2; step 5 counts ok, 2, 0, 0/0, 2/2, 1, 0; phone-memory --check passes; `pnpm test` 10 of 10; `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`.
 - **Open**: the browser gate (plan step 6: one h1 while playing, non-empty live region, h2 at the result, Mat rail transition 0s under reduced motion) was not run by the executor; the plan hands it to the lane reviewer. The upstream request to the play lane and the single-key shortcut decision (WCAG 2.1.4) remain.
+
+## 2026-11-10: The sound player keeps the choice after Back, the battle's key answers, waits keep real time, a failed manifest retries (improve/019-sound-player-robustness, executor agent)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four groups of anchored pairs on the `public/sound/sound.js` entry, after plan 005's), `public/sound/sound.js` and `sync.lock.json` (by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Rationale**: pageshow reads the saved choice after a back-forward restore; the battle's speaker key plays `bt.ui.toggle` and skips the gallery group; the player's timers use `battlePace.realTimeout`; a failed manifest clears its cached promise and re-arms the gestures.
+- **Checked**: sync check `in sync`; marker counts ok, 1, 1, 1, 4; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. Browser (preview, agent-browser): (a) true then false on / and on /es; (b) true offline, then true after the second press online; (c) pressed "true", toggled true, files 128.
+- **Open**: the upstream request to the sound lane (four lines in the plan); the reviewer appends it.
