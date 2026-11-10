@@ -450,3 +450,13 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: `astro check` could not run on TypeScript 7 (no compiler API) and there was no tsconfig; `node >=24` and `^` ranges let the toolchain move without a commit; `@astrojs/mdx` was used nowhere.
 - **Checked**: `pnpm check` ends `Result (61 files): - 0 errors - 0 warnings - 5 hints` (before the fix: 1 error at Header.astro:31:81, the one the plan names). `pnpm build` 256 pages, all checks pass; built HTML, Markdown and text files compared with the pre-change build.
 - **Open**: five hints left as they are (cards.ts:87, About.astro x2, Home.astro x2); AGENTS.md's agent-docs auto block still prints the old check script until the scaffold is rerun.
+
+
+## 2026-11-10: a GitHub workflow runs the checks on every pull request and push to main (improve/021-ci-workflow, executor agent)
+
+- **Type**: feature, plan 021, cut from cce834f (improve/020) with improve/011 merged in
+- **Changed**: `.github/workflows/check.yml` (new), `docs/deploy.md` (one bullet under Build), `memory.md`.
+- **Why**: no check ran before a build on the host. The workflow uses the pinned Node (`.nvmrc`, 24) and pnpm 11.15.1 (`packageManager`), no secret, no deploy.
+- **Steps**: install, `pnpm test`, `pnpm check`, `check-facts.mjs`, `check-negotiation.mjs`, `lock-check.mjs`, `pnpm build`, then `check-release.mjs dist/index.html` (needs the built page).
+- **Checked**: each command by hand in the worktree (test 10 of 10, check 0 errors, facts, negotiation 4 routes 16 cases, lock-check 3024 files, build 256 pages all checks pass, check-release 7 cases on dist/index.html and dist/de.html); the YAML parses with the expected keys and steps.
+- **Open**: not pushed, so the workflow first runs on GitHub when Kevin pushes this branch; Actions minutes on a private repository count against the monthly allowance; check-facts, check-negotiation and check-release run as workflow steps, not from `pnpm test` (no test file in this plan's scope).

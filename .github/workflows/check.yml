@@ -1,0 +1,43 @@
+# Runs on every pull request and every push to main: the content rules' tests, the lock check and a full build with
+# the release guard. It needs no secret and no rounds folder. Vercel builds and deploys on its own; this only reports.
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      # pnpm at the version package.json names in "packageManager"
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Tests
+        run: pnpm test
+      - name: Types
+        run: pnpm check
+      - name: Facts behind /about
+        run: node scripts/check-facts.mjs
+      - name: Markdown negotiation routes
+        run: node scripts/check-negotiation.mjs
+      - name: Synced folders match the lock
+        run: node scripts/lock-check.mjs
+      - name: Build and release guard
+        run: pnpm build
+      - name: Release script in the built page
+        run: node scripts/check-release.mjs dist/index.html
