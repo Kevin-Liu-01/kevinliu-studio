@@ -44,6 +44,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
+- `gallery.js`, `ex/markup.js`: Play's P key acts only from the dock, messages sent together are spoken as one line, the rival's side is a group whose wells name their cards, and the card that takes focus back from the lens scrolls into view.
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
 - `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.

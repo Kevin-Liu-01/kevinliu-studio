@@ -265,6 +265,8 @@ const TRANSFORMS = {
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [
     ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
+    // aria-label on a div without a role is ignored: the rival's side is a group
+    ['<div class="side rival" aria-label="Rival">', '<div class="side rival" role="group" aria-label="Rival">'],
     nolink(t),
   ]),
   // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
@@ -322,6 +324,16 @@ const TRANSFORMS = {
     // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
     // every card prints its primary frame, so the frame printings never run and src/lib/cards.ts loads none of their code
     ['    frs.hidden = !F || F.length < 2;', '    frs.hidden = true;'],
+    // the bare P key played from anywhere on the page (WCAG 2.1.4); it plays while focus is in the dock, where the Play
+    // button announces it (aria-keyshortcuts)
+    ["(e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea')", "(e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock')"],
+    // a pack says "Rival: ..." and "Pack: ..." in the same instant, and each say() cleared the line the other had asked
+    // for; the messages of one 30 ms window now go out as one line
+    ["  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };", "  let sayQ = [], sayT = 0;\n  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };"],
+    // the rival's wells hold copies hidden from assistive technology (copyOf), so each filled well names its card
+    ["      w.classList.toggle('full', !!id);\n    });\n    const g = $('.gauge');", "      w.classList.toggle('full', !!id);\n      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }\n    });\n    const g = $('.gauge');"],
+    // the lens's arrow keys step to cards the wall has not scrolled to; the card that takes focus back comes into view
+    ["      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });", "      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });"],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
