@@ -57,7 +57,9 @@
     "packOnly": "Kartenpack: {list}",
     "statsSr": "Lebenspunkte {hp}, Reichweite {atk}, Nachweis {def}, Tempo {spd}",
     "art": "Illustration",
-    "frame": "Rahmen"
+    "frame": "Rahmen",
+    "altArt": "Alternatives Motiv",
+    "altArtN": "Alternatives Motiv {n}"
   },
   "cards": {
     "title": "Karten",
@@ -132,10 +134,10 @@
     "replay": "Wiederholung",
     "log": "Protokoll",
     "leave": "Verlassen",
-    "guard": "Verteidigen",
+    "guard": "Abwehr",
     "switch": "Wechseln",
-    "kit": "Ausrüstung",
-    "auto": "Automatisch",
+    "kit": "Items",
+    "auto": "Auto",
     "skips": "Mit {key} überspringen",
     "tapToSkip": "Zum Überspringen tippen",
     "close": "Schließen",

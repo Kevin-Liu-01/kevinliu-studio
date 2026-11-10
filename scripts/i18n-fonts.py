@@ -26,6 +26,8 @@ FONTS = os.path.join(ROOT, 'public/fonts')
 
 # characters the battle page prints from its own scripts in every language (keys, scores) are Latin already
 BASE = set(chr(c) for c in TTFont(os.path.join(FONTS, 'katagami-sans-site.woff2')).getBestCmap())
+# the battle pages load the rounds' own subset instead (r4/play), which lacks a few of the site's (é, –, —)
+BATTLE = set(chr(c) for c in TTFont(os.path.join(ROOT, 'public/battle/vendor/fonts/katagami-sans-battle.woff2')).getBestCmap())
 
 
 # each language's own name, as the language key and a translated twin's first line print it (src/i18n/locales.mjs)
@@ -83,21 +85,27 @@ def cut(src, chars, out):
 
 
 def main():
-    # the site's own subset, which every page loads: the guard counts its characters as held
-    faces = {'site': {'file': '/fonts/katagami-sans-site.woff2', 'locales': [], 'range': '', 'chars': ''.join(sorted(BASE))}}
+    # the site's own subset, which every page loads, and the battle's, which the battle pages load instead: the guard
+    # counts their characters as held. Each face below holds what a page's own subset lacks: `range` is what it adds to
+    # the site face, `battleRange` what it adds to the battle face
+    faces = {
+        'site': {'file': '/fonts/katagami-sans-site.woff2', 'locales': [], 'base': 'site', 'range': '', 'battleRange': '', 'chars': ''.join(sorted(BASE))},
+        'battle': {'file': '/battle/vendor/fonts/katagami-sans-battle.woff2', 'locales': [], 'base': 'battle', 'range': '', 'battleRange': '', 'chars': ''.join(sorted(BATTLE))},
+    }
     # whitespace and controls never need a glyph of their own
     skip = {'\n', '\r', '\t'}
-    latin = {c for c in text('es', 'fr', 'de', 'pt-BR') if c not in BASE and c not in skip and ord(c) < 0x2E80}
+    lacks = lambda c: c not in BASE or c not in BATTLE
+    latin = {c for c in text('es', 'fr', 'de', 'pt-BR') if lacks(c) and c not in skip and ord(c) < 0x2E80}
     jobs = [
         ('ext', ['es', 'fr', 'de', 'pt'], 'sans/KatagamiSans[wght].ttf', 'katagami-sans-ext.woff2', latin),
     ]
     for code, gt, cjk in (('ja', 'ja', 'JP'), ('ko', 'ko', 'KR'), ('zh', 'zh-CN', 'SC')):
-        chars = {c for c in text(gt) if c not in BASE and c not in skip and c not in latin}
+        chars = {c for c in text(gt) if lacks(c) and c not in skip and c not in latin}
         jobs.append((code, [code], f'cjk/KatagamiCJK{cjk}[wght].ttf', f'katagami-cjk-{code}.woff2', chars))
     for key, codes, src, out, chars in jobs:
         keep, missing = cut(os.path.join(KATAGAMI, 'fonts', src), chars, out)
         size = os.path.getsize(os.path.join(FONTS, out))
-        faces[key] = {'file': f'/fonts/{out}', 'locales': codes, 'range': ranges(keep), 'chars': keep}
+        faces[key] = {'file': f'/fonts/{out}', 'locales': codes, 'range': ranges(c for c in keep if c not in BASE), 'battleRange': ranges(c for c in keep if c not in BATTLE), 'chars': keep}
         print(f'{out}: {len(keep)} characters, {size / 1024:.1f} KB' + (f'; not in the face: {"".join(missing)}' if missing else ''))
     with open(os.path.join(I18N, 'fonts.json'), 'w', encoding='utf-8') as f:
         json.dump(faces, f, ensure_ascii=False, indent=2)

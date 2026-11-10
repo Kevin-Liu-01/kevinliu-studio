@@ -86,6 +86,8 @@ html:root[data-mode='machine'] {
 /* under 380 the name is read but not shown (site.css): its wrapper leaves the brand's row, as the name did, and its
    machine form goes with it */
 @media (max-width: 379px) { header.top .nm { display: contents; } :root[data-mode='machine'] header.top .nm > .mx { display: none; } }
+/* es, fr and de give the name way below 420 px (site.css), so their Machine name does too */
+@media (max-width: 419px) { html:is([lang='es'], [lang='fr'], [lang='de']) header.top .nm { display: contents; } :root[data-mode='machine']:is([lang='es'], [lang='fr'], [lang='de']) header.top .nm > .mx { display: none; } }
 :root[data-mode='machine'] header.top .brand .kl { display: none; }
 :root[data-mode='machine'] header.top .kl-mx { display: grid; place-items: center; width: 28px; height: 28px; flex: none; font: 700 22px/1 var(--mono); color: var(--t-dim); }
 @media (max-width: 639px) { :root[data-mode='machine'] header.top .kl-mx { width: 24px; height: 24px; font-size: 18px; } }

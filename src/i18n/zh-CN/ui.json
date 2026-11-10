@@ -57,7 +57,9 @@
     "packOnly": "卡包：{list}",
     "statsSr": "生命值 {hp}，攻击范围 {atk}，抗性 {def}，速度 {spd}",
     "art": "插画",
-    "frame": "边框"
+    "frame": "边框",
+    "altArt": "异画",
+    "altArtN": "异画 {n}"
   },
   "cards": {
     "title": "卡牌",

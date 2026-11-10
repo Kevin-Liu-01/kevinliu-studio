@@ -49,7 +49,9 @@ ${SOCIAL.map((s) => `- ${s.name}: ${s.url}`).join('\n')}
 - ${t('twin.linkPrevious')}: ${PREVIOUS}`;
 };
 // the line a translated twin opens under its heading: which language this is and where the original lives
-const edition = (code: string, p: string) => (code === DEFAULT ? '' : `${L(code).t('twin.translated', { language: L(code).name, url: `<${SITE}${p}>` })}\n\n`);
+// (Spanish, French and Portuguese write a language's name in lower case inside a sentence: "la edición en español")
+const nameInSentence = (code: string) => (['es', 'fr', 'pt'].includes(code) ? L(code).name.toLowerCase() : L(code).name);
+const edition = (code: string, p: string) => (code === DEFAULT ? '' : `${L(code).t('twin.translated', { language: nameInSentence(code), url: `<${SITE}${p}>` })}\n\n`);
 
 export function homeMd(code = DEFAULT) {
   const l = L(code), t = l.t;

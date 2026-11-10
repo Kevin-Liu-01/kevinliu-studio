@@ -4,7 +4,7 @@
   "about": [
     "Soy ingeniero de infraestructura y producto en [General Translation](https://generaltranslation.com), en San Francisco.",
     "Tengo 19 años y llevo programando y diseñando desde los 12. Actualmente estudio en [Princeton University](https://www.princeton.edu).",
-    "Diseño interfaces que parecen tener vida, con espíritu propio y partiendo de principios fundamentales. Me guío por los puntos de fricción para descubrir lo que falta y considero los entornos parte del producto. Transformo observaciones insólitas en mundos útiles mediante tipografía, habilidades y protocolos."
+    "Diseño interfaces que parecen tener vida, con espíritu propio y partiendo de principios fundamentales. Me guío por los puntos de fricción para descubrir lo que falta y considero los entornos parte del producto. Transformo observaciones insólitas en mundos útiles mediante tipografía, skills y protocolos."
   ],
   "facts": [
     "Kevin Liu es ingeniero de infraestructura y producto en General Translation, en San Francisco, desde julio de 2026.",
@@ -27,7 +27,7 @@
       "a": "Cofundó Online Monmouth Math Competition (OMMC), una competición de matemáticas sin ánimo de lucro con estatus 501(c)(3), y dirige su área tecnológica. Fue el desarrollador principal de los sitios web de HackPrinceton y creó Podium, su herramienta de evaluación. Ganó 13 hackatones consecutivos; RecyclAIble, el proyecto de su equipo, obtuvo el primer puesto en hardware en PennApps XXIII (2022). Es autor de un artículo sobre transcripción del habla para la enfermedad de Huntington (IYRC 2023), que recibió un premio de Sigma Xi, y coautor de un artículo sobre el flujo de calor en baterías de polímero de iones de litio (IEEE MIT URTC 2024)."
     }
   ],
-  "ringRule": "Un ataque tiene un multiplicador de 1.5x contra la siguiente disciplina del anillo y de 0.67x contra la anterior; cualquier otro emparejamiento tiene un multiplicador de 1x. En las disciplinas dobles, los multiplicadores se combinan multiplicándose.",
+  "ringRule": "Un ataque tiene un multiplicador de 1,5x contra la siguiente disciplina del anillo y de 0,67x contra la anterior; cualquier otro emparejamiento tiene un multiplicador de 1x. En las disciplinas dobles, los multiplicadores se combinan multiplicándose.",
   "cards": {
     "turboslide": {
       "what": "Un editor de diapositivas en el navegador donde personas y agentes de IA editan una misma presentación.",
@@ -98,12 +98,12 @@
     "local-search": {
       "what": "Una herramienta de línea de comandos para que los agentes de IA busquen en la web desde el navegador que usted utiliza.",
       "answer": "Local Search es una herramienta de línea de comandos para que los agentes de IA busquen en la web desde el navegador que usted utiliza.",
-      "rule": "Las búsquedas repetidas devuelven los resultados guardados en un tiempo mediano de 6.5 ms, así que un movimiento reutilizado actúa primero.",
+      "rule": "Las búsquedas repetidas devuelven los resultados guardados en un tiempo mediano de 6,5 ms, así que un movimiento reutilizado actúa primero.",
       "moves": [
         "{move} inflige 61 de daño con un 95 % de probabilidad. Su agente busca en la web desde el navegador que ya utiliza, sin recurrir a un servicio de búsqueda independiente.",
         "{move} inflige 57 de daño. Los resultados llegan en JSON con una estructura fija, y los fallos incluyen un código de error que permite a los agentes actuar en consecuencia.",
-        "{move} inflige 55 de daño y aumenta su Ritmo. Su prueba de rendimiento de julio de 2026 registró un tiempo de búsqueda mediano de 148.7 ms, combinando búsquedas nuevas con respuestas basadas en resultados guardados.",
-        "{move} restaura 45 de salud. Cada resultado es breve, con una mediana de 53.4 tokens (los fragmentos de palabras que leen los modelos de IA), lo que permite a los agentes procesar más resultados."
+        "{move} inflige 55 de daño y aumenta su Ritmo. Su prueba de rendimiento de julio de 2026 registró un tiempo de búsqueda mediano de 148,7 ms, combinando búsquedas nuevas con respuestas basadas en resultados guardados.",
+        "{move} restaura 45 de salud. Cada resultado es breve, con una mediana de 53,4 tokens (los fragmentos de palabras que leen los modelos de IA), lo que permite a los agentes procesar más resultados."
       ]
     },
     "agent-pets": {
@@ -186,7 +186,7 @@
     "cotfly": {
       "what": "Una mosca de la fruta en 3D en Claude of Tanks, con un acelerador controlado por 124 neuronas simuladas.",
       "answer": "CoTFly es una mosca de la fruta en 3D en Claude of Tanks, con un acelerador controlado por 124 neuronas simuladas.",
-      "rule": "La actividad neuronal regula su acelerador, por lo que, tras dos turnos en juego, su Ritmo se multiplica por 1.5.",
+      "rule": "La actividad neuronal regula su acelerador, por lo que, tras dos turnos en juego, su Ritmo se multiplica por 1,5.",
       "moves": [
         "{move} inflige 120 de daño el 95 % de las veces. Cada una de las 124 neuronas acumula y pierde carga, y se activa al superar un umbral de voltaje; todo se calcula en tiempo real cada milisegundo.",
         "{move} inflige 75 de daño y aturde el 30 % de las veces. 75 neuronas inhibidoras reducen la actividad de 49 neuronas impulsoras mediante 1,106 conexiones cartografiadas en el cerebro de una mosca real, reduciendo la aceleración.",
@@ -246,7 +246,7 @@
         "{move} inflige 65 de daño y actúa primero. Los invitados se registran enviando su nombre por mensaje, sin necesidad de una aplicación, y reciben una gema de color, una palabra secreta y una misión.",
         "{move} inflige 30 de daño tres veces, con un 95% de probabilidad. Encuentre a dos invitados cuyas gemas formen, junto con la suya, un triángulo en el círculo cromático y envíe sus identificadores por mensaje para obtener 100 puntos.",
         "{move} restaura 50 de salud. Pida una bebida por mensaje con sus propias palabras; el sistema busca su equivalente en la carta y pone el pedido en cola. Recibirá un mensaje cuando esté lista.",
-        "{move} inflige 85 de daño. Una pantalla grande muestra las fichas de los invitados ordenadas por puntos; se actualiza cada 1.5 segundos y conserva los datos al recargar."
+        "{move} inflige 85 de daño. Una pantalla grande muestra las fichas de los invitados ordenadas por puntos; se actualiza cada 1,5 segundos y conserva los datos al recargar."
       ]
     },
     "sigil-ui": {
@@ -296,7 +296,7 @@
     "ommc": {
       "what": "Una competición de matemáticas en línea sin ánimo de lucro para equipos de estudiantes de hasta 18 años.",
       "answer": "OMMC es una competición de matemáticas en línea sin ánimo de lucro para equipos de estudiantes de hasta 18 años.",
-      "rule": "Los mejores equipos pasan a una ronda de demostraciones, así que, cuando su Salud se reduce a la mitad, su Alcance se multiplica por 1.5.",
+      "rule": "Los mejores equipos pasan a una ronda de demostraciones, así que, cuando su Salud se reduce a la mitad, su Alcance se multiplica por 1,5.",
       "moves": [
         "{move} inflige 90 de daño con un 95% de probabilidad. El PDF de la prueba se abre junto a 25 casillas de respuesta, y el botón Enviar permanece desactivado hasta que se completen las 25.",
         "{move} inflige 28 de daño entre 1 y 4 veces, con un 95% de probabilidad. Hasta cuatro estudiantes pueden inscribirse como un solo equipo; cada uno indica su edad, curso y centro educativo, o la palabra anonymous.",

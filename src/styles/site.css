@@ -30,9 +30,10 @@ header.top .links a {
 header.top .links a[aria-current='page'] { color: var(--ink-1); font-weight: 600; box-shadow: var(--sink-s); }
 @media (hover: hover) { header.top .links a:hover { color: var(--ink-1); } }
 header.top .spacer { visibility: hidden; pointer-events: none; }
-/* a CJK nav key holds its Machine-view address (/ja/battle) though its word is two characters (対戦); a phone's header
-   has no room for it, so there the address scrolls in its key (machine.css data-over) */
-@media (min-width: 640px) { html:is([lang='ja'], [lang='ko'], [lang='zh-Hans']) header.top .links a { min-width: 72px; } }
+/* a CJK nav key holds its Machine-view address (/ja/battle) though its word is two characters (対戦); below 900 px the
+   header (with the language key from 800) has no room for it, so there the address scrolls in its key (machine.css
+   data-over) */
+@media (min-width: 900px) { html:is([lang='ja'], [lang='ko'], [lang='zh-Hans']) header.top .links a { min-width: 72px; } }
 header.top .swapi .on { display: none; }
 header.top #sound[aria-pressed='true'] .on { display: block; }
 header.top #sound[aria-pressed='true'] .off { display: none; }
@@ -48,6 +49,9 @@ header.top #sound[aria-pressed='true'] .off { display: none; }
 .lang.in-head[open] > summary::after { opacity: 1; }
 .lang ul { position: absolute; z-index: 60; display: grid; min-width: 168px; margin: 0; padding: 6px; list-style: none; border-radius: var(--r-ctl); background: var(--clay); box-shadow: var(--raise-s); }
 .lang.in-head ul { right: 0; top: calc(100% + 8px); }
+/* the footer's list opens from the footer's line of links, centred on it, not on the key, which may sit at either edge */
+.foot > nav { position: relative; }
+.foot .lang.in-foot { position: static; }
 .lang.in-foot ul { left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); }
 .lang ul a { display: flex; align-items: center; min-height: var(--ctl); padding: 0 12px; border-radius: calc(var(--r-ctl) - 4px); font: 500 15px/20px ui-sans-serif, system-ui, sans-serif; color: var(--ink-2); text-decoration: none; }
 .lang ul a[aria-current] { color: var(--ink-1); font-weight: 650; box-shadow: var(--sink-s); }
@@ -67,6 +71,12 @@ header.top #sound[aria-pressed='true'] .off { display: none; }
   header.top .seg { display: none; }
 }
 @media (max-width: 379px) { header.top .brand :is(h1, .name) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }
+/* a nav word never wraps inside its key (Acerca de, Über mich, À propos); where those languages' longer words leave no
+   room beside the name, below 420 px, the name gives way as it does for every language below 380, and below 380 their
+   keys tighten. The kl mark stays the way home and the name stays the h1 */
+header.top .links a { white-space: nowrap; }
+@media (max-width: 419px) { html:is([lang='es'], [lang='fr'], [lang='de']) header.top .brand :is(h1, .name) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); } }
+@media (max-width: 379px) { html:is([lang='es'], [lang='fr'], [lang='de']) header.top.site { gap: 4px; } html:is([lang='es'], [lang='fr'], [lang='de']) header.top .links a { padding: 0 6px; } }
 
 /* ---------- footer: one line of where else Kevin is ---------- */
 .foot { padding: 32px var(--g) calc(var(--dock) + 40px); }

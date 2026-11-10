@@ -39,7 +39,7 @@ const fontFace = [
 // every language, and the page's own CJK face. Each joins "Katagami Sans" for its unicode-range only, so a browser
 // fetches it only for the characters that need it; the page's own is preloaded beside the site face. English pages
 // declare none of them.
-const faces = l.en ? [] : Object.values(FACES).filter((f) => f.locales.length > 1 || f.locales.includes(l.code));
+const faces = l.en ? [] : Object.values(FACES).filter((f) => f.range && (f.locales.length > 1 || f.locales.includes(l.code)));
 const extFaces = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.range}}`).join('');
 const preloads = faces.filter((f) => f.locales.includes(l.code)).map((f) => versioned(f.file));
 ---

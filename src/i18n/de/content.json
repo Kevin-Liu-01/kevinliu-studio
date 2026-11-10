@@ -4,7 +4,7 @@
   "about": [
     "Ich bin Infrastruktur- und Produktingenieur bei [General Translation](https://generaltranslation.com) in San Francisco.",
     "Ich bin 19 und programmiere und gestalte, seit ich 12 bin. Derzeit studiere ich an der [Princeton University](https://www.princeton.edu).",
-    "Ich gestalte von Grund auf Benutzeroberflächen, die sich lebendig anfühlen und einen eigenen Charakter haben. Ich gehe Reibungspunkten nach, um herauszufinden, was fehlt, und betrachte die Umgebung als Teil des Produkts. Aus ungewöhnlichen Beobachtungen erschaffe ich mithilfe von Typografie, Fähigkeiten und Protokollen nützliche Welten."
+    "Ich gestalte von Grund auf Benutzeroberflächen, die sich lebendig anfühlen und einen eigenen Charakter haben. Ich gehe Reibungspunkten nach, um herauszufinden, was fehlt, und betrachte die Umgebung als Teil des Produkts. Aus ungewöhnlichen Beobachtungen erschaffe ich mithilfe von Typografie, Skills und Protokollen nützliche Welten."
   ],
   "facts": [
     "Kevin Liu ist seit Juli 2026 Infrastruktur- und Produktingenieur bei General Translation in San Francisco.",
@@ -102,8 +102,8 @@
       "moves": [
         "{move} verursacht mit 95 % Wahrscheinlichkeit 61 Schaden. Ihr Agent durchsucht das Web in dem Browser, den Sie bereits nutzen, ohne separaten Suchdienst.",
         "{move} verursacht 57 Schaden. Ergebnisse werden als JSON in einem einheitlichen Format geliefert. Bei Fehlern wird ein Fehlercode ausgegeben, auf den Agenten reagieren können.",
-        "{move} verursacht 55 Schaden und erhöht sein Tempo. Beim Benchmark im Juli 2026 lag die mediane Suchzeit bei 148.7 ms – bei einer Mischung aus neuen Suchen und Antworten aus gespeicherten Ergebnissen.",
-        "{move} stellt 45 Lebenspunkte wieder her. Die Ergebnisse sind mit einem Median von 53.4 Tokens (den Wortbausteinen, die KI-Modelle lesen) kurz, sodass Agenten mehr Ergebnisse verarbeiten können."
+        "{move} verursacht 55 Schaden und erhöht sein Tempo. Beim Benchmark im Juli 2026 lag die mediane Suchzeit bei 148,7 ms – bei einer Mischung aus neuen Suchen und Antworten aus gespeicherten Ergebnissen.",
+        "{move} stellt 45 Lebenspunkte wieder her. Die Ergebnisse sind mit einem Median von 53,4 Tokens (den Wortbausteinen, die KI-Modelle lesen) kurz, sodass Agenten mehr Ergebnisse verarbeiten können."
       ]
     },
     "agent-pets": {

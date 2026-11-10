@@ -57,7 +57,9 @@
     "packOnly": "Paquet : {list}",
     "statsSr": "Santé {hp}, Portée {atk}, Preuve {def}, Cadence {spd}",
     "art": "Illustration",
-    "frame": "Cadre"
+    "frame": "Cadre",
+    "altArt": "Illustration alternative",
+    "altArtN": "Illustration alternative {n}"
   },
   "cards": {
     "title": "Cartes",
@@ -134,7 +136,7 @@
     "leave": "Quitter",
     "guard": "Défendre",
     "switch": "Changer",
-    "kit": "Équipement",
+    "kit": "Objets",
     "auto": "Auto",
     "skips": "{key} pour passer",
     "tapToSkip": "Appuyez pour passer",

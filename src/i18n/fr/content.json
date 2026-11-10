@@ -4,7 +4,7 @@
   "about": [
     "Je suis ingénieur infrastructure et produit chez [General Translation](https://generaltranslation.com), à San Francisco.",
     "J'ai 19 ans et je code et conçois depuis l'âge de 12 ans. J'étudie actuellement à [Princeton University](https://www.princeton.edu).",
-    "Je conçois des interfaces qui semblent vivantes, en repartant des principes fondamentaux pour leur donner une personnalité propre. Les points de friction me guident vers ce qui manque, et je considère les environnements comme une partie intégrante du produit. Grâce à la typographie, aux compétences et aux protocoles, je transforme des observations insolites en univers utiles."
+    "Je conçois des interfaces qui semblent vivantes, en repartant des principes fondamentaux pour leur donner une personnalité propre. Les points de friction me guident vers ce qui manque, et je considère les environnements comme une partie intégrante du produit. Grâce à la typographie, aux skills et aux protocoles, je transforme des observations insolites en univers utiles."
   ],
   "facts": [
     "Kevin Liu est ingénieur infrastructure et produit chez General Translation à San Francisco depuis juillet 2026.",
@@ -102,8 +102,8 @@
       "moves": [
         "{move} inflige 61 dégâts dans 95 % des cas. Votre agent effectue ses recherches sur le web dans le navigateur que vous utilisez déjà, sans service de recherche distinct.",
         "{move} inflige 57 dégâts. Les résultats sont renvoyés en JSON selon une structure fixe, et chaque échec s’accompagne d’un code d’erreur que les agents peuvent exploiter.",
-        "{move} inflige 55 dégâts et augmente sa Cadence. Son banc d’essai de juillet 2026 a mesuré un temps de recherche médian de 148.7 ms, en combinant de nouvelles recherches et des réponses tirées de résultats enregistrés.",
-        "{move} restaure 45 points de Santé. Chaque résultat est court : une longueur médiane de 53.4 jetons (les fragments de mots que lisent les modèles d’IA), ce qui permet aux agents d’assimiler davantage de résultats."
+        "{move} inflige 55 dégâts et augmente sa Cadence. Son banc d’essai de juillet 2026 a mesuré un temps de recherche médian de 148,7 ms, en combinant de nouvelles recherches et des réponses tirées de résultats enregistrés.",
+        "{move} restaure 45 points de Santé. Chaque résultat est court : une longueur médiane de 53,4 jetons (les fragments de mots que lisent les modèles d’IA), ce qui permet aux agents d’assimiler davantage de résultats."
       ]
     },
     "agent-pets": {

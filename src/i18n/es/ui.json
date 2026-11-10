@@ -57,7 +57,9 @@
     "packOnly": "Sobre: {list}",
     "statsSr": "Salud {hp}, Alcance {atk}, Resistencia {def}, Ritmo {spd}",
     "art": "Ilustración",
-    "frame": "Marco"
+    "frame": "Marco",
+    "altArt": "Ilustración alternativa",
+    "altArtN": "Ilustración alternativa {n}"
   },
   "cards": {
     "title": "Cartas",
@@ -135,7 +137,7 @@
     "guard": "Defender",
     "switch": "Cambiar",
     "kit": "Objetos",
-    "auto": "Automático",
+    "auto": "Auto",
     "skips": "{key} para omitir",
     "tapToSkip": "Toque para omitir",
     "close": "Cerrar",
