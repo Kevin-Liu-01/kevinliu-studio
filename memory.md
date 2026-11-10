@@ -293,3 +293,36 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: the site in eight languages with General Translation (feat/i18n, Claude Code)
+
+- **Type**: feature (branch, not pushed or deployed)
+- **Asked**: Kevin, 2026-11-09: "i also want my website to be internationalized with GT" and "you have api keys just use
+  em with a new project using gt cli".
+- **GT project**: a new project, **kevinliu.studio** (prj_i3sf0ks7nnj2gtm95aexc481), created with the gt CLI's API in
+  Kevin's "Random Projects" organization (his "Kevin-GT" organization was at its plan's project limit). Its project key
+  is only in the worktree's gitignored `.env.local`; no gt-cloud project or key was touched. The build needs no key, so
+  Vercel has none and needs none.
+- **Languages**: English at the root, unchanged; es, fr, de, pt (pt-BR), ja, ko and zh (zh-Hans) under their codes.
+  `src/i18n/locales.mjs` is the list. docs/i18n.md is the procedure and the reasons.
+- **Translated**: every page (home, /cards, 26 card pages, About, 404, battle Mat and Arena), metadata and JSON-LD,
+  hreflang and og:locale alternates, the sitemap's xhtml alternates, html lang, header, footer, Machine view, every
+  Markdown twin, llms.txt and llms-full.txt per language, the wall's lens sheet, dock, pack and runtime labels
+  (`/<code>/gallery.js`), and the battle page's own frame.
+- **English on purpose**: names (Kevin's, products, companies, cards, moves, traits), receipts and code, the card
+  faces (fitted to Katagami's Latin advances at build), the game inside the battle (r4/play builds its HUD, tooltips,
+  narration and cutscenes in English inside ~850 KB of round code: string tables belong in the rounds), credits.
+- **Faces**: accented Latin 10 KB and Katagami CJK subsets (ja 260, ko 63, zh 237 KB) cut by `scripts/i18n-fonts.py`
+  from ~/repos/Katagami b648dbb; unicode-range, preloaded, content-addressed. English pages declare none.
+- **Checked**: `pnpm build` (256 pages, 248 sitemap URLs; the guard now checks every language, hreflang, html lang and
+  that a translated page prints only characters its faces hold), check-seo on the local build (249 pages, 490 links),
+  English twins and llms files byte-identical to the base build, English HTML differing only by the alternates and the
+  language key. Browser (built-in, local serve): es, fr, de, ja at 1440, 390 and 320: CLS 0 on the wall, card pages,
+  About and the Machine switch; no page wider than its screen; lens address, labels and status lines in the language;
+  battle rail fits at 390 and 320 in every language. iPhone 14 probe (WebKit, pages mode): translated pages' WebContent
+  within English's (wall 197 to 208 against 222 MB, card 34/33, About 20 to 22/19, battle 176/201), canvas, WebGL and
+  pictures identical; CJK faces add 2 to 3 MB.
+- **Found on the way**: the header at 640 to 680 px with touch-size keys was already a few px too wide in English; the
+  language key therefore sits in the header from 800 px and in the footer below. `astro check` refuses TypeScript 7.
+- **Open**: the battle's in-game text needs string tables in r4/play; a `pnpm sync` that changes card words needs
+  `pnpm i18n:translate` and `python3 scripts/i18n-fonts.py` (the changed strings print in English until then).

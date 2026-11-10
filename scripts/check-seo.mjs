@@ -78,7 +78,8 @@ for (const p of [...pages, '/no-such-page']) {
     if (!links.has(key)) links.set(key, p);
   }
   if (p !== '/no-such-page') {
-    const twin = p === '/' ? '/index.md' : `${p}.md`;
+    // a home's twin is its index.md: /index.md, and /es/index.md for a language's home (src/lib/twins.ts twinPath)
+    const twin = p === '/' ? '/index.md' : /^\/[a-z]{2}$/.test(p) ? `${p}/index.md` : `${p}.md`;
     const tr = await fetch(base + twin, { headers: bypass });
     if (tr.status !== 200 || !/^text\/markdown/.test(tr.headers.get('content-type') ?? '')) fails.push(`${twin}: ${tr.status} ${tr.headers.get('content-type')}`);
     await tr.body?.cancel();

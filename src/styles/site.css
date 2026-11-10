@@ -30,6 +30,9 @@ header.top .links a {
 header.top .links a[aria-current='page'] { color: var(--ink-1); font-weight: 600; box-shadow: var(--sink-s); }
 @media (hover: hover) { header.top .links a:hover { color: var(--ink-1); } }
 header.top .spacer { visibility: hidden; pointer-events: none; }
+/* a CJK nav key holds its Machine-view address (/ja/battle) though its word is two characters (対戦); a phone's header
+   has no room for it, so there the address scrolls in its key (machine.css data-over) */
+@media (min-width: 640px) { html:is([lang='ja'], [lang='ko'], [lang='zh-Hans']) header.top .links a { min-width: 72px; } }
 header.top .swapi .on { display: none; }
 header.top #sound[aria-pressed='true'] .on { display: block; }
 header.top #sound[aria-pressed='true'] .off { display: none; }
