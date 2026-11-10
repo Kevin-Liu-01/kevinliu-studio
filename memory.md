@@ -468,3 +468,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: the workflow ran `scripts/check-facts.mjs`, which exists only on another branch; here plan 011's check is `scripts/facts.test.mjs`, run by `pnpm test`, so that step would have failed on GitHub.
 - **Checked**: `pnpm test` 15 pass, 0 fail; `pnpm check` 0 errors; `check-negotiation.mjs` 4 routes 16 cases; `lock-check.mjs` 3024 files; `phone-memory.mjs --check` and `i18n-extract.mjs --check` exit 0; `check-release.mjs dist/index.html` 7 cases pass; the YAML parses with the expected keys and nine run steps.
 - **Open**: not pushed, so the workflow has never run on GitHub; the action majors (checkout v7, setup-node v7, pnpm/action-setup v6) were read from GitHub's releases API and are untested until the first run.
+
+## 2026-11-10: one JPEG reader, share-tag check and HTTP helper for the guard and the deployed checks (improve/p2-checks, plan 025)
+
+- **Type**: refactor
+- **Changed**: `scripts/lib/checks.mjs`, `scripts/lib/http.mjs`, `scripts/lib/checks.test.mjs` (new); `scripts/verify-build.mjs`, `scripts/check-seo.mjs`, `scripts/smoke.mjs`, `scripts/SKILL.md`, `memory.md`.
+- **Why**: three copies of the same checks had drifted: only one script knew both preview tokens, the SEO check read `sitemap-0.xml` not the index and followed redirects with the token attached, and the smoke check matched redirect targets by suffix.
+- **Checked**: `pnpm test` 19 pass, 0 fail (15 before); `pnpm build` 256 pages, 248 sitemap URLs, all checks pass; the smoke check on production prints the same output before and after; a seeded `twitter:card` fault in `dist/about.html` is caught by the guard, then restored.
+- **Open**: the SEO check against a local serve is the reviewer's step; not run against a protected preview.

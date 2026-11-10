@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
 import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
@@ -72,17 +73,6 @@ const FACES = JSON.parse(fs.readFileSync(path.join(path.dirname(DIST), 'src/i18n
 const held = (code, base) => new Set(Object.values(FACES).filter((f) => f.base === base || (f.locales.length && (f.locales.length > 1 || f.locales.includes(code)))).flatMap((f) => [...f.chars]));
 
 
-// width and height from a JPEG's start-of-frame marker
-function jpegSize(b) {
-  if (b[0] !== 0xff || b[1] !== 0xd8) return null;
-  for (let i = 2; i < b.length - 9;) {
-    if (b[i] !== 0xff) return null;
-    const m = b[i + 1], len = b.readUInt16BE(i + 2);
-    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)];
-    i += 2 + len;
-  }
-  return null;
-}
 
 // one @graph: every node typed, every {"@id"} reference names a node in it (or a repository's own #code node), every
 // url absolute, and none of the markup this site must never claim
@@ -153,9 +143,7 @@ for (const f of htmls) {
       if (!size || size[0] !== 1200 || size[1] !== 630) fail(page, `og:image ${u} is ${size ? size.join(' x ') : 'not a JPEG'}, not 1200 x 630`);
     }
   }
-  if (meta('twitter:card') !== 'summary_large_image') fail(page, 'twitter:card is not summary_large_image');
-  if (meta('twitter:image') !== meta('og:image')) fail(page, 'twitter:image differs from og:image');
-  for (const k of ['og:image:alt', 'twitter:image:alt', 'og:title', 'og:description']) if (!meta(k)?.trim()) fail(page, `no ${k}`);
+  for (const why of shareTagProblems(html)) fail(page, why);
   const lds = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   if (lds.length !== 1) fail(page, `${lds.length} JSON-LD blocks, expected one @graph`);
   for (const m of lds) {
@@ -223,7 +211,7 @@ for (const f of files) {
 
 const sitemap = files.filter((f) => /sitemap-\d+\.xml$/.test(f)).map((f) => fs.readFileSync(f, 'utf8')).join('');
 const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-if (listed.length < 31 * LOCALES.length) fail('sitemap', `${listed.length} URLs`);
+if (listed.length < PAGES_MIN * LOCALES.length) fail('sitemap', `${listed.length} URLs`);
 for (const c of ['', ...OTHER.map((x) => `/${x}`)]) if (!listed.includes(`${SITE}${c}/cards`)) fail('sitemap', `does not list ${c}/cards`);
 if ((sitemap.match(/<xhtml:link rel="alternate" hreflang=/g) ?? []).length < listed.length * LOCALES.length) fail('sitemap', 'a page lacks its alternates in every language');
 // lastmod is left out where git history cannot date a page (astro.config.mjs), so only its shape is checked
