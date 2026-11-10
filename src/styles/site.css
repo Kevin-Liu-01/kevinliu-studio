@@ -149,6 +149,15 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .cardpage .cp-facts b { display: block; font: 800 24px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
 .cardpage .cp-facts span { color: var(--ink-2); font-size: 14px; }
 .cardpage .cp-moves p, .cardpage .cp-trait p { margin: 0; }
+/* a move's battle preview: its poster at the contact, the loop over it while it plays (views/Card.astro) */
+.cardpage .cp-moves li.pv { display: grid; grid-template-columns: 176px minmax(0, 1fr); column-gap: 14px; align-items: start; }
+.cardpage .cp-moves li.pv > .mv { grid-row: 1 / span 2; }
+.cardpage .cp-moves .mv { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; margin: 0; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: color-mix(in oklab, var(--ink-1) 12%, var(--clay)); cursor: pointer; }
+.cardpage .cp-moves .mv :is(img, video) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 559px) {
+  .cardpage .cp-moves li.pv { grid-template-columns: minmax(0, 1fr); }
+  .cardpage .cp-moves li.pv > .mv { grid-row: auto; margin-bottom: 10px; }
+}
 .cardpage code { display: block; margin-top: 8px; font: 500 12px/1.45 ui-monospace, 'SF Mono', Menlo, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
 .cardpage .cp-pin { margin-top: 20px; font-size: 14px; color: var(--ink-2); }
 .cardpage .cp-pin a { color: inherit; }

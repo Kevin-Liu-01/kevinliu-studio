@@ -55,6 +55,8 @@ html:root[data-mode='machine'] {
 :root[data-mode='machine'] .sl { position: relative; }
 :root[data-mode='machine'] .sl > li:not(.mx) { visibility: hidden; }
 :root[data-mode='machine'] .sl > li.mx { display: block; position: absolute; inset: 0; padding: 16px 14px; box-sizing: border-box; overflow: hidden; list-style: none; background: none; box-shadow: none; }
+/* a move's preview keeps its box, so the list is the same height in both views, and fetches no poster here */
+:root[data-mode='machine'] .cardpage .cp-moves .mv img { display: none; }
 :root[data-mode='machine'] .hw > .mx { margin: 0; padding: 0; color: var(--t-hi); white-space: pre-wrap; overflow-wrap: anywhere; }
 :root[data-mode='machine'] :is(.cardpage .info, .prose) .hw:has(> h1) > .mx { font: 700 48px/1.08 var(--mono); }
 :root[data-mode='machine'] :is(.cardpage .info, .prose) .hw:has(> h2) > .mx { font: 700 15px/1.35 var(--mono); }

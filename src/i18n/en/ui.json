@@ -77,6 +77,7 @@
     "numbers": "The numbers",
     "trait": "Trait",
     "moves": "Moves",
+    "playPreview": "Play the battle preview of {move}",
     "related": "Related",
     "pinned": "Numbers pinned at {sha}.",
     "pinnedOn": "Numbers pinned at {sha}, {date}.",

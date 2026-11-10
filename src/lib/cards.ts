@@ -178,8 +178,13 @@ export const hueOf = (f: Fighter): Record<string, string> => (FACE?.[f.id]?.hue 
 export const battleRoster = await (async () => {
   const file = path.join(ROOT, 'vendor/battle/vendor/engine.js');
   if (!fs.existsSync(file)) return null;
-  const b = await import(/* @vite-ignore */ file) as { RULES: any; FIGHTERS: Fighter[] };
-  return { budget: b.RULES.team.budget as number, cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number> };
+  const b = await import(/* @vite-ignore */ file) as { RULES: any; FIGHTERS: (Fighter & { moves: (Move & { id: string })[] })[] };
+  return {
+    budget: b.RULES.team.budget as number,
+    cost: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, f.cost])) as Record<string, number>,
+    // each fielded card's engine move ids by the move's name: the key of its scene, sound cue and preview files
+    moves: Object.fromEntries(b.FIGHTERS.map((f) => [f.id, Object.fromEntries(f.moves.map((m) => [m.name.toLowerCase(), m.id]))])) as Record<string, Record<string, string>>,
+  };
 })();
 
 // The round page's own head (vendor/ex/index.html, the sync keeps it): the sheets and scripts a wall loads, in order. A
@@ -216,6 +221,20 @@ export function teamFor(lead: string): string[] | null {
     if (battleRoster.cost[ids[i]] + battleRoster.cost[ids[j]] <= left) return [lead, ids[i], ids[j]];
   }
   return null;
+}
+
+// A move's battle preview for the card page's Moves list: the loop r4/play recorded of it (480 x 270) and its poster
+// at the contact, /battle/previews/<card>.<engine move id>.webm and .webp (the battle's tooltips name them the same
+// way, shared/hud.js). Only where the battle fields a move of the same name on that card: a move the card has since
+// renamed prints none, because its loop still prints the old name. A preview the sync did not ship fails the build.
+export function previewOf(f: Fighter, mv: Move): { poster: string; clip: string } | null {
+  const id = battleRoster?.moves[f.id]?.[mv.name.toLowerCase()];
+  if (!id) return null;
+  const stem = `/battle/previews/${f.id}.${id}`;
+  for (const ext of ['webp', 'webm']) {
+    if (!fs.existsSync(path.join(ROOT, 'public', `${stem}.${ext}`))) throw new Error(`card ${f.id}: move "${mv.name}" has no preview at public${stem}.${ext}`);
+  }
+  return { poster: `${stem}.webp`, clip: `${stem}.webm` };
 }
 
 // the repositories a visitor cannot open, shared with the card faces' sync patch

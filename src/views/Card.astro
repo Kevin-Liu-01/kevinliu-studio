@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { fighters, card, FRAMED, M, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../lib/cards';
+import { fighters, card, FRAMED, M, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter, previewOf } from '../lib/cards';
 import { cardPath, answerIn, ruleIn } from '../lib/twins';
 import { moveHtml, roomIn } from '../lib/i18n-room';
 import { L } from '../i18n';
@@ -74,9 +74,13 @@ const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sh
       {f.trait && <Fragment><div class="sw hw"><h2>{l.t('card.trait')}</h2><Fragment set:html={hd(`## ${l.t('card.trait')}`)} /></div><div class="cp-trait sw"><div class="hx"><p><b>{f.trait.name}</b> {ruleIn(f, code)}</p><code>{f.trait.receipt}</code></div><p class="mx" set:html={BX + mdHtml(tw.trait!)} /></div></Fragment>}
       <div class="sw hw"><h2>{l.t('card.moves')}</h2><Fragment set:html={hd(`## ${l.t('card.moves')}`)} /></div>
       <ol class="cp-moves sl">
-        {f.moves.map((mv, j) => <li><p set:html={moveHtml(f, j, code)} /><code>{mv.receipt}</code></li>)}
+        {f.moves.map((mv, j) => {
+          const pv = previewOf(f, mv);
+          return <li class:list={[pv && 'pv']}>{pv && <button type="button" class="mv" aria-pressed="false" aria-label={l.t('card.playPreview', { move: mv.name })} data-clip={pv.clip}><img src={pv.poster} alt="" width="480" height="270" loading="lazy" decoding="async" draggable="false" /></button>}<p set:html={moveHtml(f, j, code)} /><code>{mv.receipt}</code></li>;
+        })}
         <li class="mx" set:html={BX + mdHtml(tw.moves.join('\n'))} />
       </ol>
+      <script is:inline>/* a move's battle preview: its loop plays over its poster while a mouse is over the move, and a press (mouse, key or tap) holds it playing until the next press, one at a time; it stops, and its source is dropped so the decoder is given back, when the pointer leaves one that is not held, when it leaves the screen, when the view switches, and when the page hides. Under Pause or reduced motion only a press plays it */(function(){var list=document.querySelector('.cardpage .cp-moves');if(!list||!list.querySelector('.mv'))return;var live=null,held=false,fine=matchMedia('(hover: hover) and (pointer: fine)');function still(){return 'paused' in document.documentElement.dataset||matchMedia('(prefers-reduced-motion: reduce)').matches}function stop(){if(!live)return;var v=live.querySelector('video');if(v){v.pause();v.removeAttribute('src');v.load();v.remove()}live.setAttribute('aria-pressed','false');live=null;held=false}function play(b){if(!b||live===b)return;stop();var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('aria-hidden','true');v.addEventListener('error',function(){if(live===b)stop()});v.src=b.dataset.clip;b.appendChild(v);live=b;var p=v.play();if(p&&p.catch)p.catch(function(){if(live===b)stop()})}list.addEventListener('click',function(e){var b=e.target.closest('.mv');if(!b)return;if(live===b&&held){stop();return}play(b);if(live===b){held=true;b.setAttribute('aria-pressed','true')}});list.addEventListener('pointerover',function(e){if(held||e.pointerType!=='mouse'||!fine.matches||still())return;var li=e.target.closest('li.pv');if(li)play(li.querySelector('.mv'))});list.addEventListener('pointerout',function(e){var li=e.target.closest('li.pv');if(li&&live&&!held&&li.contains(live)&&!li.contains(e.relatedTarget))stop()});if('IntersectionObserver' in self){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(!en.isIntersecting&&live===en.target)stop()})});list.querySelectorAll('.mv').forEach(function(b){io.observe(b)})}addEventListener('pagehide',stop);document.addEventListener('visibilitychange',function(){if(document.hidden)stop()});document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-mode-set],[data-mode-go]'))stop()})})()</script>
       <div class="sw hw"><h2>{l.t('card.related')}</h2><Fragment set:html={hd(`## ${l.t('card.related')}`)} /></div>
       <ul class="cp-related sl">
         {related.map((g) => <li><a href={cardPath(g, code)}><b>{g.title}</b><span>{g.disciplines.map((d) => l.disc(d)).join(', ')}</span></a></li>)}
