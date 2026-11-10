@@ -17,8 +17,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { safeKey } from './lock-check.mjs';
 import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -108,8 +109,15 @@ const STAGES = {
 // it. A name counts only when it is a file the round has outside the scratch folders.
 const PAGE_REF = /(?:\.\.?\/)?(?:[\w@.-]+\/)*[\w@.-]+\.(?:webp|avif|png|jpg|jpeg|svg|mp4|webm|woff2)\b/g;
 function pageHead(html) {
-  const head = html.slice(0, html.indexOf('</head>'));
-  return [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+  const end = html.indexOf('</head>');
+  if (end < 0) throw new Error('the round page has no </head>');
+  const head = html.slice(0, end);
+  const found = [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+  // every sheet and script the head loads, however its tag is written: one the pattern above cannot read would neither
+  // ship nor load, and the wall would print without it
+  const tags = (head.match(/<link\b[^>]*\brel=["']?stylesheet/gi) ?? []).length + (head.match(/<script\b[^>]*\bsrc=/gi) ?? []).length;
+  if (found.length !== tags) throw new Error(`the round page's head loads ${tags} sheets and scripts, but ${found.length} are written the way the sync reads them (<link rel="stylesheet" href="..."> and <script src="..."></script>)`);
+  return found;
 }
 function pageFiles(list) {
   const have = new Set(list.filter((f) => !SKIP.test(f) && !/\.(html|md)$/.test(f)));
@@ -320,32 +328,7 @@ const BINARY = {
   'public/battle/r3/media-moves/elo/mcp-server.webp': paintOut(760, 830),
 };
 
-// ---------- the scan ----------
-const TEXT = /\.(js|mjs|css|html|json|md|txt|svg)$/;
-const BANNED = [
-  [/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'],
-  [/\/api\/(submissions|emails)\b/, 'OMMC participant route'],
-  [/xi-api-key/i, 'ElevenLabs header'],
-  [/\bsk_[a-f0-9]{40,}\b/, 'API key shape'],
-];
-// General Translation appears only in the Atlas card's own records: the shared card data files print every card.
-const GT = /general\s?translation|generaltranslation/i;
-const GT_OK = new Set(['public/ex/fighters.js', 'public/ex/media.gen.js', 'public/ex/face.gen.js', 'vendor/ex/face.gen.js', 'vendor/ex/roster/battle-roster.json', 'vendor/ex/copy/overrides.json']);
-
-function scan(dest, buf) {
-  const hits = [];
-  if (TEXT.test(dest)) {
-    const t = buf.toString('utf8');
-    for (const [re, why] of BANNED) if (re.test(t)) hits.push(why);
-    if (GT.test(t) && !GT_OK.has(dest) && !/\/atlas[./]/.test(dest)) hits.push('General Translation outside the Atlas card');
-  } else {
-    const t = buf.toString('latin1');
-    if (/xi-api-key/i.test(t) || /sk_[a-f0-9]{40,}/.test(t)) hits.push('key shape in binary');
-    const where = MEDIA.test(dest) && hasLocation(buf);
-    if (where) hits.push(where);
-  }
-  return hits;
-}
+// ---------- the scan: scripts/rules.mjs, the same rules the release guard reads dist with ----------
 
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
@@ -353,6 +336,9 @@ const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : {
 const lock = { rounds: ROUNDS_GIT, head: null, pins: PIN, synced: null, stages: {} };
 const problems = [];
 const writes = [], removes = [];
+// every file a TRANSFORMS, PHONE or BINARY patch names must be one a rule ships (checked after the stages)
+const PATCHED = new Set([...Object.keys(TRANSFORMS), ...Object.keys(PHONE), ...Object.keys(BINARY)]);
+const shipped = new Set();
 let unpinned = 0;
 for (const [stage, rules] of Object.entries(STAGES)) {
   const files = {};
@@ -367,6 +353,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     for (const f of picked) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
       if (files[dest]) continue; // two rules may pick the same file
+      if (PATCHED.has(dest)) shipped.add(dest);
       let buf = fs.readFileSync(src);
       // the file as it was at the stage's pin. A file the pin does not have (the frame SVGs were generated and committed
       // only after 30e69931) cannot be checked against it, so it ships only as the last lock recorded it
@@ -378,7 +365,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
         if (PHONE[dest]) buf = Buffer.from(PHONE[dest](buf.toString('utf8')));
         if (BINARY[dest]) buf = await BINARY[dest](buf);
       } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
-      for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);
+      for (const h of scanBuffer(dest, buf)) problems.push(`${dest}: ${h}`);
       if (at === undefined && !ADMIT && prev.stages[stage]?.list?.[dest]?.sha256 !== sha(buf)) problems.push(`${dest}: ${rel(ROUNDS, src)} is not in the ${stage} pin ${PIN[stage]} and is ${prev.stages[stage]?.list?.[dest] ? 'not the bytes the lock records' : 'new'} (look at it, then --admit-unpinned)`);
       files[dest] = { src: rel(ROUNDS, src), sha256: sha(buf), bytes: buf.length };
       const abs = path.join(REPO, dest);
@@ -386,9 +373,16 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     }
   }
   // a file this stage shipped last time and no longer ships leaves the repo; nothing the sync never wrote is touched
-  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) {
+    // only a plain path inside a synced folder is ever removed, whatever the previous lock says
+    if (!safeKey(dest)) { problems.push(`${dest}: sync.lock.json lists a path outside the synced folders; restore the lock (git checkout sync.lock.json)`); continue; }
+    if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  }
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
+// a patch whose file no rule shipped was never applied: the round renamed or dropped the file, and the fix it carried
+// (or the paint-out of a capture, which no text scan can see) would be lost without a word
+for (const key of PATCHED) if (!shipped.has(key)) problems.push(`${key}: a TRANSFORMS, PHONE or BINARY patch names this file, but no rule shipped it (renamed or dropped in the rounds?)`);
 // the rounds' commits: one per stage, every tracked file checked against it above
 lock.head = [...new Set(Object.values(PIN))].join(' + ');
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB, pinned at ${PIN[stage]}`);
@@ -408,7 +402,7 @@ for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: 
 for (const abs of removes) fs.rmSync(abs);
 // the lock changes only when the shipped files or the rounds' commit do, so a no-op rerun leaves no diff
 const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head && JSON.stringify(prev.pins) === JSON.stringify(lock.pins);
-if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
+if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(`${LOCK}.tmp`, JSON.stringify(lock, null, 1) + '\n'); fs.renameSync(`${LOCK}.tmp`, LOCK); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
 // path -> git blob id of every file under `dirs` at `commit`, or null when the rounds' checkout cannot answer

@@ -326,3 +326,30 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   language key therefore sits in the header from 800 px and in the footer below. `astro check` refuses TypeScript 7.
 - **Open**: the battle's in-game text needs string tables in r4/play; a `pnpm sync` that changes card words needs
   `pnpm i18n:translate` and `python3 scripts/i18n-fonts.py` (the changed strings print in English until then).
+## 2026-11-09: one set of content rules for the sync and the guard (improve/001-scan-rules-module-and-tests, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/rules.mjs, scripts/rules.test.mjs (new); scripts/sync.mjs, scripts/verify-build.mjs, package.json,
+  docs/sync.md, scripts/SKILL.md, AGENTS.md, memory.md.
+- **Why**: the sync's scan and the release guard each had their own copy of the rules and the copies had drifted; names
+  written with entities, escapes, accents, hyphens, underscores, odd spaces or "dex" passed, and file names were never read.
+- **Checked**: `pnpm test` 8 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` ends
+  `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; a probe file holding `General&nbsp;Translation`
+  in a copy of dist fails with exit 1; no change under public, vendor or sync.lock.json.
+- **Open**: plans 002 and 003 also edit scripts/sync.mjs.
+
+## 2026-11-09: the sync stops when a patch never met its file (improve/002-sync-fails-on-unapplied-patches, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/sync.mjs, scripts/phone-memory.mjs, docs/sync.md, memory.md.
+- **Why**: a renamed file dropped its TRANSFORMS, PHONE or BINARY patch silently (the two picture paint-outs are invisible to any text scan); the standalone phone-memory run could leave a file patched and the lock wrong; pageHead dropped tags it could not read.
+- **Checked**: `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; a temporary patch key for a missing file fails with exit 1 and the new message, then removed; `phone-memory.mjs` and `--check` exit 0 with no file changed.
+- **Open**: none.
+
+## 2026-11-09: every build checks the synced folders against the lock (improve/003-lock-integrity-check, Claude Code)
+
+- **Type**: feature
+- **Files**: scripts/lock-check.mjs, scripts/lock-check.test.mjs (new); scripts/sync.mjs, package.json, docs/sync.md, scripts/SKILL.md, memory.md.
+- **Why**: nothing enforced "never edit the synced folders by hand" without the rounds folder; a hand edit, a stray file or a stopped sync's .tmp would build and deploy. The sync also removed any path the previous lock named, and wrote the lock in place.
+- **Checked**: `node scripts/lock-check.mjs` passes on 3024 files and fails on a stray file in public/ex (removed after); `pnpm test` 10 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` runs lock-check first.
+- **Open**: AGENTS.md's agent-docs auto block still prints the old build script until `agent-docs scaffold` is rerun.

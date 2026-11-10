@@ -57,6 +57,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 
 - `pnpm sync` and `pnpm sync --check`
 - `pnpm i18n:translate` (extract, then GT), `python3 scripts/i18n-fonts.py`, `node scripts/i18n-extract.mjs --check`
+- `pnpm test` (the content rules' tests, `scripts/*.test.mjs`)
 - `pnpm dev`, `pnpm build` (runs the guard), `pnpm preview`
 - `node scripts/smoke.mjs <base-url>` and `node scripts/check-seo.mjs <base-url> --external` against a deployment
 - `node scripts/icons.mjs` after the kl mark changes

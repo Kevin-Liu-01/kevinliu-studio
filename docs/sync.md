@@ -39,7 +39,8 @@ wrote is never touched.
 
 The only edits are in `TRANSFORMS` in `scripts/sync.mjs` and `PHONE` in `scripts/phone-memory.mjs` (applied after
 `TRANSFORMS`). Each patch names the exact text it attaches to and must match exactly once, or the sync stops and says
-which anchor moved.
+which anchor moved. A patch whose file no rule shipped also stops the sync: a file the rounds renamed never loses its
+patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in memory before it writes any.
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
@@ -76,7 +77,10 @@ which anchor moved.
 Every synced file is scanned. Text files fail on franchise names, the OMMC participant routes, the ElevenLabs header
 and API-key shapes, and on General Translation anywhere except the Atlas card's records. Images, video and audio fail on location metadata
 (`scripts/location.mjs`: GPS in EXIF for JPEG, AVIF, WebP and PNG, GPS in XMP, and the MP4 and QuickTime location
-atoms). The release guard runs the same check on `dist`.
+atoms). The rules live in `scripts/rules.mjs`, and the release guard reads `dist` with the same function
+(`scanBuffer`), so the two cannot drift. Names are matched on a normalized text: entities and escapes decoded,
+accents off, and every run of spaces, hyphens and underscores read as one space. Each file's path is read too.
+`pnpm test` runs the rules' tests (`scripts/rules.test.mjs`).
 
 ## Pins
 
@@ -98,6 +102,10 @@ own checkout either way.
 and each file's source path, sha-256 and size. It is rewritten only when a file or a pin changed, so a rerun with
 nothing new leaves no diff. `pnpm sync --check` exits 1 when any synced file differs from the rounds and names each one,
 so CI or a person can see the repo is behind and why.
+
+`node scripts/lock-check.mjs` needs no rounds folder: it fails when a synced file differs from the lock, is
+missing, or is not in the lock at all (a hand edit, a stray file, a `.tmp` a stopped sync left). `pnpm build` runs
+it first, so the host and CI enforce that the synced folders change only through `pnpm sync`.
 
 ## When a round finishes
 
