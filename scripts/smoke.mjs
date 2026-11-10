@@ -43,6 +43,27 @@ for (const u of [es.match(/\/es\/gallery\.js\?v=[0-9a-f]+/)?.[0], es.match(/\/fo
   const { r } = await get(u);
   if (!/immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u}: cache-control ${r.headers.get('cache-control')}`);
 }
+// a client that prefers HTML, or refuses Markdown, gets HTML; one that prefers Markdown gets the twin
+for (const [accept, want] of [['text/html, text/markdown;q=0.1', 'text/html'], ['text/markdown;q=0, text/html', 'text/html'], ['text/markdown, text/html;q=0.9', 'text/markdown'], ['application/json, text/markdown', 'text/markdown']]) {
+  for (const p of ['/cards', '/es/cards']) {
+    const { r } = await get(p, { Accept: accept });
+    const type = r.headers.get('content-type') ?? '';
+    if (r.status !== 200 || !type.startsWith(want)) fails.push(`${p} with Accept "${accept}": ${r.status} ${type}, expected ${want}`);
+  }
+}
+// a missing .md address is a 404 that does not claim to be Markdown
+for (const p of ['/no-such-page.md', '/.md', '/es/no-such-page.md']) {
+  const { r } = await get(p);
+  if (r.status !== 404 || /^text\/markdown/.test(r.headers.get('content-type') ?? '')) fails.push(`${p}: ${r.status} ${r.headers.get('content-type')}, expected a 404 that is not text/markdown`);
+}
+// only the negotiated pages vary on Accept, and no other site may frame a page
+{
+  const { r: page } = await get('/about');
+  if (!/accept/i.test(page.headers.get('vary') ?? '')) fails.push(`/about: vary ${page.headers.get('vary')}, expected Accept`);
+  if (!/frame-ancestors 'self'/.test(page.headers.get('content-security-policy') ?? '')) fails.push(`/about: content-security-policy ${page.headers.get('content-security-policy')}`);
+  const { r: face } = await get('/fonts/katagami-sans-site.woff2');
+  if (/accept(?!-encoding)/i.test(face.headers.get('vary') ?? '')) fails.push(`/fonts/katagami-sans-site.woff2: vary ${face.headers.get('vary')}, expected no Accept`);
+}
 for (const [p, to] of [['/about/', '/about'], ['/index', '/'], ['/about.html', '/about'], ['/en', '/'], ['/es/', '/es'], ['/ja/about/', '/ja/about'], ['/kevin_liu_resume_25.pdf', 'https://portfoliomon.kevinliu.studio/kevin_liu_resume_25.pdf']]) {
   const { r } = await get(p);
   const at = r.headers.get('location') ?? '';
