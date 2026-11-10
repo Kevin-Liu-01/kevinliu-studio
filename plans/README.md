@@ -119,6 +119,12 @@ session knew. Its reviewed branches stand; the lanes take them instead of redoin
 - Lane C: takes 018 and runs its step 6 browser gate, takes 019, then does 022 and 023.
 - Lane D: unchanged.
 
+### Base moved at about 01:30 on 2026-11-10
+
+The i18n session merged shipped main into `feat/i18n`: the next release's base is `b03edfb` (contains origin/main
+`d3fc558` and the P1 work). Every P2 branch is cut from `4025230`, an ancestor of it. The lanes carry on from
+`4025230`; the audit session merges `b03edfb` in when it assembles the four lanes.
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale: finding
 fixed independently or approach abandoned)
 
