@@ -416,3 +416,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+## 2026-11-10: the wall's posters take their half on a 1x screen (improve/013-restore-poster-ladder, executor agent)
+
+- **Type**: perf
+- **Changed**: `scripts/sync.mjs` (`posters/posters.json` joins the build-only list), `vendor/ex/posters/posters.json` and `sync.lock.json` (by the sync), `src/lib/cards.ts` (env.posters, `ladder` option, `data-plainfxset` held and restored by FRAMED), `src/views/Card.astro` (`ladder: false`), `scripts/verify-build.mjs` (guard also reads `data-plainfxset`), `docs/performance.md`.
+- **Why**: the build never gave markup.js `posters.json`, so no poster printed a `srcset` and a 1x desktop fetched all 26 whole posters and fx posters although the 52 halves were deployed.
+- **Checked**: `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. dist/index.html and dist/de.html: 26 poster srcsets, 26 `data-plainfxset`, no fx `<img>` with `src` or `srcset`. Card pages (en, de): no `srcset="posters/` and no `data-plainfxset` attribute. Browser, 1280 wide 1x: visible wall posters `@0.5x.avif`, nat 250 = drawn 250; card page poster has no srcset and loads `katagami.webp`.
+- **Paint capture**: before 50 frames over 14.75 s -> /private/tmp/013-before; after 153 frames over 13.39 s -> /private/tmp/013-after (different machine load; a reviewer reads the frames).
+- **Open**: card pages still choose every card picture by the wall's width (the subject picture draws about 1.8 times larger than its file); wants its own decision. A phone (plain print stays, FRAMED restores the fx srcset) was not checked in a browser.

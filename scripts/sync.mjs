@@ -72,7 +72,7 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: pageFiles },
     // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
     { from: EX, to: 'vendor/ex', files: only('index.html') },
-    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json', 'posters/posters.json') },
     // the battle prints the wall's own card (r4/play shared/excard.js), so the page loads these at runtime from /ex/ too:
     // the faces, and the icon set it inlines beside the card's own symbols
     { from: EX, to: 'public/ex', files: only('face.gen.js', 'icons/icons.svg', 'icons/card-symbols.svg') },
