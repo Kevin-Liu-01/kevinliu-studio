@@ -146,7 +146,7 @@ const intro = () => `# ${NAME}
 
 > ${BIO} ${DESCRIPTION}
 
-Every page has a Markdown twin: add .md to its path, or send \`Accept: text/markdown\`.
+Every page has a Markdown twin: add .md to its path (the home page's is /index.md), or send \`Accept: text/markdown\` first in the header.
 
 ## About
 

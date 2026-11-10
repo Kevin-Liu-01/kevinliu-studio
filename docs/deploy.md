@@ -23,8 +23,10 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
 - `vercel.json` uses one `routes` list, because Vercel runs `rewrites` only after a static file misses, which would
   make `Accept: text/markdown` negotiation unreachable. In order: redirects (trailing slash, `.html`, `/index`, the old
-  site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers (each `.md` twin carries
-  `Link: <its page>; rel="canonical"`), the Markdown negotiation (`/`, `/cards`, `/about`, the battle and each card),
+  site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers (no other site may frame a page; the negotiated pages send `Vary: Accept`; each `.md` twin carries
+  `Link: <its page>; rel="canonical"`), the Markdown negotiation (`/`, `/cards`, `/about`, the battle and each card: the
+  twin is served when `text/markdown` comes before any `text/html` in `Accept` and is not `q=0`;
+  `node scripts/check-negotiation.mjs` checks the rule without a deployment),
   the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
 - Caching: `_astro/` and `fonts/` are immutable; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
   with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; media under those folders keeps a day

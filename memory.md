@@ -293,3 +293,9 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: Markdown negotiation and framing headers (improve/004-markdown-negotiation-and-headers, Claude)
+- **Type**: fix
+- **Changed**: vercel.json (Accept rule on the two negotiation routes: Markdown only when `text/markdown` precedes any `text/html` and is not `q=0`; dropped the `.md` Content-Type route so a missing `.md` is a plain 404; `Vary: Accept` moved to the six negotiated page routes; `Content-Security-Policy: frame-ancestors 'self'; base-uri 'self'; object-src 'none'`), scripts/check-negotiation.mjs (new), scripts/smoke.mjs (new cases), src/lib/twins.ts (llms.txt sentence), docs/deploy.md.
+- **Checked**: `node scripts/check-negotiation.mjs` prints `negotiation: 2 routes, 16 cases pass`; `pnpm build` ends `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; dist/llms.txt and llms-full.txt carry the new sentence; no dist page has iframe/object/embed, and every `<base href>` is a same-origin path.
+- **Open**: not deployed; the preview smoke (`node scripts/smoke.mjs <preview>`) has not run, so the Accept rule, the 404 type of a missing `.md`, `Vary` and the framing header are checked only by `scripts/check-negotiation.mjs`.
