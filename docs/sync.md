@@ -99,6 +99,12 @@ The working tree usually has moved past the pins, so a release syncs from an exp
 stage's folders plus the git-ignored frame SVGs, then `ROUNDS=<export> pnpm sync`. The pins are read from the rounds'
 own checkout either way.
 
+Moving a pin is a code review, not only a content review. The build runs round code with the build's own rights, here
+and on Vercel: `src/lib/cards.ts` loads `fighters.js`, `markup.js`, `art.js`, `media.gen.js`, `face.gen.js` and the
+ground recipes through `node:vm` only to give classic scripts a CommonJS `module` (Node's documentation says `vm` is
+not a security boundary), and it imports `tools/wall-rule.mjs` and the battle's `engine.js` directly. The scan looks
+for banned strings and location metadata, never for what a script does.
+
 ## The lock
 
 `sync.lock.json` records the rounds' checkout (`rounds`), the pinned commits (`head`, and `pins` by stage), the time,

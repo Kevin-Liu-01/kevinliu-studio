@@ -8,6 +8,7 @@
 // every round file scripts/phone-memory.mjs patches carries its patches (a phone's tab stays under its memory limit).
 // A face under /fonts is named with ?v=, and that token, like a /ex/borders or /ex/fx drawing's, is the file's own sha-256
 // (they are kept for a year).
+// Each llms.txt keeps the llms.txt shape: an H1, a summary, and ## sections that are lists of links.
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -46,6 +47,22 @@ for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg
 // every page and text file in every language (src/i18n/locales.mjs)
 for (const c of OTHER) for (const need of [`/${c}.html`, `/${c}/index.md`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/about.html`, `/${c}/about.md`, `/${c}/battle.html`, `/${c}/battle.md`, `/${c}/battle/arena.html`, `/${c}/battle/arena.md`, `/${c}/404.html`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`, `/${c}/cards/atlas.html`, `/${c}/cards/atlas.md`]) {
   if (!exists(need)) fail(need, 'missing');
+}
+// llms.txt follows its convention (llmstxt.org): an H1, a blockquote summary, free text, then `##` sections that hold
+// only lists of links, so a reader that takes each section as a link list (llms_txt2ctx) loses nothing
+for (const c of ['', ...OTHER]) {
+  const name = `${c && `/${c}`}/llms.txt`, f = path.join(DIST, name);
+  if (!fs.existsSync(f)) continue;
+  const lines = fs.readFileSync(f, 'utf8').split('\n');
+  if (!/^# \S/.test(lines[0])) fail(name, 'line 1 is not an H1');
+  if (!lines.some((l) => l.startsWith('> '))) fail(name, 'no blockquote summary');
+  let h2 = null;
+  lines.forEach((l, i) => {
+    if (/^## /.test(l)) { h2 = l; return; }
+    if (i > 0 && /^#/.test(l)) fail(name, `line ${i + 1} is a heading that is not an H2: ${l}`);
+    if (h2 && l.trim() && !/^- \[[^\]]+\]\([^)\s]+\)(: .+)?$/.test(l)) fail(name, `line ${i + 1} under "${h2}" is not a link item: ${l.slice(0, 70)}`);
+  });
+  if (!h2) fail(name, 'no ## section');
 }
 const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')})/404\\.html$`).test(page);
 // a language's pages, by their prefix

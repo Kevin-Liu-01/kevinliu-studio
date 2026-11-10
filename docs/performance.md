@@ -187,3 +187,7 @@ rounds against the view it replaced: pictures 48.5 MB both, canvas equal or lowe
 The terminal (2026-11-08) adds Katagami Mono, 21.7 KB, fetched at idle after a Human page has loaded (cached a year,
 like the site face), and each card's art as text: home HTML 43.5 to 50.6 KB gzip, a card page 15.1 to 16.6, About
 14.0 to 15.2. The art is built from the cards' own pictures at build, so no picture is decoded for it.
+
+Measured again on 2026-11-10 (`gzip -9 -c dist/<page>.html | wc -c`, after the framed templates, round 5 and the
+language key): home HTML 55,500 bytes gzip (341,792 raw), a card page (`cards/turboslide`) 17,239,
+About 15,882.

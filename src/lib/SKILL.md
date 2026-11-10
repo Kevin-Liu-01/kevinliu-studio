@@ -11,9 +11,10 @@ The data every page and agent file reads, computed once at build.
 
 ## Mental model & key files
 <!-- agent-docs:fill:model -->
-- `cards.ts`: runs `public/ex/{fighters,markup,art,media.gen}.js` and `vendor/ex/face.gen.js` in `vm` sandboxes with a
+- `cards.ts`: runs `public/ex/{fighters,markup,art,media.gen}.js` and `vendor/ex/face.gen.js` in `vm` contexts with a
   CommonJS shim, because this repo is ESM and the round files are classic scripts with CommonJS exports. Mirrors r4/ex
   `build.mjs`'s `env`, so `card(f)` prints exactly what the rounds print.
+  The `vm` contexts are a module shim, not isolation: round code runs with the build's rights (docs/sync.md, Pins).
 - `twins.ts`: `homeMd`, `cardsMd`, `cardMd`, `battleMd`, `aboutMd`, `llmsTxt`, `llmsFullTxt`, `qaOf`, and `TWINS` (path to twin).
 - `site.ts`: `SITE`, `BIO`, `FACT_LIST` (public, sourced; `q` files a fact under a question on /about), `FACTS`, `factsFor`, `QA`, `ALSO_KNOWN_AS`, `SOCIAL`, `EMAIL`, `PREVIOUS`, the `person` JSON-LD node.
 - `schema.ts`: `graph()`, `page()`, `work()`, `cardList`: one JSON-LD `@graph` per page (`docs/seo.md`).

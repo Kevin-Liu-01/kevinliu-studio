@@ -19,13 +19,14 @@ og:images in all my links. and make more links!"
 - Card pages: live site, public source, the battle with that card leading (`teamFor()`), three related cards
   (`relatedOf()`, shared disciplines), previous and next.
 - `/cards`: every card with its year, line, live site and public source.
-- Footer: profiles, email, `/cards`, the page's twin, `llms.txt`, the sitemap.
+- Footer: profiles, email, `/cards`, the page's twin and `llms.txt`; the Machine view's footer adds `llms-full.txt` and the sitemap.
 - Repositories GitHub answers 404 for without a sign-in are listed in `src/lib/closed-repos.mjs` and never linked: not by the card pages, twins and JSON-LD (`repoOf` in `src/lib/cards.ts`), nor by the pinned commit on the wall's and the battle's card faces (`scripts/sync.mjs` rewrites each `markup.js` `NOLINK` from the same list).
 
 ## Facts about Kevin
 
-`FACTS` and `ALSO_KNOWN_AS` in `src/lib/site.ts`, each line with its public source in a comment. They feed the About
-section of `llms.txt` and `llms-full.txt` and the questions on `/about`. Only public sources: this site, his previous
+`FACTS` and `ALSO_KNOWN_AS` in `src/lib/site.ts`, each line with its public source in a comment. They feed the list
+at the top of `llms.txt` and `llms-full.txt` (above the first `##`, where the llms.txt convention puts free text; its
+`##` sections are link lists, and the guard fails the build otherwise) and the questions on `/about`. Only public sources: this site, his previous
 site, his GitHub profile and Kevin-Wiki pages `kb` does not mark private. Strike a line by deleting it: a line's `q` files it under one of the questions on `/about`, so its answer gets
 shorter and no other answer moves; a question left with no line stops the build and says so
 (`scripts/facts.test.mjs`, in `pnpm test`, checks both).

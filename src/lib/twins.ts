@@ -170,7 +170,8 @@ ${SOCIAL.map((s) => `- ${s.name}: ${s.url}`).join('\n')}
 `;
 }
 
-// who he is and how to reach him: the top of llms.txt and llms-full.txt
+// who he is and how to reach him: the top of llms.txt and llms-full.txt. The facts are free text above the first ##;
+// every ## section is a list of links, as the llms.txt convention asks (the guard checks it)
 const intro = (code: string) => {
   const l = L(code), t = l.t;
   const facts = code === DEFAULT ? FACTS : l.c.facts;
@@ -180,15 +181,13 @@ const intro = (code: string) => {
 
 ${edition(code, '/llms.txt')}${t('twin.everyPageTwin', { home: twinPath(lp(code, '/')), accept: '`Accept: text/markdown`' })}
 
-## ${t('frame.about')}
-
 ${facts.map((f) => `- ${f}`).join('\n')}
 - ${t('twin.aka', { names: code === DEFAULT ? and(ALSO_KNOWN_AS) : l.and(ALSO_KNOWN_AS) })}
 
 ## ${t('twin.contact')}
 
-- ${t('twin.linkEmail')}: ${EMAIL}
-${SOCIAL.map((s) => `- ${s.name}: ${s.url}`).join('\n')}
+- [${t('twin.linkEmail')}](mailto:${EMAIL})
+${SOCIAL.map((s) => `- [${s.name}](${s.url})`).join('\n')}
 `;
 };
 
