@@ -3,7 +3,7 @@
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
 import { fighters, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, ABOUT, FACTS, ALSO_KNOWN_AS, DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
+import { SITE, NAME, BIO, ABOUT, FACTS, factsFor, ALSO_KNOWN_AS, DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
 
 const ring = rules.ring as string[];
@@ -20,11 +20,11 @@ const leadVars = { name: NAME, n: fighters.length, from: Math.min(...years), to:
 export const CARDS_LEAD = `${NAME} made these ${fighters.length} projects between ${Math.min(...years)} and ${Math.max(...years)}.`;
 export const cardsLead = (code = DEFAULT) => (code === DEFAULT ? CARDS_LEAD : L(code).t('cards.lead', leadVars));
 
-// Questions /about asks and answers below Kevin's own words: only those the words above do not already answer, from
-// site.ts FACTS (prose, no FAQ markup)
+// Questions /about asks and answers below Kevin's own words: only those the words above do not already answer. Each
+// answer is the facts filed under it in site.ts (FACT_LIST `q`), never a position in the list (prose, no FAQ markup)
 export const QA: [string, string][] = [
-  ['What did he do before General Translation?', `${FACTS[3].replace(/^Before General Translation he/, 'He')} ${FACTS[4]}`],
-  ['What else has he done?', FACTS.slice(5).join(' ')],
+  ['What did he do before General Translation?', factsFor('before').join(' ').replace(/^Before General Translation he/, 'He')],
+  ['What else has he done?', factsFor('else').join(' ')],
 ];
 export const qaOf = (code = DEFAULT): [string, string][] => (code === DEFAULT ? QA : L(code).c.qa.map((x) => [x.q, x.a]));
 

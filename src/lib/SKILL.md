@@ -15,7 +15,7 @@ The data every page and agent file reads, computed once at build.
   CommonJS shim, because this repo is ESM and the round files are classic scripts with CommonJS exports. Mirrors r4/ex
   `build.mjs`'s `env`, so `card(f)` prints exactly what the rounds print.
 - `twins.ts`: `homeMd`, `cardsMd`, `cardMd`, `battleMd`, `aboutMd`, `llmsTxt`, `llmsFullTxt`, `QA`, and `TWINS` (path to twin).
-- `site.ts`: `SITE`, `BIO`, `FACTS` (public, sourced), `ALSO_KNOWN_AS`, `SOCIAL`, `EMAIL`, `PREVIOUS`, the `person` JSON-LD node.
+- `site.ts`: `SITE`, `BIO`, `FACT_LIST` (public, sourced; `q` files a fact under a question on /about), `FACTS`, `factsFor`, `ALSO_KNOWN_AS`, `SOCIAL`, `EMAIL`, `PREVIOUS`, the `person` JSON-LD node.
 - `schema.ts`: `graph()`, `page()`, `work()`, `cardList`: one JSON-LD `@graph` per page (`docs/seo.md`).
 - `share.ts`: the share images for pages the rounds draw none for, rendered by `pages/share/[name].jpg.ts`.
 - `battle.ts`: reads `vendor/battle/mat/index.html`, swaps its round-relative paths, splits head and body.

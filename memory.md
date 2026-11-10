@@ -424,3 +424,9 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: `astro check` could not run on TypeScript 7 (no compiler API) and there was no tsconfig; `node >=24` and `^` ranges let the toolchain move without a commit; `@astrojs/mdx` was used nowhere.
 - **Checked**: `pnpm check` ends `Result (61 files): - 0 errors - 0 warnings - 5 hints` (before the fix: 1 error at Header.astro:31:81, the one the plan names). `pnpm build` 256 pages, all checks pass; built HTML, Markdown and text files compared with the pre-change build.
 - **Open**: five hints left as they are (cards.ts:87, About.astro x2, Home.astro x2); AGENTS.md's agent-docs auto block still prints the old check script until the scaffold is rerun.
+## 2026-11-10: each fact names the question it answers on /about (improve/011-about-questions-by-key, executor agent)
+
+- **Type**: fix
+- **Changed**: `src/lib/site.ts` (`FACT_LIST` with a `q` per fact, `FACTS` derived, `factsFor(q)` throws when a question has none), `src/lib/twins.ts` (import and `QA` read `factsFor`, no positions), `scripts/check-facts.mjs` (new strike check), `docs/seo.md`, `src/lib/SKILL.md`.
+- **Checked**: built `dist/about.html`, `about.md`, `llms.txt`, `llms-full.txt` and the `/es` about.html, about.md, llms.txt, llms-full.txt are byte-identical to a build of 4025230 (shasum diff empty); `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `node scripts/check-facts.mjs` prints `facts: striking a line moves no other answer; an emptied question stops the build`.
+- **Open**: `check-facts.mjs` is not yet called from `pnpm test` (no test file in this plan's scope); other languages' answers come from `content.json` `qa`, not from `FACT_LIST`.
