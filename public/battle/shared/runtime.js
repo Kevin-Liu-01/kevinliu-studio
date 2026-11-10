@@ -212,6 +212,9 @@ export function sceneOf(shot) {
   return runtime.compileScene(s, { ...def, full: edit(def.full), short: edit(shortOf) });
 }
 
+// kevinliu.studio phone memory: a touch screen or a small-memory device keeps one card's world besides the one on screen; the others give
+// their WebGL context back (scripts/phone-memory.mjs)
+const LEAN_GROUNDS = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
 export class Stage extends runtime.Stage {
   /** Where the scene opens from and lands on, viewport px (the Director sets them from the layout before each play). */
   anchors = { source: null, target: null };
@@ -343,7 +346,7 @@ export class Stage extends runtime.Stage {
   fetchOnce(src) {
     this.fetched ??= new Map();
     let p = this.fetched.get(src);
-    if (!p) { p = fetch(src, { priority: 'low' }).then((r) => r.blob()).catch(() => null); this.fetched.set(src, p); }
+    if (!p) { p = fetch(src, { priority: 'low' }).then((r) => r.blob()).then(() => true).catch(() => null); this.fetched.set(src, p); }
     return p;
   }
   /** Fetch the media of shots that may come in a later batch (the moves the cards in play may use next), one file at a
@@ -411,6 +414,7 @@ export class Stage extends runtime.Stage {
     const shader = ground?.kind === 'shader';
     if ((shader && this.shaderSource !== ground.source) || (!shader && this.shader)) {
       if (this.shader) { this.shader.canvas.hidden = true; this.grounds.set(this.shaderSource, this.shader); }
+      if (LEAN_GROUNDS) for (const [src, sh] of [...this.grounds]) if (src !== this.shaderSource && !(shader && src === ground.source)) { sh.dispose(); this.grounds.delete(src); }
       const kept = shader ? this.grounds.get(ground.source) ?? null : null;
       this.shader = kept;
       this.shaderSource = kept ? ground.source : '';

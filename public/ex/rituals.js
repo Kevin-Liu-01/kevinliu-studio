@@ -262,7 +262,7 @@
           const sl = $('.sleeve', m);
           if (sl) sl.style.opacity = t >= 1200 ? '' : turned.toFixed(3);
         });
-      }, () => { minis.forEach((m) => { if (m) m.style.opacity = ''; }); S.rival.forEach((id) => cards[id].el.classList.add('theirs')); own(T); idle(warm); });
+      }, () => { minis.forEach((m) => { if (m) m.style.opacity = ''; }); S.rival.forEach((id) => cards[id].el.classList.add('theirs')); own(T); idle(LEAN ? probe : warm); });
       { const sh = SND()?.schedule(SND().dealCues()); const fin = T.finish; T.finish = () => { sh?.cancel(40); fin.call(T); }; } T.kind = 'deal'; // a Play pressed while it lands waits for it (gallery.js play)
       G.ritual = T;
     }
@@ -303,7 +303,7 @@
       let sized = false;
       const boot = () => {
         if (live() && !sized && Ground.prewarm) { sized = Ground.prewarm([]); if (Ground.driver) Ground.driver(); if (sized) idle(warmLens); } // the next frame clears its trace
-        if ((!sized || !warm()) && ++tries < 40) setTimeout(boot, 250);
+        if (LEAN && sized) { if (G.S.you.length + G.S.rival.length === 6) probe(); } else if ((!sized || !warm()) && ++tries < 40) setTimeout(boot, 250);
       };
       setTimeout(boot, 400);
     }

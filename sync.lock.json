@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-09T19:01:08.839Z",
+ "synced": "2026-11-10T11:33:20.795Z",
  "stages": {
   "cards": {
-   "files": 1033,
-   "bytes": 107533897,
+   "files": 1034,
+   "bytes": 107509941,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -19,8 +19,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "dc4a53a807940ba60fd64ae1b5b53c82b8cac65af2ffea8e50b0112c1610c944",
-     "bytes": 142913
+     "sha256": "18f8e7baba0f3972df0cc58ccd3747868791df11fba086f72fef8efc414c662a",
+     "bytes": 112359
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",
@@ -54,18 +54,18 @@
     },
     "public/ex/markup.js": {
      "src": "r4/ex/markup.js",
-     "sha256": "03d6406f0b112e6881dd44dc2e4131c144b8ede4edd72dbda04aecabbc40f4c4",
-     "bytes": 52326
+     "sha256": "8ea9ae51febd938012fab5bd1fa3b9f08e774e594bc52f7edcca153bd1da5092",
+     "bytes": 52339
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
-     "sha256": "32718d5dff58382b6483beae62117b3017f7b693f9c1cdd29248dd36bebdbd86",
-     "bytes": 69950
+     "sha256": "6cadb1ff34ce9f2e11ded36b07205db1e1936b4c05a18b8b3bb1734031f15b3e",
+     "bytes": 70047
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "3d28f631b76eefdd96af2d6c64faeca9f0a4a71837110490c3063fb90130d9ca",
-     "bytes": 63910
+     "sha256": "4a319e5660d9d3ac8d01bc3b79c4b4ede37b16ae99c0da4f209b457471514732",
+     "bytes": 64790
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
@@ -5167,6 +5167,11 @@
      "sha256": "210cddfa6a3e8855e4a20e56ddf7c5d6bffa084ba498b402885e3a099984204b",
      "bytes": 134646
     },
+    "vendor/ex/posters/posters.json": {
+     "src": "r4/ex/posters/posters.json",
+     "sha256": "2e18cd35ee6005b922c80cb7480f426e0afe411d7d770fe6f564b52c0c4afbca",
+     "bytes": 5608
+    },
     "public/ex/face.gen.js": {
      "src": "r4/ex/face.gen.js",
      "sha256": "fd39fbd9ca523693f75ab0aa3f22c878165f2d030cf8962577810801055d7ffd",
@@ -5181,12 +5186,12 @@
   },
   "sound": {
    "files": 1098,
-   "bytes": 17101617,
+   "bytes": 17103358,
    "list": {
     "public/sound/sound.js": {
      "src": "r4/sound/sound.js",
-     "sha256": "6d5c6a149c3306955b87a16c22537130fa3d36775f966ce3f657be3bd61254f0",
-     "bytes": 83779
+     "sha256": "3a93a93fc704bdab405ded8b13a90b36a4f69cf7a5ec1ddc58c0df4373d5ff66",
+     "bytes": 85520
     },
     "public/sound/boot.gallery.js": {
      "src": "r4/sound/boot.gallery.js",
@@ -10677,17 +10682,17 @@
   },
   "battle": {
    "files": 893,
-   "bytes": 144494323,
+   "bytes": 144497361,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "803408f1e749096ad99016f6ea22272535a198d5858ec230f8e1f0ead369fafd",
+     "sha256": "bf2acb5e2ad5cbd959ffb7ae4eb2fb4e6f6db15ea6edda3fb93c6b12876d72b8",
      "bytes": 32329
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
-     "sha256": "0145d274b5c6490a3f02c2d8f54d5a02e5fff83bd8bd9f2533f01d0c4c41c9dc",
-     "bytes": 92898
+     "sha256": "3d677cfed99f24d753a94c01a2d7bfcb363c6e9bec19ebc62c8ebfd630d50965",
+     "bytes": 93077
     },
     "public/battle/arena/ground.js": {
      "src": "r4/play/arena/ground.js",
@@ -10706,8 +10711,8 @@
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "2efde40a80b11e9042e6ad6593d312f2b131a25e8a9163849446c02aca60b7bc",
-     "bytes": 27223
+     "sha256": "32e7afb1be8f4a7efc63e8a5e458de4f04e0e983e89e59facf7ab26e403f3607",
+     "bytes": 27363
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
@@ -10721,8 +10726,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "53b84803d1fdfd18f6b164a1121711e0243d9eccc348efd1fff448de83433d99",
-     "bytes": 61748
+     "sha256": "f031fd9586c881f6f022134045df6f8b0e1b8789754d947ad4f708c22e35f0d7",
+     "bytes": 63877
     },
     "public/battle/shared/excard.js": {
      "src": "r4/play/shared/excard.js",
@@ -10771,8 +10776,8 @@
     },
     "public/battle/shared/runtime.js": {
      "src": "r4/play/shared/runtime.js",
-     "sha256": "426568ff8ce75d5c0805c7f65d1066a31cc03ee8328418b2d4c64bb1fb3673bc",
-     "bytes": 35588
+     "sha256": "2dbf77d2811b4f198e76413c1536730533b653b32c29de24d9fc09c3ae6dcf11",
+     "bytes": 36178
     },
     "public/battle/vendor/broadcast/broadcast.css": {
      "src": "r4/play/vendor/broadcast/broadcast.css",

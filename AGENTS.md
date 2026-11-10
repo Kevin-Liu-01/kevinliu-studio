@@ -8,7 +8,7 @@ Read `memory.md` before acting and append to it after every meaningful change.
 | Path | What | Edit? |
 | --- | --- | --- |
 | `src/pages/` | home (the wall), `/cards` (the index), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404`, the `.md` twins, `llms*.txt`, `robots.txt`, `/share/<name>.jpg` | yes |
-| `src/lib/cards.ts` | loads the round card code at build in CommonJS sandboxes; `card()`, `fighters`, `whatOf()`, `factLines()`, the battle roster | yes |
+| `src/lib/cards.ts` | loads the round card code at build through a CommonJS shim (not isolation); `card()`, `fighters`, `whatOf()`, `factLines()`, the battle roster | yes |
 | `src/lib/twins.ts` | the Markdown twin of every page; `.md` endpoints, `llms*.txt` and the Machine view print from it | yes |
 | `src/lib/site.ts` | name, bio, the public facts about Kevin with their sources, links, the previous site | yes |
 | `src/lib/schema.ts`, `src/lib/share.ts` | the JSON-LD graph of every page; the share images built at build time (`docs/seo.md`) | yes |
@@ -57,6 +57,8 @@ Read `memory.md` before acting and append to it after every meaningful change.
 
 - `pnpm sync` and `pnpm sync --check`
 - `pnpm i18n:translate` (extract, then GT), `python3 scripts/i18n-fonts.py`, `node scripts/i18n-extract.mjs --check`
+- `pnpm test` (the content rules' tests, `scripts/*.test.mjs`)
+- `pnpm check` (`astro check`: types in `src/`)
 - `pnpm dev`, `pnpm build` (runs the guard), `pnpm preview`
 - `node scripts/smoke.mjs <base-url>` and `node scripts/check-seo.mjs <base-url> --external` against a deployment
 - `node scripts/icons.mjs` after the kl mark changes

@@ -9,9 +9,10 @@ fallback, motion uses only `transform` and `opacity`, canvases and loops cost no
 
 | Part | Where | What it does |
 | --- | --- | --- |
-| The face | `public/fonts/katagami-sans-site.woff2`, `src/layouts/Base.astro` | One 27.5 KB subset of Katagami Sans (every character the site prints), preloaded first on every page, cached for a year. `font-display: block`, because the cards' titles are fitted to its advances at build (`markup.js` ADV). The fallback is Arial cut to its width and line (106.9% up to weight 600, Arial Bold at 102% above), so a page that ever paints before it lands keeps every line where it was. No page inlines a face; the guard fails on one. |
-| Content addresses | `src/lib/assets.ts`, `vercel.json` | Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) carries `?v=<hash>` and is `immutable` for a year; the files the rounds' own scripts load keep plain addresses and revalidate. The guard fails on an unversioned `/ex/` reference; the smoke test checks the header. |
-| The wall's first paint | `src/pages/index.astro`, `src/styles/site.css` | The first 14 cards (two rows at the widest the gallery sets) load with the page, the first poster at high priority; the rest are `loading="lazy"` until the page has loaded, then fetch at idle, so no lens, pack or dock ever opens on a missing picture. The page is held (`data-hold`, nothing contentful) until the pictures of the cards on screen decode, at most 1 s, so it paints whole in one frame, and a visitor arriving from another page keeps seeing that page until then. |
+| The face | `public/fonts/katagami-sans-site.woff2`, `src/layouts/Base.astro` | One 27.5 KB subset of Katagami Sans (every character the site prints), preloaded first on every page, named by content address (`?v=`) and cached for a year. `font-display: block`, because the cards' titles are fitted to its advances at build (`markup.js` ADV). The fallback is Arial cut to its width and line (106.9% up to weight 600, Arial Bold at 102% above), so a page that ever paints before it lands keeps every line where it was. No page inlines a face; the guard fails on one. |
+| Content addresses | `src/lib/assets.ts`, `vercel.json` | Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) and every face under `/fonts/` carries `?v=<hash>` and is `immutable` for a year; so are the frame and effect drawings under `/ex/borders/` and `/ex/fx/`, whose `?v=` the rounds write as the file's own sha-256. A face or drawing asked for without `?v=`, the `design/` drawings (their `?v=` is another file's hash), every plain picture address and the files the rounds' own scripts load revalidate or keep a day. The guard fails on an unversioned `/ex/` or `/fonts/` reference and on a face or drawing whose `?v=` is not its hash; `scripts/cache-rules.test.mjs` reads the rules in `vercel.json`; the smoke test checks the headers. |
+| The wall's first paint | `src/pages/index.astro`, `src/styles/site.css` | The first 14 cards (two rows at the widest the gallery sets) load with the page on a fine pointer, and the first two on a touch screen (one column), the first poster at high priority; the rest are `loading="lazy"` until the page has loaded, then fetch at idle, so no lens, pack or dock ever opens on a missing picture. The page is held (`data-hold`, nothing contentful) until the pictures of the cards on screen decode, at most 1 s, so it paints whole in one frame, and a visitor arriving from another page keeps seeing that page until then. |
+| Poster sizes | `scripts/sync.mjs`, `src/lib/cards.ts` | The wall prints each poster and front-effects poster with its half beside it (`srcset`, the rounds' `posters/posters.json`), so a card drawn under 252 px wide at 1x fetches the half; a card page prints the whole poster (`ladder: false`). |
 | Key states | `src/components/Header.astro` | The Human and Machine switch, sound and pause keys take the state their scripts give them after load as the header parses, so no icon flips on screen. |
 | View Transitions | `src/layouts/Base.astro` | `rituals.css` (which declares `@view-transition`) loads only where `rituals.js` runs. On card pages it made every return to the wall a default root crossfade through a pale frame. |
 | Prefetch | `Header.astro`, `cards/[id].astro` | The header's links and the card pager prefetch their page when in view, so the next HTML is in hand when the visitor clicks. |
@@ -91,11 +92,43 @@ Interaction: the first press on a card spent 5.5 s (on this Mac under load) insi
 after the change: pointerdown 48 ms in all, 7 ms of script. At 390 (DPR 3) the remaining 600 to 800 ms is
 presentation delay on this Mac's GPU, with the main thread idle; Speed Insights after shipping is the real number.
 
-Left for the battle round (r4/play): the 627 KB `kit.js` bundle keeps the board empty for about 2.7 s before the
-deal; the page is blank behind its font gate for up to 2 s on entry; the interface disappears after each cutscene
-and snaps back; the Arena shows both pads and labels for one frame, removes them and adds them back; its team rail
-shows flat squares before the card art; at 390 the move list slides up over the active cards. The lens's Escape drops
-its action bar a frame before the dissolve (`gallery.js`).
+### The battle's pops and their causes (2026-11-10)
+
+The four things the battle still did against "nothing pops", each with its cause in the round's code (r4/play; line
+numbers are the site copies'). One is fixed here; three are requests to the play lane (plan 023 and its result in
+the audit's `plans/results/`). Evidence: paint captures and a frame-by-frame reading of the page, before and after,
+kept in `~/k7-rescue/improve-audit/lane-c/023/`. Local numbers show order only; a Vercel preview is needed for times.
+
+1. **The Arena's pads faded out at the reveal. Fixed by a sync transform.** On a deal the Arena created its pads
+   visible (`battle/arena/board.js:221`), laid the board out, and only then marked them hidden (`drawSides`, `:792`),
+   so the page was revealed with both pads on an empty floor, they faded to nothing over 0.2 s (`arena.css:110-111`)
+   and came back with each side's first card. Before: the first Arena frame shows both pads, the next frames none,
+   then the player's again with its card. After: the first Arena frame has no pad, and each pad arrives once, with
+   its card. The pads start hidden only on a deal: creating them hidden always was tried and made a switch from Mat
+   to Arena fade them in, which the shipped pair does not (the first Arena frame after the switch has both pads, as
+   before). The flags are created and marked in the same order but were never seen on a visible page before their
+   card, so they are left alone.
+2. **The interface hides and returns around every shot, not around the turn.** `battle/shared/battle.js:507` sets
+   `data-scene` at each shot's start and `:547` removes it at each shot's end; the rail and console fade out under it
+   (`mat.css:202`, `arena.css:251`) and back in after 0.25 s without it (`mat.css:56`), and the plates, the log and
+   the turn tab flip `visibility` after 0.12 s (`battle/shared/hud.css:366`, `:427`). In the opening, between the two
+   leads' entrances, the rail and console went from opacity 0 back to 1, stood for about 0.7 s and dropped to 0
+   again. Left to the round: hide for the batch, not for each shot.
+3. **The first paint waits on about a megabyte of blocking scripts, then on the whole boot.** Twelve classic scripts
+   stand before the page's module (`vendor/battle/mat/index.html:96-107`, 1,064 KB uncompressed, `kit.js` 627 KB of
+   it, holding all 18 battle cards' scenes for a hand that uses six), `battle.js:53` registers every scene at module
+   top level, and `html[data-boot] #app { visibility: hidden }` (`battle/shared/battle.css:58`) hides the page, the
+   static rail included, until a start has laid the board out. Locally the Arena's first frame came 2.3 s after the
+   navigation, after one black frame; the Mat's came at 1.4 s with the board already in it. Left to the round: a kit
+   per card, and a boot gate that lets the rail paint first.
+4. **The font gate was not what held the page.** `html[data-fonts] body { visibility: hidden }`
+   (`vendor/battle/mat/index.html:15`, 2 s cap) lifts when the 28.8 KB preloaded face arrives: 190 ms on the Arena
+   against a first contentful paint at 2328 ms (kit.js at 236 ms), and 102 ms against 1160 ms on the Mat (kit.js at
+   148 ms). It can only add blank time when the face arrives after the scripts and the boot.
+
+Not looked at by this spike, as recorded before: the Arena's team rail shows flat squares before the card art; at
+390 the move list slides up over the active cards. The lens's Escape drops its action bar a frame before the
+dissolve (`gallery.js`).
 
 ## Memory (phones)
 
@@ -115,9 +148,13 @@ What held the memory, measured in WebKit at iPhone 14 (390 x 844 at 3x):
 | Every card's ground and front-effects canvases kept their backing store while scrolled away | 55 MB | A held print's canvas is 0 x 0 until the frame that draws it; a print is held as it leaves the screen |
 | A device-size filter buffer for every painted card (the cracks' glow covers the whole card) | about 190 MB of WebContent | A wall card more than a screen away paints no filters (`data-far`, `site.css`) |
 | The next pack's three 3D card copies and packet, rastered on the stage at opacity 0.001, plus their well cards | GPU layers | Cut at the press on a touch screen, as under reduced motion |
+| The battle prerendered behind the wall as soon as both teams exist (Chromium), and its opening cast built at idle | Pixel 7 profile, the wall with teams in the address, median of 3: renderers 179 to 171 MB (largest 155 to 147), GPU 535 to 430 MB (measured on a Mac at load average 340+, so noisy) | No prerender and no cast ahead of a press on a touch screen or a small-memory device (`scripts/phone-memory.mjs`) |
 | All 26 cards' pictures fetched and decoded at idle | about 30 MB decoded before any scroll | Stay lazy on a touch screen |
 | The battle's media preload kept a detached `<video preload="auto">` per clip | a decoder per clip until a collection | Drops its source once its first frame loads |
-| Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again |
+| Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again, and the wall writes the dock's team into its address first so the reload keeps it (`node scripts/check-release.mjs dist/index.html`) |
+| The battle's stage kept every card's cutscene world (a WebGL2 canvas each) once linked | a context per card with a world, up to 12 across a visit | On a touch screen or a small-memory device only the world going out and the one coming in are kept |
+| The battle's media warm-up kept every fetched clip and picture as a Blob | the bytes of every warmed file, up to 111 MB of scene media | The Blob is dropped once it arrives |
+| The cards' live prints drew behind the result and under the Log | a frame loop with nothing to show | They pause there |
 
 ### How it was measured
 
@@ -161,6 +198,16 @@ within 5 s. So a rising soak on desktop WebKit is not a leak by itself: send the
 400 MB of WebContent and two WebGL contexts (the battle round's board and broadcast kit); that is the next place to
 look, in r4/play.
 
+
+2026-11-09, the battle on a phone (plan 009). Before and after, one 150 s Auto battle (`?auto=1`, seed 30, three against
+three), Chromium with Playwright's iPhone 14 descriptor (touch, mobile; `(pointer: coarse)` true): world canvases on the
+stage 3 → 2, phase `result` in both. The soak's WebKit iPhone 14 profile (`/battle`, `/battle/arena` at rest, no battle
+played, so the cap and the Blobs are not exercised): live GL contexts 2 → 2 on both pages; WebContent 231 → 213 MB and
+203 → 229 MB; GPU process 686 → 903 MB and 599 → 731 MB. Those last four moved with the load of this Mac (load average
+above 400, other builds running) and are not a result of the change. The pause check (Chromium, same descriptor): the
+prints were running at rest (`paused` false), `paused` true with the Log open and false after it closed. The Blob
+saving was not measured separately.
+
 ### The Machine view (2026-11-07)
 
 The Machine view keeps the page laid out and shows each region's machine form in its box (docs/architecture.md). It
@@ -173,3 +220,32 @@ rounds against the view it replaced: pictures 48.5 MB both, canvas equal or lowe
 The terminal (2026-11-08) adds Katagami Mono, 21.7 KB, fetched at idle after a Human page has loaded (cached a year,
 like the site face), and each card's art as text: home HTML 43.5 to 50.6 KB gzip, a card page 15.1 to 16.6, About
 14.0 to 15.2. The art is built from the cards' own pictures at build, so no picture is decoded for it.
+
+Measured again on 2026-11-10 (`gzip -9 -c dist/<page>.html | wc -c`, after the framed templates, round 5 and the
+language key): home HTML 55,500 bytes gzip (341,792 raw), a card page (`cards/turboslide`) 17,239,
+About 15,882.
+### Decoded audio across hands (2026-11-10)
+
+Method: Playwright Chromium with the iPhone 14 descriptor (coarse pointer true), three Auto hands at double speed with New Rival after each result, reading the player's own `Sound.stats().pcm` (decoded bytes). Before (build of `7245c52`; every New Rival hand kept its three new rival cards' kits for the rest of the visit):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 32.5 | 28.5 | 60.9 |
+| hand 2, result | 32.5 | 2.3 | 34.8 |
+| hand 3, kit loaded | 39.3 | 28.5 | 67.7 |
+| hand 3, result | 39.3 | 1.8 | 41.1 |
+
+After (a new hand unloads the card kits it does not hold; the same three hands were dealt):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 27.1 | 28.5 | 55.6 |
+| hand 2, result | 27.1 | 2.0 | 29.1 |
+| hand 3, kit loaded | 27.6 | 28.5 | 56.1 |
+| hand 3, result | 27.6 | 1.8 | 29.4 |
+
+`d` (one-shots at hand 3 loaded minus hand 1 loaded) was 13.1 MB before and is 1.4 MB after; at the third hand the page holds 11.7 MB less decoded audio (39.3 to 27.6). A group unloaded and loaded again through the player's own face gave its bytes back and took them again (`card:katagami`: 27.6, 26.1 after unload, 27.6 after load). An emulated phone on a loaded Mac is not a real phone: the decoded sizes are exact, the process totals on an iPhone were not measured. Themes are still decoded whole on every iPhone (28.5 MB while a hand plays), because the player's low-memory path tests `navigator.deviceMemory`, which Safari does not have; that is Kevin's decision.

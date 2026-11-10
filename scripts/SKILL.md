@@ -11,6 +11,8 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
 - `phone-memory.mjs`: the patches that keep a phone's tab under its memory limit. Add one as an anchored pair in `PHONE`;
   restore the patched files from git and run `node scripts/phone-memory.mjs` to re-apply all of them without the rounds.
 - `verify-build.mjs`: a new site-wide rule goes here so it fails the build, not in a checklist.
+- `lock-check.mjs`: runs first in `pnpm build`; the synced folders must hold exactly what `sync.lock.json` records. A new synced folder goes in its `SYNCED` list and in `sync.mjs` STAGES together.
+- `rules.mjs`: the content rules, read by `sync.mjs` and `verify-build.mjs` alike. A new banned name or allowed path goes here, with a case in `rules.test.mjs` (`pnpm test`).
 - `smoke.mjs`: runs against a deployment; add a route here when a page is added.
 - `check-seo.mjs`: runs against a deployment or a local serve of dist; every sitemap page and the 404 for share tags, a
   200 1200 x 630 JPEG share image with alt, JSON-LD and its twin, and every link (`--external` for outside links,
@@ -25,3 +27,4 @@ description: Procedure for scripts/ in kevinliu-studio: the round sync, the rele
   skill; the procedure is in `docs/performance.md`.
 - `smoke.mjs` takes `VERCEL_OIDC_TOKEN="$(vercel project token kevinliu-studio --scope kl01s-projects)"` for a
   protected preview.
+- `lib/checks.mjs` (the JPEG reader, the share-tag check, the sitemap's least page count per language) and `lib/http.mjs` (preview bypass headers, one request without following redirects, redirects followed by hand) are shared by `verify-build.mjs`, `check-seo.mjs` and `smoke.mjs`; `lib/checks.test.mjs` tests both. `check-seo.mjs` takes `VERCEL_AUTOMATION_BYPASS_SECRET` too now.

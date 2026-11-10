@@ -326,6 +326,97 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   language key therefore sits in the header from 800 px and in the footer below. `astro check` refuses TypeScript 7.
 - **Open**: the battle's in-game text needs string tables in r4/play; a `pnpm sync` that changes card words needs
   `pnpm i18n:translate` and `python3 scripts/i18n-fonts.py` (the changed strings print in English until then).
+## 2026-11-09: one set of content rules for the sync and the guard (improve/001-scan-rules-module-and-tests, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/rules.mjs, scripts/rules.test.mjs (new); scripts/sync.mjs, scripts/verify-build.mjs, package.json,
+  docs/sync.md, scripts/SKILL.md, AGENTS.md, memory.md.
+- **Why**: the sync's scan and the release guard each had their own copy of the rules and the copies had drifted; names
+  written with entities, escapes, accents, hyphens, underscores, odd spaces or "dex" passed, and file names were never read.
+- **Checked**: `pnpm test` 8 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` ends
+  `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; a probe file holding `General&nbsp;Translation`
+  in a copy of dist fails with exit 1; no change under public, vendor or sync.lock.json.
+- **Open**: plans 002 and 003 also edit scripts/sync.mjs.
+
+## 2026-11-09: the sync stops when a patch never met its file (improve/002-sync-fails-on-unapplied-patches, Claude Code)
+
+- **Type**: fix
+- **Files**: scripts/sync.mjs, scripts/phone-memory.mjs, docs/sync.md, memory.md.
+- **Why**: a renamed file dropped its TRANSFORMS, PHONE or BINARY patch silently (the two picture paint-outs are invisible to any text scan); the standalone phone-memory run could leave a file patched and the lock wrong; pageHead dropped tags it could not read.
+- **Checked**: `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; a temporary patch key for a missing file fails with exit 1 and the new message, then removed; `phone-memory.mjs` and `--check` exit 0 with no file changed.
+- **Open**: none.
+
+## 2026-11-09: every build checks the synced folders against the lock (improve/003-lock-integrity-check, Claude Code)
+
+- **Type**: feature
+- **Files**: scripts/lock-check.mjs, scripts/lock-check.test.mjs (new); scripts/sync.mjs, package.json, docs/sync.md, scripts/SKILL.md, memory.md.
+- **Why**: nothing enforced "never edit the synced folders by hand" without the rounds folder; a hand edit, a stray file or a stopped sync's .tmp would build and deploy. The sync also removed any path the previous lock named, and wrote the lock in place.
+- **Checked**: `node scripts/lock-check.mjs` passes on 3024 files and fails on a stray file in public/ex (removed after); `pnpm test` 10 pass, 0 fail; `sync.mjs --check` against rounds-42ff51c7 prints `in sync`; `pnpm build` runs lock-check first.
+- **Open**: AGENTS.md's agent-docs auto block still prints the old build script until `agent-docs scaffold` is rerun.
+## 2026-11-09: a cue before the context is unlocked fetches nothing (plan 005, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (two pairs on the sound.js entry), `public/sound/sound.js` and `sync.lock.json`
+  (rewritten by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Why**: on /battle the player makes its context at load (resumeAtLoad), so cues played before any gesture (the deal,
+  the leads' entrances) passed playCue's check, fetched and decoded files, and were dropped by the suspended context.
+  playCue and stinger now return unless the context is unlocked.
+- **Measured** (production build, local preview): /battle with no input, 25 s: 0 files under /sound/out/ (plan baseline:
+  10); after one click on #app: 127. Home page, a real mouse down/up on the first card (two presses, 8 s): 69 files
+  loaded on the unpatched sound.js and 69 on the patched one, 0 before the press.
+- **Check note**: the plan's home-page check (`agent-browser click ".wall .card"`, then count resource-timing entries
+  under /sound/out/) cannot tell fixed from broken: that click did not reach a card press, and the home page's many
+  images fill the 250-entry resource-timing buffer, so late sound requests never appear in it. The check that works is a
+  real mouse move/down/up at (196, 250) (`agent-browser mouse move|down|up`) and `Object.keys(Sound.stats().files).length`.
+  The /battle counts are unaffected (127 after the click shows the buffer was not full there).
+- **Open**: the rounds should take this upstream (the request in plan 005).
+## 2026-11-09: Markdown negotiation and framing headers (improve/004-markdown-negotiation-and-headers, Claude)
+- **Type**: fix
+- **Changed**: vercel.json (Accept rule on the two negotiation routes: Markdown only when `text/markdown` precedes any `text/html` and is not `q=0`; dropped the `.md` Content-Type route so a missing `.md` is a plain 404; `Vary: Accept` moved to the six negotiated page routes; `Content-Security-Policy: frame-ancestors 'self'; base-uri 'self'; object-src 'none'`), scripts/check-negotiation.mjs (new), scripts/smoke.mjs (new cases), src/lib/twins.ts (llms.txt sentence), docs/deploy.md.
+- **Checked**: `node scripts/check-negotiation.mjs` prints `negotiation: 2 routes, 16 cases pass`; `pnpm build` ends `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; dist/llms.txt and llms-full.txt carry the new sentence; no dist page has iframe/object/embed, and every `<base href>` is a same-origin path.
+- **Open**: not deployed; the preview smoke (`node scripts/smoke.mjs <preview>`) has not run, so the Accept rule, the 404 type of a missing `.md`, `Vary` and the framing header are checked only by `scripts/check-negotiation.mjs`.
+## 2026-11-09 · perf · No battle prerender and no opening cast ahead of a press on a phone (improve/010-wall-phone-no-prerender, Claude Code)
+
+- **Changed**: `scripts/phone-memory.mjs` gains a `PHONE` entry for `public/ex/gallery.js` (no speculationrules prerender of
+  the battle on a touch screen or `deviceMemory <= 4`) and two pairs for `public/ex/rituals.js` (the two idle `warm()`
+  callers only `probe()` there; the press path, `pointerenter`/`focus` on `#play` and `entry()`, is untouched). Synced
+  files `public/ex/gallery.js`, `public/ex/rituals.js` and `sync.lock.json` came from the sync, not by hand.
+  `scripts/memory/soak.mjs` pages mode now also records `contentSumMB`. docs/sync.md and docs/performance.md updated.
+- **Measured** (Pixel 7 profile, wall with teams in the address, median of 3, Mac at load average 340+): renderers sum
+  179 to 171 MB, largest renderer 155 to 147 MB, GPU 535 to 430 MB, glLive 1 both. Desktop (fine pointer) still gets
+  the `#prerender` rule (agent-browser: coarse false, rule true).
+- **Open**: the rounds' room lane has the same change as a request (plans/010).
+## 2026-11-09, fix: a battle link that cannot start says why and never leaves the page hidden (plan 008)
+- **Files**: scripts/sync.mjs (six pairs on battle.js, one board.js entry), public/battle/shared/battle.js, public/battle/arena/board.js, sync.lock.json, src/components/BattlePage.astro (8 s backstop script), docs/battle.md, docs/sync.md.
+- **Why**: a bad address (unknown card, old log) started the default hand with the alert erased in the same task; `#mode=constructor` / `#map=constructor` passed the own-key-less checks and left the page hidden; any boot-path rejection left a blank page.
+- **Checked** (preview on port 43850, built dist): mode=constructor -> visible, entrance, no error, mode=mat in hash; Arena map=constructor -> visible, live, no error; team=nope,nope,nope -> visible, live, error ends "Playing the default hand.", default team in hash; ?fixture=9 -> visible, error starts "The battle could not start"; plain /battle -> visible, no error; simulated late error -> visible, "The battle could not start. Reload the page, or Leave." after 9 s. pnpm build: all checks pass.
+- **Open**: the upstream request to the rounds' play lane (r4/play shared/battle.js and arena/board.js); the i18n branch needs keys for the three new sentences.
+
+## 2026-11-09: Machine view keeps headings and the home link for screen readers (improve/007-machine-view-headings, Claude)
+- **Type**: fix (accessibility), plan 007, cut from feat/i18n cac5d2b
+- **Changed**: `src/styles/machine.css` (headings cleared with `color: transparent`, not `visibility: hidden`; skip-button rule uses `data-mode-go`), twin `<p class="mx">` after each heading `aria-hidden` in `src/views/{About,Cards,NotFound,Card}.astro`, brand link always labelled `frame.brand` in `Header.astro`, one-way view buttons in `Footer.astro` and `Base.astro` are `data-mode-go` without `aria-pressed` (the click script and its view picker accept both attributes), `docs/architecture.md` bullet.
+- **Checked**: `pnpm build` 256 pages, 248 sitemap URLs, all checks pass, no untranslated strings. Twin-line greps on English and es pages: about 0/3, cards 0/1, 404 0/1, cards/atlas 0/5. Buttons on about (en and es): 4 `data-mode-go`, 0 with aria-pressed, 2 `data-mode-set`. Accessibility snapshot, Machine view: /about 3 headings (0 twin text), /es/about 3, /cards/atlas 5, home link named "Kevin Liu, every card", 0 `pressed` on the card page; /es/about screenshot shows the title once. machine-check (chromium, playwright-core from Prototemplate-wt-jaw-1103): layout shifts 0 and 0 differing pixels everywhere; 8 pairs report movedCount above 0 (home 390/320, about 390/320, card 1440/730/390/320), all identical in selector and count to a baseline run on cac5d2b, so they are pre-existing (header .seg buttons at 390/320; .card, .cp-facts li[4], .cp-moves li[4] on the card page). Baseline home-730 timed out on reload (load); 007's home-730 moved 0.
+- **Open**: the footer's and the skip links' view buttons are now `data-mode-go`; on the home page they play the plain tap sound (gallery.js's mode sound is bound to `data-mode-set`); not checked with VoiceOver; the plan's strict movedCount gate fails on cac5d2b itself (pre-existing, to be looked at separately).
+## 2026-11-09: A phone keeps the Pick Three team when it comes back to the wall (improve/006-phone-keeps-team-after-back, executor agent)
+
+- **Type**: fix
+- **Changed**: `src/components/Release.astro` (on a return from the back-forward cache the wall writes the dock's team into its address, then reloads as before; gallery.js restore() reads it), `scripts/check-release.mjs` (new, runs the built inline script under node:vm), `docs/performance.md` (Memory table row).
+- **Checked**: `pnpm build` ends `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; `node scripts/check-release.mjs` prints `release: 5 cases pass` on dist/index.html, dist/battle.html and dist/battle/arena.html. The check fails (2 cases, exit 1) against the old script. Browser check ran (playwright-core Chromium, iPhone 14 context, matchMedia coarse true, pageshow persisted sent by hand; agent-browser not used because its device mode gives no coarse pointer): after Gallery.toggle of katagami and mailroom the hash was empty; after the event the page reloaded to `/#you=katagami,mailroom&rival=&seed=N` with __table.you = katagami, mailroom.
+- **Open**: not checked on a real iPhone or in a real back-forward cache; a lens left open (`/cards/<id>` in the address) still returns to that card's page.
+## 2026-11-09: the battle gives back shader worlds and warm-up bytes on a phone (improve/009-battle-phone-memory, Claude Code)
+
+- **Type**: perf
+- **Changed**: `scripts/phone-memory.mjs` (two `PHONE` entries), `public/battle/shared/runtime.js` and
+  `public/battle/shared/battle.js` (by the sync), `sync.lock.json`, `docs/performance.md`, `docs/sync.md`.
+- **Rationale**: a visit kept one WebGL2 context per card with a world and every warmed clip's Blob, and the cards' live
+  prints ran behind the result and the Log. A touch screen or small-memory device now keeps two worlds, the warm-up keeps no
+  bytes, the prints pause at the result and under the Log.
+- **Measured**: 150 s Auto battle, Chromium with the iPhone 14 descriptor (coarse pointer true): stage canvases 3 → 2.
+  WebKit soak (pages only): glLive 2 → 2; contentMB and gpuMB moved with machine load. Pause check: true under the Log,
+  false after.
+- **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
+  `groundG.paused` at the result and Log; the reviewer appends it.
+
 
 ## 2026-11-09 — the eight-language release candidate (ship check)
 - **Type**: release (release/next, not pushed)
@@ -352,3 +443,221 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   smoke.mjs passes on www; live /, /es, /ja, /ja/about, /de/battle, /fr/cards/katagami and /battle byte-identical to
   the checked build. Rollback: `kevinliu-studio-5o2libd3l` (c6245d9), docs/deploy.md. This record is committed on
   release/next and not pushed (a push would redeploy the same site); it ships with the next release.
+
+## 2026-11-10: Striking a fact no longer puts the wrong answer under a question on /about (improve/p2-checks, plan 011)
+
+- **Type**: fix
+- **Changed**: `src/lib/site.ts` (`FACT_LIST` with a `q` per fact, `factsFor`, the one `QA`), `src/lib/twins.ts` (reads `QA`),
+  `src/i18n/source.mjs` (reads `QA`), `scripts/facts.test.mjs` (new), `docs/seo.md`, `src/lib/SKILL.md`.
+- **Rationale**: the two answers were picked from `FACTS` by position (`FACTS[3]`, `FACTS[4]`, `FACTS.slice(5)`), in two files, so
+  deleting an early line moved every later answer. Each fact now names its question; a question left empty stops the build.
+- **Checked**: every built page, twin and text file (523) is byte-identical to before; `node scripts/i18n-extract.mjs --check`
+  passes, `content.json` unchanged; `pnpm test` 13 tests, 0 fail (10 before); a positional mutant fails the strike test.
+- **Open**: none.
+
+## 2026-11-10: The two site faces are named by content address; a year only where the address holds the content (improve/p2-checks, plan 012)
+
+- **Type**: perf
+- **Changed**: `src/layouts/Base.astro` (both faces through `versioned()`, the Mono `@font-face` rule moved into the inline style, `data-mono` on `<html>` for the head script's preload), `src/styles/machine.css` (Mono rule removed), `vercel.json` (`/fonts/` immutable only with `?v=`; `/ex/borders` and `/ex/fx` drawings a year with `?v=`, a day without), `scripts/cache-rules.test.mjs` (new), `scripts/verify-build.mjs` (face without `?v=` fails; a `?v=` on a face or border/fx drawing must be the file's sha-256), `scripts/smoke.mjs`, `docs/performance.md`, `docs/deploy.md`.
+- **Rationale**: a subset rebuilt under a plain address would sit in returning visitors' caches for a year; a year is now earned only by an address that holds its content.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; all four sampled pages name `katagami-mono-site.woff2?v=9fade4c28f` and `katagami-sans-site.woff2?v=8254e26517`; no `fonts/` in `dist/_astro/*.css`; `pnpm test` 15 tests, 0 fail (the new test fails 2 of 2 on the old `vercel.json`); a corrupted `fx.svg?v=` token made the guard name `is not the file's sha-256`, and the guard passed again once the file was restored; `node scripts/check-negotiation.mjs` exit 0.
+- **Open**: not deployed: the smoke check of the cache headers (`node scripts/smoke.mjs <preview>`) has not run, so Vercel's handling of the `missing` condition is unproven on a deployment; the plain picture addresses (`posters/`, `media/`) still keep a day and are not hashed; `design/` drawings carry a `?v=` that is not their own hash (a rounds matter); returning visitors fetch each face once more after this ships.
+
+## 2026-11-10: llms.txt sections are link lists, lastmod counts what a page prints, the docs say what the code does (improve/p2-checks, plan 024)
+
+- **Type**: fix
+- **Changed**: `src/lib/twins.ts` (`intro`: facts above the first `##`, Contact as links), `scripts/verify-build.mjs` (llms.txt shape check in all eight languages), `astro.config.mjs` (`SOURCES`: battle roster and `site.ts` counted for the home page, card pages and `/about`), `docs/architecture.md`, `docs/seo.md`, `docs/battle.md`, `docs/performance.md`, `docs/sync.md`, `src/lib/SKILL.md`, `AGENTS.md` (line 11), `memory.md`.
+- **Checked**: the new guard check reported 120 problem(s) (60 listed) on the old `dist/`; `pnpm test` 15 tests, 0 fail; `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `dist/llms.txt` and `dist/es/llms.txt` keep 46 list lines, 4 `##` sections, all 9 facts above the first `##`; `lastmod-check.mjs` reports 7 pages match.
+- **Open**: the loader is documented, not isolated; `AGENTS.md:88` (a machine-written block) and the front matter of `src/lib/SKILL.md` still say 'sandboxes' until agent-docs is rerun; Kevin may prefer the `## About` heading back in `llms.txt` (a one-line revert in `intro`, which the guard's check would then refuse).
+
+## 2026-11-10: `pnpm check` type-checks `src/` again; toolchain pins made exact (improve/020-typecheck-and-pins, Claude Code)
+
+- **Type**: chore, plan 020, cut from feat/i18n 4025230
+- **Changed**: `package.json` (engines `24.x`, `check` is `astro check` alone, `@astrojs/mdx` removed, `@astrojs/check` 0.9.12 and `typescript` 5.9.3 exact), `pnpm-lock.yaml` (by `pnpm install`), `pnpm-workspace.yaml` (`engineStrict: true`, mdx release-age exclusion removed), `.npmrc` deleted, `tsconfig.json` (new, Astro base preset, `src/` only), `src/components/Header.astro` (`aria-pressed={i === 0 ? 'true' : 'false'}`, same two values as `String(!i)`), `docs/deploy.md`, `AGENTS.md`.
+- **Why**: `astro check` could not run on TypeScript 7 (no compiler API) and there was no tsconfig; `node >=24` and `^` ranges let the toolchain move without a commit; `@astrojs/mdx` was used nowhere.
+- **Checked**: `pnpm check` ends `Result (61 files): - 0 errors - 0 warnings - 5 hints` (before the fix: 1 error at Header.astro:31:81, the one the plan names). `pnpm build` 256 pages, all checks pass; built HTML, Markdown and text files compared with the pre-change build.
+- **Open**: five hints left as they are (cards.ts:87, About.astro x2, Home.astro x2); AGENTS.md's agent-docs auto block still prints the old check script until the scaffold is rerun.
+
+
+## 2026-11-10: a GitHub workflow runs the checks on every pull request and push to main (improve/021-ci-workflow, executor agent)
+
+- **Type**: feature, plan 021, cut from cce834f (improve/020) with improve/011 merged in
+- **Changed**: `.github/workflows/check.yml` (new), `docs/deploy.md` (one bullet under Build), `memory.md`.
+- **Why**: no check ran before a build on the host. The workflow uses the pinned Node (`.nvmrc`, 24) and pnpm 11.15.1 (`packageManager`), no secret, no deploy.
+- **Steps**: install, `pnpm test`, `pnpm check`, `check-facts.mjs`, `check-negotiation.mjs`, `lock-check.mjs`, `pnpm build`, then `check-release.mjs dist/index.html` (needs the built page).
+- **Checked**: each command by hand in the worktree (test 10 of 10, check 0 errors, facts, negotiation 4 routes 16 cases, lock-check 3024 files, build 256 pages all checks pass, check-release 7 cases on dist/index.html and dist/de.html); the YAML parses with the expected keys and steps.
+- **Open**: not pushed, so the workflow first runs on GitHub when Kevin pushes this branch; Actions minutes on a private repository count against the monthly allowance; check-facts, check-negotiation and check-release run as workflow steps, not from `pnpm test` (no test file in this plan's scope).
+
+## 2026-11-10: the workflow calls the checks this branch has (improve/p2-checks, plan 021 follow-up)
+
+- **Type**: fix
+- **Changed**: `.github/workflows/check.yml`, `docs/deploy.md`, `memory.md`.
+- **Why**: the workflow ran `scripts/check-facts.mjs`, which exists only on another branch; here plan 011's check is `scripts/facts.test.mjs`, run by `pnpm test`, so that step would have failed on GitHub.
+- **Checked**: `pnpm test` 15 pass, 0 fail; `pnpm check` 0 errors; `check-negotiation.mjs` 4 routes 16 cases; `lock-check.mjs` 3024 files; `phone-memory.mjs --check` and `i18n-extract.mjs --check` exit 0; `check-release.mjs dist/index.html` 7 cases pass; the YAML parses with the expected keys and nine run steps.
+- **Open**: not pushed, so the workflow has never run on GitHub; the action majors (checkout v7, setup-node v7, pnpm/action-setup v6) were read from GitHub's releases API and are untested until the first run.
+
+## 2026-11-10: one JPEG reader, share-tag check and HTTP helper for the guard and the deployed checks (improve/p2-checks, plan 025)
+
+- **Type**: refactor
+- **Changed**: `scripts/lib/checks.mjs`, `scripts/lib/http.mjs`, `scripts/lib/checks.test.mjs` (new); `scripts/verify-build.mjs`, `scripts/check-seo.mjs`, `scripts/smoke.mjs`, `scripts/SKILL.md`, `memory.md`.
+- **Why**: three copies of the same checks had drifted: only one script knew both preview tokens, the SEO check read `sitemap-0.xml` not the index and followed redirects with the token attached, and the smoke check matched redirect targets by suffix.
+- **Checked**: `pnpm test` 19 pass, 0 fail (15 before); `pnpm build` 256 pages, 248 sitemap URLs, all checks pass; the smoke check on production prints the same output before and after; a seeded `twitter:card` fault in `dist/about.html` is caught by the guard, then restored.
+- **Open**: the SEO check against a local serve is the reviewer's step; not run against a protected preview.
+
+## 2026-11-10: the franchise name split inside the word is caught (improve/p2-checks, plan 031)
+
+- **Type**: fix
+- **Changed**: `scripts/rules.mjs` (one pattern), `scripts/rules.test.mjs` (one test appended), `memory.md`.
+- **Why**: the shared content rules let a space, hyphen or underscore sit inside two of the three banned names but not the third, so that name written with a split in the middle passed both the sync and the release guard, in text and in paths.
+- **Checked**: the new test failed alone before the fix (19 pass, 1 fail); after it `pnpm test` 20 pass, 0 fail; the sync check prints `in sync`; `pnpm build` 256 pages, all checks pass.
+- **Open**: not pushed.
+## 2026-11-10: the wall's posters take their half on a 1x screen (improve/013-restore-poster-ladder, executor agent)
+
+- **Type**: perf
+- **Changed**: `scripts/sync.mjs` (`posters/posters.json` joins the build-only list), `vendor/ex/posters/posters.json` and `sync.lock.json` (by the sync), `src/lib/cards.ts` (env.posters, `ladder` option, `data-plainfxset` held and restored by FRAMED), `src/views/Card.astro` (`ladder: false`), `scripts/verify-build.mjs` (guard also reads `data-plainfxset`), `docs/performance.md`.
+- **Why**: the build never gave markup.js `posters.json`, so no poster printed a `srcset` and a 1x desktop fetched all 26 whole posters and fx posters although the 52 halves were deployed.
+- **Checked**: `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. dist/index.html and dist/de.html: 26 poster srcsets, 26 `data-plainfxset`, no fx `<img>` with `src` or `srcset`. Card pages (en, de): no `srcset="posters/` and no `data-plainfxset` attribute. Browser, 1280 wide 1x: visible wall posters `@0.5x.avif`, nat 250 = drawn 250; card page poster has no srcset and loads `katagami.webp`.
+- **Paint capture**: before 50 frames over 14.75 s -> /private/tmp/013-before; after 153 frames over 13.39 s -> /private/tmp/013-after (different machine load; a reviewer reads the frames).
+- **Open**: card pages still choose every card picture by the wall's width (the subject picture draws about 1.8 times larger than its file); wants its own decision. A phone (plain print stays, FRAMED restores the fx srcset) was not checked in a browser.
+
+## 2026-11-10: card pages link a card style's sheet only when they print in it; card.css leaves its inline frost tile (improve/015-render-blocking-css-diet, Claude Code)
+
+- **Type**: perf
+- **Changed**: Part A: `src/layouts/Base.astro` (new `cardStyle` prop), `src/views/Card.astro` (names its card's style;
+  the plan's `src/pages/cards/[id].astro` is now a wrapper). Part B: `src/components/BattlePage.astro` (sets `--frost` to
+  `/ex/icons/frost.webp`), `scripts/sync.mjs` (`frost(t)` pair in the `card.css` entry), `public/ex/card.css` and
+  `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Rationale**: 25 of 26 card pages (and their language copies) waited on `breakout.css` for one Breakout card, and
+  every page carried a 30 KB base64 frost tile in `card.css` that only the battle ever painted.
+- **Measured**: `breakout.css` linked on 1 of 26 English card pages (princeton-td) and on the home page; same one card
+  in each of the 7 other languages. `card.css` gzip -9: 55045 -> 29561 bytes. Browser: both battle pages and `/de/battle`
+  compute `--frost-tile` as `url("/ex/icons/frost.webp")` and fetch it; card pages keep `image-set(...)`.
+- **Open**: the operator's look at the battle's slips (trait and move slips, both modes, still show their fine noise).
+
+## 2026-11-10: the wall works for keyboard and screen-reader users (improve/016-wall-keyboard-and-screen-reader, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four pairs in the gallery.js entry, one in markup.js), `public/ex/gallery.js` and `public/ex/markup.js` (by the sync), `sync.lock.json`, `docs/sync.md`.
+- **Rationale**: (1) a bare P anywhere on the page left for the battle (WCAG 2.1.4); it now plays only from the dock. (2) A pack's "Rival: ..." was replaced by "Pack: ..." before a screen reader spoke it; messages inside one 30 ms window now go out as one line. (3) The rival's wells were aria-hidden copies under a role-less labelled div; the side is now a group and each filled well is an img named by its card. (4) The lens's arrow keys step past the wall's scroll, so Escape focused an off-screen card; the card now scrolls into view first.
+- **Measured**: say() simulation prints "Rival: A. Pack: B"; built dist/index.html has the rival group once (dist/de.html too, labelled Gegner); browser: wells img:bday.land / img:Princeton Powerlifting / img:Elo, P from the page stays on /, P from #play reaches /battle#team=katagami,mailroom,agent-pets.
+- **Open**: the same changes are requested upstream (plans/016); the lens's focus check needs a person.
+
+## 2026-11-10: the wall saves only the visitor's choices and keeps its history straight (improve/017-wall-saved-state-and-history, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (six new pairs and four edited pairs in the gallery.js entry), `public/ex/gallery.js` (by the sync), `sync.lock.json`, `src/views/Home.astro` (the plan's `src/pages/index.astro` moved here with the i18n work; every language's home uses it), `src/styles/site.css`, `docs/sync.md`.
+- **Rationale**: (1) reduced motion was saved as `ill-pause = '1'` on every load; only the Pause key saves now. (2) A lens that Forward reopened closed with replaceState and left two identical entries; it steps back now. (3) Forward opened an invisible, inert lens in the Machine view; it opens nothing there. (4) The tab kept the home title at a card's address; it reads "<card> | Kevin Liu" while the lens holds the address. (5) Without scripts the wall was 26 dead buttons with the page links hidden from keyboards; the links are real links until gallery.js has booted, then a small script takes them out of the tab order.
+- **Checked**: build ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; 26 `sr golink` links in dist/index.html and dist/de.html, none of the old form; browser (agent-browser, /): booted true, 26 links hidden; lens at /cards/turboslide titled "Turboslide | Kevin Liu"; Escape back to / and "Kevin Liu"; Forward reopens, Escape returns to /, second Forward reopens. Same on /de (address /de/cards/turboslide).
+- **Open**: the same four changes are requested upstream (plans/017); a visitor who already has `ill-pause = '1'` saved from reduced motion stays paused until they press Pause.
+
+
+## 2026-11-10: a touch screen fetches two cards' pictures with the page, not fourteen (improve/014-phone-first-screen-pictures, executor agent)
+
+- **Type**: perf
+- **Changed**: `src/views/Home.astro` (the plan names `src/pages/index.astro`; the home markup now lives here), `docs/performance.md` (one table row's text).
+- **Rationale**: a phone's wall is one column, about a card and a half, yet 14 cards printed eager pictures. Cards 3 to 14 now print lazy; `TOUCH_FIRST = 2` stays eager everywhere, and a script right after `FRAMED` (`EAGER`) makes cards 3 to 14 eager again on a fine pointer while the page is still parsing.
+- **Measured**: Playwright Chromium, local serve, grounds paused, 8 s cold load of `/`. Desktop 1440x900, first three pairs (noisy, one build at a time): frames before 8, 16, 18 and after 36, 17, 13. Settling run, two baselines served together on 43142 and this branch on 43141, 5 interleaved pairs: frames before 21, 25, 10, 13, 25 (median 21) and after 21, 27, 19, 18, 15 (median 19); desktop `lazy14` 0 in every after run. Phone (devices['iPhone 14'], `(pointer: coarse)` true) frames before 5, 6 and after 6, 6; phone images before 83 / 3789 KB, after 59 / 2890 KB. Built wall lazy map: pockets 1 and 2 are 0/n, 3 to 26 are n/n (English `dist/index.html` and `dist/fr.html`). Captures: `/private/tmp/claude-501/s/{b1440,b1440b,b1440c,a1440,a1440b,a1440c,b390,b390b,a390}` (scratch, lost on reboot).
+- **Open**: numbers are from a local serve; check Speed Insights LCP on phones after it ships. Frame counts swing with machine load (the first desktop pair, 8 to 36, was the only one above before + 2).
+
+## 2026-11-10: lane B merges plans 013, 015, 016, 017 and 014 and reviews them together (improve/p2-wall, Claude Code)
+
+- **Type**: merge and review
+- **Changed**: five plan branches and one fix branch merged with `--no-ff`; no code written here beyond merge resolution. `memory.md` kept every entry; `sync.lock.json` took the lane's side and was rewritten by a full sync from `rounds-42ff51c7` after 015, 016 and 017; `src/views/Home.astro` and `docs/performance.md` keep both 017's and 014's edits (014's `EAGER` script directly after `FRAMED`, 017's link script after it).
+- **Gates** after every merge: sync `in sync`, `pnpm test` 10 of 10, `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`. The 016 fix merge and the 014 merge share one gate run.
+- **Found**: 016 joined the pack's two status lines into one, and the language shim translated the joined line as if it were one (`/es`: "Rival: Loop, Mailroom, bday.land. Pack: CoTFly, Relay y Kevin Wiki"). Sent back; fixed by `improve/016-shim-split` (17419cd, `said()` translates each line); a real pack press under reduced motion now reads right on `/`, `/es` and `/ja`.
+- **Checked on the merged build** (Playwright, full Chromium with the GPU, `/`, `/es`, part on `/ja`): P plays only from the dock; the rival side is a group whose wells name their cards; lens open, Escape, Forward twice, arrow steps and titles; Machine view opens no lens on Forward; Pause is not saved under reduced motion and is saved on a press; scripts-off card links focusable and visible; phone Back and Forward through a lens; the poster ladder (26 halves at 1440 and 1x, whole posters on a phone and on card pages); `breakout.css` on 8 of 208 card pages; the battle's frost tile fetched from its file.
+- **First paint**: captures with `scripts/paint-capture.mjs` at 4025230, before 014 and at the tip are in `~/k7-rescue/improve-audit/lane-b/cap/`. Phone wall with the page: 85 pictures and 3,922 KB before, 61 and 3,024 KB after. Six interleaved desktop pairs against a build without 014 show no steady difference in what is missing when the hold lets go; this Mac ran at a load above 100 throughout.
+- **Open**: with scripts off each card shows an empty picture box (the plain print's front-effects `<img>` has no `src` until `FRAMED` runs; so at 4025230 too). On the Arena the frost tile is asked for about 150 ms before the page shows, and the first card about 1.3 s later; a `<link rel="preload" as="image">` beside the battle's `--frost` line would take the timing out of it. Chromium's lazy loading still fetches about 34 posters on a phone that has not scrolled.
+## 2026-11-10: the battle announces every outcome, the Mat's reduced-motion rule is whole, one h1, a guarded replay (improve/018-battle-screen-reader-and-reduced-motion, executor agent)
+
+- **Type**: fix (accessibility), plan 018, cut from 4025230 (feat/i18n)
+- **Changed**: `scripts/sync.mjs` (five pairs on the battle.js entry after plan 008's; the mat.css and arena.css entries rename `.result h1 {` to `.result h2 {`, and the Mat's reduced-motion rule is restored), `public/battle/shared/battle.js`, `public/battle/mat/mat.css`, `public/battle/arena/arena.css` and `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Checked**: sync --check `in sync` before and after; step 1 anchor counts 1,1,1,1,1,1,2,2; step 5 counts ok, 2, 0, 0/0, 2/2, 1, 0; phone-memory --check passes; `pnpm test` 10 of 10; `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`.
+- **Open**: the browser gate (plan step 6: one h1 while playing, non-empty live region, h2 at the result, Mat rail transition 0s under reduced motion) was not run by the executor; the plan hands it to the lane reviewer. The upstream request to the play lane and the single-key shortcut decision (WCAG 2.1.4) remain.
+
+## 2026-11-10: The sound player keeps the choice after Back, the battle's key answers, waits keep real time, a failed manifest retries (improve/019-sound-player-robustness, executor agent)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four groups of anchored pairs on the `public/sound/sound.js` entry, after plan 005's), `public/sound/sound.js` and `sync.lock.json` (by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Rationale**: pageshow reads the saved choice after a back-forward restore; the battle's speaker key plays `bt.ui.toggle` and skips the gallery group; the player's timers use `battlePace.realTimeout`; a failed manifest clears its cached promise and re-arms the gestures.
+- **Checked**: sync check `in sync`; marker counts ok, 1, 1, 1, 4; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. Browser (preview, agent-browser): (a) true then false on / and on /es; (b) true offline, then true after the second press online; (c) pressed "true", toggled true, files 128.
+- **Open**: the upstream request to the sound lane (four lines in the plan); the reviewer appends it.
+
+## 2026-11-10: a new hand lets the last hand's card kits go (improve/022-sound-memory-on-phones, executor agent)
+
+- **Type**: perf, plan 022, stacked on 7245c52
+- **Changed**: `scripts/sync.mjs` (two pairs on the sound.js entry: `unload(group)` and its export; two on the battle.js entry: a new hand unloads the card kits it does not hold), `public/sound/sound.js` and `public/battle/shared/battle.js` (by the sync), `sync.lock.json`, `docs/performance.md`, `docs/sync.md`.
+- **Rationale**: nothing but a faded theme was ever released, so each New Rival hand added its three new rival cards' decoded kits (about 2.2 MB a card) for the rest of the visit.
+- **Measured**: Chromium, iPhone 14 descriptor (coarse pointer true), three Auto hands, New Rival after each; `Sound.stats().pcm`. One-shots at hand 1, 2, 3 loaded: 26.2, 32.5, 39.3 MB before; 26.2, 27.1, 27.6 MB after. `d` 13.1 MB before, 1.4 MB after; hand 3 total 67.7 to 56.1 MB loaded, 41.1 to 29.4 MB at the result. An unloaded group loads again (`card:katagami` 27.6, 26.1, 27.6).
+- **Checked**: sync check `in sync`; marker counts 1, 1, 1, 1; phone-memory check six lines; `pnpm test` pass 10, fail 0; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass.
+- **Open**: the upstream request to the sound lane (add and export `unload(group)` in `r4/sound/sound.js`, after `evict` and in the `Sound` object) and to the play lane (`r4/play/shared/battle.js` `start()` unloads the previous hand's card groups the new hand does not hold, before loading the new hand's; log `r4/play/REQUESTS.md`); the theme question for Kevin: themes are decoded whole on every iPhone (28.5 MB while a hand plays) because `navigator.deviceMemory` is absent in Safari, and streaming them on a coarse pointer would lose loop points, lap changes and the Final Turns layer there; not checked on a real iPhone.
+
+## 2026-11-10: on a deal the Arena's pads start hidden instead of fading out at the reveal (improve/p2-battle, executor agent)
+
+- **Type**: fix, plan 023, stacked on 4e42cd5
+- **Changed**: `scripts/sync.mjs` (one pair on the `board.js` entry: pads created with `data-on="false"` when `ctx.dealing`), `public/battle/arena/board.js` (by the sync), `sync.lock.json`, `docs/performance.md` ("The battle's pops and their causes"), `docs/sync.md`.
+- **Rationale**: on a deal the Arena created its pads visible, laid the board out, and only then marked them hidden, so they faded out in front of the visitor and came back with the first cards. Creating them hidden always was tried and rejected: a Mat-to-Arena switch then faded the pads in over 0.2 s.
+- **Before**: the Arena's first frame showed both pads on an empty floor, gone in the next frames, back with the first card.
+- **After**: no pad before its side's first card; a Mat-to-Arena switch still shows both pads in its first Arena frame; both pads and both flags are there once the first cards have arrived.
+- **Checked**: anchor count 1 and 1; sync ended `1 written, 0 removed`; marker counts 1 (new pair) and 1 (plan 008's pair); sync check `in sync`; phone-memory check six lines; `pnpm test` pass 10, fail 0; `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass.
+- **Open**: four upstream requests to the play lane (pads and flags created hidden on a deal; hide the interface per batch, not per shot; per-card kit and `data-boot` scope; the font gate), as in the plan's "Upstream request" section; a reload in the middle of a hand was not reached in a browser.
+## 2026-11-10: the 26-card battle routes, measured (spike, asked by improve plan 026, Claude Code)
+
+- **Type**: spike
+- **Changed**: nothing that ships. The result document is `plans/results/026-battle-26-cards.md` on `improve/audit`.
+- **Recommendation**: field all 26 cards by rebuilding only `engine.js` first, because the 572 uncommitted battle-r4b
+  entries touch nothing under `engine/` or `runtime/`, while every open flash failure and the 27 to 48 hour check
+  estimate sit on the scene path; the eight then play default scenes until a scene route follows.
+- **Measured**: a committed-scene export plus the dry run's three engine files validates 104/104, 26/26, 26/26, 0 problems;
+  none of the eight has a shader world, so fielding them adds no WebGL context under plan 009's two-world cap.
+- **Open**: 6 questions for Kevin (battle-r4b's work, machine time, default scenes, the 12 move names, who builds, the
+  four trait hooks).
+## 2026-11-10: a card page plays its card's own sound on the visitor's press (improve plan 028, Claude Code)
+
+- **Type**: feature
+- **Asked**: improve plan 028.
+- **Changed**: `src/components/Header.astro` (the sound key shows on `/cards/<id>`, one spacer stays for the pause key's room), `src/views/Card.astro` (one inline script: nothing is fetched until a trusted press of the card or of the key; then the player by content address, `manifest.gallery.json` and the card's `sig:<id>` group), `docs/sound.md` (one paragraph under "Where it is wired"), `memory.md`.
+- **Checked**: `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `pnpm test` pass 10, fail 0. Built pages: `id="sound"` once and one spacer on the three card pages checked, none and two spacers on about, cards, 404 and es/about, once on index. `data-player="/sound/sound.js?v=` once on three card pages; no `boot.gallery.js` on the card page; no sound `<link>`; the script parses, one `import(`, no `fetch(`. Note: `grep -c 'sound.js'` prints 1 on about, cards and 404 because the header's existing script comment names sound.js; no player is loaded there.
+- **Open**: the reviewer's browser checks (no sound file before a gesture, the header's positions, the paint recording); the first press can be silent on a cold load; a keyboard cannot press the card (it is not a control).
+## 2026-11-10: the 26-card battle routes, corrected (spike, improve plan 026, Claude Code)
+
+- **Type**: spike (correction of the entry "the 26-card battle routes, measured")
+- **Changed**: nothing that ships. The result document `plans/results/026-battle-26-cards.md` on `improve/audit` is rewritten in place (Revision 1).
+- **What the first entry got wrong**: it said to rebuild only `engine.js`. The battle page's engine is inside `kit.js`
+  (`window.showdown`; `vendor/battle/mat/index.html` loads `media.js` and `kit.js`, never `engine.js`). `engine.js` is
+  build-only on the site (the roster for `cards.ts`), so an engine-only rebuild would open Battle buttons for teams the page
+  refuses. Every route needs a rebuilt kit, with `engine.js` rebuilt in the same step.
+- **Recommendation**: Route C redefined: a kit rebuilt from the committed tree with the 26-card engine, the eight on default
+  scenes until their own scenes pass the page flash scan; its first gate is the page flash scan over the 18 fielded cards.
+- **Measured**: of the 186 files the shipped kit was built from (`r4/play/vendor/SOURCES.md`), 116 differ in the committed
+  tree (93 of 133 scenes, 7 of 10 broadcast/src, 7 of 8 engine, 5 of 16 runtime, 4 of 19 other). Last page flash readings:
+  next-a (committed = working tree, 2026-11-04) sandbox-arena 86 of 104 variants over the limit, sigil-ui 85 of 99,
+  dedalus-terminal 67 of 109, ariadne 252 margin rows in an older run; next-b committed scenes have no reading, the fixed
+  working-tree copies 40 open rows. Kit builds in scratch from copies of `.work/mat/build.mjs` and `.work/study/bundle.mjs`
+  (entry files re-pointed to the export): (a) eight unregistered 730,959 bytes, `"ommc"` 1, `"katagami"` 14, phone-patch
+  anchor 1, `FIGHTERS.length` 26; (b) eight registered 811,308 bytes, `"ommc"` 13, anchor 1, validator 104/104, 26/26, 26/26,
+  0 problems. Both `media.js` hold 18 cards. Arena: the eight are in `r4/stage` under `roster.next` and need adding to
+  `roster.fields` before `build.mjs` puts them in the Arena manifest.
+- **Open**: 7 questions for Kevin (battle-r4b's scene work, default scenes, machine time for the 18-card re-check, the 12 move names,
+  the four hooks, who builds and when the pin moves, saved replays). Built kits are in `~/k7-rescue/improve-audit/lane-d/kit-026/a/` and `b/`.
+- **Run by the reviewer** (kit (a) swapped into a copy of the build, Playwright Chromium, Auto): a Mat battle between six staged
+  cards plays to its result with no page error (404s: the eight's gallery grounds and move thumbnails); in the Arena a staged
+  lead has no figure and the battle never leaves its entrance (150 s), while fielded cards play; the same teams and seed give
+  a different battle than today's kit (Defeat in 9 turns, Victory in 12), so saved replays change with any kit rebuild.
+## 2026-11-10: Claude of Tanks' October footage in the battle's moves, tested in a scratch export (spike, asked by improve plan 030, Claude Code)
+
+- **Type**: spike
+- **Changed**: nothing that ships. The result document is `plans/results/030-claude-of-tanks-footage.md` on `improve/audit`.
+- **Verdicts**: Sabot Round, One Spec and 14 v 14 GO now (data only: the manifest entry plus the nine files); Killcam GO with the kit (its scene holds a point in the clip's own pixels, `ENTRY` at `claude-of-tanks.killcam.ts:22`, and scene files change only when `kit.js` is rebuilt).
+- **Measured**: the data build needs git-ignored media, so a committed-only export fails (357 ignored entries in `r1/study-roster18` and `r2/plates`); with those cloned in, the footage changes exactly one card (`data/media.js: claude-of-tanks`), the splice leaves the other 17 cards equal and the three sync anchors match once each; the new clips are 1600 x 900 and 9,373,541 bytes in all.
+- **Run by the reviewer** (the new clips and the entry's `moves` put into a copy of the build, today's kit, Playwright Chromium, the four moves by key on the Mat): all four new clips play with no page error or failed request; Killcam's ring draws at the old clip's point, so it waits for the kit as the scene check says.
+- **Open**: 3 questions for Kevin (three clips now or all four with the kit, drop the old `*-clean.mp4` files, the optional trait clip).
+## 2026-11-10: the logo decision sheet (improve plan 027, Part 1, Claude Code)
+
+- **Type**: decision sheet
+- **Asked**: improve plan 027.
+- **Changed**: nothing that ships. The sheet is outside every repository, at `/Users/kevinliu/k7-rescue/improve-audit/logo-decisions/index.html` (it holds Kevin's portrait mark, so it is never copied into a repository or published). The questions are in `plans/results/027-logo-decisions.md` on `improve/audit`.
+- **Questions**: Kevin Wiki's logo (portrait, emblem or a new crop), 050525's logo (cursor, title or favicon wing), Podium trophy's origin, Claude of Tanks' archived shield, the Atlas monogram under the 11-01 ruling, Sevenfold's address, and the logo-contrast fix (E15).
+- **Checked**: candidates read from rounds `20496336` with `git show HEAD:` only (8 files, byte counts match the plan); the sheet has 32 `<img` lines, no `<script`, no `http` in any `src` or `href`.
+- **Open**: Kevin's answers, then Part 2 (the request block and the E15 re-measure) once the cards' session has committed.
+- **Looked at by the reviewer**: the sheet rendered locally from `file://` with no request off the disk; all eight candidates show at 20 and 44 px and enlarged.

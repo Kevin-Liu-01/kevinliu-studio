@@ -39,14 +39,21 @@ wrote is never touched.
 
 The only edits are in `TRANSFORMS` in `scripts/sync.mjs` and `PHONE` in `scripts/phone-memory.mjs` (applied after
 `TRANSFORMS`). Each patch names the exact text it attaches to and must match exactly once, or the sync stops and says
-which anchor moved.
+which anchor moved. A patch whose file no rule shipped also stops the sync: a file the rounds renamed never loses its
+patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in memory before it writes any.
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
+- `gallery.js`, `ex/markup.js`: Play's P key acts only from the dock, messages sent together are spoken as one line, the rival's side is a group whose wells name their cards, and the card that takes focus back from the lens scrolls into view.
+- `gallery.js`: Pause is saved only when pressed (reduced motion is not the visitor's choice), a lens always steps back out of its own history entry, a card's history entry opens nothing in the Machine view, and the tab carries the card page's title while the lens holds its address.
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
-- `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit (docs/sound.md).
+- `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md); the saved choice is read again on a back-forward restore, the battle's speaker key answers with its own cue, the player's timers keep real time under the battle's clock, and a failed manifest is retried.
+- `sound.js`, `battle/shared/battle.js`: the player can unload a group, and a new hand unloads the card kits it does not hold (docs/performance.md, Memory).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
+- `battle/shared/battle.js`, `battle/mat/mat.css`, `battle/arena/arena.css`: one batch's outcomes are announced together; Enter or Space on a focused speed, mode or sound key presses it; the result's title is an h2; Replay is guarded by the battle's generation; and the Mat's reduced-motion rule, which round 5 shipped empty, is whole again.
+- `battle/shared/battle.js`, `battle/arena/board.js`: a bad address keeps its reason on screen, retries without its log, checks `mode=` and `map=` as own keys, and a start that rejects un-hides the page.
+- `battle/arena/board.js`: on a deal the Arena's pads start hidden (`data-on="false"`), so they no longer fade out at the reveal (docs/performance.md, "The battle's pops and their causes").
 - `battle/shared/excard.js`: the battle prints the wall's card from `/ex/` (the rounds' `../../../r4/ex/`), and a phone
   prints it plain, as the wall does. `src/lib/battle.ts` maps the page's own `../../../r4/ex/` sheet and scripts to
   `/ex/` by content address; the cards stage ships `face.gen.js` and the icon set to `public/ex` for it.
@@ -60,12 +67,15 @@ which anchor moved.
   Turboslide cards use the captures that replace the dropped ones, and the Prototemplate loop points at the clip that
   exists.
 - `ex/markup.js`: the lens's Visit link carries no placeholder `#`, which `<base>` would turn into `/ex/`.
+- `ex/card.css`: the frosted slips' inline 1x tile (a 30 KB data URL, the fallback of `--frost`) is left out; every page sets `--frost` itself (`ui.css`, and `BattlePage.astro` for the battle).
 - `rituals.js` also resolves the battle page's stylesheets against that page's own `<base>`, and plays the pack reveal
   for a reduced-motion pack.
 - `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and
   the density at 1.5 on a touch screen or a small-memory device, and gives an off-screen card's canvases back;
-  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `battle/vendor/broadcast/kit.js`
+  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `ex/gallery.js` adds no prerender of the battle there, and `ex/rituals.js` reads only the battle's acceptance at idle and builds the opening cast at the press; `battle/vendor/broadcast/kit.js`
   lets each preloaded clip drop its source once its first frame loads. When the rounds are not at hand,
+  `ex/rituals.js` cuts the next pack at the press there instead of holding it rastered; `battle/vendor/broadcast/kit.js`
+  lets each preloaded clip drop its source once its first frame loads; `battle/shared/runtime.js` keeps two shader worlds on a phone and drops each warm-up Blob; `battle/shared/battle.js` pauses the card prints at the result and under the Log. When the rounds are not at hand,
   `node scripts/phone-memory.mjs` applies them to the synced files in place (only to bytes `sync.lock.json` records)
   and updates the lock; the release guard fails a build whose files lack them.
 - Binary (`BINARY`): the two Elo API captures have their Lifecycle paragraph, which names General Translation's email
@@ -76,7 +86,10 @@ which anchor moved.
 Every synced file is scanned. Text files fail on franchise names, the OMMC participant routes, the ElevenLabs header
 and API-key shapes, and on General Translation anywhere except the Atlas card's records. Images, video and audio fail on location metadata
 (`scripts/location.mjs`: GPS in EXIF for JPEG, AVIF, WebP and PNG, GPS in XMP, and the MP4 and QuickTime location
-atoms). The release guard runs the same check on `dist`.
+atoms). The rules live in `scripts/rules.mjs`, and the release guard reads `dist` with the same function
+(`scanBuffer`), so the two cannot drift. Names are matched on a normalized text: entities and escapes decoded,
+accents off, and every run of spaces, hyphens and underscores read as one space. Each file's path is read too.
+`pnpm test` runs the rules' tests (`scripts/rules.test.mjs`).
 
 ## Pins
 
@@ -92,12 +105,22 @@ The working tree usually has moved past the pins, so a release syncs from an exp
 stage's folders plus the git-ignored frame SVGs, then `ROUNDS=<export> pnpm sync`. The pins are read from the rounds'
 own checkout either way.
 
+Moving a pin is a code review, not only a content review. The build runs round code with the build's own rights, here
+and on Vercel: `src/lib/cards.ts` loads `fighters.js`, `markup.js`, `art.js`, `media.gen.js`, `face.gen.js` and the
+ground recipes through `node:vm` only to give classic scripts a CommonJS `module` (Node's documentation says `vm` is
+not a security boundary), and it imports `tools/wall-rule.mjs` and the battle's `engine.js` directly. The scan looks
+for banned strings and location metadata, never for what a script does.
+
 ## The lock
 
 `sync.lock.json` records the rounds' checkout (`rounds`), the pinned commits (`head`, and `pins` by stage), the time,
 and each file's source path, sha-256 and size. It is rewritten only when a file or a pin changed, so a rerun with
 nothing new leaves no diff. `pnpm sync --check` exits 1 when any synced file differs from the rounds and names each one,
 so CI or a person can see the repo is behind and why.
+
+`node scripts/lock-check.mjs` needs no rounds folder: it fails when a synced file differs from the lock, is
+missing, or is not in the lock at all (a hand edit, a stray file, a `.tmp` a stopped sync left). `pnpm build` runs
+it first, so the host and CI enforce that the synced folders change only through `pnpm sync`.
 
 ## When a round finishes
 

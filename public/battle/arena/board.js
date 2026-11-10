@@ -24,7 +24,7 @@ const SUBJECT_1X = (src) => src.replace('@2x.', '.');
  *  with depth) for the terrace, its daylight neighbour; Kevin can reverse this (MODES.md section 4). */
 export const PHONE_SKIP = { atelier: 'terrace' };
 const mapOf = (ctx) => {
-  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';
+  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';
   return innerWidth < 600 ? PHONE_SKIP[map] ?? map : map;
 };
 const mapSrc = (map) => new URL(`../assets/maps/${map}.webp`, import.meta.url).href;
@@ -218,7 +218,7 @@ export class ArenaBoard extends Layout {
     this.floorEl = el('div', 'arena-floor', this.shakeEl);
     this.groundSvg = sv('svg', { class: 'arena-svg arena-ground' }, this.shakeEl);
     this.padG = {};
-    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s }, this.groundSvg);
+    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s, ...(this.ctx.dealing ? { 'data-on': 'false' } : {}) }, this.groundSvg); // kevinliu.studio: on a deal the pads start hidden, as drawSides marks them a moment later (scripts/sync.mjs)
     this.decals = el('div', 'arena-decals', this.floorEl);
     this.shadows = el('div', 'arena-shadows', this.floorEl);
     this.rings = el('div', 'arena-rings', this.shakeEl);

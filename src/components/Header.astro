@@ -9,13 +9,15 @@ const { path } = Astro.props;
 const l = of(path);
 const { path: base } = split(path);
 const home = base === '/';
+// a card page has the sound key too: pressing its card plays the card's own sound (src/views/Card.astro)
+const card = /^\/cards\/[\w-]+$/.test(base);
 const NAV = [
   { href: l.p('/battle'), label: l.t('frame.battle') },
   { href: l.p('/about'), label: l.t('frame.about') },
 ];
 ---
 <header class="top site">
-  <a class="brand" href={l.p('/')} aria-label={home ? undefined : l.t('frame.brand')} data-astro-prefetch={home ? undefined : 'viewport'}>
+  <a class="brand" href={l.p('/')} aria-label={l.t('frame.brand')} data-astro-prefetch={home ? undefined : 'viewport'}>
     <svg class="kl" viewBox="8 5 80 80" aria-hidden="true"><path fill="currentColor" d={KL_PATH} /></svg>
     <span class="mx kl-mx" aria-hidden="true">{home ? '#' : '/'}</span>
     {/* in the Machine view the name is laid over its own box in the terminal face, so the header never moves */}
@@ -28,12 +30,13 @@ const NAV = [
   <div class="seg" role="group" aria-label={l.t('frame.view')} style="--i:0">
     {/* in the Machine view each half names the type it asks for: every address on the site answers text/markdown with its
      twin (vercel.json negotiates on Accept), so the links keep their addresses and this switch is the difference */}
-    {[['human', 'text/html'], ['machine', 'text/markdown']].map(([v, t], i) => <button type="button" data-mode-set={v} aria-pressed={String(!i)} set:html={`${M.weights(l.t(`frame.${v}`))}<span class="mx">${t}</span>`} />)}
+    {[['human', 'text/html'], ['machine', 'text/markdown']].map(([v, t], i) => <button type="button" data-mode-set={v} aria-pressed={i === 0 ? 'true' : 'false'} set:html={`${M.weights(l.t(`frame.${v}`))}<span class="mx">${t}</span>`} />)}
   </div>
-  {home && <button type="button" class="press icon" id="sound" aria-pressed="false" aria-label={l.t('frame.sound')}><span class="swapi"><svg class="i off" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm13.3.2 1.7 1.7 1.7-1.7a1 1 0 1 1 1.4 1.4L19.4 12.8l1.7 1.7a1 1 0 1 1-1.4 1.4L18 14.2l-1.7 1.7a1 1 0 1 1-1.4-1.4l1.7-1.7-1.7-1.7a1 1 0 1 1 1.4-1.4Z"/></svg><svg class="i on" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm12.8-1.9a1 1 0 0 1 1.4.1 6.6 6.6 0 0 1 0 8.6 1 1 0 1 1-1.5-1.3 4.6 4.6 0 0 0 0-6 1 1 0 0 1 .1-1.4Zm3-2.6a1 1 0 0 1 1.4 0 10.4 10.4 0 0 1 0 14 1 1 0 1 1-1.4-1.4 8.4 8.4 0 0 0 0-11.2 1 1 0 0 1 0-1.4Z"/></svg></span><span class="mx" aria-hidden="true">snd</span></button>}
+  {(home || card) && <button type="button" class="press icon" id="sound" aria-pressed="false" aria-label={l.t('frame.sound')}><span class="swapi"><svg class="i off" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm13.3.2 1.7 1.7 1.7-1.7a1 1 0 1 1 1.4 1.4L19.4 12.8l1.7 1.7a1 1 0 1 1-1.4 1.4L18 14.2l-1.7 1.7a1 1 0 1 1-1.4-1.4l1.7-1.7-1.7-1.7a1 1 0 1 1 1.4-1.4Z"/></svg><svg class="i on" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 9.5h3.6L11 5.6c.6-.5 1.5-.1 1.5.7v11.4c0 .8-.9 1.2-1.5.7l-4.4-3.9H3a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1Zm12.8-1.9a1 1 0 0 1 1.4.1 6.6 6.6 0 0 1 0 8.6 1 1 0 1 1-1.5-1.3 4.6 4.6 0 0 0 0-6 1 1 0 0 1 .1-1.4Zm3-2.6a1 1 0 0 1 1.4 0 10.4 10.4 0 0 1 0 14 1 1 0 1 1-1.4-1.4 8.4 8.4 0 0 0 0-11.2 1 1 0 0 1 0-1.4Z"/></svg></span><span class="mx" aria-hidden="true">snd</span></button>}
   {home && <button type="button" class="press icon" id="pause" aria-pressed="false" aria-label={l.t('frame.pause')}><span class="swapi" set:html={`${M.icon('pause', 'off')}${M.icon('play', 'on')}`} /><span class="mx" aria-hidden="true"><span class="off">||</span><span class="on">&gt;</span></span></button>}
   {/* the wall's sound and pause keys keep their room on every other page, so the links and the view switch never move between pages */}
-  {!home && <span class="press icon spacer" aria-hidden="true"></span><span class="press icon spacer" aria-hidden="true"></span>}
+  {card && <span class="press icon spacer" aria-hidden="true"></span>}
+  {!home && !card && <span class="press icon spacer" aria-hidden="true"></span><span class="press icon spacer" aria-hidden="true"></span>}
   <script is:inline>/* a language key (header and footer) closes on a press outside it (pointerdown: iOS sends no click for a tap on text) or on Escape, and gives focus back to its face */(function(d){d.addEventListener('pointerdown',function(e){d.querySelectorAll('details.lang[open]').forEach(function(x){if(!x.contains(e.target))x.open=false})});d.addEventListener('keydown',function(e){var x=e.key==='Escape'&&e.target.closest&&e.target.closest('details.lang[open]');if(x){x.open=false;x.querySelector('summary').focus()}})})(document)</script>
   <script is:inline>/* the view switch, sound and pause keys start in the state the page's scripts give them after load (Base.astro's mode script, sound.js preference, gallery.js setPaused), so no key flips on screen */(function(d){var m=d.dataset.mode==='machine';document.querySelectorAll('header.top [data-mode-set]').forEach(function(b){b.setAttribute('aria-pressed',String((b.dataset.modeSet==='machine')===m))});document.querySelector('header.top .seg').style.setProperty('--i',m?1:0);var s=document.getElementById('sound'),p=document.getElementById('pause');if(s){var on=false;try{var k=localStorage.getItem('kevin-liu-studio:sound');on=k==='on'||k===null&&!matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}s.setAttribute('aria-pressed',String(on));d.dataset.sound=on?'on':'off'}if(p)p.setAttribute('aria-pressed',String('paused' in d.dataset))})(document.documentElement)</script>
 </header>

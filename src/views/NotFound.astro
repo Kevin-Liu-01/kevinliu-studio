@@ -12,7 +12,7 @@ const [mBefore, mAfter] = l.t('notFound.machine', { cards: '\u0000' }).split('\u
 ---
 <Base seo={{ title: l.t('notFound.title'), description: l.t('notFound.description'), path: l.p('/404'), share: '404', imageAlt: l.t('notFound.title'), twin: null, noindex: true, jsonld: graph() }}>
   <main class="prose" id="main">
-    <div class="sw hw"><h1>{l.t('notFound.title')}</h1><p class="mx"># {l.t('notFound.title')}</p></div>
+    <div class="sw hw"><h1>{l.t('notFound.title')}</h1><p class="mx" aria-hidden="true"># {l.t('notFound.title')}</p></div>
     <p class="sw"><span class="hx">{before}<a href={cards}>{text}</a>{after}</span><span class="mx">{mBefore}<a href={cards}>{cards}</a>{mAfter}</span></p>
   </main>
 </Base>

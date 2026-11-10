@@ -6,10 +6,15 @@
 // references exists in dist (resolved against its <base>), the sitemap, robots.txt and llms files exist, no image
 // carries GPS metadata, no image, video or audio file carries location metadata, no banned name or route appears, and
 // every round file scripts/phone-memory.mjs patches carries its patches (a phone's tab stays under its memory limit).
+// A face under /fonts is named with ?v=, and that token, like a /ex/borders or /ex/fx drawing's, is the file's own sha-256
+// (they are kept for a year).
+// Each llms.txt keeps the llms.txt shape: an H1, a summary, and ## sections that are lists of links.
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
 import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 
 const DIST = path.resolve(process.argv[2] ?? 'dist');
@@ -24,6 +29,9 @@ const exists = (p) => {
   const f = path.join(DIST, clean);
   return fs.existsSync(f) && fs.statSync(f).isFile() || fs.existsSync(f + '.html') || fs.existsSync(path.join(f, 'index.html'));
 };
+// sha-256 of a dist file, read once
+const hashes = new Map();
+const sha256 = (f) => hashes.get(f) ?? hashes.set(f, createHash('sha256').update(fs.readFileSync(f)).digest('hex')).get(f);
 
 // a phone's memory: every file scripts/phone-memory.mjs patches ships patched (a sync that dropped them, or a hand copy)
 for (const dest of Object.keys(PHONE)) {
@@ -41,6 +49,22 @@ for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg
 for (const c of OTHER) for (const need of [`/${c}.html`, `/${c}/index.md`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/about.html`, `/${c}/about.md`, `/${c}/battle.html`, `/${c}/battle.md`, `/${c}/battle/arena.html`, `/${c}/battle/arena.md`, `/${c}/404.html`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`, `/${c}/cards/atlas.html`, `/${c}/cards/atlas.md`]) {
   if (!exists(need)) fail(need, 'missing');
 }
+// llms.txt follows its convention (llmstxt.org): an H1, a blockquote summary, free text, then `##` sections that hold
+// only lists of links, so a reader that takes each section as a link list (llms_txt2ctx) loses nothing
+for (const c of ['', ...OTHER]) {
+  const name = `${c && `/${c}`}/llms.txt`, f = path.join(DIST, name);
+  if (!fs.existsSync(f)) continue;
+  const lines = fs.readFileSync(f, 'utf8').split('\n');
+  if (!/^# \S/.test(lines[0])) fail(name, 'line 1 is not an H1');
+  if (!lines.some((l) => l.startsWith('> '))) fail(name, 'no blockquote summary');
+  let h2 = null;
+  lines.forEach((l, i) => {
+    if (/^## /.test(l)) { h2 = l; return; }
+    if (i > 0 && /^#/.test(l)) fail(name, `line ${i + 1} is a heading that is not an H2: ${l}`);
+    if (h2 && l.trim() && !/^- \[[^\]]+\]\([^)\s]+\)(: .+)?$/.test(l)) fail(name, `line ${i + 1} under "${h2}" is not a link item: ${l.slice(0, 70)}`);
+  });
+  if (!h2) fail(name, 'no ## section');
+}
 const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')})/404\\.html$`).test(page);
 // a language's pages, by their prefix
 const langOf = (page) => OTHER.find((c) => page === `/${c}.html` || page.startsWith(`/${c}/`)) ?? 'en';
@@ -48,24 +72,7 @@ const langOf = (page) => OTHER.find((c) => page === `/${c}.html` || page.startsW
 const FACES = JSON.parse(fs.readFileSync(path.join(path.dirname(DIST), 'src/i18n/fonts.json'), 'utf8'));
 const held = (code, base) => new Set(Object.values(FACES).filter((f) => f.base === base || (f.locales.length && (f.locales.length > 1 || f.locales.includes(code)))).flatMap((f) => [...f.chars]));
 
-const GT = /general\s?translation|generaltranslation/i;
-// the wall and the cards index print every card, Atlas's line among them
-const GT_PAGES = new Set(['/index.html', '/cards.html', '/cards.md', '/404.html', '/about.html', '/cards/atlas.html', '/index.md', '/about.md', '/cards/atlas.md', '/llms.txt', '/llms-full.txt', '/ex/fighters.js', '/ex/media.gen.js', '/ex/face.gen.js',
-  // the same pages in every language, and the lens sheets a translated wall loads (Atlas's among them)
-  ...OTHER.flatMap((c) => [`/${c}.html`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/404.html`, `/${c}/about.html`, `/${c}/index.md`, `/${c}/about.md`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`])]);
-const BANNED = [[/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'], [/\/api\/(submissions|emails)\b/, 'OMMC participant route'], [/xi-api-key|\bsk_[a-f0-9]{40,}\b/i, 'key shape']];
 
-// width and height from a JPEG's start-of-frame marker
-function jpegSize(b) {
-  if (b[0] !== 0xff || b[1] !== 0xd8) return null;
-  for (let i = 2; i < b.length - 9;) {
-    if (b[i] !== 0xff) return null;
-    const m = b[i + 1], len = b.readUInt16BE(i + 2);
-    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)];
-    i += 2 + len;
-  }
-  return null;
-}
 
 // one @graph: every node typed, every {"@id"} reference names a node in it (or a repository's own #code node), every
 // url absolute, and none of the markup this site must never claim
@@ -136,9 +143,7 @@ for (const f of htmls) {
       if (!size || size[0] !== 1200 || size[1] !== 630) fail(page, `og:image ${u} is ${size ? size.join(' x ') : 'not a JPEG'}, not 1200 x 630`);
     }
   }
-  if (meta('twitter:card') !== 'summary_large_image') fail(page, 'twitter:card is not summary_large_image');
-  if (meta('twitter:image') !== meta('og:image')) fail(page, 'twitter:image differs from og:image');
-  for (const k of ['og:image:alt', 'twitter:image:alt', 'og:title', 'og:description']) if (!meta(k)?.trim()) fail(page, `no ${k}`);
+  for (const why of shareTagProblems(html)) fail(page, why);
   const lds = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
   if (lds.length !== 1) fail(page, `${lds.length} JSON-LD blocks, expected one @graph`);
   for (const m of lds) {
@@ -150,6 +155,9 @@ for (const f of htmls) {
   if (/font\/woff2;base64/.test(html)) fail(page, 'a font is inlined as base64');
   // each stylesheet and deferred script a page names under /ex/ carries its content address (vercel.json caches it)
   for (const m of html.matchAll(/\s(?:href|src)="(\/ex\/[^"]+\.(?:css|js))"/g)) fail(page, `${m[1]} has no ?v= content address`);
+  // a face under /fonts is kept for a year only when it is named with its ?v= content address (vercel.json); named
+  // without it, it would be fetched again on every visit, and the face blocks text
+  for (const m of html.matchAll(/(?<![\w.-])\/fonts\/[\w-]+\.woff2(?!\?v=[0-9a-f])/g)) fail(page, `${m[0]} is named without its ?v= content address`);
   const twin = html.match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
   if (!is404(page) && (!twin || !exists(twin))) fail(page, `Markdown twin ${twin} missing`);
   // every local reference, resolved the way the browser will
@@ -163,6 +171,10 @@ for (const f of htmls) {
     if (!u || /^(https?:|mailto:|data:|#|%23|javascript:|blob:)/.test(u) || u.includes('${')) continue;
     const abs = new URL(u, `https://x${base}`).pathname;
     if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);
+    // a face under /fonts, and a frame or effect drawing under /ex/borders or /ex/fx, named with ?v= is kept for a
+    // year (vercel.json), so the token must be the served file's own sha-256: a changed file then always gets a new address
+    const v = /^\/fonts\/|^\/ex\/(?:borders|fx)\/.*\.svg$/.test(abs) ? /[?&]v=([0-9a-f]+)/.exec(u)?.[1] : null;
+    if (v && exists(abs) && !sha256(path.join(DIST, abs)).startsWith(v)) fail(page, `${abs}?v=${v} is not the file's sha-256, and it is kept for a year`);
   }
   // every card prints plain with its framed print in a template right after it (frames on desktop only,
   // src/lib/cards.ts): the same card, in its family (design/card.js, data-fam), never the plain fallback markup.js prints
@@ -183,7 +195,7 @@ for (const f of htmls) {
   const printed = [...outside.matchAll(cardTag)].length;
   if (printed !== parts.length - 1) fail(page, `${printed} cards outside templates and ${parts.length - 1} framed prints`);
   if (/\sdata-card-style="breakout"/.test(html) && !/href="\/ex\/styles\/breakout\/breakout\.css\?v=/.test(html)) fail(page, 'a Breakout card without breakout.css');
-  for (const m of html.matchAll(/\ssrcset="([^"]+)"/g)) {
+  for (const m of html.matchAll(/\s(?:srcset|data-plainfxset)="([^"]+)"/g)) {
     for (const part of m[1].split(',')) {
       const u = part.trim().split(/\s+/)[0];
       if (u && !/^(https?:|data:)/.test(u) && !exists(new URL(u, `https://x${base}`).pathname)) fail(page, `broken srcset ${u}`);
@@ -191,21 +203,15 @@ for (const f of htmls) {
   }
 }
 
+// the content rules (scripts/rules.mjs), on every built file and its path: the same scan the sync runs on the way in
 for (const f of files) {
   const p = rel(f);
-  if (/\.(html|md|txt|js|css|json|svg|xml)$/.test(f)) {
-    const t = fs.readFileSync(f, 'utf8');
-    for (const [re, why] of BANNED) if (re.test(t)) fail(p, why);
-    if (GT.test(t) && !GT_PAGES.has(p) && !/\/atlas[./]/.test(p)) fail(p, 'General Translation outside the Atlas card');
-  } else if (MEDIA.test(f)) {
-    const where = hasLocation(fs.readFileSync(f));
-    if (where) fail(p, where);
-  }
+  for (const why of scanBuffer(p, fs.readFileSync(f))) fail(p, why);
 }
 
 const sitemap = files.filter((f) => /sitemap-\d+\.xml$/.test(f)).map((f) => fs.readFileSync(f, 'utf8')).join('');
 const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-if (listed.length < 31 * LOCALES.length) fail('sitemap', `${listed.length} URLs`);
+if (listed.length < PAGES_MIN * LOCALES.length) fail('sitemap', `${listed.length} URLs`);
 for (const c of ['', ...OTHER.map((x) => `/${x}`)]) if (!listed.includes(`${SITE}${c}/cards`)) fail('sitemap', `does not list ${c}/cards`);
 if ((sitemap.match(/<xhtml:link rel="alternate" hreflang=/g) ?? []).length < listed.length * LOCALES.length) fail('sitemap', 'a page lacks its alternates in every language');
 // lastmod is left out where git history cannot date a page (astro.config.mjs), so only its shape is checked

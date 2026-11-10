@@ -10,15 +10,15 @@
    In the human view the forms are display:none and the wrappers display:contents, both !important, so no rule of the
    room's (a pill, a tile) can give them a box: the human view paints as if they were not there. The face is fetched at
    idle after the human view has loaded (or preloaded when a page opens in the Machine view), so the human view's first
-   paint is unchanged and a switch finds it ready; it blocks rather than swaps, so no text reflows when it lands. */
-@font-face { font-family: 'Katagami Mono'; src: url(/fonts/katagami-mono-site.woff2) format('woff2'); font-weight: 100 700; font-display: block; }
+   paint is unchanged and a switch finds it ready; it blocks rather than swaps, so no text reflows when it lands.
+   Its @font-face rule is in Base.astro's inline style, where the file is named by content address. */
 :root { --mono: 'Katagami Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
 
 :root:not([data-mode='machine']) .mx { display: none !important; }
 :root:not([data-mode='machine']) .hx { display: contents !important; }
 /* the phone's second skip stop names the other view; above 640 the header's switch is a few stops in */
 .skipmode { border: 0; cursor: pointer; }
-:root:not([data-mode='machine']) .skipmode[data-mode-set='human'], :root[data-mode='machine'] .skipmode[data-mode-set='machine'] { display: none; }
+:root:not([data-mode='machine']) .skipmode[data-mode-go='human'], :root[data-mode='machine'] .skipmode[data-mode-go='machine'] { display: none; }
 @media (min-width: 640px) { .skipmode { display: none; } }
 
 /* ---------- the terminal: the room's tokens turn to the dark ground, so every rule that names them follows ---------- */
@@ -48,7 +48,9 @@ html:root[data-mode='machine'] {
 :root[data-mode='machine'] .sw > .mx { display: block; position: absolute; inset: 0; padding: inherit; box-sizing: border-box; overflow: hidden; }
 /* what still does not fit at the fit step's smallest size scrolls inside its box rather than being cut */
 :root[data-mode='machine'] [data-over] { overflow: auto; }
-:root[data-mode='machine'] .hw > :not(.mx) { visibility: hidden; }
+/* a heading keeps its role and its name for a screen reader: its text is cleared, not hidden, and its twin line
+   (aria-hidden) is laid over it */
+:root[data-mode='machine'] .hw > :not(.mx) { color: transparent; text-shadow: none; -webkit-user-select: none; user-select: none; forced-color-adjust: none; }
 /* a list (.sl) keeps its items laid out, hidden, and lays one framed panel of its twin lines over the whole list */
 :root[data-mode='machine'] .sl { position: relative; }
 :root[data-mode='machine'] .sl > li:not(.mx) { visibility: hidden; }

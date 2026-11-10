@@ -112,11 +112,11 @@ async function pagesMode(name) {
   for (const path of PAGES) {
     const { browser, ctx, mem } = await launch(name);
     const page = await ctx.newPage();
-    let peak = {}, peakMem = { contentMB: 0, gpuMB: 0 };
+    let peak = {}, peakMem = { contentMB: 0, contentSumMB: 0, gpuMB: 0 };
     const take = async () => {
       const s = await sample(page); const m = mem();
       if (s) for (const [k, v] of Object.entries(s)) if (typeof v === 'number' && (peak[k] == null || v > peak[k])) peak[k] = v;
-      for (const k of ['contentMB', 'gpuMB']) peakMem[k] = Math.max(peakMem[k], m[k]);
+      for (const k of ['contentMB', 'contentSumMB', 'gpuMB']) peakMem[k] = Math.max(peakMem[k], m[k] ?? 0);
       return s;
     };
     const t0 = Date.now();

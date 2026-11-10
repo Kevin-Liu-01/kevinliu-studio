@@ -16,11 +16,14 @@ const gitDate = (...paths) => {
   const [sha, date] = git('log', '-1', '--format=%H %cI', '--', ...paths).split(' ');
   return sha && !SHALLOW.has(sha) ? date : undefined;
 };
+// a file belongs in a page's list when a change to it changes what the page shows a reader: the cards' data, the
+// battle's roster (a card page's Battle link, the home page's dock), and site.ts (Kevin's description, facts and
+// the questions on /about)
 const SOURCES = [
-  [/^\/$/, () => ['public/ex/fighters.js', 'src/views/Home.astro']],
+  [/^\/$/, () => ['public/ex/fighters.js', 'vendor/battle/vendor/engine.js', 'src/lib/site.ts', 'src/views/Home.astro']],
   [/^\/cards$/, () => ['public/ex/fighters.js', 'src/views/Cards.astro']],
-  [/^\/cards\/([\w-]+)$/, (id) => ['public/ex/fighters.js', `public/og/${id}.jpg`, `public/ex/media/${id}`, 'src/views/Card.astro']],
-  [/^\/about$/, () => ['src/lib/site.ts', 'src/views/About.astro']],
+  [/^\/cards\/([\w-]+)$/, (id) => ['public/ex/fighters.js', 'vendor/battle/vendor/engine.js', `public/og/${id}.jpg`, `public/ex/media/${id}`, 'src/views/Card.astro']],
+  [/^\/about$/, () => ['public/ex/fighters.js', 'src/lib/site.ts', 'src/views/About.astro']],
   [/^\/battle(\/arena)?$/, () => ['vendor/battle', 'public/battle', 'src/components/BattlePage.astro']],
 ];
 // a translated page changes when its English page does, or when its language's translations do

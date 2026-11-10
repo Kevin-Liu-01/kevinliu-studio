@@ -2,7 +2,7 @@
 // (the synced cards, src/lib/cards.ts). scripts/i18n-extract.mjs writes it for General Translation; the build computes
 // it again, so a card whose words changed since the last translation prints in English until it is translated again.
 // Product names, move names, trait names, receipts and code are never in it: a move line names its move as {move}.
-export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCRIPTION, ABOUT, FACTS }) {
+export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCRIPTION, ABOUT, FACTS, QA }) {
   const run = (r) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
   const cards = {};
   for (const f of fighters) {
@@ -22,10 +22,7 @@ export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCR
     description: DESCRIPTION,
     about: ABOUT.map((runs) => runs.map(run).join('')),
     facts: [...FACTS],
-    qa: [
-      { q: 'What did he do before General Translation?', a: `${FACTS[3].replace(/^Before General Translation he/, 'He')} ${FACTS[4]}` },
-      { q: 'What else has he done?', a: FACTS.slice(5).join(' ') },
-    ],
+    qa: QA.map(([q, a]) => ({ q, a })),
     ringRule: rules.ringRule,
     cards,
   };

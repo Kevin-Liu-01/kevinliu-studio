@@ -17,7 +17,7 @@ generator for metadata.
 | Layer | Where | Owner |
 | --- | --- | --- |
 | Round material (cards, battle, sound) | `public/ex`, `public/battle`, `public/sound`, `public/og`, `vendor/` | `scripts/sync.mjs`, never edited by hand |
-| Build-time card loader | `src/lib/cards.ts` | loads `markup.js`, `fighters.js`, `face.gen.js` and the rest in CommonJS sandboxes |
+| Build-time card loader | `src/lib/cards.ts` | loads `markup.js`, `fighters.js`, `face.gen.js` and the rest through a CommonJS shim (`node:vm` contexts, which are not isolation) |
 | Twins and agent files | `src/lib/twins.ts`, `src/lib/machine.ts` | every `.md` endpoint, `llms.txt`, `llms-full.txt` and the Machine view's forms |
 | Page frame and SEO | `src/layouts/Base.astro`, `src/components/Seo.astro`, `src/lib/schema.ts`, `src/lib/share.ts` | title, canonical, share image (and loop), one JSON-LD graph; `docs/seo.md` |
 | Pages | `src/pages/` | home (the wall), `/cards/<id>`, `/battle`, `/battle/arena`, `/about`, `/404` |
@@ -70,8 +70,9 @@ How it holds:
   it loads, paints or decodes. The pack's fan paints no posters. The wall's first-paint hold waits on no picture and
   fetches none ahead. The world canvas, stage and lens are hidden.
 - Headings keep one text: a heading's twin line is laid over the heading's own box (`.hw`), so every page still has
-  one h1 and crawlers read one title. A card page's lists are one framed panel each (`.sl`), so their lines share the
-  room their tiles take.
+  one h1 and crawlers read one title. In the Machine view the heading's text is cleared, not hidden, and its twin
+  line is `aria-hidden`, so a screen reader finds the same headings in both views. A card page's lists are one framed
+  panel each (`.sl`), so their lines share the room their tiles take.
 - Frames are characters, not borders: a `.bx` element's top and bottom are long rows of `─` cut to the box, its sides
   columns of `│` under their corners. Nothing is measured; the box sets the frame.
 - Katagami Mono (`public/fonts/katagami-mono-site.woff2`, 21.7 KB) is fetched at idle after a Human page loads and
@@ -92,7 +93,7 @@ every region's box between the modes; `ENGINE=chromium` adds layout shifts while
 | `/` | the 26-card wall, the pack, the dock (Pick Three), the face-down deck to the previous site | `/index.md` |
 | `/cards` | every card as a plain index with live sites and public sources | `/cards.md` |
 | `/cards/<id>` | one card at full size with its numbers, trait, moves and receipts | `/cards/<id>.md` |
-| `/battle`, `/battle/arena` | the Mat and Arena battle (r4/play) | `/battle.md` |
+| `/battle`, `/battle/arena` | the Mat and Arena battle (r4/play) | `/battle.md`, `/battle/arena.md` (the same text) |
 | `/about` | the bio, every project and links | `/about.md` |
 | `/llms.txt`, `/llms-full.txt` | agent indexes | |
 

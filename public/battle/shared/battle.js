@@ -193,13 +193,13 @@ let leadersNow = [], mapNow, said = new Set();
 const store = createStore();
 const plan = createPlan(store, { specials: q.get('specials') !== 'off', repeats: q.get('repeats') !== 'off' });
 const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
-let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
+let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
 let layout = null, switching = null;
 
 // ============================================================ sound (r4/sound, INTEGRATION.md section 3)
 // A dynamic import, so a page whose player fails to load still deals and plays in silence; every hook calls `Sound?.`,
 // and what a battle's start asks for waits for the import through `soundReady`.
-let Sound = null, shotSound = null;
+let Sound = null, shotSound = null, soundCards = new Set();
 const soundReady = import('../../sound/sound.js').then((m) => {
   Sound = m.default;
   Sound.init({ manifest: new URL('../../sound/manifest.battle.json', import.meta.url).href, page: 'battle', resumeAtLoad: true, groups: ['battle', mode, `music:mus.${mode}`] });
@@ -669,7 +669,9 @@ function say(text, ms = 0) {
   clearTimeout(sayT);
   if (ms) sayT = setTimeout(() => { s.textContent = narrow() ? sayRest : ''; }, ms);
 }
-function live(text) { $('#live').textContent = text; }
+// kevinliu.studio: one batch's outcomes are announced together, not only the last one written (scripts/sync.mjs)
+let liveLines = [];
+function live(text) { if (!liveLines.length) queueMicrotask(() => { $('#live').textContent = liveLines.join(' '); liveLines = []; }); liveLines.push(text); }
 
 function command(action) {
   if (busy || !match || match.state.phase !== 'command') return;
@@ -791,13 +793,14 @@ function showResult() {
   M.resultAt = performance.now();
   M.phase = 'result';
   app.dataset.phase = 'result';
+  if (groundG) groundG.paused = true; // kevinliu.studio phone memory: the cards' live prints stop behind the result and the Log (scripts/phone-memory.mjs)
   const st = match.state;
   const win = st.winner;
   const r = $('#result');
   r.hidden = false;
   r.textContent = '';
   const out = (s) => st.sides[s].team.filter((f) => f.hp <= 0).length;
-  el('h1', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat');
+  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)
   el('p', '', r, `${st.turn} turns   ${out('rival')} of 3 rival cards out   ${out('player')} of 3 yours out`);
   // on a phone the leaders' lines have no plate on the board: the winner's rides the result instead
   if (narrow() && win !== 'draw') {
@@ -825,16 +828,19 @@ function openLog() {
   hud.writeLog(list);
   d.showModal();
   stage.hold(true); layout.hold(true);
+  if (groundG) groundG.paused = true;
   list.lastElementChild?.scrollIntoView({ block: 'end' });
 }
-$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); });
+$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); if (groundG && match?.state.phase !== 'over') groundG.paused = false; });
 $('#log-close').onclick = () => $('#log').close();
 $('#logb').onclick = openLog;
 
 // the last attack again, as a replay: presentation only, no event lands twice
 async function replayLast() {
   if (busy || !lastShot?.scene) return;
+  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)
   busy = true; render();
+  try {
   const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };
   const c = runtime.compileScene(s);
   await stage.prepare(s, c);
@@ -842,8 +848,10 @@ async function replayLast() {
   app.dataset.scene = 'replay';
   stage.anchors = { source: layout.anchor('source', s.side), target: null };
   await stage.play(s, c, {});
-  delete app.dataset.scene;
-  busy = false; render();
+  } finally {
+    if (app.dataset.scene === 'replay') delete app.dataset.scene;
+    if (my === gen) { busy = false; render(); }
+  }
 }
 $('#replay').onclick = () => replayLast();
 
@@ -854,7 +862,7 @@ function skip() { shotSound?.skip(); stage.skip(); layout.skip(); }
 addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if ($('#log').open) return;
-  if (stage.playing && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); e.stopPropagation(); skip(); return; }
+  if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)
   const k = e.key.toLowerCase();
   if (k === 'escape') { if (panel && panel !== 'replace') { closePanel(true); e.preventDefault(); } return; }
   const refuse = () => { if (!busy && match?.state.phase === 'command') Sound?.play('bt.ui.refuse'); };
@@ -904,23 +912,40 @@ addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout((
 
 // ============================================================ starting a battle: the deal, then the leads' entrances
 const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };
+// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that
+// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)
+let keptError = '';
+function bootFailed(err) {
+  if (document.documentElement.dataset.boot === undefined) return;
+  delete document.documentElement.dataset.boot;
+  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;
+}
 async function start(p, replay = false, resume = false) {
   let next;
   try { next = sd.start({ team: p.team, rival: p.rival, seed: p.seed, log: replay || resume ? p.log : undefined }); }
-  catch (err) { $('#error').textContent = String(err.message ?? err); if (!match) start(DEFAULT); return; }
+  catch (err) {
+    const retry = (replay || resume) && p.log;
+    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;
+    $('#error').textContent = String(err.message ?? err);
+    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);
+    else keptError = '';
+    return;
+  }
   const my = ++gen;
   director.stop();
   clearTimeout(rushT); pace?.unrush();
   match = next;
+  if (groundG) groundG.paused = false;
   // a new hand stops the last one's sound and loads this one's six cards (a hand replaced before the import lands does nothing)
-  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });
+  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)
+  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });
   for (const id of [...match.team, ...match.rival]) groundCards.add(id);
   auto = false;
   busy = true;
   panel = null; kitItem = null;
   $('#panel').hidden = true;
   $('#result').hidden = true;
-  $('#error').textContent = '';
+  $('#error').textContent = keptError; keptError = '';
   hud.bind(match);
   lastShot = null;
   store.begin(`${match.team.join(',')}|${match.rival.join(',')}|${match.seed}`, resume);
@@ -1000,8 +1025,8 @@ async function runFixture(n) {
 // ============================================================ boot
 const first = sd.parseHash(location.hash);
 const resuming = Boolean(first.log) && hashParams.get('resume') === '1';
-if (q.get('fixture')) runFixture(q.get('fixture'));
-else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);
+if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);
+else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);
 /** The preview recorder's hook (?debug only): one move's scene, as replayLast plays one, from its card in play. */
 async function previewScene(s, o = {}) {
   const c = runtime.compileScene(s);

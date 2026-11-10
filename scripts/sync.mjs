@@ -17,8 +17,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { safeKey } from './lock-check.mjs';
 import { CLOSED } from '../src/lib/closed-repos.mjs';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -71,7 +72,7 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: pageFiles },
     // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
     { from: EX, to: 'vendor/ex', files: only('index.html') },
-    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json', 'posters/posters.json') },
     // the battle prints the wall's own card (r4/play shared/excard.js), so the page loads these at runtime from /ex/ too:
     // the faces, and the icon set it inlines beside the card's own symbols
     { from: EX, to: 'public/ex', files: only('face.gen.js', 'icons/icons.svg', 'icons/card-symbols.svg') },
@@ -108,8 +109,15 @@ const STAGES = {
 // it. A name counts only when it is a file the round has outside the scratch folders.
 const PAGE_REF = /(?:\.\.?\/)?(?:[\w@.-]+\/)*[\w@.-]+\.(?:webp|avif|png|jpg|jpeg|svg|mp4|webm|woff2)\b/g;
 function pageHead(html) {
-  const head = html.slice(0, html.indexOf('</head>'));
-  return [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+  const end = html.indexOf('</head>');
+  if (end < 0) throw new Error('the round page has no </head>');
+  const head = html.slice(0, end);
+  const found = [...head.matchAll(/<link rel="stylesheet" href="([^"]+)"[^>]*>|<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/g)].map((m) => m[1] ?? m[2]);
+  // every sheet and script the head loads, however its tag is written: one the pattern above cannot read would neither
+  // ship nor load, and the wall would print without it
+  const tags = (head.match(/<link\b[^>]*\brel=["']?stylesheet/gi) ?? []).length + (head.match(/<script\b[^>]*\bsrc=/gi) ?? []).length;
+  if (found.length !== tags) throw new Error(`the round page's head loads ${tags} sheets and scripts, but ${found.length} are written the way the sync reads them (<link rel="stylesheet" href="..."> and <script src="..."></script>)`);
+  return found;
 }
 function pageFiles(list) {
   const have = new Set(list.filter((f) => !SKIP.test(f) && !/\.(html|md)$/.test(f)));
@@ -183,6 +191,12 @@ const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.
 // a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on every card
 // face (the battle prints the wall's markup.js)
 const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
+// card.css carries the frosted slips' 1x tile as a 30 KB base64 data URL, the fallback of var(--frost, ...), so the
+// sheet paints wherever the rounds serve it (r4/ex card.css, round ex.5). Every page here sets --frost (ui.css on the
+// pages Base.astro frames, BattlePage.astro on the battle), so the fallback is never painted and it leaves the
+// render-blocking sheet: about 25 KB less gzipped on every page that prints a card
+const FROST = '.card { --frost-tile: var(--frost, url("data:image/webp;base64,';
+const frost = (t) => { const a = t.indexOf(FROST), e = a < 0 ? -1 : t.indexOf('"))', a); return [e < 0 ? '<none>' : t.slice(a, e + 3), '.card { --frost-tile: var(--frost, none)']; };
 const TRANSFORMS = {
   // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
   'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
@@ -192,6 +206,39 @@ const TRANSFORMS = {
     ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
     ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
+    // an address that cannot start: `mode=` is checked as the list's own key (an inherited name such as "constructor"
+    // passed, the layout failed to load and the page stayed hidden); the reason stays on screen after the hand that
+    // plays instead begins (its start cleared the alert in the same task); a log that will not replay is retried as
+    // the same teams without it before the default hand; and a start that rejects un-hides the page and says so
+    ["let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') :", "let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') :"],
+    ["const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };\n", after("// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that\n// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)\nlet keptError = '';\nfunction bootFailed(err) {\n  if (document.documentElement.dataset.boot === undefined) return;\n  delete document.documentElement.dataset.boot;\n  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;\n}\n")],
+    ["  catch (err) { $('#error').textContent = String(err.message ?? err); if (!match) start(DEFAULT); return; }", "  catch (err) {\n    const retry = (replay || resume) && p.log;\n    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;\n    $('#error').textContent = String(err.message ?? err);\n    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);\n    else keptError = '';\n    return;\n  }"],
+    ["  $('#error').textContent = '';\n  hud.bind(match);", "  $('#error').textContent = keptError; keptError = '';\n  hud.bind(match);"],
+    ["else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);", "else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);"],
+    ["if (q.get('fixture')) runFixture(q.get('fixture'));", "if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);"],
+    // one batch's outcomes are announced together: a shot lands all its events in one loop, and each one overwrote
+    // the live region, so a hit was lost behind the knockout that followed it
+    ["function live(text) { $('#live').textContent = text; }", "// kevinliu.studio: one batch's outcomes are announced together, not only the last one written (scripts/sync.mjs)\nlet liveLines = [];\nfunction live(text) { if (!liveLines.length) queueMicrotask(() => { $('#live').textContent = liveLines.join(' '); liveLines = []; }); liveLines.push(text); }"],
+    // Enter or Space on a focused speed, mode or sound key presses that key instead of skipping the scene, as a
+    // pointer press on them already does (r4/play SPEC.md: "the speed buttons never skip")
+    ["  if (stage.playing && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); e.stopPropagation(); skip(); return; }", "  if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)"],
+    // the page's h1 is its wordmark (src/lib/battle.ts); the result's title is the next level down
+    ["  el('h1', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat');", "  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)"],
+    // a replay that a new battle overtakes leaves that battle's state alone, and one that throws unlocks the console
+    ["  if (busy || !lastShot?.scene) return;\n  busy = true; render();\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };", "  if (busy || !lastShot?.scene) return;\n  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)\n  busy = true; render();\n  try {\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };"],
+    ["  await stage.play(s, c, {});\n  delete app.dataset.scene;\n  busy = false; render();\n}\n$('#replay').onclick = () => replayLast();", "  await stage.play(s, c, {});\n  } finally {\n    if (app.dataset.scene === 'replay') delete app.dataset.scene;\n    if (my === gen) { busy = false; render(); }\n  }\n}\n$('#replay').onclick = () => replayLast();"],
+    // a new hand lets the card kits of cards it does not hold go: each kit is 0.7 to 2.6 MB decoded and none was
+    // ever released, so New Rival hands piled them up
+    ["  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });", "  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)\n  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });"],
+    ["let Sound = null, shotSound = null;", "let Sound = null, shotSound = null, soundCards = new Set();"],
+  ]),
+  // `map=` is checked as the list's own key: an inherited name ("constructor") passed, its ground file was a 404 and
+  // the Arena's boot rejected with the page still hidden
+  'public/battle/arena/board.js': (t) => patch('board.js', t, [
+    ["  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';", "  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';"],
+    // on a deal the Arena made its pads visible, laid the board out, and only then marked them hidden, so they faded
+    // out in front of the visitor at the reveal and came back with the first cards; on a deal they start hidden
+    ["    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s }, this.groundSvg);", "    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s, ...(this.ctx.dealing ? { 'data-on': 'false' } : {}) }, this.groundSvg); // kevinliu.studio: on a deal the pads start hidden, as drawSides marks them a moment later (scripts/sync.mjs)"],
   ]),
   // the card code is the wall's, served at /ex/ (the rounds' ../../../r4/ex/). A phone prints each card plain, as the
   // wall does (Kevin, 11-08, "Desktop-only frames"): a family's frame SVG layers held about 250 MB on an iPhone
@@ -225,17 +272,27 @@ const TRANSFORMS = {
   // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
   // accessibility tree
   // a key's raise and colour change at once; only its press moves (transform), so no frame repaints a shadow
-  'public/battle/mat/mat.css': (t) => patch('mat.css', t, [['  .mark { display: none; }', HIDE], [KEY_EASE, KEY_MOVE]]),
+  // the result's title is an h2 here (the page's h1 is its wordmark), so its two rules follow it. The Mat's
+  // reduced-motion rule arrived from the round-5 merge with an unclosed selector list and no declarations, so the
+  // browser dropped it and the Mat's rail, console, keys and slots kept their transitions under reduced motion; it is
+  // the rule from before that merge again, less the retired .kit-chip
+  'public/battle/mat/mat.css': (t) => patch('mat.css', everyOf('mat.css', t, '.result h1 {', '.result h2 {', 2), [
+    ['  .mark { display: none; }', HIDE],
+    [KEY_EASE, KEY_MOVE],
+    ['  .rail, .console, .key, .slot-lift, .slot[data-dim], }', '  .rail, .console, .key, .slot-lift, .slot[data-dim], .result, #app[data-scene] .rail, #app[data-scene] .console, .slot[data-zone="finale"] :is(.chips, .tokens) { transition: none !important; }\n}'],
+  ]),
   // at 320 px the Arena's team rail (two teams of pips and the turn) was 33 px wider than the rail, and the grid column
   // it shares with the keys grew with it, so Leave slid off screen: the column holds the rail's width, and the pips and
   // gaps tighten until the team rail fits
-  'public/battle/arena/arena.css': (t) => patch('arena.css', everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2), [
+  'public/battle/arena/arena.css': (t) => patch('arena.css', everyOf('arena.css', everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2), '.result h1 {', '.result h2 {', 2), [
     ['/* ============================================================ reduced motion: every step a still */', before(NARROW_ARENA)],
     [KEY_EASE, KEY_MOVE],
   ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [
     ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
+    // aria-label on a div without a role is ignored: the rival's side is a group
+    ['<div class="side rival" aria-label="Rival">', '<div class="side rival" role="group" aria-label="Rival">'],
     nolink(t),
   ]),
   // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
@@ -254,18 +311,46 @@ const TRANSFORMS = {
     ['.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto;', '.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto;'],
     ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
     ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
+    frost(t),
   ]),
   // nothing is fetched before the first gesture (the player's own header): a cue played before one (the battle's deal)
   // called unlock() with no event, which counted as a gesture and loaded every wanted group, about 240 files and 2.3 MB
   // on /battle while the context stayed suspended and every cue was dropped (next-release ship checks). Such a call now
   // returns, unless the context already runs (resumeAtLoad on a page the browser lets play)
-  'public/sound/sound.js': (t) => patch('sound.js', t, [['  if (e && e.isTrusted === false) return;\n  S.gestured = true;\n', "  if (e && e.isTrusted === false) return;\n  if (!e && !S.gestured && !(S.ctx && S.ctx.state === 'running')) return; // kevinliu.studio: no gesture, no fetch (scripts/sync.mjs)\n  S.gestured = true;\n"]]),
+  'public/sound/sound.js': (t) => patch('sound.js', t, [['  if (e && e.isTrusted === false) return;\n  S.gestured = true;\n', "  if (e && e.isTrusted === false) return;\n  if (!e && !S.gestured && !(S.ctx && S.ctx.state === 'running')) return; // kevinliu.studio: no gesture, no fetch (scripts/sync.mjs)\n  S.gestured = true;\n"],
+    // nothing is fetched before the context is unlocked: on the battle the player makes its context at load
+    // (resumeAtLoad), so a cue played before any gesture (the deal, the leads' entrances) passed the old check, fetched
+    // and decoded its file, and was dropped by the suspended context (10 files in 25 s with no input). The fanfare path
+    // had the same check
+    ['  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx) return null; }', '  if (!S.ctx || !S.unlocked) { unlock(); if (!S.ctx || !S.unlocked) return null; } // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)'],
+    ['  if (!c || !S.enabled || !S.ctx) return null;', '  if (!c || !S.enabled || !S.ctx || !S.unlocked) return null; // kevinliu.studio: no unlocked context, no fetch (scripts/sync.mjs)'],
+    // a page shown again from the back-forward cache missed every storage event: it reads the saved choice
+    ["      addEventListener('storage', (e) => { if (e.key === KEY && (e.newValue === 'on' || e.newValue === 'off')) setEnabled(e.newValue === 'on', { persist: false }); });\n", after("      // kevinliu.studio: a page shown again from the back-forward cache gets no storage event; it reads the saved choice (scripts/sync.mjs)\n      addEventListener('pageshow', (e) => { if (!e.persisted) return; const s = saved(); if (s !== null && s !== S.enabled) setEnabled(s, { persist: false }); });\n")],
+    // the battle's manifest has no ui.sound.on and no gallery group: its speaker key answers with bt.ui.toggle
+    ["    if (feedback) { play('ui.sound.on', { force: true, waitMs: 900 }); load('gallery'); }", "    if (feedback) { play(S.m && !S.m.cues['ui.sound.on'] && S.m.cues['bt.ui.toggle'] ? 'bt.ui.toggle' : 'ui.sound.on', { force: true, waitMs: 900 }); if (S.page !== 'battle') load('gallery'); } // kevinliu.studio: the battle answers with its own toggle cue (scripts/sync.mjs)"],
+    // the battle's clock (shared/pace.js) runs every page timer in scene time, up to four times as fast in a rush;
+    // the player's waits (a theme's stop, the eviction of a faded theme, lap changes, a prefetch) keep real time
+    ["const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];", before("// kevinliu.studio: the battle's clock (shared/pace.js) runs every page timer in scene time; the player's waits keep real time (scripts/sync.mjs)\nconst setTimeout = (fn, ms, ...a) => (globalThis.battlePace?.realTimeout ?? globalThis.setTimeout)(fn, ms, ...a);\n")],
+    // a manifest that fails (a dropped request, a 404 mid-deploy) was cached as a rejected promise: the page stayed
+    // silent until a reload and every later hover logged an unhandled rejection. The fetch checks its status, a
+    // failure clears the cache, the first-gesture loading re-arms for the next gesture, and no caller is left uncaught
+    ['      S.m = await (await fetch(url)).json();', '      const res = await fetch(url);\n      if (!res.ok) throw new Error(`manifest ${res.status}`);\n      S.m = await res.json();'],
+    ['    applyGraph();\n    return S.m;\n  })();\n  return S.mp;', '    applyGraph();\n    return S.m;\n  })().catch((e) => { S.mp = null; throw e; }); // kevinliu.studio: a manifest that failed is asked for again (scripts/sync.mjs)\n  return S.mp;'],
+    ['    });\n  });\n}\nfunction bindGestures() {', '    });\n  }).catch(() => { S.unlocked = false; if (!S.gesturesBound) { bindGestures(); S.gesturesBound = true; } }); // kevinliu.studio: the next gesture asks again (scripts/sync.mjs)\n}\nfunction bindGestures() {'],
+    ['    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest(); }', '    if (S.unlocked) { S.pendingIds.push({ id: id0, o, t: performance.now() }); ensureManifest().catch(() => {}); }'],
+    ['  if (!S.m) return ensureManifest().then(() => load(group));', '  if (!S.m) return ensureManifest().then(() => load(group)).catch(() => { S.wantGroups.add(group); });'],
+    ['    ensureManifest(); // its request goes first', '    ensureManifest().catch(() => {}); // its request goes first'],
+    ["    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest();", "    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest().catch(() => {});"],
+    // a group's decoded files can be let go (the last hand's card kits): nothing but a faded theme ever was
+    ['function evict(file) { const rec = S.files.get(file); if (rec) { rec.buf = null; S.files.delete(file); } }', after("\n/** kevinliu.studio: let a group's decoded files go (a hand's card kits when the next hand holds other cards); a later load fetches them again (scripts/sync.mjs) */\nfunction unload(group) { S.groups.delete(group); S.wantGroups.delete(group); for (const [file, rec] of [...S.files]) if (rec.group === group) { rec.buf = null; S.files.delete(file); } }")],
+    ['  init, load, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,', '  init, load, unload, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,'],
+  ]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
     ["const BATTLE = new URL($('meta[name=\"battle\"]').content, document.baseURI).href;", after(SND + "\n  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('a, button'); if (b && !b.closest('.card, #pause, #sound, [data-mode-set], #play, #pack, .addbtn, .close')) snd('ui.tap'); });")],
     ["if (b) setMode(b.dataset.modeSet); });", "if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });"],
-    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });"],
+    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true', true); });"],
     ["if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return;", after(" snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);")],
     ["aim(c, clamp((e.clientX - r.x - 6) / (r.w - 12)), clamp((e.clientY - top - 6) / (r.h - 12)));", after(TILT)],
     ["if (!el.matches(':focus-visible') || RM()) return;", after(" snd('ui.step', { pan: pan(el) }); SND()?.load('sig:' + el.dataset.id);")],
@@ -277,14 +362,37 @@ const TRANSFORMS = {
     ["const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget';", after(" snd('team.refuse');")],
     ["if (RM() || !Ground.available) { go(); return; }", "if (RM() || !Ground.available) { snd('ui.tap'); go(); return; }"],
     // the lens's address is the card's own page here (/cards/<id>), not a folder under the page's <base>
-    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }"],
-    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`);"],
-    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else history.replaceState(null, '', '/' + location.search + location.hash);"],
+    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; } retitle();"],
+    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`); retitle();"],
+    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else { history.replaceState(null, '', '/' + location.search + location.hash); retitle(); }"],
     ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
     // the lens's frame row stays in the rounds: its buttons carry the design lanes' working names ("studio border lane,
     // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
     // every card prints its primary frame, so the frame printings never run and src/lib/cards.ts loads none of their code
     ['    frs.hidden = !F || F.length < 2;', '    frs.hidden = true;'],
+    // the bare P key played from anywhere on the page (WCAG 2.1.4); it plays while focus is in the dock, where the Play
+    // button announces it (aria-keyshortcuts)
+    ["(e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea')", "(e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock')"],
+    // a pack says "Rival: ..." and "Pack: ..." in the same instant, and each say() cleared the line the other had asked
+    // for; the messages of one 30 ms window now go out as one line
+    ["  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };", "  let sayQ = [], sayT = 0;\n  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };"],
+    // the rival's wells hold copies hidden from assistive technology (copyOf), so each filled well names its card
+    ["      w.classList.toggle('full', !!id);\n    });\n    const g = $('.gauge');", "      w.classList.toggle('full', !!id);\n      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }\n    });\n    const g = $('.gauge');"],
+    // the lens's arrow keys step to cards the wall has not scrolled to; the card that takes focus back comes into view
+    ["      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });", "      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });"],
+    // reduced motion starts the page paused (Base.astro), and the boot call saved that as the visitor's own choice; only
+    // the Pause key's press saves now
+    ["  function setPaused(on) {", "  function setPaused(on, save) {"],
+    ["    try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}", "    if (save) try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}"],
+    // a lens that Forward reopened is on its own history entry too: leaving it steps back, as a pushed lens does, where
+    // replaceState left two identical entries
+    ["        if (I.pushed && history.state && history.state.card) history.back();", "        if (history.state && history.state.card) history.back();"],
+    // the Machine view hides the lens (machine.css), so a card's history entry opens nothing there
+    ["    if (id && cards[id]) openInspect(id, { push: false });", "    if (id && cards[id] && root.dataset.mode !== 'machine') openInspect(id, { push: false });"],
+    // while the lens holds /cards/<id> the tab, the history entry and a bookmark carry that card page's own title
+    // (Seo.astro: "<card> | Kevin Liu"); the wall's own title comes back when the address does
+    ["  const titleOf = (id) => F[id].title;", after("\n  const TITLE0 = document.title;\n  const retitle = () => { const c = history.state && history.state.card; document.title = c && F[c] ? `${F[c].title} | ${TITLE0}` : TITLE0; };")],
+    ["  addEventListener('popstate', (e) => {\n    const id = e.state && e.state.card;", "  addEventListener('popstate', (e) => {\n    retitle();\n    const id = e.state && e.state.card;"],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],
@@ -320,32 +428,7 @@ const BINARY = {
   'public/battle/r3/media-moves/elo/mcp-server.webp': paintOut(760, 830),
 };
 
-// ---------- the scan ----------
-const TEXT = /\.(js|mjs|css|html|json|md|txt|svg)$/;
-const BANNED = [
-  [/pok[eé]\s?(mon|ball)|nintendo|game\s?freak/i, 'franchise name'],
-  [/\/api\/(submissions|emails)\b/, 'OMMC participant route'],
-  [/xi-api-key/i, 'ElevenLabs header'],
-  [/\bsk_[a-f0-9]{40,}\b/, 'API key shape'],
-];
-// General Translation appears only in the Atlas card's own records: the shared card data files print every card.
-const GT = /general\s?translation|generaltranslation/i;
-const GT_OK = new Set(['public/ex/fighters.js', 'public/ex/media.gen.js', 'public/ex/face.gen.js', 'vendor/ex/face.gen.js', 'vendor/ex/roster/battle-roster.json', 'vendor/ex/copy/overrides.json']);
-
-function scan(dest, buf) {
-  const hits = [];
-  if (TEXT.test(dest)) {
-    const t = buf.toString('utf8');
-    for (const [re, why] of BANNED) if (re.test(t)) hits.push(why);
-    if (GT.test(t) && !GT_OK.has(dest) && !/\/atlas[./]/.test(dest)) hits.push('General Translation outside the Atlas card');
-  } else {
-    const t = buf.toString('latin1');
-    if (/xi-api-key/i.test(t) || /sk_[a-f0-9]{40,}/.test(t)) hits.push('key shape in binary');
-    const where = MEDIA.test(dest) && hasLocation(buf);
-    if (where) hits.push(where);
-  }
-  return hits;
-}
+// ---------- the scan: scripts/rules.mjs, the same rules the release guard reads dist with ----------
 
 // ---------- run: read, transform and scan everything first; write only when nothing failed ----------
 const LOCK = path.join(REPO, 'sync.lock.json');
@@ -353,6 +436,9 @@ const prev = fs.existsSync(LOCK) ? JSON.parse(fs.readFileSync(LOCK, 'utf8')) : {
 const lock = { rounds: ROUNDS_GIT, head: null, pins: PIN, synced: null, stages: {} };
 const problems = [];
 const writes = [], removes = [];
+// every file a TRANSFORMS, PHONE or BINARY patch names must be one a rule ships (checked after the stages)
+const PATCHED = new Set([...Object.keys(TRANSFORMS), ...Object.keys(PHONE), ...Object.keys(BINARY)]);
+const shipped = new Set();
 let unpinned = 0;
 for (const [stage, rules] of Object.entries(STAGES)) {
   const files = {};
@@ -367,6 +453,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     for (const f of picked) {
       const src = path.join(r.from, f), dest = `${r.to}/${f}`;
       if (files[dest]) continue; // two rules may pick the same file
+      if (PATCHED.has(dest)) shipped.add(dest);
       let buf = fs.readFileSync(src);
       // the file as it was at the stage's pin. A file the pin does not have (the frame SVGs were generated and committed
       // only after 30e69931) cannot be checked against it, so it ships only as the last lock recorded it
@@ -378,7 +465,7 @@ for (const [stage, rules] of Object.entries(STAGES)) {
         if (PHONE[dest]) buf = Buffer.from(PHONE[dest](buf.toString('utf8')));
         if (BINARY[dest]) buf = await BINARY[dest](buf);
       } catch (e) { problems.push(`${dest}: ${e.message}`); continue; }
-      for (const h of scan(dest, buf)) problems.push(`${dest}: ${h}`);
+      for (const h of scanBuffer(dest, buf)) problems.push(`${dest}: ${h}`);
       if (at === undefined && !ADMIT && prev.stages[stage]?.list?.[dest]?.sha256 !== sha(buf)) problems.push(`${dest}: ${rel(ROUNDS, src)} is not in the ${stage} pin ${PIN[stage]} and is ${prev.stages[stage]?.list?.[dest] ? 'not the bytes the lock records' : 'new'} (look at it, then --admit-unpinned)`);
       files[dest] = { src: rel(ROUNDS, src), sha256: sha(buf), bytes: buf.length };
       const abs = path.join(REPO, dest);
@@ -386,9 +473,16 @@ for (const [stage, rules] of Object.entries(STAGES)) {
     }
   }
   // a file this stage shipped last time and no longer ships leaves the repo; nothing the sync never wrote is touched
-  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  for (const dest of Object.keys(prev.stages[stage]?.list ?? {})) {
+    // only a plain path inside a synced folder is ever removed, whatever the previous lock says
+    if (!safeKey(dest)) { problems.push(`${dest}: sync.lock.json lists a path outside the synced folders; restore the lock (git checkout sync.lock.json)`); continue; }
+    if (!files[dest] && fs.existsSync(path.join(REPO, dest))) removes.push(path.join(REPO, dest));
+  }
   lock.stages[stage] = { files: Object.keys(files).length, bytes: Object.values(files).reduce((a, f) => a + f.bytes, 0), list: files };
 }
+// a patch whose file no rule shipped was never applied: the round renamed or dropped the file, and the fix it carried
+// (or the paint-out of a capture, which no text scan can see) would be lost without a word
+for (const key of PATCHED) if (!shipped.has(key)) problems.push(`${key}: a TRANSFORMS, PHONE or BINARY patch names this file, but no rule shipped it (renamed or dropped in the rounds?)`);
 // the rounds' commits: one per stage, every tracked file checked against it above
 lock.head = [...new Set(Object.values(PIN))].join(' + ');
 for (const [stage, s] of Object.entries(lock.stages)) console.log(`${stage}: ${s.files} files, ${(s.bytes / 1e6).toFixed(1)} MB, pinned at ${PIN[stage]}`);
@@ -408,7 +502,7 @@ for (const [abs, buf] of writes) { fs.mkdirSync(path.dirname(abs), { recursive: 
 for (const abs of removes) fs.rmSync(abs);
 // the lock changes only when the shipped files or the rounds' commit do, so a no-op rerun leaves no diff
 const same = JSON.stringify(prev.stages) === JSON.stringify(lock.stages) && prev.head === lock.head && JSON.stringify(prev.pins) === JSON.stringify(lock.pins);
-if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(LOCK, JSON.stringify(lock, null, 1) + '\n'); }
+if (!same) { lock.synced = new Date().toISOString(); fs.writeFileSync(`${LOCK}.tmp`, JSON.stringify(lock, null, 1) + '\n'); fs.renameSync(`${LOCK}.tmp`, LOCK); }
 console.log(`synced from ${lock.head ?? 'a folder without git'}: ${writes.length} written, ${removes.length} removed${same ? ', lock unchanged' : ''}`);
 
 // path -> git blob id of every file under `dirs` at `commit`, or null when the rounds' checkout cannot answer
