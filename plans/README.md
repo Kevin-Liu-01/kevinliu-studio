@@ -105,6 +105,20 @@ Lanes B and C both add anchored pairs to `scripts/sync.mjs` and rewrite `sync.lo
 `memory.md`. Those conflicts are expected when the lanes are merged: keep both memory entries, keep both sets of
 pairs, and re-run the sync for the lock.
 
+### Change at 00:50 on 2026-11-10: two sessions had started the same plans
+
+Kevin said "continue everything" to the session "Carry out the site audit's P1 plans" as well. It started P2 plans
+on per-plan branches (`improve/0NN-*`, worktrees `~/repos/kevinliu-studio-0NN`) from the same base before either
+session knew. Its reviewed branches stand; the lanes take them instead of redoing them:
+
+- That session: 013, 015, 016, 018 (all but the step 6 browser gate) and 020 are done there; it finishes 014, 017,
+  019 and 021 and starts nothing else. Its 011 is dropped in favour of lane A's.
+- Lane A: its own 011, then 012 and 024; cherry-picks 020 and 021; then 025 and 031.
+- Lane B: executes nothing; merges 013, 015, 016, 017 and 014 into `improve/p2-wall` and reviews them together, on
+  the English wall and one translated wall.
+- Lane C: takes 018 and runs its step 6 browser gate, takes 019, then does 022 and 023.
+- Lane D: unchanged.
+
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale: finding
 fixed independently or approach abandoned)
 
