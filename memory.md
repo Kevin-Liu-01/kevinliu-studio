@@ -416,3 +416,9 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+## 2026-11-10: each fact names the question it answers on /about (improve/011-about-questions-by-key, executor agent)
+
+- **Type**: fix
+- **Changed**: `src/lib/site.ts` (`FACT_LIST` with a `q` per fact, `FACTS` derived, `factsFor(q)` throws when a question has none), `src/lib/twins.ts` (import and `QA` read `factsFor`, no positions), `scripts/check-facts.mjs` (new strike check), `docs/seo.md`, `src/lib/SKILL.md`.
+- **Checked**: built `dist/about.html`, `about.md`, `llms.txt`, `llms-full.txt` and the `/es` about.html, about.md, llms.txt, llms-full.txt are byte-identical to a build of 4025230 (shasum diff empty); `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; `node scripts/check-facts.mjs` prints `facts: striking a line moves no other answer; an emptied question stops the build`.
+- **Open**: `check-facts.mjs` is not yet called from `pnpm test` (no test file in this plan's scope); other languages' answers come from `content.json` `qa`, not from `FACT_LIST`.
