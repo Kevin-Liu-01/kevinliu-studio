@@ -416,3 +416,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+
+## 2026-11-10: the battle announces every outcome, the Mat's reduced-motion rule is whole, one h1, a guarded replay (improve/018-battle-screen-reader-and-reduced-motion, executor agent)
+
+- **Type**: fix (accessibility), plan 018, cut from 4025230 (feat/i18n)
+- **Changed**: `scripts/sync.mjs` (five pairs on the battle.js entry after plan 008's; the mat.css and arena.css entries rename `.result h1 {` to `.result h2 {`, and the Mat's reduced-motion rule is restored), `public/battle/shared/battle.js`, `public/battle/mat/mat.css`, `public/battle/arena/arena.css` and `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Checked**: sync --check `in sync` before and after; step 1 anchor counts 1,1,1,1,1,1,2,2; step 5 counts ok, 2, 0, 0/0, 2/2, 1, 0; phone-memory --check passes; `pnpm test` 10 of 10; `pnpm build` ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`.
+- **Open**: the browser gate (plan step 6: one h1 while playing, non-empty live region, h2 at the result, Mat rail transition 0s under reduced motion) was not run by the executor; the plan hands it to the lane reviewer. The upstream request to the play lane and the single-key shortcut decision (WCAG 2.1.4) remain.
