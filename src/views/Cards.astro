@@ -19,7 +19,7 @@ const jsonld = graph(page({ path: l.p('/cards'), type: 'CollectionPage', name: l
 ---
 <Base seo={{ title, description: CARDS_LEAD, path: l.p('/cards'), share: 'cards', imageAlt: l.t('cards.imageAlt', { n: fighters.length, name: NAME }), jsonld }}>
   <main class="prose" id="main">
-    <div class="sw hw"><h1>{title}</h1><p class="mx" set:html={mdHtml(`# ${title}`)} /></div>
+    <div class="sw hw"><h1>{title}</h1><p class="mx" aria-hidden="true" set:html={mdHtml(`# ${title}`)} /></div>
     <p class="lede sw"><span class="hx">{CARDS_LEAD}</span><span class="mx">{CARDS_LEAD}</span></p>
     <ol class="index">
       {fighters.map((f, i) => {

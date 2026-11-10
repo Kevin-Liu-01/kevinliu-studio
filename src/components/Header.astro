@@ -15,7 +15,7 @@ const NAV = [
 ];
 ---
 <header class="top site">
-  <a class="brand" href={l.p('/')} aria-label={home ? undefined : l.t('frame.brand')} data-astro-prefetch={home ? undefined : 'viewport'}>
+  <a class="brand" href={l.p('/')} aria-label={l.t('frame.brand')} data-astro-prefetch={home ? undefined : 'viewport'}>
     <svg class="kl" viewBox="8 5 80 80" aria-hidden="true"><path fill="currentColor" d={KL_PATH} /></svg>
     <span class="mx kl-mx" aria-hidden="true">{home ? '#' : '/'}</span>
     {/* in the Machine view the name is laid over its own box in the terminal face, so the header never moves */}

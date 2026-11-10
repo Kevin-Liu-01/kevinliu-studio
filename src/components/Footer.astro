@@ -24,7 +24,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
     <a href={l.p('/cards')}>{l.t('frame.cards')}</a>
     {twinLink && <a href={twinLink} type="text/markdown">{l.t('frame.markdown')}</a>}
     <a href={l.p('/llms.txt')}>llms.txt</a>
-    <button type="button" class="tomachine" data-mode-set="machine" aria-pressed="false">{l.t('frame.machine')}</button>
+    <button type="button" class="tomachine" data-mode-go="machine">{l.t('frame.machine')}</button>
     <Lang path={path} where="foot" />
   </nav>
   <div class="mx fm">
@@ -36,7 +36,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
       <a href={l.p('/llms.txt')}>{l.p('/llms.txt')}</a>
       <a href={l.p('/llms-full.txt')}>{l.p('/llms-full.txt')}</a>
       <a href="/sitemap-index.xml">/sitemap-index.xml</a>
-      <button type="button" class="tohuman" data-mode-set="human" aria-pressed="false">{l.t('frame.human')}</button>
+      <button type="button" class="tohuman" data-mode-go="human">{l.t('frame.human')}</button>
       <details>
         <summary>{twin ? `200 · text/markdown · ${Buffer.byteLength(md).toLocaleString('en-US')} B` : `404 · ${l.t('frame.noTwin')}`}</summary>
         <pre class="cmds">{cmds.map((c) => `$ ${c}`).join('\n')}</pre>
