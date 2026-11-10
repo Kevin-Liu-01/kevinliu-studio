@@ -467,3 +467,12 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Measured**: the data build needs git-ignored media, so a committed-only export fails (357 ignored entries in `r1/study-roster18` and `r2/plates`); with those cloned in, the footage changes exactly one card (`data/media.js: claude-of-tanks`), the splice leaves the other 17 cards equal and the three sync anchors match once each; the new clips are 1600 x 900 and 9,373,541 bytes in all.
 - **Run by the reviewer** (the new clips and the entry's `moves` put into a copy of the build, today's kit, Playwright Chromium, the four moves by key on the Mat): all four new clips play with no page error or failed request; Killcam's ring draws at the old clip's point, so it waits for the kit as the scene check says.
 - **Open**: 3 questions for Kevin (three clips now or all four with the kit, drop the old `*-clean.mp4` files, the optional trait clip).
+## 2026-11-10: the logo decision sheet (improve plan 027, Part 1, Claude Code)
+
+- **Type**: decision sheet
+- **Asked**: improve plan 027.
+- **Changed**: nothing that ships. The sheet is outside every repository, at `/Users/kevinliu/k7-rescue/improve-audit/logo-decisions/index.html` (it holds Kevin's portrait mark, so it is never copied into a repository or published). The questions are in `plans/results/027-logo-decisions.md` on `improve/audit`.
+- **Questions**: Kevin Wiki's logo (portrait, emblem or a new crop), 050525's logo (cursor, title or favicon wing), Podium trophy's origin, Claude of Tanks' archived shield, the Atlas monogram under the 11-01 ruling, Sevenfold's address, and the logo-contrast fix (E15).
+- **Checked**: candidates read from rounds `20496336` with `git show HEAD:` only (8 files, byte counts match the plan); the sheet has 32 `<img` lines, no `<script`, no `http` in any `src` or `href`.
+- **Open**: Kevin's answers, then Part 2 (the request block and the E15 re-measure) once the cards' session has committed.
+- **Looked at by the reviewer**: the sheet rendered locally from `file://` with no request off the disk; all eight candidates show at 20 and 44 px and enlarged.
