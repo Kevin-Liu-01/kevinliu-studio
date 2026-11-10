@@ -75,17 +75,18 @@ Read `memory.md` before acting and append to it after every meaningful change.
 <!-- agent-docs:auto:stack end -->
 
 <!-- agent-docs:auto:commands start -->
-- Package scripts detected: 6. Use `package.json` as the exhaustive source.
+- Package scripts detected: 9. Use `package.json` as the exhaustive source.
 - `pnpm run dev` - astro dev
-- `pnpm run build` - astro build && node scripts/verify-build.mjs
-- `pnpm run check` - astro check && node scripts/verify-build.mjs
+- `pnpm run build` - node scripts/lock-check.mjs && astro build && node scripts/verify-build.mjs
+- `pnpm run test` - node --test "scripts/**/*.test.mjs"
+- `pnpm run check` - astro check
 - Keep this block compact. Put full command catalogs in a generated command index, not in AGENTS.md.
 <!-- agent-docs:auto:commands end -->
 
 <!-- agent-docs:auto:dirmap start -->
 | Directory | Skill | Purpose |
 |---|---|---|
-| `scripts/` | [`scripts/SKILL.md`](scripts/SKILL.md) | Procedure for scripts/ in kevinliu-studio: the round sync, the release guard, the smoke check and the icon builder. Read before editing a script. |
+| `scripts/` | [`scripts/SKILL.md`](scripts/SKILL.md) | Procedure for scripts/ in kevinliu-studio: the round sync, the release guard, the smoke check, the paint capture and the icon builder. Read before editing a script. |
 | `src/lib/` | [`src/lib/SKILL.md`](src/lib/SKILL.md) | Build-time data for kevinliu-studio. cards.ts loads the rounds' card code in CommonJS sandboxes, twins.ts writes every Markdown twin and llms file, site.ts holds Kevin's facts, battle.ts splits the battle page. Read before editing here. |
 | `src/pages/` | [`src/SKILL.md`](src/SKILL.md) | Routes of kevinliu-studio. Home prints the 26-card wall, cards/[id] one card page each, battle and battle/arena wrap the round battle page, plus about, 404, the .md twins, llms files and robots. Read before editing here. |
 <!-- agent-docs:auto:dirmap end -->
