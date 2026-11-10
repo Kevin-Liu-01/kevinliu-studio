@@ -416,3 +416,25 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+
+
+## 2026-11-09 — the eight-language release candidate (ship check)
+- **Type**: release (release/next, not pushed)
+- **Asked**: Kevin, 2026-11-09: "Ship-check it" (the i18n branch); "Next release" for the ten P1 audit fixes, asked
+  again directly after other sessions relayed "yes" — so this release is i18n only; improve/p1-on-next a1ff84c (and
+  feat/i18n 4025230 on top of it) is the next release's base.
+- **Candidate**: c6245d9 + feat/i18n (cac5d2b) + 01f51d4 + 0d3af36 + b1bf077 (the i18n session's layout fixes,
+  cherry-picked from f2ff841, tree equal to its 2ba20de on 0d3af36) + the mid-width header spacing.
+- **Found and fixed**: on Vercel /es etc. served es/index.md (a language home's twin sits in a folder named like the
+  page; vercel.json routes /<code> to /<code>.html ahead of the filesystem step); es and pt froze the tab after the
+  first Open Pack (the shim's "Rival: {list}" rule matched its own output: nodes now remember what the shim wrote);
+  battle pages lost their favicon; ja/ko twin links swallowed the next words (<url>); edited English sources shipped
+  old translations (the build now stops when en/{ui,content}.json differ from gt-lock.json's versionId); the footer
+  language list ran off phones; CJK overflowed 640 to 875 px; battle console labels overflowed at 320; French é fell
+  back on battle pages; iOS taps outside did not close the list; nowrap nav words then overflowed translated headers
+  at 640 to 700 and 800 px (translated headers tighten gap and key padding from 640 to 879 px).
+- **Checked**: build guard, preview smoke.mjs and check-seo.mjs, iPhone 14 memory (translated pages within English
+  production's numbers; each page fetches only its own face), layout in Chromium and WebKit (English unchanged except
+  the language key; every language clean from 600 to 1100 px and at 390 and 320), the wall's pack flow in six languages
+  (no hang, 20/20 pings), card framing 26/26, translated battles to their result, sound gate 10 files before a tap.
+  Evidence: ~/k7-rescue/release-next/checks/i18n-*, final-widths.
