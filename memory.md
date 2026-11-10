@@ -416,3 +416,14 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+## 2026-11-10: the 26-card battle routes, measured (spike, asked by improve plan 026, Claude Code)
+
+- **Type**: spike
+- **Changed**: nothing that ships. The result document is `plans/results/026-battle-26-cards.md` on `improve/audit`.
+- **Recommendation**: field all 26 cards by rebuilding only `engine.js` first, because the 572 uncommitted battle-r4b
+  entries touch nothing under `engine/` or `runtime/`, while every open flash failure and the 27 to 48 hour check
+  estimate sit on the scene path; the eight then play default scenes until a scene route follows.
+- **Measured**: a committed-scene export plus the dry run's three engine files validates 104/104, 26/26, 26/26, 0 problems;
+  none of the eight has a shader world, so fielding them adds no WebGL context under plan 009's two-world cap.
+- **Open**: 6 questions for Kevin (battle-r4b's work, machine time, default scenes, the 12 move names, who builds, the
+  four trait hooks).
