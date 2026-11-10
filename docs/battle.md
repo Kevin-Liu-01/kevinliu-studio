@@ -4,6 +4,7 @@ One engine, two modes, one page: r4/play's `mat/index.html`, served at `/battle`
 The engine is deterministic: teams, a seed and the commands always replay the same battle.
 
 - Address: `#team=a,b,c&rival=x,y,z&seed=N&mode=mat|arena` (also `&log=`, `&resume=1`, `&leaders=`, `&map=`).
+- A link that cannot start says why in the page's alert and plays the same teams without the log, or the default hand; mode= and map= accept only their own names; a boot that fails un-hides the page with the reason (sync transforms, and one inline script in BattlePage.astro).
 - Mat plays on a card mat with Broadcast's cutscenes, call-outs and black bars. Arena plays on a painted floor with the
   eight original trainer figures from the round, each map calibrated so figures stand on the floor.
 - The home page's Play button opens it with the dock's teams. Leave returns to `/` with `#you=` so the dock keeps them.

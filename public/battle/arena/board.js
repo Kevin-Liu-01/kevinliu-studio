@@ -24,7 +24,7 @@ const SUBJECT_1X = (src) => src.replace('@2x.', '.');
  *  with depth) for the terrace, its daylight neighbour; Kevin can reverse this (MODES.md section 4). */
 export const PHONE_SKIP = { atelier: 'terrace' };
 const mapOf = (ctx) => {
-  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';
+  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';
   return innerWidth < 600 ? PHONE_SKIP[map] ?? map : map;
 };
 const mapSrc = (map) => new URL(`../assets/maps/${map}.webp`, import.meta.url).href;

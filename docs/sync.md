@@ -47,6 +47,7 @@ which anchor moved.
 - `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit (docs/sound.md).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
+- `battle/shared/battle.js`, `battle/arena/board.js`: a bad address keeps its reason on screen, retries without its log, checks `mode=` and `map=` as own keys, and a start that rejects un-hides the page.
 - `battle/shared/excard.js`: the battle prints the wall's card from `/ex/` (the rounds' `../../../r4/ex/`), and a phone
   prints it plain, as the wall does. `src/lib/battle.ts` maps the page's own `../../../r4/ex/` sheet and scripts to
   `/ex/` by content address; the cards stage ships `face.gen.js` and the icon set to `public/ex` for it.

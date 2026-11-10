@@ -192,6 +192,21 @@ const TRANSFORMS = {
     ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
     ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
+    // an address that cannot start: `mode=` is checked as the list's own key (an inherited name such as "constructor"
+    // passed, the layout failed to load and the page stayed hidden); the reason stays on screen after the hand that
+    // plays instead begins (its start cleared the alert in the same task); a log that will not replay is retried as
+    // the same teams without it before the default hand; and a start that rejects un-hides the page and says so
+    ["let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') :", "let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') :"],
+    ["const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };\n", after("// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that\n// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)\nlet keptError = '';\nfunction bootFailed(err) {\n  if (document.documentElement.dataset.boot === undefined) return;\n  delete document.documentElement.dataset.boot;\n  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;\n}\n")],
+    ["  catch (err) { $('#error').textContent = String(err.message ?? err); if (!match) start(DEFAULT); return; }", "  catch (err) {\n    const retry = (replay || resume) && p.log;\n    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;\n    $('#error').textContent = String(err.message ?? err);\n    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);\n    else keptError = '';\n    return;\n  }"],
+    ["  $('#error').textContent = '';\n  hud.bind(match);", "  $('#error').textContent = keptError; keptError = '';\n  hud.bind(match);"],
+    ["else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);", "else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);"],
+    ["if (q.get('fixture')) runFixture(q.get('fixture'));", "if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);"],
+  ]),
+  // `map=` is checked as the list's own key: an inherited name ("constructor") passed, its ground file was a 404 and
+  // the Arena's boot rejected with the page still hidden
+  'public/battle/arena/board.js': (t) => patch('board.js', t, [
+    ["  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';", "  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';"],
   ]),
   // the card code is the wall's, served at /ex/ (the rounds' ../../../r4/ex/). A phone prints each card plain, as the
   // wall does (Kevin, 11-08, "Desktop-only frames"): a family's frame SVG layers held about 250 MB on an iPhone

@@ -293,3 +293,9 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09, fix: a battle link that cannot start says why and never leaves the page hidden (plan 008)
+- **Files**: scripts/sync.mjs (six pairs on battle.js, one board.js entry), public/battle/shared/battle.js, public/battle/arena/board.js, sync.lock.json, src/components/BattlePage.astro (8 s backstop script), docs/battle.md, docs/sync.md.
+- **Why**: a bad address (unknown card, old log) started the default hand with the alert erased in the same task; `#mode=constructor` / `#map=constructor` passed the own-key-less checks and left the page hidden; any boot-path rejection left a blank page.
+- **Checked** (preview on port 43850, built dist): mode=constructor -> visible, entrance, no error, mode=mat in hash; Arena map=constructor -> visible, live, no error; team=nope,nope,nope -> visible, live, error ends "Playing the default hand.", default team in hash; ?fixture=9 -> visible, error starts "The battle could not start"; plain /battle -> visible, no error; simulated late error -> visible, "The battle could not start. Reload the page, or Leave." after 9 s. pnpm build: all checks pass.
+- **Open**: the upstream request to the rounds' play lane (r4/play shared/battle.js and arena/board.js); the i18n branch needs keys for the three new sentences.
