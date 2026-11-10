@@ -117,7 +117,7 @@ What held the memory, measured in WebKit at iPhone 14 (390 x 844 at 3x):
 | The next pack's three 3D card copies and packet, rastered on the stage at opacity 0.001, plus their well cards | GPU layers | Cut at the press on a touch screen, as under reduced motion |
 | All 26 cards' pictures fetched and decoded at idle | about 30 MB decoded before any scroll | Stay lazy on a touch screen |
 | The battle's media preload kept a detached `<video preload="auto">` per clip | a decoder per clip until a collection | Drops its source once its first frame loads |
-| Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again |
+| Safari's back-forward cache keeps the wall and the battle alive behind the page in view | the whole page | On a touch screen they lose their WebGL contexts and drop canvases, clips and pictures as they enter it; a return loads them again, and the wall writes the dock's team into its address first so the reload keeps it (`node scripts/check-release.mjs dist/index.html`) |
 
 ### How it was measured
 

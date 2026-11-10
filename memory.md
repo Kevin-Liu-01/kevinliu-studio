@@ -293,3 +293,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: A phone keeps the Pick Three team when it comes back to the wall (improve/006-phone-keeps-team-after-back, executor agent)
+
+- **Type**: fix
+- **Changed**: `src/components/Release.astro` (on a return from the back-forward cache the wall writes the dock's team into its address, then reloads as before; gallery.js restore() reads it), `scripts/check-release.mjs` (new, runs the built inline script under node:vm), `docs/performance.md` (Memory table row).
+- **Checked**: `pnpm build` ends `verify-build: 32 pages, 31 sitemap URLs, 3099 files: all checks pass`; `node scripts/check-release.mjs` prints `release: 5 cases pass` on dist/index.html, dist/battle.html and dist/battle/arena.html. The check fails (2 cases, exit 1) against the old script. Browser check ran (playwright-core Chromium, iPhone 14 context, matchMedia coarse true, pageshow persisted sent by hand; agent-browser not used because its device mode gives no coarse pointer): after Gallery.toggle of katagami and mailroom the hash was empty; after the event the page reloaded to `/#you=katagami,mailroom&rival=&seed=N` with __table.you = katagami, mailroom.
+- **Open**: not checked on a real iPhone or in a real back-forward cache; a lens left open (`/cards/<id>` in the address) still returns to that card's page.
