@@ -218,7 +218,7 @@ export class ArenaBoard extends Layout {
     this.floorEl = el('div', 'arena-floor', this.shakeEl);
     this.groundSvg = sv('svg', { class: 'arena-svg arena-ground' }, this.shakeEl);
     this.padG = {};
-    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s }, this.groundSvg);
+    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s, ...(this.ctx.dealing ? { 'data-on': 'false' } : {}) }, this.groundSvg); // kevinliu.studio: on a deal the pads start hidden, as drawSides marks them a moment later (scripts/sync.mjs)
     this.decals = el('div', 'arena-decals', this.floorEl);
     this.shadows = el('div', 'arena-shadows', this.floorEl);
     this.rings = el('div', 'arena-rings', this.shakeEl);

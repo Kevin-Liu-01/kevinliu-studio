@@ -92,11 +92,43 @@ Interaction: the first press on a card spent 5.5 s (on this Mac under load) insi
 after the change: pointerdown 48 ms in all, 7 ms of script. At 390 (DPR 3) the remaining 600 to 800 ms is
 presentation delay on this Mac's GPU, with the main thread idle; Speed Insights after shipping is the real number.
 
-Left for the battle round (r4/play): the 627 KB `kit.js` bundle keeps the board empty for about 2.7 s before the
-deal; the page is blank behind its font gate for up to 2 s on entry; the interface disappears after each cutscene
-and snaps back; the Arena shows both pads and labels for one frame, removes them and adds them back; its team rail
-shows flat squares before the card art; at 390 the move list slides up over the active cards. The lens's Escape drops
-its action bar a frame before the dissolve (`gallery.js`).
+### The battle's pops and their causes (2026-11-10)
+
+The four things the battle still did against "nothing pops", each with its cause in the round's code (r4/play; line
+numbers are the site copies'). One is fixed here; three are requests to the play lane (plan 023 and its result in
+the audit's `plans/results/`). Evidence: paint captures and a frame-by-frame reading of the page, before and after,
+kept in `~/k7-rescue/improve-audit/lane-c/023/`. Local numbers show order only; a Vercel preview is needed for times.
+
+1. **The Arena's pads faded out at the reveal. Fixed by a sync transform.** On a deal the Arena created its pads
+   visible (`battle/arena/board.js:221`), laid the board out, and only then marked them hidden (`drawSides`, `:792`),
+   so the page was revealed with both pads on an empty floor, they faded to nothing over 0.2 s (`arena.css:110-111`)
+   and came back with each side's first card. Before: the first Arena frame shows both pads, the next frames none,
+   then the player's again with its card. After: the first Arena frame has no pad, and each pad arrives once, with
+   its card. The pads start hidden only on a deal: creating them hidden always was tried and made a switch from Mat
+   to Arena fade them in, which the shipped pair does not (the first Arena frame after the switch has both pads, as
+   before). The flags are created and marked in the same order but were never seen on a visible page before their
+   card, so they are left alone.
+2. **The interface hides and returns around every shot, not around the turn.** `battle/shared/battle.js:507` sets
+   `data-scene` at each shot's start and `:547` removes it at each shot's end; the rail and console fade out under it
+   (`mat.css:202`, `arena.css:251`) and back in after 0.25 s without it (`mat.css:56`), and the plates, the log and
+   the turn tab flip `visibility` after 0.12 s (`battle/shared/hud.css:366`, `:427`). In the opening, between the two
+   leads' entrances, the rail and console went from opacity 0 back to 1, stood for about 0.7 s and dropped to 0
+   again. Left to the round: hide for the batch, not for each shot.
+3. **The first paint waits on about a megabyte of blocking scripts, then on the whole boot.** Twelve classic scripts
+   stand before the page's module (`vendor/battle/mat/index.html:96-107`, 1,064 KB uncompressed, `kit.js` 627 KB of
+   it, holding all 18 battle cards' scenes for a hand that uses six), `battle.js:53` registers every scene at module
+   top level, and `html[data-boot] #app { visibility: hidden }` (`battle/shared/battle.css:58`) hides the page, the
+   static rail included, until a start has laid the board out. Locally the Arena's first frame came 2.3 s after the
+   navigation, after one black frame; the Mat's came at 1.4 s with the board already in it. Left to the round: a kit
+   per card, and a boot gate that lets the rail paint first.
+4. **The font gate was not what held the page.** `html[data-fonts] body { visibility: hidden }`
+   (`vendor/battle/mat/index.html:15`, 2 s cap) lifts when the 28.8 KB preloaded face arrives: 190 ms on the Arena
+   against a first contentful paint at 2328 ms (kit.js at 236 ms), and 102 ms against 1160 ms on the Mat (kit.js at
+   148 ms). It can only add blank time when the face arrives after the scripts and the boot.
+
+Not looked at by this spike, as recorded before: the Arena's team rail shows flat squares before the card art; at
+390 the move list slides up over the active cards. The lens's Escape drops its action bar a frame before the
+dissolve (`gallery.js`).
 
 ## Memory (phones)
 
@@ -192,3 +224,28 @@ like the site face), and each card's art as text: home HTML 43.5 to 50.6 KB gzip
 Measured again on 2026-11-10 (`gzip -9 -c dist/<page>.html | wc -c`, after the framed templates, round 5 and the
 language key): home HTML 55,500 bytes gzip (341,792 raw), a card page (`cards/turboslide`) 17,239,
 About 15,882.
+### Decoded audio across hands (2026-11-10)
+
+Method: Playwright Chromium with the iPhone 14 descriptor (coarse pointer true), three Auto hands at double speed with New Rival after each result, reading the player's own `Sound.stats().pcm` (decoded bytes). Before (build of `7245c52`; every New Rival hand kept its three new rival cards' kits for the rest of the visit):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 32.5 | 28.5 | 60.9 |
+| hand 2, result | 32.5 | 2.3 | 34.8 |
+| hand 3, kit loaded | 39.3 | 28.5 | 67.7 |
+| hand 3, result | 39.3 | 1.8 | 41.1 |
+
+After (a new hand unloads the card kits it does not hold; the same three hands were dealt):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 27.1 | 28.5 | 55.6 |
+| hand 2, result | 27.1 | 2.0 | 29.1 |
+| hand 3, kit loaded | 27.6 | 28.5 | 56.1 |
+| hand 3, result | 27.6 | 1.8 | 29.4 |
+
+`d` (one-shots at hand 3 loaded minus hand 1 loaded) was 13.1 MB before and is 1.4 MB after; at the third hand the page holds 11.7 MB less decoded audio (39.3 to 27.6). A group unloaded and loaded again through the player's own face gave its bytes back and took them again (`card:katagami`: 27.6, 26.1 after unload, 27.6 after load). An emulated phone on a loaded Mac is not a real phone: the decoded sizes are exact, the process totals on an iPhone were not measured. Themes are still decoded whole on every iPhone (28.5 MB while a hand plays), because the player's low-memory path tests `navigator.deviceMemory`, which Safari does not have; that is Kevin's decision.

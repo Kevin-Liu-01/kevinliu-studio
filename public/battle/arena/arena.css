@@ -286,7 +286,7 @@ button.hcard:focus-visible { outline-offset: 3px; }
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 22px; padding: 16px 22px; border-radius: 20px; background: var(--room-clay); box-shadow: var(--room-raise-l);
   transition: opacity .2s;
 }
-.result h1 { margin: 0; font: 800 46px/1 var(--sans); color: var(--paper); }
+.result h2 { margin: 0; font: 800 46px/1 var(--sans); color: var(--paper); }
 .result p { margin: 0; font: 600 14px/1.4 var(--sans); color: var(--ink-2); white-space: pre-wrap; }
 .result-keys { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .result .result-say { color: var(--paper); }
@@ -342,7 +342,7 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .move-head { font-size: 14px; }
   .acts { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 44px; }
   .result { grid-template-columns: 1fr; gap: 10px; padding: 14px; top: auto; bottom: 8px; }
-  .result h1 { font-size: 34px; }
+  .result h2 { font-size: 34px; }
   .result-keys { justify-content: stretch; }
   .result-keys .key { flex: 1 1 40%; }
   .flag-name { font-size: 11px; }

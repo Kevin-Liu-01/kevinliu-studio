@@ -199,7 +199,7 @@ let layout = null, switching = null;
 // ============================================================ sound (r4/sound, INTEGRATION.md section 3)
 // A dynamic import, so a page whose player fails to load still deals and plays in silence; every hook calls `Sound?.`,
 // and what a battle's start asks for waits for the import through `soundReady`.
-let Sound = null, shotSound = null;
+let Sound = null, shotSound = null, soundCards = new Set();
 const soundReady = import('../../sound/sound.js').then((m) => {
   Sound = m.default;
   Sound.init({ manifest: new URL('../../sound/manifest.battle.json', import.meta.url).href, page: 'battle', resumeAtLoad: true, groups: ['battle', mode, `music:mus.${mode}`] });
@@ -669,7 +669,9 @@ function say(text, ms = 0) {
   clearTimeout(sayT);
   if (ms) sayT = setTimeout(() => { s.textContent = narrow() ? sayRest : ''; }, ms);
 }
-function live(text) { $('#live').textContent = text; }
+// kevinliu.studio: one batch's outcomes are announced together, not only the last one written (scripts/sync.mjs)
+let liveLines = [];
+function live(text) { if (!liveLines.length) queueMicrotask(() => { $('#live').textContent = liveLines.join(' '); liveLines = []; }); liveLines.push(text); }
 
 function command(action) {
   if (busy || !match || match.state.phase !== 'command') return;
@@ -798,7 +800,7 @@ function showResult() {
   r.hidden = false;
   r.textContent = '';
   const out = (s) => st.sides[s].team.filter((f) => f.hp <= 0).length;
-  el('h1', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat');
+  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)
   el('p', '', r, `${st.turn} turns   ${out('rival')} of 3 rival cards out   ${out('player')} of 3 yours out`);
   // on a phone the leaders' lines have no plate on the board: the winner's rides the result instead
   if (narrow() && win !== 'draw') {
@@ -836,7 +838,9 @@ $('#logb').onclick = openLog;
 // the last attack again, as a replay: presentation only, no event lands twice
 async function replayLast() {
   if (busy || !lastShot?.scene) return;
+  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)
   busy = true; render();
+  try {
   const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };
   const c = runtime.compileScene(s);
   await stage.prepare(s, c);
@@ -844,8 +848,10 @@ async function replayLast() {
   app.dataset.scene = 'replay';
   stage.anchors = { source: layout.anchor('source', s.side), target: null };
   await stage.play(s, c, {});
-  delete app.dataset.scene;
-  busy = false; render();
+  } finally {
+    if (app.dataset.scene === 'replay') delete app.dataset.scene;
+    if (my === gen) { busy = false; render(); }
+  }
 }
 $('#replay').onclick = () => replayLast();
 
@@ -856,7 +862,7 @@ function skip() { shotSound?.skip(); stage.skip(); layout.skip(); }
 addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if ($('#log').open) return;
-  if (stage.playing && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); e.stopPropagation(); skip(); return; }
+  if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)
   const k = e.key.toLowerCase();
   if (k === 'escape') { if (panel && panel !== 'replace') { closePanel(true); e.preventDefault(); } return; }
   const refuse = () => { if (!busy && match?.state.phase === 'command') Sound?.play('bt.ui.refuse'); };
@@ -931,7 +937,8 @@ async function start(p, replay = false, resume = false) {
   match = next;
   if (groundG) groundG.paused = false;
   // a new hand stops the last one's sound and loads this one's six cards (a hand replaced before the import lands does nothing)
-  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });
+  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)
+  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });
   for (const id of [...match.team, ...match.rival]) groundCards.add(id);
   auto = false;
   busy = true;

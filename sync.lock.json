@@ -6,7 +6,7 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T08:59:54.361Z",
+ "synced": "2026-11-10T11:33:20.795Z",
  "stages": {
   "cards": {
    "files": 1034,
@@ -5186,12 +5186,12 @@
   },
   "sound": {
    "files": 1098,
-   "bytes": 17101785,
+   "bytes": 17103358,
    "list": {
     "public/sound/sound.js": {
      "src": "r4/sound/sound.js",
-     "sha256": "f2570f40a8421e7425216bca9c1c123737deba6bcb36c406775bad8ec206f55e",
-     "bytes": 83947
+     "sha256": "3a93a93fc704bdab405ded8b13a90b36a4f69cf7a5ec1ddc58c0df4373d5ff66",
+     "bytes": 85520
     },
     "public/sound/boot.gallery.js": {
      "src": "r4/sound/boot.gallery.js",
@@ -10682,17 +10682,17 @@
   },
   "battle": {
    "files": 893,
-   "bytes": 144496115,
+   "bytes": 144497361,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "803408f1e749096ad99016f6ea22272535a198d5858ec230f8e1f0ead369fafd",
+     "sha256": "bf2acb5e2ad5cbd959ffb7ae4eb2fb4e6f6db15ea6edda3fb93c6b12876d72b8",
      "bytes": 32329
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
-     "sha256": "8c5b0d2a2d3f3e1c4362895ee985bf24fab2fe2cba407c8f9f88be6430e44565",
-     "bytes": 92913
+     "sha256": "3d677cfed99f24d753a94c01a2d7bfcb363c6e9bec19ebc62c8ebfd630d50965",
+     "bytes": 93077
     },
     "public/battle/arena/ground.js": {
      "src": "r4/play/arena/ground.js",
@@ -10711,8 +10711,8 @@
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "2efde40a80b11e9042e6ad6593d312f2b131a25e8a9163849446c02aca60b7bc",
-     "bytes": 27223
+     "sha256": "32e7afb1be8f4a7efc63e8a5e458de4f04e0e983e89e59facf7ab26e403f3607",
+     "bytes": 27363
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
@@ -10726,8 +10726,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "2a6cb1221d39c12d90f4ae5a8d5718fcb5a26841d1e78481fe78d934df29c613",
-     "bytes": 62935
+     "sha256": "f031fd9586c881f6f022134045df6f8b0e1b8789754d947ad4f708c22e35f0d7",
+     "bytes": 63877
     },
     "public/battle/shared/excard.js": {
      "src": "r4/play/shared/excard.js",

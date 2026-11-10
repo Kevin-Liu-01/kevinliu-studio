@@ -236,7 +236,7 @@ button.well:focus-visible { outline: 2px solid var(--ink); outline-offset: 9px; 
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 22px; padding: 16px 22px; border-radius: 20px; background: var(--room-clay); box-shadow: var(--room-raise-l);
   transition: opacity .2s;
 }
-.result h1 { margin: 0; font: 800 46px/1 var(--sans); }
+.result h2 { margin: 0; font: 800 46px/1 var(--sans); }
 .result p { margin: 0; font: 600 14px/1.4 var(--sans); color: var(--ink-2); white-space: pre-wrap; }
 .result-keys { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .error { position: absolute; z-index: 40; left: 50%; top: 70px; translate: -50% 0; margin: 0; padding: 0 12px; font: 600 13px/1.4 var(--sans); color: var(--rival); }
@@ -267,7 +267,7 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
   .acts { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 44px; }
   .result { grid-template-columns: 1fr; gap: 10px; padding: 14px; top: auto; bottom: 8px; }
   .slot:is([data-zone="bench"], [data-zone="ko"]) .tab { scale: 1.4; transform-origin: 0 100%; }
-  .result h1 { font-size: 34px; }
+  .result h2 { font-size: 34px; }
   .result-keys { justify-content: stretch; }
   .result-keys .key { flex: 1 1 40%; }
   /* while a turn plays the mat takes the console's room: only the row of acts stays (Auto among them), on its own tray */
@@ -286,7 +286,8 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 
 /* ============================================================ reduced motion: every step a still */
 @media (prefers-reduced-motion: reduce) {
-  .rail, .console, .key, .slot-lift, .slot[data-dim], }
+  .rail, .console, .key, .slot-lift, .slot[data-dim], .result, #app[data-scene] .rail, #app[data-scene] .console, .slot[data-zone="finale"] :is(.chips, .tokens) { transition: none !important; }
+}
 
 /* the deal's cards, printed ahead one a frame in an unseen box at their slot's size (board.js prepare) */
 .mat-print { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; contain: strict; }
