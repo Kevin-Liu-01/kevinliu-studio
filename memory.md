@@ -416,3 +416,11 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+
+## 2026-11-10: `pnpm check` type-checks `src/` again; toolchain pins made exact (improve/020-typecheck-and-pins, Claude Code)
+
+- **Type**: chore, plan 020, cut from feat/i18n 4025230
+- **Changed**: `package.json` (engines `24.x`, `check` is `astro check` alone, `@astrojs/mdx` removed, `@astrojs/check` 0.9.12 and `typescript` 5.9.3 exact), `pnpm-lock.yaml` (by `pnpm install`), `pnpm-workspace.yaml` (`engineStrict: true`, mdx release-age exclusion removed), `.npmrc` deleted, `tsconfig.json` (new, Astro base preset, `src/` only), `src/components/Header.astro` (`aria-pressed={i === 0 ? 'true' : 'false'}`, same two values as `String(!i)`), `docs/deploy.md`, `AGENTS.md`.
+- **Why**: `astro check` could not run on TypeScript 7 (no compiler API) and there was no tsconfig; `node >=24` and `^` ranges let the toolchain move without a commit; `@astrojs/mdx` was used nowhere.
+- **Checked**: `pnpm check` ends `Result (61 files): - 0 errors - 0 warnings - 5 hints` (before the fix: 1 error at Header.astro:31:81, the one the plan names). `pnpm build` 256 pages, all checks pass; built HTML, Markdown and text files compared with the pre-change build.
+- **Open**: five hints left as they are (cards.ts:87, About.astro x2, Home.astro x2); AGENTS.md's agent-docs auto block still prints the old check script until the scaffold is rerun.
