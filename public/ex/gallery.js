@@ -56,7 +56,8 @@
   }, true);
   // one status line for the page and one inside the inspect dialog (aria-modal): a message goes where focus is
   const status = $('#status'), insStatus = $('#ins-status');
-  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };
+  let sayQ = [], sayT = 0;
+  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };
   const and = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs.at(-1));
   const { clamp } = M;
   const optsOf = (id) => ({ pass: ART.passOf(F[id].cost), k: KS[id], subject: ART.subjectOf(id) });
@@ -482,6 +483,7 @@
         }
       }
       w.classList.toggle('full', !!id);
+      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }
     });
     const g = $('.gauge');
     $$('i', g).forEach((sq, i) => sq.classList.toggle('on', i < spent()));
@@ -927,7 +929,7 @@
     closed(id) {
       setInert(false, id);
       for (const n of [behind, cards[id].pocket]) if (n.inert) { n.inert = false; inertTodo = inertTodo.filter((x) => x !== n); }
-      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });
+      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });
     },
   });
   const openInspect = R.lift.open, closeInspect = R.lift.close, stepTo = R.lift.step, tickInspect = R.lift.tick;
@@ -969,7 +971,7 @@
       playNext = false;
       if (G.ritual) { e.preventDefault(); G.ritual.finish(); return; }
       if (I.id) { e.preventDefault(); closeInspect(false); }
-    } else if ((e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea') && !I.id && !e.metaKey && !e.ctrlKey) { play(); }
+    } else if ((e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock') && !I.id && !e.metaKey && !e.ctrlKey) { play(); }
   });
 
   // ---------- boot ----------

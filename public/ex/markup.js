@@ -597,7 +597,7 @@ ${pin ? `<p class="pin">${pin}</p>` : ''}${[f.credit, ((media || {})[f.id] || {}
     return `<nav class="dock" aria-label="Teams">
 <div class="side you">${wells('you')}</div>
 <div class="mid"><span class="gauge" role="img" aria-label="${n} of ${rules.team.budget} inks">${Array.from({ length: rules.team.budget }, (_, i) => `<i${i < n ? ' class="on"' : ''}></i>`).join('')}</span>${playButton(both)}</div>
-<div class="side rival" aria-label="Rival">${wells('rival')}</div>
+<div class="side rival" role="group" aria-label="Rival">${wells('rival')}</div>
 </nav>`;
   }
   function inspect() {

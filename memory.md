@@ -416,3 +416,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+## 2026-11-10: the wall works for keyboard and screen-reader users (improve/016-wall-keyboard-and-screen-reader, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four pairs in the gallery.js entry, one in markup.js), `public/ex/gallery.js` and `public/ex/markup.js` (by the sync), `sync.lock.json`, `docs/sync.md`.
+- **Rationale**: (1) a bare P anywhere on the page left for the battle (WCAG 2.1.4); it now plays only from the dock. (2) A pack's "Rival: ..." was replaced by "Pack: ..." before a screen reader spoke it; messages inside one 30 ms window now go out as one line. (3) The rival's wells were aria-hidden copies under a role-less labelled div; the side is now a group and each filled well is an img named by its card. (4) The lens's arrow keys step past the wall's scroll, so Escape focused an off-screen card; the card now scrolls into view first.
+- **Measured**: say() simulation prints "Rival: A. Pack: B"; built dist/index.html has the rival group once (dist/de.html too, labelled Gegner); browser: wells img:bday.land / img:Princeton Powerlifting / img:Elo, P from the page stays on /, P from #play reaches /battle#team=katagami,mailroom,agent-pets.
+- **Open**: the same changes are requested upstream (plans/016); the lens's focus check needs a person.
