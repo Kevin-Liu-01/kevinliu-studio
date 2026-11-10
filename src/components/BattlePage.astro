@@ -56,9 +56,11 @@ function localize(body: string) {
 // the page's own faces for its language (scripts/i18n-fonts.py), as Base.astro declares them
 // each face covers what the battle's own subset lacks (battleRange: é, – and — among them)
 const faces = l.en ? [] : Object.values(FACES).filter((f) => f.battleRange && (f.locales.length > 1 || f.locales.includes(l.code)));
-// a translated rail: its longer words (Verlassen, Protokoll) fit at a phone's width with the rounds' own narrow-phone
-// spacing (hud.css, 389 px and under), applied below 720 px, and 12 px labels under 360 px
-const railCss = l.en ? '' : '@media (max-width:719px){#app#app .rail-keys{gap:3px}#app#app .rail-keys .tray{padding:3px;gap:3px}#app#app .rail-keys .key{padding:0 7px}#app#app .rail-keys .seg .key{min-width:0}#app#app .speed .key{min-width:38px;padding:0 6px}#app#app .key.snd{min-width:34px;padding:0 6px}}@media (max-width:359px){#app#app .rail-keys .key{padding:0 5px;font-size:12px}#app#app .rail-keys{gap:2px}#app#app .rail-keys .tray{padding:2px;gap:2px}}';
+// translated words are longer: a move's tooltip lets its header and numbers wrap and its column shrink to the tip's
+// width (hud.css lays it out at its widest unwrapped row, which at 320 px ran past the 304 px tip); the rail fits at a
+// phone's width with the rounds' own narrow-phone spacing (hud.css, 389 px and under), applied below 720 px, and 12 px
+// labels under 360 px
+const railCss = l.en ? '' : '.tp-move.tp-move{grid-template-columns:minmax(0,1fr)}.tp-body.tp-body{min-width:0}.tip.tip header{flex-wrap:wrap;row-gap:4px}.tp-nums.tp-nums{flex-wrap:wrap;row-gap:6px}@media (max-width:719px){#app#app .rail-keys{gap:3px}#app#app .rail-keys .tray{padding:3px;gap:3px}#app#app .rail-keys .key{padding:0 7px}#app#app .rail-keys .seg .key{min-width:0}#app#app .speed .key{min-width:38px;padding:0 6px}#app#app .key.snd{min-width:34px;padding:0 6px}}@media (max-width:359px){#app#app .rail-keys .key{padding:0 5px;font-size:12px}#app#app .rail-keys{gap:2px}#app#app .rail-keys .tray{padding:2px;gap:2px}}';
 // battle.js points Leave (the rail's and the result's) at the English wall (/#you=...) and titles the tab in English on
 // each mode switch, and sound.js names its key Sound; on a translated page Leave goes to this language's wall and the
 // title and the key's name stay in the language
