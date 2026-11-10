@@ -3,12 +3,17 @@
 > **Executor instructions**: This is a spike. You test one thing in a scratch copy and write one decision document.
 > Nothing ships and nothing in the design rounds is edited. Follow the steps in order. Run every verification command
 > and confirm the expected result before moving on. If anything in "STOP conditions" occurs, stop and report; do not
-> improvise. When done, update the status row for this plan in `plans/README.md`, unless a reviewer dispatched you
-> and told you they maintain the index.
+> improvise. Do NOT edit `plans/README.md`: lane D's reviewer dispatched you and the audit session keeps the index.
+>
+> **Refreshed 2026-11-10 by lane D** against site commit `4025230` (lane worktree `~/repos/kevinliu-studio-dir`, branch
+> `improve/direction`) and rounds HEAD `20496336`. The rounds paths this plan reads have not changed since the first
+> writing; on the site only line numbers moved. Plan 026's result now exists and changes one premise (see "What plan
+> 026 found", below). In this lane you write nothing in any site worktree: another executor is working in
+> `~/repos/kevinliu-studio-dir`. You may read files there.
 >
 > **Drift check (run first)**:
-> `git -C "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30" log --oneline 868340d7..HEAD -- r4/stage/cot2 r3/battle/data r3/battle/media-moves/claude-of-tanks r3/battle/broadcast/data/media.js r3/battle/broadcast/scenes r3/battle/tools/build-data.mjs r3/battle/broadcast/tools/media.py r4/play/vendor/broadcast/media.js`
-> and `git -C ~/repos/kevinliu-studio diff --stat c6245d9..origin/main -- public/battle/vendor/broadcast/media.js public/battle/r3/media-moves/claude-of-tanks scripts/sync.mjs docs/battle.md`.
+> `git -C "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30" log --oneline 20496336..HEAD -- r4/stage/cot2 r3/battle/data r3/battle/media-moves/claude-of-tanks r3/battle/broadcast/data/media.js r3/battle/broadcast/scenes r3/battle/tools/build-data.mjs r3/battle/broadcast/tools/media.py r4/play/vendor/broadcast/media.js`
+> and `git -C ~/repos/kevinliu-studio-dir diff --stat 4025230..HEAD -- public/battle/vendor/broadcast/media.js public/battle/r3/media-moves/claude-of-tanks scripts/sync.mjs docs/battle.md`.
 > If either prints anything, re-read the "Current state" facts against the live files before relying on them; a
 > mismatch you cannot explain is a STOP condition.
 
@@ -20,29 +25,33 @@
 - **Depends on**: none. Plan 026 (the 26-card battle routes) decides when the kit is rebuilt, which the Killcam clip
   needs; read its result if it exists (`plans/results/026-battle-26-cards.md`).
 - **Category**: direction
-- **Planned at**: commit `c6245d9` (site), rounds HEAD `868340d7`, 2026-11-09
+- **Planned at**: commit `4025230` (site), rounds HEAD `20496336`, 2026-11-10 (first written at `c6245d9` and
+  `868340d7`, 2026-11-09)
 
 ## Why this matters
 
 Claude of Tanks is Kevin's fourth goal and one of the 18 cards the battle fields. Its four battle moves still play
 older clips with the game's interface painted out, three of them small (518 x 332, 960 x 540, 526 x 244). On
 2026-11-03 a design round filmed replacements from Kevin's own October captures and his October tanks and maps, at
-1600 x 900 with no interface in frame, wrote the exact copy table, and then left them waiting: `docs/battle.md:27`
+1600 x 900 with no interface in frame, wrote the exact copy table, and then left them waiting: `docs/battle.md:28`
 says they "go into r3/battle's media-moves with the same merge" as the 26-card roster, a merge with no date. This
 spike finds out whether the clips can go in sooner, alone, without the kit rebuild, and gives Kevin a go or no-go per
 clip with the evidence. If the answer is yes for three of four, the battle shows his current game weeks earlier.
 
 ## Current state
 
-Two repositories. You read both; you write one new file in a site worktree and a scratch folder.
+Two repositories. You read both; you write one result file in the audit worktree, a scratch folder, and a hand-over
+folder for the reviewer.
 
-- Site repo: `~/repos/kevinliu-studio` (Astro 7 static). The battle's files arrive from the rounds through
-  `scripts/sync.mjs` at a pinned rounds commit (`PIN.battle = '42ff51c7'`, `scripts/sync.mjs:30`).
+- Site (read only for you): `~/repos/kevinliu-studio-dir` (Astro 7 static). The battle's files arrive from the rounds
+  through `scripts/sync.mjs` at a pinned rounds commit (`PIN.battle = '42ff51c7'`, `scripts/sync.mjs:31`).
+- Audit worktree: `~/repos/kevinliu-studio-improve`. You create `plans/results/030-claude-of-tanks-footage.md` there
+  and commit nothing.
 - Rounds repo: `/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30`, called `<rounds>` below.
   `<rounds>/r3/battle` holds 572 uncommitted entries from a retired run (battle-r4b). **Never write anywhere under
   `<rounds>`, and never run a tool inside the live `<rounds>/r3/battle`.**
 
-What the site says (`docs/battle.md:27`):
+What the site says (`docs/battle.md:28`):
 
 ```
 - Claude of Tanks' five new move videos (`r4/stage/cot2/footage`) go into r3/battle's media-moves with the same merge.
@@ -140,6 +149,14 @@ The checks that depend on a finished swap, from the tools' own headers in `<roun
   is skipped ... `node tools/previews.mjs [card,card...]`". The site ships eight preview files for Claude of Tanks
   (`public/battle/previews/claude-of-tanks.*.webm` and `.webp`); they show the old clips until re-recorded.
 
+**What plan 026 found** (`~/repos/kevinliu-studio-improve/plans/results/026-battle-26-cards.md`; read its first screen,
+"What a clean kit rebuild takes with it besides the eight" and "Reviewer's browser run"): the battle page's engine and
+every scene live inside `kit.js`; every route to 26 cards rebuilds the kit; a clean rebuild from the committed tree
+changes 116 of the 186 source files of the shipped kit and needs a page flash scan of the 18 fielded cards first; and
+plan 026 recommends that rebuild as the first step. So "wait for the kit" now has a shape: the Killcam clip would ride
+the first 26-card kit, whose date depends on Kevin's answers to that document's questions. Use this in Step 6 ("Two
+steps or one") and in the verdict; quote the 026 lines you rely on.
+
 Vocabulary: "the kit" is `kit.js`, the bundle of the engine, runtime and every scene file; "the page's manifest" is
 `r4/play/vendor/broadcast/media.js`; "the flash gate" limits bright flashes per scene.
 
@@ -148,20 +165,22 @@ Vocabulary: "the kit" is `kit.js`, the bundle of the engine, runtime and every s
 | Purpose | Command | Expected on success |
 | --- | --- | --- |
 | Free disk | `df -h /System/Volumes/Data` | "Avail" at least 31 GB before the export |
-| Export committed folders | `git -C "<rounds>" archive HEAD r3/battle r1/study-roster18 r2/plates r4/stage/cot2/footage \| tar -x -C "$SPIKE"` | exit 0; about 200 MB |
+| Export committed folders | `git -C "<rounds>" archive HEAD r3/battle r3/cards r1/study-roster18 r2/plates r4/stage/cot2/footage \| tar -x -C "$SPIKE"` | exit 0; about 200 MB |
 | The page's manifest at the pin | `git -C "<rounds>" show 42ff51c7:r4/play/vendor/broadcast/media.js > "$SPIKE/page-media.js"` | a file of about 103 KB |
 | Data build (in `$SPIKE/r3/battle`) | `node tools/build-data.mjs --no-copy` | exit 0 |
 | Manifest build (same folder) | `python3 -I broadcast/tools/media.py --data-only` | prints `data/media.js: unchanged` or a list of card ids |
-| Site sync check (site worktree; proves the site is untouched) | `ROUNDS=$HOME/k7-rescue/release-next/rounds-42ff51c7 node scripts/sync.mjs --check` | prints `in sync` |
+| Site sync check (proves the site is untouched) | run by the lane's reviewer, not by you | prints `in sync` |
 
 `$SPIKE` is `~/k7-rescue/improve-audit/spike-030` (create it; outside both repositories; survives a reboot).
 
 ## Scope
 
 **In scope** (the only files you create or modify):
-- `plans/results/030-claude-of-tanks-footage.md` in your site worktree (create): the go or no-go document.
-- `plans/README.md` in your site worktree: this plan's status row.
+- `~/repos/kevinliu-studio-improve/plans/results/030-claude-of-tanks-footage.md` (create): the go or no-go document.
+  Do not commit it.
 - Anything under `$SPIKE` (scratch; deleted in the last step).
+- `~/k7-rescue/improve-audit/lane-d/cot-030/` (create): the hand-over for the reviewer's browser run (Step 4 says
+  what goes in it) and `~/k7-rescue/improve-audit/lane-d/030-memory.md` (the `memory.md` entry's text; Step 7).
 
 **Out of scope** (do NOT touch):
 - Every path under `<rounds>`. In particular do not copy the clips into the live `r3/battle`, do not edit
@@ -174,11 +193,10 @@ Vocabulary: "the kit" is `kit.js`, the bundle of the engine, runtime and every s
 
 ## Git workflow
 
-- Site worktree: `git -C ~/repos/kevinliu-studio worktree add -b improve/030-claude-of-tanks-footage ~/repos/kevinliu-studio-030 origin/main`.
-  Never edit the main checkout. Never `git stash`.
-- One commit, by explicit path, as the noreply address:
-  `git -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "docs(plans): Claude of Tanks' October footage in the battle, go or no-go" -- plans/results/030-claude-of-tanks-footage.md plans/README.md`
-- Do NOT push, open a PR or deploy.
+- You make no commit and touch no git state anywhere. The reviewer appends your `memory.md` text to the lane worktree
+  (`~/repos/kevinliu-studio-dir`, branch `improve/direction`) and commits it; the audit session commits the result
+  file.
+- Never `git stash`. Do NOT push, open a PR or deploy.
 
 ## Steps
 
@@ -188,8 +206,8 @@ Vocabulary: "the kit" is `kit.js`, the bundle of the engine, runtime and every s
 df -h /System/Volumes/Data            # Avail must be 31 GB or more
 SPIKE=~/k7-rescue/improve-audit/spike-030; mkdir -p "$SPIKE"
 R="/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30"
-git -C "$R" status --short | wc -l    # write this number down
-git -C "$R" archive HEAD r3/battle r1/study-roster18 r2/plates r4/stage/cot2/footage | tar -x -C "$SPIKE"
+git -C "$R" status --short -- r4/stage/cot2 r3/battle/data r3/battle/media-moves | wc -l    # write this number down
+git -C "$R" archive HEAD r3/battle r3/cards r1/study-roster18 r2/plates r4/stage/cot2/footage | tar -x -C "$SPIKE"
 git -C "$R" show 42ff51c7:r4/play/vendor/broadcast/media.js > "$SPIKE/page-media.js"
 cp "$SPIKE/r3/battle/broadcast/data/media.js" "$SPIKE/r3-media.before.js"
 ```
@@ -249,7 +267,7 @@ for(const m of spliced[id].moves)console.log(m.media&&m.media.src,JSON.stringify
 ```
 
 Then check that the site's three anchored patches on this file still match the spliced copy exactly once each (they
-are in `scripts/sync.mjs:209-213` of the site repo):
+are in `~/repos/kevinliu-studio-dir/scripts/sync.mjs:233-235`):
 
 ```sh
 node -e '
@@ -258,6 +276,11 @@ for(const a of [`"card":{"src":"media/elo/card-elo-hub.png","kind":"image","w":2
 ```
 
 Copy `cot-entry.diff.json`'s contents into the result document under "The change to the page's manifest".
+
+Hand-over for the reviewer's browser run (the reviewer puts the new clips and the new entry into a copy of the site's
+build and watches the four moves play under today's kit): copy into `~/k7-rescue/improve-audit/lane-d/cot-030/` the
+files `cot-entry.diff.json` and `page-media.spliced.js`, and, in a subfolder `media-moves/claude-of-tanks/`, the nine
+files Step 3 copied (the four `-oct.mp4` clips and the five `.webp` stills).
 
 **Verify**: the first script prints `r3 entries changed by the footage: claude-of-tanks`, lists the changed fields
 (expect `moves`; record whatever it prints), prints `other cards untouched in the splice: true`, and its last lines
@@ -301,27 +324,65 @@ Write these sections in the result document. Do not run the tools.
   pinned commit. So shipping means: the clips and the spliced manifest committed in the rounds by the battle's lane,
   `PIN.battle` moved to that commit, a sync from an export, `pnpm build`, and the re-recorded previews in the same
   pin. About 9.4 MB of new media; the old `*-clean.mp4` files (about what they weigh today:
-  `du -sh ~/repos/kevinliu-studio/public/battle/r3/media-moves/claude-of-tanks`) stay until the new ones are proven,
+  `du -sh ~/repos/kevinliu-studio-dir/public/battle/r3/media-moves/claude-of-tanks`) stay until the new ones are proven,
   then leave.
 - "Two steps or one": shipping three clips now and Killcam with the kit means two rounds of checks; waiting means one,
   with the old clips in place until the 26-card rebuild. State both plainly.
 
-**Verify**: `grep -c "tools/" plans/results/030-claude-of-tanks-footage.md` prints 6 or more.
+**Verify**: `/usr/bin/grep -c "tools/" ~/repos/kevinliu-studio-improve/plans/results/030-claude-of-tanks-footage.md` prints 6 or more.
 
 ### Step 7: Write the verdict and clean up
 
-Finish `plans/results/030-claude-of-tanks-footage.md` with, at the top, one line per clip: **GO now**, **GO with the
+Finish `~/repos/kevinliu-studio-improve/plans/results/030-claude-of-tanks-footage.md` with, at the top (after a line
+giving the date, the site commit and the rounds HEAD you read), one line per clip: **GO now**, **GO with the
 kit**, or **NO-GO**, and the single reason. Then "Questions for Kevin": (1) ship three now and Killcam later, or all
 four with the kit; (2) drop the old `*-clean.mp4` files once the new ones are live; (3) is the optional trait clip
 (`cot-seeded-oct.mp4`) wanted anywhere. Then "Findings along the way" (Step 2's and Step 4's surprises, if any).
 
-Delete the scratch export: `rm -rf ~/k7-rescue/improve-audit/spike-030` (look at the path first; it must be exactly
-that folder). In the site worktree run the sync check from the commands table.
+Write the `memory.md` entry's text to `~/k7-rescue/improve-audit/lane-d/030-memory.md` in the form of the last
+entries of `~/repos/kevinliu-studio-dir/memory.md` (read them; do not edit that file): date 2026-11-10, type "spike",
+asked by improve plan 030, changed: nothing that ships (the result document is
+`plans/results/030-claude-of-tanks-footage.md` on `improve/audit`), the verdict per clip in one line, what you
+measured, and the open questions' count.
 
-**Verify**: `head -12 plans/results/030-claude-of-tanks-footage.md | grep -c "GO"` prints 4 or more;
-`ls ~/k7-rescue/improve-audit/spike-030 2>&1` prints "No such file or directory";
-the sync check prints `in sync`;
-`git -C "<rounds>" status --short | wc -l` prints the number you wrote down in Step 1.
+Delete the scratch export: `rm -rf ~/k7-rescue/improve-audit/spike-030` (look at the path first; it must be exactly
+that folder). Keep `~/k7-rescue/improve-audit/lane-d/cot-030/`.
+
+**Verify** (use `/usr/bin/grep`): `head -14 ~/repos/kevinliu-studio-improve/plans/results/030-claude-of-tanks-footage.md | /usr/bin/grep -c "GO"`
+prints 4 or more; `ls ~/k7-rescue/improve-audit/spike-030 2>&1` prints "No such file or directory";
+`ls ~/k7-rescue/improve-audit/lane-d/cot-030/media-moves/claude-of-tanks | wc -l` prints `9`;
+`git -C "<rounds>" status --short -- r4/stage/cot2 r3/battle/data r3/battle/media-moves | wc -l` prints the number it
+printed before Step 1 (other sessions write elsewhere in the rounds, so compare these paths, not the whole tree).
+
+## Revision 1 (lane D's reviewer, 2026-11-10, after the Step 2 stop)
+
+Step 2 stopped correctly: `tools/build-data.mjs --no-copy` needs
+`r1/study-roster18/turboslide/media/ts-perfect-export.webp`, which exists in the live rounds but is not tracked. The
+rounds' `.gitignore` leaves most media out of git on purpose (lines 5 to 14: `*.png`, `*.jpg`, `*.webp`, `*.mp4` and
+more), so a committed-only export can never run the data build: `git status --short --ignored -- r1/study-roster18
+r2/plates` lists 357 ignored entries and no modified or untracked one. That is a finding for the result document
+("Findings along the way"): the build that ships the footage must run in a full checkout, not from a `git archive`.
+
+The plan's "tracked only" rule existed to keep battle-r4b's uncommitted work out of the experiment. Ignored media in
+`r1` and `r2` is not that work. So, to continue:
+
+1. Replace the export's two input folders with copy-on-write clones of the live ones (APFS clones: instant, no extra
+   disk, and nothing the tools do can reach the live rounds):
+   ```sh
+   SPIKE=~/k7-rescue/improve-audit/spike-030; R="/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30"
+   git -C "$R" status --short -- r1/study-roster18 r2/plates | wc -l     # must print 0: the tracked files there are the committed ones
+   rm -rf "$SPIKE/r1/study-roster18" "$SPIKE/r2/plates"
+   cp -Rc "$R/r1/study-roster18" "$SPIKE/r1/study-roster18"
+   cp -Rc "$R/r2/plates" "$SPIKE/r2/plates"
+   ```
+   If the first command does not print `0`, stop and report.
+2. Run Step 2 again. If a tool then names a missing file under `r3/battle` or `r3/cards`, look at it in the live
+   rounds with `git -C "$R" status --short --ignored -- <that file>`: if its status is `!!` (ignored, so not part of
+   battle-r4b's modified or untracked work), copy that one file into the same place in the export and note it; if its
+   status is `??` or ` M`, or more than ten such files are needed, stop and report. Never copy a whole folder from
+   `r3/battle`.
+3. Continue with Steps 3 to 7 as written. In the result document, list every untracked input you brought in and say
+   plainly that the experiment used committed code and data with git-ignored media from the live folders.
 
 ## Test plan
 
@@ -330,21 +391,23 @@ No code changes, so no new tests. The spike's own checks are its evidence:
 - Step 2: the tools change nothing on an untouched export (`data/media.js: unchanged`).
 - Step 3: the footage changes exactly one card (`data/media.js: claude-of-tanks`).
 - Step 4: the splice leaves the other 17 cards byte-equal and the site's three patch anchors still match once.
-- The rounds repo's status count is the same before and after; the site's sync check still says `in sync`.
+- The rounds repo's status count for the paths this plan reads is the same before and after; the reviewer confirms
+  the site's sync check still says `in sync`.
 
 ## Done criteria
 
 Machine-checkable. ALL must hold:
 
-- [ ] `plans/results/030-claude-of-tanks-footage.md` exists; its first 12 lines give a verdict for each of the four
-      clips; it contains the manifest diff from Step 4, the four-row scene table from Step 5, "Checks at the build",
+- [ ] `~/repos/kevinliu-studio-improve/plans/results/030-claude-of-tanks-footage.md` exists; its first 14 lines give
+      a verdict for each of the four clips; it contains the manifest diff from Step 4, the four-row scene table from Step 5, "Checks at the build",
       "What the site needs" and "Questions for Kevin".
 - [ ] The document records Step 2's and Step 3's printed lines verbatim.
-- [ ] `git status --short` in the site worktree shows only `plans/results/030-claude-of-tanks-footage.md` and
-      `plans/README.md`.
-- [ ] `git -C "<rounds>" status --short | wc -l` equals the count from Step 1.
-- [ ] `~/k7-rescue/improve-audit/spike-030` no longer exists.
-- [ ] `plans/README.md` status row updated.
+- [ ] You changed nothing in any site worktree and made no commit.
+- [ ] The rounds' status count for `r4/stage/cot2`, `r3/battle/data` and `r3/battle/media-moves` equals the count
+      from before Step 1.
+- [ ] `~/k7-rescue/improve-audit/spike-030` no longer exists; `~/k7-rescue/improve-audit/lane-d/cot-030/` holds the
+      hand-over and `~/k7-rescue/improve-audit/lane-d/030-memory.md` exists.
+- [ ] `plans/README.md` is untouched.
 
 ## STOP conditions
 
@@ -364,7 +427,7 @@ Stop and report back (do not improvise) if:
 
 - The result of this spike feeds plan 026's decision: if Kevin picks a route that rebuilds the kit soon, shipping all
   four clips with it is one round of checks instead of two.
-- After the swap ships, `docs/battle.md:27` is out of date and its line should be rewritten in the same release, and
+- After the swap ships, `docs/battle.md:28` is out of date and its line should be rewritten in the same release, and
   `r3/battle/MEDIA.md`'s `### claude-of-tanks` section rewritten in the rounds (the handoff's last table row).
 - Media under `/battle/` is cached for a day (`vercel.json`); the new clips have new names, so no visitor is served an
   old clip under a new manifest.

@@ -3,12 +3,15 @@
 > **Executor instructions**: This is a spike. You measure, read and write one decision document. You build nothing that
 > ships and you decide nothing for Kevin. Follow the steps in order. Run every verification command and confirm the
 > expected result before moving on. If anything in "STOP conditions" occurs, stop and report; do not improvise. When
-> done, update the status row for this plan in `plans/README.md`, unless a reviewer dispatched you and told you they
-> maintain the index.
+> done, do NOT edit `plans/README.md`: lane D's reviewer dispatched you and the audit session keeps the index.
+>
+> **Refreshed 2026-11-10 by lane D** against site commit `4025230` (branch `improve/direction`, worktree
+> `~/repos/kevinliu-studio-dir`) and rounds HEAD `de54fad5`. Every "Current state" fact below was re-opened at those
+> commits; what moved since the first writing is marked "(refresh)".
 >
 > **Drift check (run first)**:
-> `git -C ~/repos/kevinliu-studio diff --stat c6245d9..origin/main -- docs/battle.md src/lib/cards.ts vendor/battle public/battle/vendor public/sound/manifest.battle.json`
-> and `git -C "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30" log --oneline 868340d7..HEAD -- r3/battle r4/play`.
+> `git -C ~/repos/kevinliu-studio-dir diff --stat 4025230..HEAD -- docs/battle.md src/lib/cards.ts vendor/battle public/battle/vendor public/sound/manifest.battle.json`
+> and `git -C "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30" log --oneline de54fad5..HEAD -- r3/battle r4/play`.
 > If either prints anything, re-read the "Current state" facts against the live files before you rely on them; a
 > mismatch you cannot explain is a STOP condition.
 
@@ -19,7 +22,8 @@
 - **Risk**: LOW for the spike (read-only on the live rounds; all experiments run in a scratch export)
 - **Depends on**: none
 - **Category**: direction
-- **Planned at**: commit `c6245d9` (site), rounds HEAD `868340d7`, 2026-11-09
+- **Planned at**: commit `4025230` (site, `feat/i18n` with the ten P1 plans), rounds HEAD `de54fad5`, 2026-11-10
+  (first written at `c6245d9` and `868340d7` on 2026-11-09)
 
 ## Why this matters
 
@@ -33,16 +37,26 @@ measurements and the trade-offs on one page so Kevin (or the main portfolio sess
 
 ## Current state
 
-Two repositories. You read both and write only to the site worktree (one new file) and a scratch folder.
+Two repositories. You read both. You write only: the result document in the audit worktree, one `memory.md` entry in
+the lane worktree, and a scratch folder.
 
-- Site repo: `~/repos/kevinliu-studio` (Astro 7 static site, production is `origin/main`).
+- Site worktree for this lane: `~/repos/kevinliu-studio-dir` (branch `improve/direction`, Astro 7 static site, cut from
+  `4025230`). Run every site command there. Never touch `~/repos/kevinliu-studio` itself or any other
+  `~/repos/kevinliu-studio-*` worktree; they belong to other sessions.
+- Audit worktree (the plans): `~/repos/kevinliu-studio-improve`. You create one file there,
+  `plans/results/026-battle-26-cards.md`, and commit nothing there.
 - Rounds repo (the source of the cards, battle and sound):
   `/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30`, called `<rounds>` below. Other sessions write
   in it. `<rounds>/r3/battle` holds 572 uncommitted entries left by a retired run called battle-r4b
-  (`git -C <rounds> status --short -- r3/battle`: 289 deleted, 70 modified, 213 untracked on 2026-11-09). **Never write
-  anywhere under `<rounds>`.**
+  (`git -C <rounds> status --short -- r3/battle`: 289 deleted, 70 modified, 213 untracked; the same counts on
+  2026-11-09 and 2026-11-10). **Never write anywhere under `<rounds>`.**
+- (refresh) Three of the notes this plan quotes are among the 70 modified files, so their working-tree text differs
+  from the committed text your export will hold: `r3/battle/broadcast/scenes/next/README.md` (31 lines changed),
+  `r3/battle/.work/next-harness/MERGE.md` (48) and `r3/battle/.work/next-harness/merge-dry/RUN.md` (6). The excerpts
+  below were taken from the working tree. Read both forms (`git -C <rounds> diff -- <file>` is read-only) and say in the
+  result document which form each quoted line comes from and what battle-r4b changed in them.
 
-What the site says (`docs/battle.md:22-24`):
+What the site says (`docs/battle.md:23-25`):
 
 ```
 - The battle holds 18 of the 26 cards. The eight added on 11-01 have staged scenes in
@@ -68,12 +82,13 @@ export function teamFor(lead: string): string[] | null {
 So the site needs no code change to field 26: a rebuilt `vendor/engine.js`, `kit.js` and `media.js` arriving through
 the sync is enough (`<meta name="battle-roster">` and `teamFor` follow the engine).
 
-What already ships for the eight and cannot be reached (measured on the site at `c6245d9`):
+What already ships for the eight and cannot be reached (measured at `c6245d9`; the cue count and the figures were
+re-measured at `4025230`: 6 cues a card, 968 KB of figures):
 
 | Material | Where on the site | Size |
 | --- | --- | --- |
 | 6 battle sound cues a card (`sig.<id>.<move>`, `.entrance`, `.trait`), 48 cues, 89 file stems | `public/sound/manifest.battle.json`, files under `public/sound/out/` | 1.36 MB (Opus and AAC) |
-| Arena figures | `public/battle/media/figures/<id>/` | 0.93 MB |
+| Arena figures | `public/battle/media/figures/<id>/` | 0.93 MB (968 KB by `du -sk`) |
 | Move footage | `public/battle/r3/media-moves/<id>/` | 9.3 MB |
 | Worlds (loop, wide, portrait, poster, object, emblem, ground) | `public/battle/r3/broadcast/media/<id>/` | 10.7 MB |
 
@@ -147,6 +162,16 @@ The engine move id is also the key of three file families: the scene file
 `public/sound/manifest.battle.json`) and the move preview (`public/battle/previews/<card>.<id>.webm` and `.webp`).
 Renaming an id would orphan all three; renaming only the displayed name would not.
 
+**(refresh) What plan 009 changed, which the route choice must read.** Plan 009 is DONE and is in `4025230`. On a
+touch screen or a small-memory device the battle now keeps two shader worlds instead of one WebGL2 context per card
+with a world (`memory.md`, entry "2026-11-09: the battle gives back shader worlds and warm-up bytes on a phone":
+"A touch screen or small-memory device now keeps two worlds, the warm-up keeps no bytes, the prints pause at the
+result and under the Log"; measured there: stage canvases 3 to 2 over a 150 s Auto battle in Chromium with the iPhone
+14 descriptor). The change is a `PHONE` patch in `scripts/phone-memory.mjs` applied to
+`public/battle/shared/runtime.js` and `public/battle/shared/battle.js` (search those two synced files for the marker
+`kevinliu.studio phone memory`). The eight staged cards each bring a world (10.7 MB of world files in all), so each
+route must say what a 26-card roster does to a phone under that cap (Step 5, question 4).
+
 Vocabulary to use: "fielded" (a card the engine holds), "staged" (the eight), "the kit" (`kit.js`, the bundle of
 engine, runtime, Broadcast grammar and every scene), "the closer's check" (`PORT=<p> node tools/check.mjs` in
 r3/battle), "flash gate" (the limit on bright flashes per scene).
@@ -156,10 +181,10 @@ r3/battle), "flash gate" (the limit on bright flashes per scene).
 | Purpose | Command | Expected on success |
 | --- | --- | --- |
 | Free disk | `df -h /System/Volumes/Data` | "Avail" at least 31 GB before any export |
-| Rounds HEAD | `git -C "<rounds>" rev-parse --short HEAD` | `868340d7` or later (see drift check) |
+| Rounds HEAD | `git -C "<rounds>" rev-parse --short HEAD` | `de54fad5` or later (see drift check) |
 | Export committed folders | `git -C "<rounds>" archive HEAD r3/battle r1/study-roster18 r2/plates r4/ex/roster \| tar -x -C "$SPIKE"` | exit 0; about 190 MB |
 | The scenes' own validator | `node broadcast/tools/validate.mjs` (in `$SPIKE/r3/battle`) | prints `own scene: moves N/N, traits N/N, entrances N/N` and `0 problems` |
-| Site build (only to confirm you changed nothing that builds) | `pnpm build` (in the site worktree) | ends `verify-build: 32 pages, 31 sitemap URLs, ... all checks pass` |
+| Site build (only to confirm you changed nothing that builds) | `pnpm build` (in `~/repos/kevinliu-studio-dir`) | ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass` (the lane baseline at `4025230`); the lane's reviewer runs it, not you |
 
 `$SPIKE` is `~/k7-rescue/improve-audit/spike-026` (create it; it is outside both repositories and survives a reboot,
 unlike `/tmp`).
@@ -167,9 +192,11 @@ unlike `/tmp`).
 ## Scope
 
 **In scope** (the only files you create or modify):
-- `plans/results/026-battle-26-cards.md` in your site worktree (create): the decision document.
-- `plans/README.md` in your site worktree: this plan's status row.
-- Anything under `$SPIKE` (scratch; delete it in the last step).
+- `~/repos/kevinliu-studio-improve/plans/results/026-battle-26-cards.md` (create, with its folder): the decision
+  document. Do not commit it; the audit session commits plan files.
+- `~/repos/kevinliu-studio-dir/memory.md`: append one entry (Step 7).
+- Anything under `$SPIKE` (scratch; delete it in the last step). Logs you want to keep go to
+  `~/k7-rescue/improve-audit/lane-d/`.
 
 **Out of scope** (do NOT touch):
 - Every path under `<rounds>`: no edits, no `git add`, no `git stash`, no checkout, no tool that writes there. In
@@ -183,19 +210,18 @@ unlike `/tmp`).
 
 ## Git workflow
 
-- Work in a new git worktree of `~/repos/kevinliu-studio` on branch `improve/026-battle-26-cards-spike` cut from
-  `origin/main`:
-  `git -C ~/repos/kevinliu-studio worktree add -b improve/026-battle-26-cards-spike ~/repos/kevinliu-studio-026 origin/main`.
-  Never edit the main checkout. Never `git stash`.
-- One commit, by explicit path, as the noreply address:
-  `git -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "docs(plans): the 26-card battle routes, measured" -- plans/results/026-battle-26-cards.md plans/README.md`
+- Work in the lane worktree that already exists: `~/repos/kevinliu-studio-dir`, branch `improve/direction`. Do not
+  create a branch or a worktree. Never edit `~/repos/kevinliu-studio` or another worktree. Never `git stash`.
+- One commit on `improve/direction`, by explicit path, as the noreply address, holding only the `memory.md` entry:
+  `git -C ~/repos/kevinliu-studio-dir -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "docs(memory): the 26-card battle routes, measured (improve plan 026)" -m "Co-Authored-By: Claude <noreply@anthropic.com>" -- memory.md`
+- Commit nothing in `~/repos/kevinliu-studio-improve`.
 - Do NOT push, open a PR or deploy.
 
 ## Steps
 
 ### Step 1: Confirm the inventory of what ships unused
 
-In the site worktree, run:
+In `~/repos/kevinliu-studio-dir`, run:
 
 ```sh
 node -e '
@@ -280,13 +306,20 @@ default scenes stand in for the eight until the kit lands. Answer from the shipp
 2. Does the director fall back to a default scene for a move with no scene file? `<rounds>/r4/play/vendor/SOURCES.md:10`
    says the director bundle carries "the runtime's default scene for every kind"; find where the kit resolves a scene
    (`findCutscene`) and say what plays.
-3. Would previews and sound break? The tooltip names `previews/<card>.<move id>.webm` (`public/battle/shared/hud.js:374`);
-   the eight have none. The eight's sound cues already ship.
+3. Would previews and sound break? The tooltip names `previews/<card>.<move id>.webm` (search
+   `public/battle/shared/hud.js` for `PREVIEWS`; the line number has moved); the eight have none. The eight's sound
+   cues already ship.
+4. (refresh) What does a 26-card roster do to a phone under plan 009's cap of two worlds? Open the patched code (search
+   `public/battle/shared/runtime.js` and `public/battle/shared/battle.js` for `kevinliu.studio phone memory`) and
+   answer with `file:line`: is the cap per visit or per battle, which world is given back when a third is asked for,
+   and does anything in it count or list the roster? Then say, for each route, whether fielding the eight raises what a
+   phone holds at once (a battle still fields six cards) or only what it may fetch over a visit. This answer goes in
+   the comparison table's "open risks" column.
 
 Give a verdict: possible, possible with named gaps, or not possible, and say plainly that the eight would play
 generic cutscenes, which falls short of Kevin's "loud".
 
-**Verify**: the "Route C" section answers the three questions, each with at least one `file:line` you opened.
+**Verify**: the "Route C" section answers the four questions, each with at least one `file:line` you opened.
 
 ### Step 6: Design the move-id map (on paper)
 
@@ -316,7 +349,7 @@ Write a "Move ids and names" section:
 
 ### Step 7: Write the recommendation and the questions for Kevin
 
-Finish `plans/results/026-battle-26-cards.md` with:
+Finish `~/repos/kevinliu-studio-improve/plans/results/026-battle-26-cards.md` with:
 
 - A three-row comparison table: route, what Kevin gets and when, what it drops or inherits, machine time, open risks.
 - One recommended route with the reason in two or three sentences. The recommendation must follow from the numbers
@@ -328,34 +361,122 @@ Finish `plans/results/026-battle-26-cards.md` with:
 - "Not done here": the four hooks, the kit rebuild, `tools/previews.mjs` for the 32 new moves, `tools/timings.mjs`,
   the site's pin move.
 
+The document's first lines state: the date, the site commit (`4025230`), the rounds HEAD you read, and one sentence
+with the recommendation, so Kevin can stop reading after the first screen.
+
+Then append one entry to `~/repos/kevinliu-studio-dir/memory.md` in the file's existing form (look at its last two
+entries): date 2026-11-10, type "spike", asked by improve plan 026, changed: nothing that ships (the result document
+is `plans/results/026-battle-26-cards.md` on `improve/audit`), the recommendation in one sentence, and the open
+questions' count. Commit it as "Git workflow" says.
+
 Then delete the scratch export: `rm -rf ~/k7-rescue/improve-audit/spike-026` (look at the path first; it must be
 exactly that folder).
 
-**Verify**: `grep -c "^## " plans/results/026-battle-26-cards.md` prints 7 or more;
-`grep -n "Questions for Kevin" plans/results/026-battle-26-cards.md` prints one line;
+**Verify** (use `/usr/bin/grep`; the shell's `grep` is another tool on this Mac), with
+`D=~/repos/kevinliu-studio-improve/plans/results/026-battle-26-cards.md`: `/usr/bin/grep -c "^## " $D` prints 7 or
+more; `/usr/bin/grep -n "Questions for Kevin" $D` prints one line;
 `ls ~/k7-rescue/improve-audit/spike-026 2>&1` prints "No such file or directory".
+
+## Revision 1 (lane D's reviewer, 2026-11-10, after the first result)
+
+The first result recommends route C on a premise this plan gave it and the code contradicts. Correct it before
+anything else, then measure what the correction makes necessary.
+
+**The fact.** The battle page's engine is inside `kit.js`, not in `vendor/engine.js`:
+
+- `<rounds>/r4/play/vendor/SOURCES.md:42-46`: "`vendor/broadcast/kit.js` bundles the battle's engine, runtime, the
+  Broadcast grammar, effects, card module and all scene files".
+- The page's scripts (`~/repos/kevinliu-studio-dir/vendor/battle/mat/index.html`) load `../vendor/broadcast/media.js`
+  and `../vendor/broadcast/kit.js`; none loads `engine.js`. `public/battle/shared/battle.js:24-25` reads
+  `const K = window.bcKit;` and `const sd = window.showdown;` (both set by the kit).
+- `public/battle/vendor/` holds `broadcast`, `cards` and `fonts`; there is no `engine.js` under `public/`.
+- `vendor/battle/vendor/engine.js` is build-only on the site (`scripts/sync.mjs:98-100`; `src/lib/cards.ts:152`
+  reads the roster from it). In `public/battle/vendor/broadcast/kit.js` the string `"katagami"` occurs 12 times and
+  `"ommc"` 0 times.
+
+So rebuilding only `engine.js` opens the dock and the Battle buttons for the eight on the site, while the page's own
+engine still holds 18 fighters and refuses those teams. Every route needs a rebuilt `kit.js`. Route C is therefore
+redefined: **a kit rebuilt from the committed tree with the 26-card engine, in which a staged card's own scenes and
+media are registered only once they pass the page flash scan; until then that card plays the default scene.** Routes A
+and B keep their meaning.
+
+Do these, in the same scratch folder as before (`~/k7-rescue/improve-audit/spike-026`, export it again with
+`git archive HEAD r3/battle r3/cards r1/study-roster18 r2/plates r4/ex/roster r4/play`; nothing under `<rounds>` is
+written, and no server or browser is started):
+
+1. **Rewrite the result's Route C section, comparison table, recommendation and first lines** on the corrected fact.
+   Keep what the first pass read about a fielded card with no media entry and about default scenes (it now describes a
+   staged card whose scenes are not yet registered), and say plainly that it was read from code, not run. Say what
+   `vendor/engine.js` is for (the site's build and r4/play's tools) and that it must be rebuilt together with the kit
+   so the two rosters agree. State that the `kit.js` anchor in `scripts/phone-memory.mjs` is a risk on every route.
+2. **What a clean kit rebuild takes with it besides the eight.** `r4/play/vendor/SOURCES.md` lists every file the
+   shipped kit (the 11-01 build) was bundled from, each with a sha-256 prefix (12 hex characters). For each listed
+   `r3/battle` and `r3/cards` path, compute the same prefix for the committed file in your export and count: same,
+   different, missing. List the different ones by folder (scenes, broadcast/src, runtime, engine, other). This is the
+   size of the re-check the 18 fielded cards need on any clean rebuild; put the counts in the document.
+3. **Each staged card's last recorded page flash reading.** For all eight (sandbox-arena, ariadne, sigil-ui,
+   dedalus-terminal, sevenfold, podium, ommc, atlas) find, in the rounds' notes (read-only: `r3/battle/.work/`,
+   `r3/battle/broadcast/scenes/next/README.md`, `r3/battle-r4/` if it exists, `r4/play/REQUESTS.md`), the last page
+   flash scan result for the committed scene files and, where they differ, for the working-tree files: pass or fail,
+   how many rows over, the file and line. If no note records one for a card, write "no reading found" and name the
+   places you searched. One table row a card.
+4. **Build the kit in the export, twice, and measure it.** Copy `r4/play/.work/mat/build.mjs` inside the export and
+   change only its `ROOT` constant to the export's root (it hard-codes the live rounds path and writes into
+   `r4/play/vendor`; in the export that is scratch). Read the script first and confirm every path it writes is under
+   the export; if any is not, do not run it and report. Put the dry run's three engine files in the export's
+   `r3/battle/engine/src/` as before. Then:
+   - (a) with the eight's scenes still under `scenes/next/` (not registered): run the copy; record whether it builds,
+     the size of `vendor/broadcast/kit.js`, how many times `"ommc"` and `"katagami"` occur in it, and how many times
+     the phone patch's anchor text occurs (the exact string is in `~/repos/kevinliu-studio-dir/scripts/phone-memory.mjs`,
+     the `kit.js` entry; the site needs exactly one). Also rebuild `engine.js` with `r4/play/.work/study/bundle.mjs`
+     (same `ROOT` treatment if it has one; it writes beside itself) and record that `FIGHTERS.length` is 26
+     (`node --input-type=module -e 'const m=await import("<path>/engine.js");console.log(m.FIGHTERS.length)'`).
+   - (b) with the 56 scene files moved up and `data/next.json` emptied, and `broadcast/tools/build.mjs` run first as
+     in your first pass: the same measurements.
+   Keep both outputs for the reviewer's browser run: copy each build's `r4/play/vendor/broadcast/kit.js`,
+   `r4/play/vendor/broadcast/media.js`, `r4/play/vendor/engine.js` and `r4/play/vendor/cards/` to
+   `~/k7-rescue/improve-audit/lane-d/kit-026/a/` and `.../b/`. If the build needs a file the export lacks, add that
+   one tracked folder once; if it needs something untracked or fails twice, stop there, keep the error text, and write
+   the failure into the document as a finding (it measures how far a clean kit rebuild is from running).
+5. **The Arena.** The first result does not mention it. Read `r3/battle/.work/next-harness/MERGE.md` step 7 and the
+   site's `public/battle/media/figures/manifest.json` and `public/battle/arena/board.js`: what does the Arena do
+   today for a card whose figure is under the manifest's `next` key (or absent from its list), and what must change
+   for the eight to stand on the floor? Answer with `file:line`, under Route C and in the "Not done here" list.
+6. **Re-derive the recommendation** from the document's numbers after 1 to 5. It may or may not be route C. Say for
+   each route what the first kit rebuild must pass before the site can take it, and give Kevin the smallest first step.
+   Keep "Questions for Kevin" short and answerable; add or drop questions as the facts require.
+7. Touch nothing in `~/repos/kevinliu-studio-dir` in this revision (another executor is working there, and
+   `memory.md` is append-only: the first entry stays). Instead write the corrected entry's text, in the file's form and
+   titled "2026-11-10: the 26-card battle routes, corrected (spike, improve plan 026)", to
+   `~/k7-rescue/improve-audit/lane-d/026-memory-correction.md`: what the first entry got wrong (the page's engine is
+   in `kit.js`), the new recommendation in one sentence, the measurements of steps 2 to 4, and the open questions'
+   count. The reviewer appends and commits it.
+8. Delete `~/k7-rescue/improve-audit/spike-026` again at the end; keep `~/k7-rescue/improve-audit/lane-d/kit-026/`.
 
 ## Test plan
 
 No code changes, so no new tests. The checks are the document's own contents (Step 7's greps) and proof that nothing
 else moved:
 
-- `git -C ~/repos/kevinliu-studio-026 status --short` lists only `plans/results/026-battle-26-cards.md` and
-  `plans/README.md`.
+- Before the commit, `git -C ~/repos/kevinliu-studio-dir status --short` lists only `memory.md`; after it, nothing.
+- `git -C ~/repos/kevinliu-studio-improve status --short` lists `plans/results/` (and plan files the lane's reviewer
+  rewrote); you added only `plans/results/026-battle-26-cards.md`.
 - `git -C "<rounds>" status --short -- r3/battle | wc -l` prints the number recorded in Step 4.
 
 ## Done criteria
 
 Machine-checkable. ALL must hold:
 
-- [ ] `plans/results/026-battle-26-cards.md` exists and contains the sections "Ships unused today", "Route A",
-      "Route B", "Route C", "Move ids and names", a recommendation, and "Questions for Kevin"
-      (`grep -c "Route [ABC]" plans/results/026-battle-26-cards.md` prints 3 or more).
+- [ ] `~/repos/kevinliu-studio-improve/plans/results/026-battle-26-cards.md` exists and contains the sections "Ships
+      unused today", "Route A", "Route B", "Route C", "Move ids and names", a recommendation, and "Questions for Kevin"
+      (`/usr/bin/grep -c "Route [ABC]"` on it prints 3 or more).
+- [ ] The "Route C" section answers question 4 (plan 009's two-world cap) with a `file:line`.
 - [ ] The document quotes the validator's output from Step 3 and shows the 27 and 48 hour arithmetic.
-- [ ] `git status --short` in the site worktree shows only the two in-scope files.
+- [ ] `improve/direction` has one new commit that touches only `memory.md`; `git status --short` in
+      `~/repos/kevinliu-studio-dir` is empty.
 - [ ] `git -C "<rounds>" status --short | wc -l` is unchanged from the count you recorded before Step 2.
 - [ ] `~/k7-rescue/improve-audit/spike-026` no longer exists.
-- [ ] `plans/README.md` status row updated.
+- [ ] `plans/README.md` is untouched (the audit session keeps it).
 
 ## STOP conditions
 

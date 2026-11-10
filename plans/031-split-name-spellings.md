@@ -3,14 +3,12 @@
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
-> report — do not improvise. When done, update the status row for this plan
-> in `plans/README.md` — unless a reviewer dispatched you and told you they
-> maintain the index.
+> report — do not improvise. Do NOT edit `plans/README.md`: the audit session
+> keeps the index.
 >
 > **Drift check (run first)**: `git diff --stat 4025230..HEAD -- scripts/rules.mjs scripts/rules.test.mjs`
-> If either file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before proceeding; on a
-> mismatch, treat it as a STOP condition.
+> must print nothing (no earlier plan on the lane branch touches these two files). If either file changed, compare
+> the "Current state" excerpts against the live code before proceeding; on a mismatch, treat it as a STOP condition.
 
 ## Status
 
@@ -19,7 +17,8 @@
 - **Risk**: LOW
 - **Depends on**: 001 (done)
 - **Category**: security
-- **Planned at**: commit `4025230` (feat/i18n, which holds the ten P1 plans), 2026-11-10
+- **Planned at**: commit `4025230` (feat/i18n, which holds the ten P1 plans), 2026-11-10. Checked again by lane A on
+  2026-11-10 against the lane branch `improve/p2-checks`: both excerpts match; only the workflow lines changed.
 
 ## Why this matters
 
@@ -76,9 +75,10 @@ pieces so it never contains them whole; keep that.
 
 ## Git workflow
 
-- Work on the lane branch and worktree your dispatcher names. Never edit the main checkout. Never `git stash`.
-- Commit by explicit path as `66856750+Kevin-Liu-01@users.noreply.github.com`:
-  `git -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "fix(scan): a franchise name split inside the word is caught" -- scripts/rules.mjs scripts/rules.test.mjs memory.md`
+- Work in the existing worktree `~/repos/kevinliu-studio-p2a` on branch `improve/p2-checks`. Do not create a branch
+  or a worktree. Never edit another checkout. Never `git stash`.
+- One commit, by explicit path, as `66856750+Kevin-Liu-01@users.noreply.github.com`:
+  `git -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "fix(scan): a franchise name split inside the word is caught" -m "<one sentence>" -m "Co-Authored-By: Claude <noreply@anthropic.com>" -- scripts/rules.mjs scripts/rules.test.mjs memory.md`
 - Do NOT push, open a PR or deploy.
 
 ## Steps

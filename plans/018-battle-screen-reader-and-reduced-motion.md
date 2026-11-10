@@ -3,24 +3,29 @@
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
-> report: do not improvise. When done, update the status row for this plan
-> in `plans/README.md`, unless a reviewer dispatched you and told you they
-> maintain the index.
+> report: do not improvise. The lane C reviewer dispatched you and maintains
+> `plans/README.md`: do not edit it. You start no server and no browser: the
+> reviewer runs the browser gate (step 6) and sends you its results before
+> step 7.
 >
-> **Drift check (run first)**: `git diff --stat c6245d9..HEAD -- scripts/sync.mjs public/battle/shared/battle.js public/battle/mat/mat.css public/battle/arena/arena.css sync.lock.json docs/sync.md docs/battle.md`
-> If any of these changed since this plan was written, compare the
-> "Current state" excerpts against the live code before proceeding; on a
-> mismatch, treat it as a STOP condition.
+> **Drift check (run first)**: `git -C ~/repos/kevinliu-studio-p2c diff --stat 4025230..HEAD -- scripts/sync.mjs scripts/phone-memory.mjs public/battle/shared/battle.js public/battle/mat/mat.css public/battle/arena/arena.css sync.lock.json docs/sync.md`
+> It must print nothing (this is the lane's first plan). If any of these
+> changed, compare the "Current state" excerpts against the live code before
+> proceeding; on a mismatch, treat it as a STOP condition.
 
 ## Status
 
 - **Priority**: P2
 - **Effort**: S
 - **Risk**: LOW
-- **Depends on**: none (it edits the same `scripts/sync.mjs` entries as plans 008 and 023; if one of them landed
-  first, add this plan's pairs after theirs)
+- **Depends on**: 008 and 009 (both landed in `4025230`; this plan adds its pairs after theirs in the same entries).
+  Plan 023 adds to the same entries after this one.
 - **Category**: bug
-- **Planned at**: commit `c6245d9`, 2026-11-09 (rounds HEAD `868340d7`; battle pinned at `42ff51c7`)
+- **Planned at**: commit `4025230` (`feat/i18n`, holds the ten P1 plans), 2026-11-10, lane C branch
+  `improve/p2-battle`. Rounds HEAD `de54fad5`; battle pinned at `42ff51c7`; `r4/play/shared/battle.js`,
+  `mat/mat.css` and `arena/arena.css` are unchanged between the pin and rounds HEAD. First written against
+  `c6245d9` on 2026-11-09 and refreshed: every finding below was re-read in the lane worktree and re-run on a
+  build of `4025230` (the "before" values in step 6).
 
 ## Why this matters
 
@@ -44,12 +49,20 @@ Five small defects in the battle page, each read in the code:
 
 The battle page is round code: `r4/play` in the design rounds repo
 (`/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30`), lane r4/play. `shared/battle.js`,
-`mat/mat.css` and `arena/arena.css` have not changed between the shipped pin `42ff51c7` and rounds HEAD `868340d7`.
-The site ships them under `public/battle/` with site patches from `scripts/sync.mjs`. Line numbers below are the site
-copies'; they are the same in the rounds for `battle.js`.
+`mat/mat.css` and `arena/arena.css` have not changed between the shipped pin `42ff51c7` and rounds HEAD `de54fad5`.
+The site ships them under `public/battle/` with site patches from `scripts/sync.mjs` (plan 008's six pairs on
+`battle.js`) and `scripts/phone-memory.mjs` (plan 009's four `PHONE` pairs on `battle.js`, applied after
+`TRANSFORMS`). Line numbers below are the site copies' in the lane worktree `~/repos/kevinliu-studio-p2c` at
+`4025230`; the rounds' own numbers are in "Upstream request". Every anchor in step 1 occurs once in the rounds export
+and once in the site copy (two for `.result h1 {`), checked 2026-11-10.
+
+The battle exists in eight languages (`src/pages/[lang]/battle.astro`, `src/components/BattlePage.astro`). Every
+language serves this same `battle.js` and these same sheets; only the page's static frame is translated, and the
+game's own lines (the announcements and "Victory", "Defeat", "Draw" among them) stay English until the rounds give
+them string tables. So this plan needs no string in `src/i18n/en/ui.json`, and one fix covers all eight.
 
 - `public/battle/shared/battle.js:468-479` and `:672`, the announcements. `onEvent` runs once per outcome, inside one
-  loop (`public/battle/shared/runtime.js:532`: `for (const e of shot.post) h.event(e, shot);`):
+  loop (`public/battle/shared/runtime.js:536`: `for (const e of shot.post) h.event(e, shot);`):
 
 ```js
 function onEvent(e) {
@@ -66,7 +79,7 @@ function live(text) { $('#live').textContent = text; }
 
   The region is `<p class="sr" id="live" aria-live="polite"></p>` (`vendor/battle/mat/index.html:93`).
 
-- `public/battle/mat/mat.css:286-289`, the broken rule (the file's text, exactly):
+- `public/battle/mat/mat.css:287-289`, the broken rule (the file's text, exactly):
 
 ```css
 /* ============================================================ reduced motion: every step a still */
@@ -86,7 +99,7 @@ function live(text) { $('#live').textContent = text; }
 }
 ```
 
-- `public/battle/shared/battle.js:854-857` and `:866-867`, the keys. The pointer path exempts
+- `public/battle/shared/battle.js:856-859` and `:869`, the keys. The pointer path exempts
   `dialog, .seg, .speed, .tip, #sound`; the key path exempts nothing:
 
 ```js
@@ -100,7 +113,7 @@ addEventListener('keydown', (e) => {
 addEventListener('pointerdown', (e) => { if (stage.playing && !e.target.closest?.('dialog, .seg, .speed, .tip, #sound')) { swallowUntil = realNow() + 800; skip(); } }, true);
 ```
 
-- `public/battle/shared/battle.js:800`, the result's heading, and its styles `public/battle/mat/mat.css:239` and
+- `public/battle/shared/battle.js:801`, the result's heading, and its styles `public/battle/mat/mat.css:239` and
   `:270`, `public/battle/arena/arena.css:289` and `:345` (`.result h1 {` twice in each sheet, nowhere else):
 
 ```js
@@ -109,7 +122,7 @@ addEventListener('pointerdown', (e) => { if (stage.playing && !e.target.closest?
 
   The site's h1 comes from `src/lib/battle.ts:42`: `['<p class="mark">Kevin Liu</p>', '<h1 class="mark">Kevin Liu</h1>'],`.
 
-- `public/battle/shared/battle.js:835-848`, the replay. `gen` is the battle's generation counter (line 191); `present`
+- `public/battle/shared/battle.js:837-850`, the replay. `gen` is the battle's generation counter (line 191); `present`
   and `start` compare it after every `await`, this function does not:
 
 ```js
@@ -129,16 +142,14 @@ async function replayLast() {
 $('#replay').onclick = () => replayLast();
 ```
 
-- `scripts/sync.mjs:190-195`, `:228` and `:232-235`, the three entries this plan extends (`HIDE`, `KEY_EASE`,
-  `KEY_MOVE` and `NARROW_ARENA` are constants defined above them; `everyOf(file, text, find, replace, n)` replaces an
-  anchor that must occur exactly `n` times, `scripts/sync.mjs:157-161`):
+- `scripts/sync.mjs:198-213`, `:251` and `:255-258`, the three entries this plan extends (`HIDE`, `KEY_EASE`,
+  `KEY_MOVE` and `NARROW_ARENA` are constants defined above them, `:170-182`; `patch(file, text, pairs)`, `:156-163`,
+  replaces each pair's anchor, which must occur exactly once; `everyOf(file, text, find, replace, n)`, `:165-169`,
+  replaces an anchor that must occur exactly `n` times). The `battle.js` entry already holds nine pairs (three for
+  the site's addresses and titles, six from plan 008); it ends:
 
 ```js
-  'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
-    // the layout switch renames the tab; it keeps this site's page titles instead
-    ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
-    ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
-    ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
+    ["if (q.get('fixture')) runFixture(q.get('fixture'));", "if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);"],
   ]),
 ```
 
@@ -152,6 +163,10 @@ $('#replay').onclick = () => replayLast();
     [KEY_EASE, KEY_MOVE],
   ]),
 ```
+
+- `scripts/phone-memory.mjs:95-100`, plan 009's `PHONE` entry for `battle.js`. Its four anchors (the result phase,
+  `openLog`, the Log's `close` listener, `match = next;`) are applied after `TRANSFORMS` and share no text with this
+  plan's five anchors. Keep every existing pair in both files exactly as it is.
 
 Repo rules that apply (from `AGENTS.md`): never edit the synced folders by hand; a fix to round code is an anchored
 pair in `TRANSFORMS` in `scripts/sync.mjs`, then the sync; every page keeps one h1; append an entry to `memory.md`.

@@ -3,23 +3,24 @@
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
-> report — do not improvise. When done, update the status row for this plan
-> in `plans/README.md` — unless a reviewer dispatched you and told you they
-> maintain the index.
+> report — do not improvise. Do NOT edit `plans/README.md`: the audit session
+> keeps the index.
 >
-> **Drift check (run first)**: `git diff --stat c6245d9..HEAD -- src/layouts/Base.astro src/styles/machine.css vercel.json scripts/smoke.mjs scripts/verify-build.mjs docs/performance.md docs/deploy.md`
-> If any in-scope file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before proceeding; on a
-> mismatch, treat it as a STOP condition.
+> **Drift check (run first)**: `git diff --stat 4025230..HEAD -- src/layouts/Base.astro src/styles/machine.css vercel.json scripts/smoke.mjs scripts/verify-build.mjs docs/performance.md docs/deploy.md`
+> must print nothing (plan 011, the commit before this one on the lane branch, touches none of these files). If it
+> prints a file, compare the "Current state" excerpts against the live code before proceeding; on a mismatch, treat
+> it as a STOP condition.
 
 ## Status
 
 - **Priority**: P2
 - **Effort**: S
 - **Risk**: LOW
-- **Depends on**: none
+- **Depends on**: none (after 004, which is on the base; uses `pnpm test` from 001)
 - **Category**: perf
-- **Planned at**: commit `c6245d9`, 2026-11-09
+- **Planned at**: commit `4025230` (`feat/i18n`), 2026-11-10. Refreshed from the `c6245d9` version by lane A: the
+  finding is still present for the two site faces; the i18n faces (`katagami-sans-ext`, `katagami-cjk-*`) already
+  carry `?v=`. The cache rules are now written so no answer depends on route order, and they get a test.
 
 ## Why this matters
 
@@ -30,27 +31,19 @@ served `immutable` for a year. The Sans file is a subset holding only the charac
 time a card title or a line of copy needs a new character, the subset is rebuilt under the same address, and every
 returning visitor keeps the old file for up to a year: the new character falls back to Arial inside card titles that
 were fitted to Katagami's widths. After this plan both faces carry `?v=<hash of the file>`, only a font address with
-`?v=` is cached for a year, and the same year-long cache is extended to the frame and effect drawings whose address
-already holds their own hash, with a build check that keeps that true.
+`?v=` is cached for a year, the build fails if a page names a face without it, and the same year-long cache is
+extended to the frame and effect drawings whose address already holds their own hash, with a build check that keeps
+that true.
 
 ## Current state
 
-- `src/lib/assets.ts` — `versioned(file)` returns a public file's address with `?v=<first 10 hex of its sha-256>`
-  (for example `/ex/ui.css?v=…`). It reads `public/<file>`, so it works for `/fonts/…` too:
+All paths are in the lane worktree `~/repos/kevinliu-studio-p2a` (branch `improve/p2-checks`).
 
-```ts
-export function versioned(file: string) {
-  let u = seen.get(file);
-  if (!u) {
-    const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(process.cwd(), 'public', file))).digest('hex').slice(0, 10);
-    seen.set(file, (u = `${file}?v=${hash}`));
-  }
-  return u;
-}
-```
+- `src/lib/assets.ts`: `versioned(file)` returns a public file's address with `?v=<first 10 hex of its sha-256>`.
+  It reads `public/<file>`, so it works for `/fonts/…`; the i18n faces already use it.
 
-- `src/layouts/Base.astro` — the page frame of every page except the battle. It already imports `versioned`
-  (`Base.astro:11`). The Sans face (`Base.astro:28-33`):
+- `src/layouts/Base.astro`, the page frame of every page except the battle. It imports `versioned` (`:11`) and
+  `'../styles/machine.css'` (`:16`). The Sans face (`:32-37`):
 
 ```astro
 const FONT = '/fonts/katagami-sans-site.woff2';
@@ -61,48 +54,58 @@ const fontFace = [
 ].join('');
 ```
 
-  It is preloaded (`Base.astro:40`) and printed in an inline style (`Base.astro:52`):
+  The translated faces, already by content address (`:43-44`):
 
+```astro
+const extFaces = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.range}}`).join('');
+const preloads = faces.filter((f) => f.locales.includes(l.code)).map((f) => versioned(f.file));
+```
+
+  The root element (`:47`), the preload (`:51`) and the inline style (`:64`):
+
+```astro
+<html lang={l.lang} data-mode="human" {...html}>
+```
 ```astro
 <link rel="preload" href={FONT} as="font" type="font/woff2" crossorigin />
 ```
 ```astro
-<style is:inline id="kface" set:html={`${fontFace}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
-```
-
-  The root element (`Base.astro:36`):
-
-```astro
-<html lang="en" data-mode="human" {...html}>
+<style is:inline id="kface" set:html={`${fontFace}${extFaces}\n${neuTokens}:root{--mask-win:${masks.win}}`}></style>
 ```
 
   The Mono face (the Machine view's) is preloaded by an inline script when a page opens in the Machine view. The
-  script is one line (`Base.astro:50`); `d` in it is `document.documentElement`. The piece that names the file occurs
-  once:
+  script is one long line (`:62`); `d` in it is `document.documentElement`. The piece that names the file occurs
+  once in the file:
 
 ```js
 l.href='/fonts/katagami-mono-site.woff2';
 ```
 
-- `src/styles/machine.css:14` — the Mono face's rule, in a stylesheet Astro bundles (so `versioned()` cannot be
-  called there):
+  The same script later calls `document.fonts.load('700 1em "Katagami Mono"')` at idle; that goes through the
+  `@font-face` rule, so it follows whatever address the rule names.
+
+- `src/styles/machine.css:14`, the Mono face's rule, in a stylesheet Astro bundles (so `versioned()` cannot be
+  called there). `machine.css` is imported only by `Base.astro`, so a rule moved into `Base.astro`'s inline style
+  reaches the same pages:
 
 ```css
 @font-face { font-family: 'Katagami Mono'; src: url(/fonts/katagami-mono-site.woff2) format('woff2'); font-weight: 100 700; font-display: block; }
 ```
 
-  `machine.css` is imported only by `Base.astro`, so a rule moved into `Base.astro`'s inline style reaches the same
-  pages.
-
-- `vercel.json:24-26` — the cache rules (`"continue": true` routes only add headers):
+- `vercel.json`, the cache rules (`"continue": true` routes only add headers). Four lines in a row:
 
 ```json
     { "src": "^/(?:_astro|fonts)/.*$", "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "src": "^/(?:ex|sound|battle)/.*\\.(?:css|js)$", "has": [{ "type": "query", "key": "v" }], "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
+    { "src": "^/(?:es|fr|de|pt|ja|ko|zh)/gallery\\.js$", "has": [{ "type": "query", "key": "v" }], "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "src": "^/(?:ex|battle|sound|og|share)/.*\\.(?:webp|avif|png|jpg|svg|mp4|webm|m4a|woff2)$", "continue": true, "headers": { "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800" } },
 ```
 
-- `scripts/smoke.mjs:24-30` — the deployed-copy check of those headers:
+  Vercel's route schema (`https://openapi.vercel.sh/vercel.json`, read 2026-11-10) accepts both `has` and `missing`
+  on a route.
+
+- `scripts/smoke.mjs`, the deployed-copy check of those headers (the block under the comment that begins `// the
+  stylesheets, scripts and face a page names`):
 
 ```js
 // the stylesheets, scripts and face a page names by content address are kept for a year (vercel.json)
@@ -114,17 +117,30 @@ for (const u of [home.match(/\/ex\/ui\.css\?v=[0-9a-f]+/)?.[0], home.match(/\/fo
 }
 ```
 
-- `scripts/verify-build.mjs` — the release guard that `pnpm build` runs. Its imports (`verify-build.mjs:9-12`), its
-  error list (`:16`) and the loop that resolves every local reference of a page (`:126-132`):
+  Further down, a block about `/es` already checks `katagami-sans-ext.woff2?v=`, and another asks for
+  `/fonts/katagami-sans-site.woff2` without `?v=` to check its `Vary` header. Leave both as they are.
+
+- `scripts/verify-build.mjs`, the release guard that `pnpm build` runs. Its imports (`:9-13`), its error list and
+  `exists` helper (`:17-26`), the `/ex/` content-address check (`:145-146`) and the loop that resolves every local
+  reference of a page (`:154-160`):
 
 ```js
 import fs from 'node:fs';
 import path from 'node:path';
-import { MEDIA, hasLocation } from './location.mjs';
+import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 ```
 ```js
-const errors = [];
+const exists = (p) => {
+  const clean = decodeURIComponent(p.split(/[?#]/)[0]);
+  const f = path.join(DIST, clean);
+  return fs.existsSync(f) && fs.statSync(f).isFile() || fs.existsSync(f + '.html') || fs.existsSync(path.join(f, 'index.html'));
+};
+```
+```js
+  // each stylesheet and deferred script a page names under /ex/ carries its content address (vercel.json caches it)
+  for (const m of html.matchAll(/\s(?:href|src)="(\/ex\/[^"]+\.(?:css|js))"/g)) fail(page, `${m[1]} has no ?v= content address`);
 ```
 ```js
   for (const m of html.replace(/<base [^>]*>/, '').matchAll(/\s(?:src|href|poster|data-plainfx)="([^"]+)"|url\(["']?([^"')]+)["']?\)/g)) {
@@ -136,71 +152,80 @@ const errors = [];
   }
 ```
 
-- The card markup (round code under `public/ex`, never edited here) already names some drawings with `?v=`. Measured
-  on the build of `c6245d9`, over the home page and two card pages (101 addresses):
+- The card markup (round code under `public/ex`, never edited here) already names some drawings with `?v=`.
+  Measured on the build of `4025230`, over `/`, `/es`, `/battle`, two card pages and `/ja/cards/atlas`:
   - `borders/<id>/…/*.svg?v=` and `fx/<id>/fx.svg?v=`: the token IS the first 8 hex of the served file's sha-256
-    (37 of 37 match). Example: `fx/turboslide/fx.svg?v=d238c1ac`.
-  - `design/frames/*.svg?v=` and `design/lit/*.svg?v=`: the token is NOT the file's hash (0 of 64 match; it is the
-    hash of another file the drawing was made from). These must NOT be cached for a year.
+    (163 of 163 and 15 of 15 references match). Example: `fx/turboslide/fx.svg?v=d238c1ac`.
+  - `design/…/*.svg?v=`: the token is NOT the file's hash (0 of 198 match; it is the hash of another file the
+    drawing was made from). These must NOT be cached for a year.
   - Every other picture (`posters/`, `media/`) has a plain address.
 
-- The battle page's own faces live under `/battle/vendor/fonts/` and are not part of this plan.
+- The battle page's own faces live under `/battle/vendor/fonts/` and are not part of this plan
+  (`src/components/BattlePage.astro` names the translated `/fonts/` faces through `versioned()` already).
 
-- `docs/performance.md:13` (the "Content addresses" row) and `docs/deploy.md:29-31` (the "Caching" bullet) describe
-  these rules and must stay true.
+- `docs/performance.md:12-13` (the rows "The face" and "Content addresses") and `docs/deploy.md:31-33` (the
+  "Caching" bullet) describe these rules and must stay true.
 
 Repo rules that apply (from `AGENTS.md`): `public/ex`, `public/battle`, `public/sound`, `public/og` and `vendor/` are
 synced and never edited by hand (this plan edits none of them); nothing pops (the face still blocks and is still
-preloaded first, so first paint does not change); append an entry to `memory.md`; ask Kevin before deploying.
+preloaded first, so first paint does not change; your reviewer records the paint before and after, you do not);
+append an entry to `memory.md`; never deploy.
 
 ## Commands you will need
 
+Run all of them in `~/repos/kevinliu-studio-p2a`. Dependencies are already installed there.
+
 | Purpose | Command | Expected on success |
 |---------|---------|---------------------|
-| Install | `pnpm install --frozen-lockfile` | exit 0 |
-| Build and release guard | `pnpm build` | last line starts `verify-build: 32 pages, 31 sitemap URLs,` and ends `all checks pass` |
-| The faces' hashes | `for f in sans mono; do shasum -a 256 public/fonts/katagami-$f-site.woff2 \| cut -c1-10; done` | two 10-character hashes (`8254e26517` and `9fade4c28f` at `c6245d9`) |
+| Build and release guard | `pnpm build` | last line starts `verify-build: 256 pages, 248 sitemap URLs,` and ends `all checks pass` |
+| Tests | `pnpm test` | `fail 0` |
+| The faces' hashes | `for f in sans mono; do shasum -a 256 public/fonts/katagami-$f-site.woff2 \| cut -c1-10; done` | `8254e26517` and `9fade4c28f` (in the table `\|` stands for a plain `|`) |
 | JSON is valid | `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` | exit 0, no output |
-| Deployed copy (operator step only) | `node scripts/smoke.mjs <preview-url>` | `smoke: <preview-url> passes` |
+| The negotiation rules still hold | `node scripts/check-negotiation.mjs` | exit 0 |
 
-There is no test runner, linter or CI in this repo. Do not run `pnpm check` (it is broken on `main`).
+zsh on macOS: no `timeout`; use `/usr/bin/grep`; never name a shell variable `path`. Do not start a server or a
+browser, do not run `scripts/smoke.mjs` (it needs a deployment) and do not run `pnpm check` (broken until plan 020).
 
 ## Scope
 
 **In scope** (the only files you should modify):
-- `src/layouts/Base.astro` (lines 28-33, 36, 50 as described)
-- `src/styles/machine.css` (line 14 only)
-- `vercel.json` (line 24, and one new route after line 26)
-- `scripts/smoke.mjs` (lines 24-30)
-- `scripts/verify-build.mjs` (one import, one helper, one check)
-- `docs/performance.md` (the "Content addresses" row), `docs/deploy.md` (the "Caching" bullet)
+- `src/layouts/Base.astro` (the four places named in step 1)
+- `src/styles/machine.css` (the `@font-face` line and the comment above it)
+- `vercel.json` (two of the four cache lines quoted above)
+- `scripts/cache-rules.test.mjs` (create)
+- `scripts/smoke.mjs` (the one block quoted above)
+- `scripts/verify-build.mjs` (one import, one helper, two checks, one sentence in the header comment)
+- `docs/performance.md` (rows "The face" and "Content addresses"), `docs/deploy.md` (the "Caching" bullet)
 - `memory.md` (append one entry)
-- `plans/README.md` (your status row)
 
 **Out of scope** (do NOT touch, even though they look related):
-- Anything under `public/` or `vendor/`, and `scripts/sync.mjs`. The fonts themselves are not rebuilt or renamed.
+- Anything under `public/` or `vendor/`, `scripts/sync.mjs`, `scripts/i18n-fonts.py`, `src/i18n/`. The fonts
+  themselves are not rebuilt or renamed.
 - Hashing the plain picture addresses (`posters/…`, `media/…/cast.webp`). They are also built at runtime by round
-  code (`gallery.js`, `rituals.js`); hashing them is a larger change and is deferred. They keep one day of cache.
-- `design/frames/` and `design/lit/` drawings: their `?v=` is not their own hash, so they keep one day of cache.
+  code; hashing them is deferred. They keep one day of cache.
+- `design/` drawings: their `?v=` is not their own hash, so they keep one day of cache.
 - The battle page's faces (`/battle/vendor/fonts/`), `src/components/BattlePage.astro`.
 - `font-display: block`, the preload order and the Arial fallback metrics: decided (`docs/performance.md`).
-- The other routes in `vercel.json`. Plan 004 changes lines 13-20 and 28-29; leave them.
+- Every other route in `vercel.json`, and `scripts/check-negotiation.mjs`.
 
 ## Git workflow
 
-- Work in a new git worktree of `~/repos/kevinliu-studio` on branch `improve/012-content-addressed-fonts` cut from
-  `origin/main`. Never edit the main checkout (other sessions use it). Never `git stash`.
-- Commit by explicit path as the noreply address:
+- Work in the existing worktree `~/repos/kevinliu-studio-p2a` on branch `improve/p2-checks`. Do not create a branch
+  or a worktree. Never edit another checkout. Never `git stash`.
+- One commit for this plan, by explicit path, as the noreply address:
   `git -c user.name=Kevin -c user.email=66856750+Kevin-Liu-01@users.noreply.github.com commit -m "<message>" -- <paths>`
-- Message style, from `git log`: `perf(cards): one copy of each card's shared markup, no unused frame code, no wasted fx posters`.
-  For this plan: `perf(cache): the faces by content address; a year only for addresses that hold their content`
+- Message: `perf(cache): the faces by content address; a year only for addresses that hold their content`, a blank
+  line, one or two sentences of body, a blank line, then `Co-Authored-By: Claude <noreply@anthropic.com>`.
 - Do NOT push, open a PR or deploy.
 
 ## Steps
 
+Every code block of steps 3 to 5 also exists as a file, byte for byte, in
+`~/k7-rescue/improve-audit/lane-a/p012/`. Copy from those files rather than retyping.
+
 ### Step 1: Give both faces their content address in `Base.astro`
 
-1. Replace line 28 (`const FONT = '/fonts/katagami-sans-site.woff2';`) with two lines:
+1. Replace the line `const FONT = '/fonts/katagami-sans-site.woff2';` with two lines:
 
 ```astro
 const FONT = versioned('/fonts/katagami-sans-site.woff2');
@@ -213,13 +238,14 @@ const MONO = versioned('/fonts/katagami-mono-site.woff2');
   `@font-face{font-family:"Katagami Mono";src:url(${MONO}) format("woff2");font-weight:100 700;font-display:block}`,
 ```
 
-3. Put the Mono address on the root element so the inline script can read it. Line 36 becomes:
+3. Put the Mono address on the root element so the inline script can read it. The `<html` line becomes:
 
 ```astro
-<html lang="en" data-mode="human" data-mono={MONO} {...html}>
+<html lang={l.lang} data-mode="human" data-mono={MONO} {...html}>
 ```
 
-4. In the inline script on line 50, replace the one occurrence of
+4. In the one-line inline script that begins `<script is:inline>(function(){var d=document.documentElement,q=new URLSearchParams`,
+   replace the one occurrence of
 
 ```js
 l.href='/fonts/katagami-mono-site.woff2';
@@ -232,56 +258,112 @@ l.href=d.dataset.mono;
 ```
 
    (`d` is already `document.documentElement` in that script. A preload must name exactly the address the
-   `@font-face` rule names, or the browser fetches the file twice.)
+   `@font-face` rule names, or the browser fetches the file twice.) Change nothing else on that line.
 
-Line 40 (`<link rel="preload" href={FONT} …>`) and line 52 need no edit: they print `FONT` and `fontFace`.
+The preload line (`<link rel="preload" href={FONT} …>`) and the `kface` style line need no edit: they print `FONT`
+and `fontFace`.
 
-**Verify**: `grep -c "katagami-mono-site.woff2'" src/layouts/Base.astro` → `1` (only the `versioned(...)` call).
-**Verify**: `grep -c "l.href=d.dataset.mono" src/layouts/Base.astro` → `1`.
+**Verify**: `/usr/bin/grep -c "katagami-mono-site.woff2" src/layouts/Base.astro` → `1` (only the `versioned(...)` call).
+**Verify**: `/usr/bin/grep -c "l.href=d.dataset.mono" src/layouts/Base.astro` → `1`.
 
 ### Step 2: Remove the Mono rule from the bundled stylesheet
 
-In `src/styles/machine.css`, delete line 14 (the whole `@font-face { font-family: 'Katagami Mono'; … }` line). Keep
-line 15 (`:root { --mono: … }`) and everything else.
+In `src/styles/machine.css`, delete the whole `@font-face { font-family: 'Katagami Mono'; … }` line. Keep the
+`:root { --mono: … }` line below it. In the comment block right above (it ends `… so no text reflows when it
+lands. */`), insert this sentence before the closing `*/`, on the comment's last line:
+`Its @font-face rule is in Base.astro's inline style, where the file is named by content address.`
 
-**Verify**: `grep -c '@font-face' src/styles/machine.css` → `0`.
+**Verify**: `/usr/bin/grep -c '@font-face' src/styles/machine.css` → `1` (the word inside the comment only), and
+`/usr/bin/grep -c 'fonts/' src/styles/machine.css` → `0`.
 
-### Step 3: Cache a font for a year only when its address holds its content; extend the year to hashed drawings
+### Step 3: Cache rules: a year only for an address that holds its content
 
 In `vercel.json`:
 
-1. Replace line 24 with these two routes:
+1. Replace the line that begins `{ "src": "^/(?:_astro|fonts)/.*$"` with these two lines
+   (`p012/routes-fonts.json.txt`):
 
 ```json
     { "src": "^/_astro/.*$", "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
     { "src": "^/fonts/.*$", "has": [{ "type": "query", "key": "v" }], "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
 ```
 
-2. Directly AFTER the media route (the line that begins `{ "src": "^/(?:ex|battle|sound|og|share)/.*\\.(?:webp|avif|…`
-   and sets `max-age=86400`), add this route. It must come after that route, because both match these files and the
-   later header is the one that is sent:
+2. Replace the media line (the one that begins `{ "src": "^/(?:ex|battle|sound|og|share)/.*\\.(?:webp|avif|` and
+   sets `max-age=86400`) with these three lines (`p012/routes-media.json.txt`). The first is the old rule minus the
+   frame and effect drawings; the other two give those drawings a day without `?v=` and a year with it, so every
+   address meets exactly one cache rule and nothing depends on the order of the routes:
 
 ```json
+    { "src": "^/(?!ex/(?:borders|fx)/.*\\.svg$)(?:ex|battle|sound|og|share)/.*\\.(?:webp|avif|png|jpg|svg|mp4|webm|m4a|woff2)$", "continue": true, "headers": { "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800" } },
+    { "src": "^/ex/(?:borders|fx)/.*\\.svg$", "missing": [{ "type": "query", "key": "v" }], "continue": true, "headers": { "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800" } },
     { "src": "^/ex/(?:borders|fx)/.*\\.svg$", "has": [{ "type": "query", "key": "v" }], "continue": true, "headers": { "Cache-Control": "public, max-age=31536000, immutable" } },
 ```
 
-**Verify**: `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` → exit 0.
-**Verify**: `grep -c '_astro|fonts' vercel.json` → `0`.
-**Verify**:
+   `~/k7-rescue/improve-audit/lane-a/p012/vercel.json` is the whole file after both edits; your `vercel.json` must
+   be byte-identical to it (`cmp vercel.json ~/k7-rescue/improve-audit/lane-a/p012/vercel.json`).
 
+3. Create `scripts/cache-rules.test.mjs` as a copy of `p012/cache-rules.test.mjs`:
+
+```js
+// vercel.json's cache rules, read without a deployment: a file is kept for a year only when its address holds its
+// content (docs/performance.md, Content addresses). Each address below must meet exactly one cache rule, so the
+// answer never depends on the order of the routes.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const { routes } = JSON.parse(fs.readFileSync(path.resolve(import.meta.dirname, '../vercel.json'), 'utf8'));
+const YEAR = 'public, max-age=31536000, immutable', DAY = 'public, max-age=86400, stale-while-revalidate=604800';
+const isV = (c) => c.type === 'query' && c.key === 'v';
+// every Cache-Control a request for `p` meets, with or without ?v=
+function cache(p, v) {
+  return routes.filter((r) => {
+    if (!r.continue || !r.headers?.['Cache-Control'] || !new RegExp(r.src).test(p)) return false;
+    for (const c of [...(r.has ?? []), ...(r.missing ?? [])]) assert.ok(isV(c), `${r.src}: this test only reads conditions on the query key v`);
+    return (r.has ?? []).every(() => v) && (r.missing ?? []).every(() => !v);
+  }).map((r) => r.headers['Cache-Control']);
+}
+
+test('a year only for an address that holds its content', () => {
+  const cases = [
+    ['/_astro/Base.Jy14gAa_.css', false, YEAR],
+    ['/fonts/katagami-sans-site.woff2', true, YEAR],
+    ['/fonts/katagami-mono-site.woff2', true, YEAR],
+    ['/fonts/katagami-cjk-ja.woff2', true, YEAR],
+    ['/ex/ui.css', true, YEAR],
+    ['/battle/shared/battle.js', true, YEAR],
+    ['/es/gallery.js', true, YEAR],
+    ['/ex/fx/turboslide/fx.svg', true, YEAR],
+    ['/ex/borders/turboslide/frames/dir-a/border.svg', true, YEAR],
+    ['/ex/fx/turboslide/fx.svg', false, DAY],
+    ['/ex/borders/turboslide/frames/dir-a/border.svg', false, DAY],
+    // a design drawing's ?v= is another file's hash, so it never gets the year
+    ['/ex/design/lit/katagami.svg', true, DAY],
+    ['/ex/design/lit/katagami.svg', false, DAY],
+    ['/ex/posters/elo.webp', false, DAY],
+    ['/ex/fx/turboslide/fx.webp', true, DAY],
+    ['/og/home.jpg', false, DAY],
+    ['/battle/vendor/fonts/katagami-sans-battle.woff2', false, DAY],
+    ['/sound/out/card.flip.webm', false, DAY],
+  ];
+  for (const [p, v, want] of cases) assert.deepEqual(cache(p, v), [want], `${p}${v ? '?v=…' : ''}`);
+});
+test('a face, stylesheet or script asked for without its content address is not kept', () => {
+  for (const p of ['/fonts/katagami-sans-site.woff2', '/fonts/katagami-mono-site.woff2', '/ex/ui.css', '/battle/shared/battle.js', '/es/gallery.js']) assert.deepEqual(cache(p, false), [], p);
+  for (const p of ['/', '/about', '/cards/elo', '/about.md', '/llms.txt', '/sitemap-index.xml']) assert.deepEqual(cache(p, false), [], p);
+});
 ```
-node -e '
-const { routes } = JSON.parse(require("fs").readFileSync("vercel.json", "utf8"));
-const year = (p, q) => routes.filter((r) => r.continue && /immutable/.test(r.headers?.["Cache-Control"] ?? "") && new RegExp(r.src).test(p) && (!r.has || (q && r.has.every((h) => h.type === "query" && h.key === "v")))).length > 0;
-const want = [["/fonts/katagami-sans-site.woff2", true, true], ["/fonts/katagami-sans-site.woff2", false, false], ["/_astro/Base.x.css", false, true], ["/ex/fx/turboslide/fx.svg", true, true], ["/ex/fx/turboslide/fx.svg", false, false], ["/ex/borders/katagami/border.svg", true, true], ["/ex/design/lit/katagami.svg", true, false], ["/ex/posters/elo.webp", false, false], ["/ex/ui.css", true, true], ["/ex/ui.css", false, false]];
-const bad = want.filter(([p, q, w]) => year(p, q) !== w);
-console.log(bad.length ? "FAIL " + JSON.stringify(bad) : "cache rules: " + want.length + " cases pass");
-process.exit(bad.length ? 1 : 0);'
-```
 
-→ `cache rules: 10 cases pass`.
+**Verify**: `node -e "JSON.parse(require('fs').readFileSync('vercel.json','utf8'))"` → exit 0, and the `cmp` above
+prints nothing.
+**Verify**: `pnpm test` → 2 more passing tests than before this plan (15 if plan 011 is the commit before), `fail 0`.
+**Verify** (the test fails on the old rules): `git show 4025230:vercel.json > ~/k7-rescue/improve-audit/lane-a/p012/old/vercel.json`
+after `mkdir -p ~/k7-rescue/improve-audit/lane-a/p012/old/scripts && cp scripts/cache-rules.test.mjs ~/k7-rescue/improve-audit/lane-a/p012/old/scripts/`,
+then `(cd ~/k7-rescue/improve-audit/lane-a/p012/old && node --test scripts/cache-rules.test.mjs)` → both tests fail.
+**Verify**: `node scripts/check-negotiation.mjs` → exit 0 (the negotiation routes were not touched).
 
-### Step 4: Make the guard hold the drawings to their hashes
+### Step 4: Make the guard hold faces and drawings to their content addresses
 
 In `scripts/verify-build.mjs`:
 
@@ -291,7 +373,7 @@ In `scripts/verify-build.mjs`:
 import { createHash } from 'node:crypto';
 ```
 
-2. Directly after the line `const errors = [];` add:
+2. Directly after the `exists` helper (after its closing `};`), add (`p012/guard-helper.js.txt`):
 
 ```js
 // sha-256 of a dist file, read once
@@ -299,39 +381,56 @@ const hashes = new Map();
 const sha256 = (f) => hashes.get(f) ?? hashes.set(f, createHash('sha256').update(fs.readFileSync(f)).digest('hex')).get(f);
 ```
 
-3. In the reference loop quoted in "Current state", directly after the line
-   ``if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);`` and before the loop's closing `}`,
-   add:
+3. Directly after the line that ends ``fail(page, `${m[1]} has no ?v= content address`);`` (the `/ex/` check quoted
+   in "Current state"), add (`p012/guard-face.js.txt`):
 
 ```js
-    // a frame or effect drawing under /ex/borders or /ex/fx named with ?v= is cached for a year (vercel.json), so the
-    // token must be the served file's own sha-256: a changed drawing then always gets a new address
-    const v = /^\/ex\/(?:borders|fx)\/.*\.svg$/.test(abs) ? /[?&]v=([0-9a-f]+)/.exec(u)?.[1] : null;
-    if (v && exists(abs) && !sha256(path.join(DIST, abs)).startsWith(v)) fail(page, `${abs}?v=${v} is not the file's sha-256, and it is cached as immutable`);
+  // a face under /fonts is kept for a year only when it is named with its ?v= content address (vercel.json); named
+  // without it, it would be fetched again on every visit, and the face blocks text
+  for (const m of html.matchAll(/(?<![\w.-])\/fonts\/[\w-]+\.woff2(?!\?v=[0-9a-f])/g)) fail(page, `${m[0]} is named without its ?v= content address`);
 ```
 
-Also extend the comment block at the top of the file (lines 2-8) with one sentence at its end: `A drawing under
-/ex/borders or /ex/fx named with ?v= carries its own sha-256 (it is cached for a year).`
+4. In the reference loop, directly after the line
+   ``if (!exists(abs)) fail(page, `broken reference ${u} (resolves to ${abs})`);`` and before the loop's closing `}`,
+   add (`p012/guard-hash.js.txt`):
+
+```js
+    // a face under /fonts, and a frame or effect drawing under /ex/borders or /ex/fx, named with ?v= is kept for a
+    // year (vercel.json), so the token must be the served file's own sha-256: a changed file then always gets a new address
+    const v = /^\/fonts\/|^\/ex\/(?:borders|fx)\/.*\.svg$/.test(abs) ? /[?&]v=([0-9a-f]+)/.exec(u)?.[1] : null;
+    if (v && exists(abs) && !sha256(path.join(DIST, abs)).startsWith(v)) fail(page, `${abs}?v=${v} is not the file's sha-256, and it is kept for a year`);
+```
+
+5. Extend the comment block at the top of the file with one sentence at its end (after `(a phone's tab stays under
+   its memory limit).`): `A face under /fonts is named with ?v=, and that token, like a /ex/borders or /ex/fx
+   drawing's, is the file's own sha-256 (they are kept for a year).` Keep the comment's `//` line style and line
+   length.
 
 **Verify**: `node --check scripts/verify-build.mjs` → exit 0.
+**Verify** (the new face check sees today's unversioned faces): if `dist/` still holds a build from before step 1,
+`node scripts/verify-build.mjs | /usr/bin/grep -c 'named without its ?v= content address'` → a number above 0. If
+`dist/` is missing or already rebuilt, skip this check and say so.
 
 ### Step 5: Update the smoke check
 
-In `scripts/smoke.mjs`, replace lines 24-30 (quoted in "Current state") with:
+In `scripts/smoke.mjs`, replace the seven-line block quoted in "Current state" (from the comment `// the
+stylesheets, scripts and face a page names by content address are kept for a year (vercel.json)` through the closing
+`}` of its `for` loop) with (`p012/smoke-block.js.txt`):
 
 ```js
 // what a page names by content address is kept for a year (vercel.json): its stylesheets and scripts, both faces, and
-// the frame and effect drawings whose ?v= is their own hash; a font asked for without ?v= is not
+// the frame and effect drawings whose ?v= is their own hash; the same face or drawing asked for without ?v= is not
 const { text: home } = await get('/');
-const border = home.match(/borders\/[\w-]+\/border\.svg\?v=[0-9a-f]+/)?.[0];
+const border = home.match(/borders\/[\w/-]+\.svg\?v=[0-9a-f]+/)?.[0];
 for (const u of [home.match(/\/ex\/ui\.css\?v=[0-9a-f]+/)?.[0], home.match(/\/fonts\/katagami-sans-site\.woff2\?v=[0-9a-f]+/)?.[0], home.match(/\/fonts\/katagami-mono-site\.woff2\?v=[0-9a-f]+/)?.[0], border && `/ex/${border}`]) {
   if (!u) { fails.push('/: no versioned /ex/ui.css, face, Machine face or border drawing'); continue; }
   const { r } = await get(u);
   if (r.status !== 200 || !/immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u}: ${r.status} cache-control ${r.headers.get('cache-control')}`);
 }
-{
-  const { r } = await get('/fonts/katagami-sans-site.woff2');
-  if (/immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`/fonts/katagami-sans-site.woff2 without ?v=: cache-control ${r.headers.get('cache-control')}, expected no immutable`);
+for (const u of ['/fonts/katagami-sans-site.woff2', border && `/ex/${border.split('?')[0]}`]) {
+  if (!u) continue;
+  const { r } = await get(u);
+  if (r.status !== 200 || /immutable/.test(r.headers.get('cache-control') ?? '')) fails.push(`${u} without ?v=: ${r.status} cache-control ${r.headers.get('cache-control')}, expected 200 and no immutable`);
 }
 ```
 
@@ -339,33 +438,36 @@ for (const u of [home.match(/\/ex\/ui\.css\?v=[0-9a-f]+/)?.[0], home.match(/\/fo
 
 ### Step 6: Build and check the pages
 
-Run `pnpm install --frozen-lockfile`, then `pnpm build`.
+Run `pnpm build`.
 
 **Verify**: the last line ends `all checks pass`.
-**Verify** (both faces carry their hash, on a room page, a prose page and the 404):
+**Verify** (both faces carry their hash, on a room page, a prose page, a translated page and the 404):
 
 ```
-for f in dist/index.html dist/about.html dist/404.html; do echo "$f: $(grep -o 'katagami-[a-z]*-site\.woff2[^")]\{0,13\}' $f | sort -u | tr '\n' ' ')"; done
+for f in dist/index.html dist/about.html dist/es/about.html dist/404.html; do echo "$f: $(/usr/bin/grep -o 'katagami-[a-z]*-site\.woff2[^")<> ]\{0,13\}' $f | sort -u | tr '\n' ' ')"; done
 ```
 
-→ each line lists exactly `katagami-mono-site.woff2?v=<10 hex> katagami-sans-site.woff2?v=<10 hex>`, and the two
-hashes equal the output of the "faces' hashes" command in the table.
+→ each line lists exactly `katagami-mono-site.woff2?v=9fade4c28f katagami-sans-site.woff2?v=8254e26517`.
 
-**Verify**: `grep -c 'fonts/' dist/_astro/*.css` → `0` for every stylesheet listed (the Mono rule left the bundle).
-**Verify**: `grep -o '<link rel="preload"[^>]*>' dist/about.html` → one line whose `href` is the Sans address with `?v=`.
-**Verify**: `grep -c 'l.href=d.dataset.mono' dist/about.html` → `1`, and
-`grep -o '<html[^>]*>' dist/about.html` contains `data-mono="/fonts/katagami-mono-site.woff2?v=`.
-**Verify** (the guard's new check works: it must fail when a token is wrong):
+**Verify**: `/usr/bin/grep -c 'fonts/' dist/_astro/*.css` → `0` for every stylesheet listed (the Mono rule left the bundle).
+**Verify**: `/usr/bin/grep -o '<link rel="preload"[^>]*>' dist/about.html` → one line whose `href` is the Sans address with `?v=`.
+**Verify**: `/usr/bin/grep -c 'l.href=d.dataset.mono' dist/about.html` → `1`, and
+`/usr/bin/grep -o '<html[^>]*>' dist/about.html` contains `data-mono="/fonts/katagami-mono-site.woff2?v=9fade4c28f"`.
+**Verify** (the guard's hash check fails when a token is wrong; one built file is changed and put back):
 
 ```
-cp -R dist "$TMPDIR/plan-012-dist" && sed -i '' 's/fx\.svg?v=\([0-9a-f]\)/fx.svg?v=0\1/' "$TMPDIR/plan-012-dist/index.html" && node scripts/verify-build.mjs "$TMPDIR/plan-012-dist" | head -3; rm -rf "$TMPDIR/plan-012-dist"
+B=~/k7-rescue/improve-audit/lane-a/p012/index.html.bak && cp dist/index.html "$B" && sed -i '' 's/fx\.svg?v=\([0-9a-f]\)/fx.svg?v=0\1/' dist/index.html && node scripts/verify-build.mjs | /usr/bin/grep -m2 "is not the file's sha-256"; cp "$B" dist/index.html && node scripts/verify-build.mjs | tail -1
 ```
 
-→ the output starts `verify-build:` with a number of problems and names `is not the file's sha-256`.
+→ at least one line naming `is not the file's sha-256`, then, after the file is put back, a last line ending
+`all checks pass`.
 
 ### Step 7: Keep the docs true, record and commit
 
-1. In `docs/performance.md`, the "Content addresses" row (line 13): replace its last cell
+1. In `docs/performance.md`, row "The face": replace `preloaded first on every page, cached for a year.` with
+   `preloaded first on every page, named by content address (`?v=`) and cached for a year.`
+
+2. In `docs/performance.md`, row "Content addresses": replace its last cell
 
 ```
 Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) carries `?v=<hash>` and is `immutable` for a year; the files the rounds' own scripts load keep plain addresses and revalidate. The guard fails on an unversioned `/ex/` reference; the smoke test checks the header. |
@@ -374,67 +476,69 @@ Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) carries
    with
 
 ```
-Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) and both site faces (`/fonts/`) carry `?v=<hash>` and are `immutable` for a year; so are the frame and effect drawings under `/ex/borders/` and `/ex/fx/`, whose `?v=` the rounds write as the file's own sha-256 (the guard fails when it is not). A font asked for without `?v=`, the `design/` drawings (their `?v=` is another file's hash), every plain picture address and the files the rounds' own scripts load revalidate or keep a day. The guard fails on an unversioned `/ex/` reference; the smoke test checks the headers. |
+Every stylesheet and script a page names (`/ex/`, `/sound/`, `/battle/`) and every face under `/fonts/` carries `?v=<hash>` and is `immutable` for a year; so are the frame and effect drawings under `/ex/borders/` and `/ex/fx/`, whose `?v=` the rounds write as the file's own sha-256. A face or drawing asked for without `?v=`, the `design/` drawings (their `?v=` is another file's hash), every plain picture address and the files the rounds' own scripts load revalidate or keep a day. The guard fails on an unversioned `/ex/` or `/fonts/` reference and on a face or drawing whose `?v=` is not its hash; `scripts/cache-rules.test.mjs` reads the rules in `vercel.json`; the smoke test checks the headers. |
 ```
 
-2. In `docs/deploy.md`, the "Caching" bullet (lines 29-31): replace `` `_astro/` and `fonts/` are immutable; `` with
-   `` `_astro/` is immutable, and so is a `fonts/` file asked for with `?v=`; `` and, after
-   `` is immutable too; ``, insert `` the `/ex/borders/` and `/ex/fx/` drawings asked for with `?v=` are immutable as well; ``.
+3. In `docs/deploy.md`, the "Caching" bullet: replace `` `_astro/` and `fonts/` are immutable; `` with
+   `` `_astro/` is immutable, and so is a `fonts/` file asked for with `?v=`; `` and, directly after
+   `` is immutable too; ``, insert `` the `/ex/borders/` and `/ex/fx/` drawings asked for with `?v=` are immutable as well (`scripts/cache-rules.test.mjs`); ``.
 
-3. Append an entry to the end of `memory.md` in the file's existing shape (a `## 2026-MM-DD: <title> (<branch>, <agent>)`
-   heading, then `- **Type**:`, `- **Changed**:`, `- **Checked**:`, `- **Open**:` bullets). Under Open write: "not
-   deployed: the smoke check of the cache headers (`node scripts/smoke.mjs <preview>`) has not run; the plain picture
-   addresses (`posters/`, `media/`) still keep a day and are not hashed; `design/` drawings carry a `?v=` that is not
-   their own hash (a rounds matter, `r4/ex/tools/design.mjs`)".
+4. Append an entry to the end of `memory.md` in the file's existing shape (a `## 2026-11-10: <title>
+   (improve/p2-checks, plan 012)` heading, then `- **Type**:`, `- **Changed**:`, `- **Checked**:`, `- **Open**:`
+   bullets). Under Open write: "not deployed: the smoke check of the cache headers
+   (`node scripts/smoke.mjs <preview>`) has not run, so Vercel's handling of the `missing` condition is unproven on
+   a deployment; the plain picture addresses (`posters/`, `media/`) still keep a day and are not hashed; `design/`
+   drawings carry a `?v=` that is not their own hash (a rounds matter); returning visitors fetch each face once
+   more after this ships".
 
-Commit by explicit path (every file in "In scope" that changed) with the message in "Git workflow".
+Commit by explicit path (the nine files in "In scope") with the message in "Git workflow".
 
-**Verify**: `git status --short` → empty.
+**Verify**: `git status --short` → empty. `git show --stat --format=%ae HEAD` lists exactly the nine files.
 
 ### Operator step (not yours): the preview check
 
 A Vercel preview needs Kevin's yes. Whoever deploys the branch runs `node scripts/smoke.mjs <preview-url>` as
-`docs/deploy.md` describes. If it reports the border drawing's `cache-control` as `max-age=86400` (the earlier media
-route won instead of the later one), remove the `^/ex/(?:borders|fx)/` route from `vercel.json`, the border entry
-from the list in `scripts/smoke.mjs`, and the two doc phrases about the drawings; the fonts are unaffected.
+`docs/deploy.md` describes. If it reports a border drawing or a face with the wrong `cache-control`, the route
+conditions did not behave on Vercel as the schema says: report the header it printed before changing anything.
 
 ## Test plan
 
-- The guard (`scripts/verify-build.mjs`) gains one check, exercised twice in step 6: it passes on the real build and
-  fails on a copy with one wrong `?v=`.
-- The cache rules in `vercel.json` are checked without a deployment by the `node -e` table in step 3 (10 cases,
-  including the two that must NOT be cached for a year: a font without `?v=` and a `design/` drawing with one).
+- New tests: `scripts/cache-rules.test.mjs`, in `pnpm test`. It evaluates `vercel.json`'s cache routes for 18
+  addresses with and without `?v=` and requires exactly one matching rule each (a year, or a day), then requires
+  that a face, stylesheet or script without `?v=`, and a page, meet no cache rule at all. Step 3 shows it fails on
+  the old rules.
+- The guard (`scripts/verify-build.mjs`) gains two checks: a face named without `?v=` (seen failing on the old
+  build in step 4), and a `?v=` that is not the file's hash (seen failing on a changed copy in step 6).
 - `scripts/smoke.mjs` checks the real headers on a deployment (operator step).
-- No test runner exists in this repo; these are commands, in the style of the existing scripts.
-- Verification: `pnpm build` ends `all checks pass`; the step 6 loop shows both faces with `?v=` on three pages.
+- Verification: `pnpm test` and `pnpm build` pass; the step 6 loop shows both faces with `?v=` on four pages.
 
 ## Done criteria
 
 Machine-checkable. ALL must hold:
 
 - [ ] `pnpm build` ends with `all checks pass`
-- [ ] the step 6 loop prints both `katagami-mono-site.woff2?v=` and `katagami-sans-site.woff2?v=` for all three pages, and no address without `?v=`
-- [ ] `grep -c 'fonts/' dist/_astro/*.css` reports `0` for every file
-- [ ] `grep -c '@font-face' src/styles/machine.css` → `0`
-- [ ] the step 3 `node -e` table prints `cache rules: 10 cases pass`
-- [ ] the step 6 negative check names `is not the file's sha-256`
-- [ ] `node --check scripts/smoke.mjs` and `node --check scripts/verify-build.mjs` exit 0
-- [ ] `git diff --name-only origin/main...HEAD -- public vendor` prints nothing
-- [ ] `git diff --name-only origin/main...HEAD` lists only the files in "In scope"
-- [ ] `plans/README.md` status row updated (DONE, with the note "preview smoke not run")
+- [ ] `pnpm test` → 0 fail, with the 2 new cache-rule tests
+- [ ] the step 6 loop prints both `katagami-mono-site.woff2?v=9fade4c28f` and `katagami-sans-site.woff2?v=8254e26517` for all four pages, and no address without `?v=`
+- [ ] `/usr/bin/grep -c 'fonts/' dist/_astro/*.css` reports `0` for every file
+- [ ] `/usr/bin/grep -c 'fonts/' src/styles/machine.css` → `0`
+- [ ] `cmp vercel.json ~/k7-rescue/improve-audit/lane-a/p012/vercel.json` prints nothing
+- [ ] the step 6 negative check names `is not the file's sha-256`, and the guard passes again once the file is back
+- [ ] `node --check scripts/smoke.mjs` and `node scripts/check-negotiation.mjs` exit 0
+- [ ] `git diff --name-only HEAD~1..HEAD -- public vendor` prints nothing
+- [ ] `git diff --name-only HEAD~1..HEAD` lists only the nine files in "In scope"
 
 ## STOP conditions
 
 Stop and report back (do not improvise) if:
 
-- Any excerpt in "Current state" does not match (for example plan 004 or the i18n branch reshaped `vercel.json`
-  line 24, or `Base.astro`'s head changed).
+- Any excerpt in "Current state" does not match the live file.
 - After the build, a page still names a face without `?v=`, or names the Mono face with two different addresses.
 - `pnpm build` fails with `is not the file's sha-256` on the real build: a `borders/` or `fx/` token no longer
-  matches its file. Do not weaken the check; report the files it names (the rounds changed how they write `?v=`).
-- The page paints differently at first load. This plan must not change first paint; if you have reason to think it
-  did (for example the Machine view flashes a fallback face), record it with `scripts/paint-capture.mjs` as
-  `docs/performance.md` describes, and report.
+  matches its file. Do not weaken the check; report the files it names.
+- `pnpm build` fails with `named without its ?v= content address` on a page this plan did not expect (for example
+  a battle page): report the page and the address; do not loosen the pattern.
+- You have reason to think first paint changed (for example the build prints a face in a different order in
+  `<head>`). Report it; your reviewer records the paint.
 - You are asked to deploy or push.
 
 ## Maintenance notes
@@ -444,8 +548,10 @@ Stop and report back (do not improvise) if:
 - Returning visitors fetch each face once more after this ships (their cached copy is under the old plain address).
 - `data-mono` on `<html>` exists only so the head script can preload the Machine face under the same address the
   `@font-face` rule names. If the script is ever rewritten, keep those two addresses identical.
-- If the rounds start writing content hashes on `design/` drawings or on pictures, widen both the `vercel.json`
-  route and the guard's pattern together, never one without the other.
+- A new cache route in `vercel.json` needs a case in `scripts/cache-rules.test.mjs`; the test requires that each
+  address meets exactly one cache rule, so two rules that overlap fail it.
+- If the rounds start writing content hashes on `design/` drawings or on pictures, widen the `vercel.json` routes
+  and the guard's pattern together, never one without the other.
 - Deferred: hashing `posters/` and `media/` addresses (they are also built at runtime by `gallery.js` and
   `rituals.js`, so it needs a sync transform as well as a build step). Until then a re-cut picture can sit behind
   yesterday's cached file for up to a day.
