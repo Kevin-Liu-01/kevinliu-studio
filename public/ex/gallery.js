@@ -56,7 +56,8 @@
   }, true);
   // one status line for the page and one inside the inspect dialog (aria-modal): a message goes where focus is
   const status = $('#status'), insStatus = $('#ins-status');
-  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };
+  let sayQ = [], sayT = 0;
+  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };
   const and = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs.at(-1));
   const { clamp } = M;
   const optsOf = (id) => ({ pass: ART.passOf(F[id].cost), k: KS[id], subject: ART.subjectOf(id) });
@@ -73,6 +74,8 @@
   const spent = (ids = S.you) => ids.reduce((a, id) => a + cost(id), 0);
   const fits = (id) => S.you.length < SIZE && spent() + cost(id) + (SIZE - S.you.length - 1) <= BUDGET;
   const titleOf = (id) => F[id].title;
+  const TITLE0 = document.title;
+  const retitle = () => { const c = history.state && history.state.card; document.title = c && F[c] ? `${F[c].title} | ${TITLE0}` : TITLE0; };
   // G is what rituals.js reads: the state, the cards, the wells and the team functions. G.ritual is the
   // live sequence ({ finish() }), or null.
   const G = { S, F, SIZE, BUDGET, $, $$, RM, say, and, optsOf, rectOf, titleOf, cost, spent, fits, hiOf, ritual: null };
@@ -86,13 +89,13 @@
   document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('[data-mode-set]'); if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });
   setMode(root.dataset.mode || 'human');
   const pauseBtn = $('#pause');
-  function setPaused(on) {
+  function setPaused(on, save) {
     const p = on || RM();
     pauseBtn.setAttribute('aria-pressed', String(p));
     Ground.paused = p;
-    try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}
+    if (save) try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}
   }
-  pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });
+  pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true', true); });
   setPaused('paused' in root.dataset);
 
   // ---------- the rituals ----------
@@ -482,6 +485,7 @@
         }
       }
       w.classList.toggle('full', !!id);
+      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }
     });
     const g = $('.gauge');
     $$('i', g).forEach((sq, i) => sq.classList.toggle('on', i < spent()));
@@ -905,19 +909,19 @@
     lensTop() { lensMoved = top0(ins, lensMoved); },
     inert: setInert,
     opened(id, push) {
-      if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }
+      if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; } retitle();
       const keys = viaKeys;
       focusSoon(() => { if (I.id === id) (keys ? $('#lifted') : ins).focus({ preventScroll: true }); });
     },
     stepped(id) {
-      history.replaceState({ card: id }, '', `/cards/${id}`);
+      history.replaceState({ card: id }, '', `/cards/${id}`); retitle();
       const keys = viaKeys;
       focusSoon(() => { if (I.id === id && !ins.contains(document.activeElement)) (keys ? $('#lifted') : ins).focus({ preventScroll: true }); });
     },
     leaving(fromPop) {
       if (!fromPop) {
-        if (I.pushed && history.state && history.state.card) history.back();
-        else history.replaceState(null, '', '/' + location.search + location.hash);
+        if (history.state && history.state.card) history.back();
+        else { history.replaceState(null, '', '/' + location.search + location.hash); retitle(); }
       }
       I.pushed = false;
     },
@@ -927,15 +931,16 @@
     closed(id) {
       setInert(false, id);
       for (const n of [behind, cards[id].pocket]) if (n.inert) { n.inert = false; inertTodo = inertTodo.filter((x) => x !== n); }
-      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });
+      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });
     },
   });
   const openInspect = R.lift.open, closeInspect = R.lift.close, stepTo = R.lift.step, tickInspect = R.lift.tick;
   closeBtn.addEventListener('click', () => closeInspect(false));
   ins.addEventListener('click', (e) => { if (e.target === ins || e.target === insCard || e.target === room) closeInspect(false); });
   addEventListener('popstate', (e) => {
+    retitle();
     const id = e.state && e.state.card;
-    if (id && cards[id]) openInspect(id, { push: false });
+    if (id && cards[id] && root.dataset.mode !== 'machine') openInspect(id, { push: false });
     else if (I.id) closeInspect(true);
   });
   // Keys in the lens, from any focus inside it: arrows step card to card, A adds or removes, F (or Enter and Space
@@ -969,7 +974,7 @@
       playNext = false;
       if (G.ritual) { e.preventDefault(); G.ritual.finish(); return; }
       if (I.id) { e.preventDefault(); closeInspect(false); }
-    } else if ((e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea') && !I.id && !e.metaKey && !e.ctrlKey) { play(); }
+    } else if ((e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock') && !I.id && !e.metaKey && !e.ctrlKey) { play(); }
   });
 
   // ---------- boot ----------

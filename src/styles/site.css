@@ -93,6 +93,9 @@ header.top .links a { white-space: nowrap; }
 @media (max-width: 639px) { .foot .tomachine { display: inline-grid; } }
 /* focus scrolling keeps a focused control clear of the fixed Pick Three dock */
 html:has(.dock) { scroll-padding-bottom: calc(var(--dock) + 24px); }
+/* a card's plain link to its page (index.astro) is hidden like .sr; where it can take focus (no scripts) it shows
+   while focused, as a label at the foot of its pocket */
+.wall > .pocket > a.golink:focus-visible { left: 10px; bottom: 10px; width: auto; height: auto; overflow: visible; clip-path: none; z-index: 7; padding: 6px 10px; border-radius: 8px; background: var(--clay); color: var(--ink-1); font: 600 14px/20px var(--sans); }
 html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 
 /* ---------- a card's own page: the card at full size on its own colour, its sheet beside it ---------- */

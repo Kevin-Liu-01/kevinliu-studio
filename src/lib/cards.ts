@@ -67,7 +67,14 @@ const webpSize = (rel: string) => {
   return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
 };
 
-export const env = { recipes: RECIPES, bands: BANDS, media: MEDIA, art: ART, size: webpSize, face: FACE, order: FIGHTERS.map((f) => f.id), set: FIGHTERS.length };
+// The poster ladder (r4/ex tools/posters.cjs): each poster's half beside it, recorded in posters.json (synced to
+// vendor/ex, build-only). markup.js prints a poster's srcset by width when its card is printed with sizes and
+// env.posters names a half for it.
+const POSTERS = JSON.parse(fs.readFileSync(path.join(VX, 'posters/posters.json'), 'utf8'));
+export const env = { recipes: RECIPES, bands: BANDS, media: MEDIA, art: ART, size: webpSize, face: FACE, order: FIGHTERS.map((f) => f.id), set: FIGHTERS.length, posters: POSTERS };
+// A card page draws its card up to 440 px wide and has no gallery.js to keep `sizes` at the drawn width, so a
+// caller may ask for the whole posters only (opts.ladder === false).
+const NO_LADDER = { ...env, posters: { half: {} } };
 export const fighters = FIGHTERS;
 export const rules = RULES;
 export const byId = Object.fromEntries(FIGHTERS.map((f) => [f.id, f]));
@@ -75,7 +82,7 @@ export const GALLERY_SIZES = WALL.sizes();
 export const wallCss: string = WALL.css();
 export const masks = ART.masks();
 
-const framedCard = (f: Fighter, opts: Record<string, unknown> = {}) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, env) as string;
+const framedCard = (f: Fighter, opts: Record<string, unknown> = {}, e: typeof env = env) => M.card(f, { sizes: GALLERY_SIZES, ...opts }, e) as string;
 // A card's element children as [start, end) slices of its HTML, the open tag that holds them and where they end.
 // markup.js writes well-formed HTML: every element closed or void, no "<" in text or attributes.
 const VOID = new Set(['img', 'br', 'input', 'source', 'wbr', 'hr', 'meta', 'link', 'area', 'col', 'embed', 'track']);
@@ -125,13 +132,17 @@ function undelta(plain: string, d: string) {
 // loading="lazy" was not enough); FRAMED gives it its src where the plain print stays, lazy where the card's poster is.
 // A delta whose paths do not all resolve in the page keeps the plain print.
 export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
-  const plain = (M.baseCard(f, { sizes: GALLERY_SIZES, ...opts }, env) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"/, '$1data-plainfx="$2"');
-  const framed = framedCard(f, opts);
+  const { ladder = true, ...o } = opts;
+  const e = ladder ? env : NO_LADDER;
+  // the plain print's front-effects poster waits in data attributes (its src, and its srcset when the ladder prints
+  // one: an <img> with a srcset and no src still fetches), so a desktop never fetches it; FRAMED gives both back
+  const plain = (M.baseCard(f, { sizes: GALLERY_SIZES, ...o }, e) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"(?: srcset="([^"]*)")?/, (_m: string, a: string, src: string, set?: string) => `${a}data-plainfx="${src}"${set ? ` data-plainfxset="${set}"` : ''}`);
+  const framed = framedCard(f, o, e);
   const d = delta(plain, framed);
   if (undelta(plain, d) !== framed) throw new Error(`card ${f.id}: the framed print's delta does not rebuild it`);
   return `${plain}<template class="framed">${d}</template>`;
 };
-export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;var ms=t.content.querySelectorAll("b[data-same]"),ns=d?[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n&&n.children[i]},c)}):[];if(d&&ns.every(Boolean)){ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
+export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;var ms=t.content.querySelectorAll("b[data-same]"),ns=d?[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n&&n.children[i]},c)}):[];if(d&&ns.every(Boolean)){ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";if(i.dataset.plainfxset){i.srcset=i.dataset.plainfxset;i.removeAttribute("data-plainfxset")}i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.

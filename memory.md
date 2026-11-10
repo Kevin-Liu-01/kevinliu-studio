@@ -505,3 +505,60 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Why**: the shared content rules let a space, hyphen or underscore sit inside two of the three banned names but not the third, so that name written with a split in the middle passed both the sync and the release guard, in text and in paths.
 - **Checked**: the new test failed alone before the fix (19 pass, 1 fail); after it `pnpm test` 20 pass, 0 fail; the sync check prints `in sync`; `pnpm build` 256 pages, all checks pass.
 - **Open**: not pushed.
+## 2026-11-10: the wall's posters take their half on a 1x screen (improve/013-restore-poster-ladder, executor agent)
+
+- **Type**: perf
+- **Changed**: `scripts/sync.mjs` (`posters/posters.json` joins the build-only list), `vendor/ex/posters/posters.json` and `sync.lock.json` (by the sync), `src/lib/cards.ts` (env.posters, `ladder` option, `data-plainfxset` held and restored by FRAMED), `src/views/Card.astro` (`ladder: false`), `scripts/verify-build.mjs` (guard also reads `data-plainfxset`), `docs/performance.md`.
+- **Why**: the build never gave markup.js `posters.json`, so no poster printed a `srcset` and a 1x desktop fetched all 26 whole posters and fx posters although the 52 halves were deployed.
+- **Checked**: `pnpm build` 256 pages, 248 sitemap URLs, 3565 files, all checks pass. dist/index.html and dist/de.html: 26 poster srcsets, 26 `data-plainfxset`, no fx `<img>` with `src` or `srcset`. Card pages (en, de): no `srcset="posters/` and no `data-plainfxset` attribute. Browser, 1280 wide 1x: visible wall posters `@0.5x.avif`, nat 250 = drawn 250; card page poster has no srcset and loads `katagami.webp`.
+- **Paint capture**: before 50 frames over 14.75 s -> /private/tmp/013-before; after 153 frames over 13.39 s -> /private/tmp/013-after (different machine load; a reviewer reads the frames).
+- **Open**: card pages still choose every card picture by the wall's width (the subject picture draws about 1.8 times larger than its file); wants its own decision. A phone (plain print stays, FRAMED restores the fx srcset) was not checked in a browser.
+
+## 2026-11-10: card pages link a card style's sheet only when they print in it; card.css leaves its inline frost tile (improve/015-render-blocking-css-diet, Claude Code)
+
+- **Type**: perf
+- **Changed**: Part A: `src/layouts/Base.astro` (new `cardStyle` prop), `src/views/Card.astro` (names its card's style;
+  the plan's `src/pages/cards/[id].astro` is now a wrapper). Part B: `src/components/BattlePage.astro` (sets `--frost` to
+  `/ex/icons/frost.webp`), `scripts/sync.mjs` (`frost(t)` pair in the `card.css` entry), `public/ex/card.css` and
+  `sync.lock.json` (by the sync), `docs/sync.md`.
+- **Rationale**: 25 of 26 card pages (and their language copies) waited on `breakout.css` for one Breakout card, and
+  every page carried a 30 KB base64 frost tile in `card.css` that only the battle ever painted.
+- **Measured**: `breakout.css` linked on 1 of 26 English card pages (princeton-td) and on the home page; same one card
+  in each of the 7 other languages. `card.css` gzip -9: 55045 -> 29561 bytes. Browser: both battle pages and `/de/battle`
+  compute `--frost-tile` as `url("/ex/icons/frost.webp")` and fetch it; card pages keep `image-set(...)`.
+- **Open**: the operator's look at the battle's slips (trait and move slips, both modes, still show their fine noise).
+
+## 2026-11-10: the wall works for keyboard and screen-reader users (improve/016-wall-keyboard-and-screen-reader, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (four pairs in the gallery.js entry, one in markup.js), `public/ex/gallery.js` and `public/ex/markup.js` (by the sync), `sync.lock.json`, `docs/sync.md`.
+- **Rationale**: (1) a bare P anywhere on the page left for the battle (WCAG 2.1.4); it now plays only from the dock. (2) A pack's "Rival: ..." was replaced by "Pack: ..." before a screen reader spoke it; messages inside one 30 ms window now go out as one line. (3) The rival's wells were aria-hidden copies under a role-less labelled div; the side is now a group and each filled well is an img named by its card. (4) The lens's arrow keys step past the wall's scroll, so Escape focused an off-screen card; the card now scrolls into view first.
+- **Measured**: say() simulation prints "Rival: A. Pack: B"; built dist/index.html has the rival group once (dist/de.html too, labelled Gegner); browser: wells img:bday.land / img:Princeton Powerlifting / img:Elo, P from the page stays on /, P from #play reaches /battle#team=katagami,mailroom,agent-pets.
+- **Open**: the same changes are requested upstream (plans/016); the lens's focus check needs a person.
+
+## 2026-11-10: the wall saves only the visitor's choices and keeps its history straight (improve/017-wall-saved-state-and-history, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (six new pairs and four edited pairs in the gallery.js entry), `public/ex/gallery.js` (by the sync), `sync.lock.json`, `src/views/Home.astro` (the plan's `src/pages/index.astro` moved here with the i18n work; every language's home uses it), `src/styles/site.css`, `docs/sync.md`.
+- **Rationale**: (1) reduced motion was saved as `ill-pause = '1'` on every load; only the Pause key saves now. (2) A lens that Forward reopened closed with replaceState and left two identical entries; it steps back now. (3) Forward opened an invisible, inert lens in the Machine view; it opens nothing there. (4) The tab kept the home title at a card's address; it reads "<card> | Kevin Liu" while the lens holds the address. (5) Without scripts the wall was 26 dead buttons with the page links hidden from keyboards; the links are real links until gallery.js has booted, then a small script takes them out of the tab order.
+- **Checked**: build ends `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`; 26 `sr golink` links in dist/index.html and dist/de.html, none of the old form; browser (agent-browser, /): booted true, 26 links hidden; lens at /cards/turboslide titled "Turboslide | Kevin Liu"; Escape back to / and "Kevin Liu"; Forward reopens, Escape returns to /, second Forward reopens. Same on /de (address /de/cards/turboslide).
+- **Open**: the same four changes are requested upstream (plans/017); a visitor who already has `ill-pause = '1'` saved from reduced motion stays paused until they press Pause.
+
+
+## 2026-11-10: a touch screen fetches two cards' pictures with the page, not fourteen (improve/014-phone-first-screen-pictures, executor agent)
+
+- **Type**: perf
+- **Changed**: `src/views/Home.astro` (the plan names `src/pages/index.astro`; the home markup now lives here), `docs/performance.md` (one table row's text).
+- **Rationale**: a phone's wall is one column, about a card and a half, yet 14 cards printed eager pictures. Cards 3 to 14 now print lazy; `TOUCH_FIRST = 2` stays eager everywhere, and a script right after `FRAMED` (`EAGER`) makes cards 3 to 14 eager again on a fine pointer while the page is still parsing.
+- **Measured**: Playwright Chromium, local serve, grounds paused, 8 s cold load of `/`. Desktop 1440x900, first three pairs (noisy, one build at a time): frames before 8, 16, 18 and after 36, 17, 13. Settling run, two baselines served together on 43142 and this branch on 43141, 5 interleaved pairs: frames before 21, 25, 10, 13, 25 (median 21) and after 21, 27, 19, 18, 15 (median 19); desktop `lazy14` 0 in every after run. Phone (devices['iPhone 14'], `(pointer: coarse)` true) frames before 5, 6 and after 6, 6; phone images before 83 / 3789 KB, after 59 / 2890 KB. Built wall lazy map: pockets 1 and 2 are 0/n, 3 to 26 are n/n (English `dist/index.html` and `dist/fr.html`). Captures: `/private/tmp/claude-501/s/{b1440,b1440b,b1440c,a1440,a1440b,a1440c,b390,b390b,a390}` (scratch, lost on reboot).
+- **Open**: numbers are from a local serve; check Speed Insights LCP on phones after it ships. Frame counts swing with machine load (the first desktop pair, 8 to 36, was the only one above before + 2).
+
+## 2026-11-10: lane B merges plans 013, 015, 016, 017 and 014 and reviews them together (improve/p2-wall, Claude Code)
+
+- **Type**: merge and review
+- **Changed**: five plan branches and one fix branch merged with `--no-ff`; no code written here beyond merge resolution. `memory.md` kept every entry; `sync.lock.json` took the lane's side and was rewritten by a full sync from `rounds-42ff51c7` after 015, 016 and 017; `src/views/Home.astro` and `docs/performance.md` keep both 017's and 014's edits (014's `EAGER` script directly after `FRAMED`, 017's link script after it).
+- **Gates** after every merge: sync `in sync`, `pnpm test` 10 of 10, `verify-build: 256 pages, 248 sitemap URLs, 3565 files: all checks pass`. The 016 fix merge and the 014 merge share one gate run.
+- **Found**: 016 joined the pack's two status lines into one, and the language shim translated the joined line as if it were one (`/es`: "Rival: Loop, Mailroom, bday.land. Pack: CoTFly, Relay y Kevin Wiki"). Sent back; fixed by `improve/016-shim-split` (17419cd, `said()` translates each line); a real pack press under reduced motion now reads right on `/`, `/es` and `/ja`.
+- **Checked on the merged build** (Playwright, full Chromium with the GPU, `/`, `/es`, part on `/ja`): P plays only from the dock; the rival side is a group whose wells name their cards; lens open, Escape, Forward twice, arrow steps and titles; Machine view opens no lens on Forward; Pause is not saved under reduced motion and is saved on a press; scripts-off card links focusable and visible; phone Back and Forward through a lens; the poster ladder (26 halves at 1440 and 1x, whole posters on a phone and on card pages); `breakout.css` on 8 of 208 card pages; the battle's frost tile fetched from its file.
+- **First paint**: captures with `scripts/paint-capture.mjs` at 4025230, before 014 and at the tip are in `~/k7-rescue/improve-audit/lane-b/cap/`. Phone wall with the page: 85 pictures and 3,922 KB before, 61 and 3,024 KB after. Six interleaved desktop pairs against a build without 014 show no steady difference in what is missing when the hold lets go; this Mac ran at a load above 100 throughout.
+- **Open**: with scripts off each card shows an empty picture box (the plain print's front-effects `<img>` has no `src` until `FRAMED` runs; so at 4025230 too). On the Arena the frost tile is asked for about 150 ms before the page shows, and the first card about 1.3 s later; a `<link rel="preload" as="image">` beside the battle's `--frost` line would take the timing out of it. Chromium's lazy loading still fetches about 34 posters on a phone that has not scrolled.

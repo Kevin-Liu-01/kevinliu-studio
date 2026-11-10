@@ -195,7 +195,7 @@ for (const f of htmls) {
   const printed = [...outside.matchAll(cardTag)].length;
   if (printed !== parts.length - 1) fail(page, `${printed} cards outside templates and ${parts.length - 1} framed prints`);
   if (/\sdata-card-style="breakout"/.test(html) && !/href="\/ex\/styles\/breakout\/breakout\.css\?v=/.test(html)) fail(page, 'a Breakout card without breakout.css');
-  for (const m of html.matchAll(/\ssrcset="([^"]+)"/g)) {
+  for (const m of html.matchAll(/\s(?:srcset|data-plainfxset)="([^"]+)"/g)) {
     for (const part of m[1].split(',')) {
       const u = part.trim().split(/\s+/)[0];
       if (u && !/^(https?:|data:)/.test(u) && !exists(new URL(u, `https://x${base}`).pathname)) fail(page, `broken srcset ${u}`);

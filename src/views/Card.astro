@@ -37,16 +37,20 @@ const art = await asciiArt(f.id, 48);
 // (.sl) is one panel of its twin lines laid over the whole list, so its lines share the room its tiles take
 const hd = (md: string) => `<p class="mx" aria-hidden="true">${mdHtml(md)}</p>`;
 const facts = factLines(f);
+// the card style this card prints in (markup.js writes data-card-style on a styled card), so Base links that
+// style's sheet and no other
+const cardStyle = (card(f).match(/\sdata-card-style="([\w-]+)"/) ?? [])[1] ?? null;
 // "Numbers pinned at <sha>, <date>.": the sentence in the language around the commit's link
 const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sha: '\u0000', date: pinned.date ?? '' }).split('\u0000') : [];
 ---
 <Base
   seo={{ title: f.title, description, path: cardPath(f, code), og: f.id, imageAlt: l.t('card.imageAlt', { title: f.title, answer }), jsonld }}
   room
+  cardStyle={cardStyle}
   html={{ 'data-card': f.id }}
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
-    <div class="stand"><Fragment set:html={roomIn(card(f, { id: `c-${f.id}`, focusable: false }), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
+    <div class="stand"><Fragment set:html={roomIn(card(f, { id: `c-${f.id}`, focusable: false, ladder: false }), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
     <script is:inline set:html={FRAMED} />
     <article class="info">
       <div class="sw hw"><h1>{f.title}</h1><Fragment set:html={hd(`# ${f.title}`)} /></div>

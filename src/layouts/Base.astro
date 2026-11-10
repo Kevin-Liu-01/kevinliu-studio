@@ -23,8 +23,9 @@ interface Props {
   twinPath?: string;
   main?: string; // the id the skip link lands on
   heavy?: boolean; // gives back its GPU memory and pictures when it leaves on a touch screen (Release.astro)
+  cardStyle?: string | null; // the one card style this page prints (data-card-style), null for none; left out, the page takes every style's sheet (the wall, whose cards can change style)
 }
-const { seo, room = false, scripts = [], html = {}, twinPath: twinOf = seo.path, main = 'main', heavy = false } = Astro.props;
+const { seo, room = false, scripts = [], html = {}, twinPath: twinOf = seo.path, main = 'main', heavy = false, cardStyle } = Astro.props;
 const l = of(seo.path);
 // One face for every page, preloaded first and cached for a year. It blocks text rather than swapping (the cards'
 // titles are fitted to its advances at build, markup.js ADV), and the fallback is Arial scaled to its width and line,
@@ -69,8 +70,9 @@ const preloads = faces.filter((f) => f.locales.includes(l.code)).map((f) => vers
 {/* only a page that runs the rituals takes their sheet: it opts the page into cross-document View Transitions, which on
    a card page crossfaded every return to the wall through a pale frame */}
 {scripts.includes('rituals.js') && <link rel="stylesheet" href={versioned('/ex/rituals.css')} />}
-{/* the round page's other sheets (a card style's, Breakout), so a card printed in that style paints in it */}
-{room && roundSheets.filter((s) => !['ui.css', 'card.css', 'rituals.css'].includes(s.href)).map((s) => <link rel="stylesheet" href={versioned(`/ex/${s.href}`)} data-card-style-sheet={s.style ? '' : undefined} />)}
+{/* the round page's other sheets (a card style's, Breakout), so a card printed in that style paints in it: every
+   style's on the wall, and on a page that names its card's style (a card page) only that one's */}
+{room && roundSheets.filter((s) => !['ui.css', 'card.css', 'rituals.css'].includes(s.href) && (!s.style || cardStyle === undefined || (!!cardStyle && s.href.startsWith(`styles/${cardStyle}/`)))).map((s) => <link rel="stylesheet" href={versioned(`/ex/${s.href}`)} data-card-style-sheet={s.style ? '' : undefined} />)}
 {scripts.map((s) => <script is:inline defer src={versioned(`/ex/${s}`)}></script>)}
 <slot name="head" />
 <Analytics />

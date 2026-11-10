@@ -44,6 +44,8 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
 
 - `gallery.js`, `rituals.js`: the sound hooks from `r4/sound/INTEGRATION.md` section 2, and the lens address
   (`/cards/<id>` instead of a folder under `<base>`).
+- `gallery.js`, `ex/markup.js`: Play's P key acts only from the dock, messages sent together are spoken as one line, the rival's side is a group whose wells name their cards, and the card that takes focus back from the lens scrolls into view.
+- `gallery.js`: Pause is saved only when pressed (reduced motion is not the visitor's choice), a lens always steps back out of its own history entry, a card's history entry opens nothing in the Machine view, and the tab carries the card page's title while the lens holds its address.
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
 - `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
@@ -62,6 +64,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
   Turboslide cards use the captures that replace the dropped ones, and the Prototemplate loop points at the clip that
   exists.
 - `ex/markup.js`: the lens's Visit link carries no placeholder `#`, which `<base>` would turn into `/ex/`.
+- `ex/card.css`: the frosted slips' inline 1x tile (a 30 KB data URL, the fallback of `--frost`) is left out; every page sets `--frost` itself (`ui.css`, and `BattlePage.astro` for the battle).
 - `rituals.js` also resolves the battle page's stylesheets against that page's own `<base>`, and plays the pack reveal
   for a reduced-motion pack.
 - `PHONE` (`scripts/phone-memory.mjs`, docs/performance.md, Memory): `ex/ground.js` caps the shared canvas at 2048 and

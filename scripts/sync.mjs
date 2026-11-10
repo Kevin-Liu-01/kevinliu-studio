@@ -72,7 +72,7 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: pageFiles },
     // the round page's head alone (its sheets and scripts, in order): src/lib/cards.ts loads the same list
     { from: EX, to: 'vendor/ex', files: only('index.html') },
-    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json') },
+    { from: EX, to: 'vendor/ex', files: only('face.gen.js', 'bands.json', 'fonts/OFL.txt', 'vendor/neu-tokens.css', 'icons/icons.svg', 'icons/card-symbols.svg', 'icons/icons.js', 'tools/wall-rule.mjs', 'roster/battle-roster.json', 'copy/overrides.json', 'posters/posters.json') },
     // the battle prints the wall's own card (r4/play shared/excard.js), so the page loads these at runtime from /ex/ too:
     // the faces, and the icon set it inlines beside the card's own symbols
     { from: EX, to: 'public/ex', files: only('face.gen.js', 'icons/icons.svg', 'icons/card-symbols.svg') },
@@ -191,6 +191,12 @@ const REVEAL = "const tier = Math.min(4, top); const S0 = SND(); const sh = S0?.
 // a card's pinned commit links only where a visitor can open its repository (src/lib/closed-repos.mjs), on every card
 // face (the battle prints the wall's markup.js)
 const nolink = (t) => [/  const NOLINK = new Set\(\[[^\]]*\]\);/.exec(t)?.[0] ?? '<none>', `  const NOLINK = new Set(${JSON.stringify(CLOSED)});`];
+// card.css carries the frosted slips' 1x tile as a 30 KB base64 data URL, the fallback of var(--frost, ...), so the
+// sheet paints wherever the rounds serve it (r4/ex card.css, round ex.5). Every page here sets --frost (ui.css on the
+// pages Base.astro frames, BattlePage.astro on the battle), so the fallback is never painted and it leaves the
+// render-blocking sheet: about 25 KB less gzipped on every page that prints a card
+const FROST = '.card { --frost-tile: var(--frost, url("data:image/webp;base64,';
+const frost = (t) => { const a = t.indexOf(FROST), e = a < 0 ? -1 : t.indexOf('"))', a); return [e < 0 ? '<none>' : t.slice(a, e + 3), '.card { --frost-tile: var(--frost, none)']; };
 const TRANSFORMS = {
   // the round page's head only, for src/lib/cards.ts: its body prints every card, which the site prints itself
   'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
@@ -259,6 +265,8 @@ const TRANSFORMS = {
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [
     ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],
+    // aria-label on a div without a role is ignored: the rival's side is a group
+    ['<div class="side rival" aria-label="Rival">', '<div class="side rival" role="group" aria-label="Rival">'],
     nolink(t),
   ]),
   // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
@@ -277,6 +285,7 @@ const TRANSFORMS = {
     ['.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: 4.9cqw auto;', '.card .trait { grid-template-columns: auto auto 1fr; grid-template-rows: auto auto;'],
     ['.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: 4.9cqw auto;', '.card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto;'],
     ['  display: none; grid-template-columns: 31cqw 28cqw 1fr; align-items: center; }', '  display: none; grid-template-columns: calc(31 / 86.4 * 100%) calc(28 / 86.4 * 100%) 1fr; align-items: center; }'],
+    frost(t),
   ]),
   // nothing is fetched before the first gesture (the player's own header): a cue played before one (the battle's deal)
   // called unlock() with no event, which counted as a gesture and loaded every wanted group, about 240 files and 2.3 MB
@@ -295,7 +304,7 @@ const TRANSFORMS = {
   'public/ex/gallery.js': (t) => patch('gallery.js', t, [
     ["const BATTLE = new URL($('meta[name=\"battle\"]').content, document.baseURI).href;", after(SND + "\n  document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('a, button'); if (b && !b.closest('.card, #pause, #sound, [data-mode-set], #play, #pack, .addbtn, .close')) snd('ui.tap'); });")],
     ["if (b) setMode(b.dataset.modeSet); });", "if (b) { snd('ui.mode'); setMode(b.dataset.modeSet); } });"],
-    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'); });"],
+    ["pauseBtn.addEventListener('click', () => setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true'));", "pauseBtn.addEventListener('click', () => { snd('ui.toggle'); setPaused(pauseBtn.getAttribute('aria-pressed') !== 'true', true); });"],
     ["if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return;", after(" snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);")],
     ["aim(c, clamp((e.clientX - r.x - 6) / (r.w - 12)), clamp((e.clientY - top - 6) / (r.h - 12)));", after(TILT)],
     ["if (!el.matches(':focus-visible') || RM()) return;", after(" snd('ui.step', { pan: pan(el) }); SND()?.load('sig:' + el.dataset.id);")],
@@ -307,14 +316,37 @@ const TRANSFORMS = {
     ["const why = S.you.length >= SIZE ? 'Team Full' : 'Over Budget';", after(" snd('team.refuse');")],
     ["if (RM() || !Ground.available) { go(); return; }", "if (RM() || !Ground.available) { snd('ui.tap'); go(); return; }"],
     // the lens's address is the card's own page here (/cards/<id>), not a folder under the page's <base>
-    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; }"],
-    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`);"],
-    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else history.replaceState(null, '', '/' + location.search + location.hash);"],
+    ["if (push) { history.pushState({ card: id }, '', `cards/${id}/`); I.pushed = true; }", "if (push) { history.pushState({ card: id }, '', `/cards/${id}`); I.pushed = true; } retitle();"],
+    ["history.replaceState({ card: id }, '', `cards/${id}/`);", "history.replaceState({ card: id }, '', `/cards/${id}`); retitle();"],
+    ["else history.replaceState(null, '', document.baseURI.replace(location.origin, '') + location.search + location.hash);", "else { history.replaceState(null, '', '/' + location.search + location.hash); retitle(); }"],
     ["location.pathname.replace(/cards\\/[^/]+\\/$/, '')", "location.pathname.replace(/\\/cards\\/[^/]+$/, '/')"],
     // the lens's frame row stays in the rounds: its buttons carry the design lanes' working names ("studio border lane,
     // studio2-before") and one unwrapped row of up to seven ran off both edges of a phone (release 11-07 ship checks);
     // every card prints its primary frame, so the frame printings never run and src/lib/cards.ts loads none of their code
     ['    frs.hidden = !F || F.length < 2;', '    frs.hidden = true;'],
+    // the bare P key played from anywhere on the page (WCAG 2.1.4); it plays while focus is in the dock, where the Play
+    // button announces it (aria-keyshortcuts)
+    ["(e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea')", "(e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock')"],
+    // a pack says "Rival: ..." and "Pack: ..." in the same instant, and each say() cleared the line the other had asked
+    // for; the messages of one 30 ms window now go out as one line
+    ["  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };", "  let sayQ = [], sayT = 0;\n  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };"],
+    // the rival's wells hold copies hidden from assistive technology (copyOf), so each filled well names its card
+    ["      w.classList.toggle('full', !!id);\n    });\n    const g = $('.gauge');", "      w.classList.toggle('full', !!id);\n      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }\n    });\n    const g = $('.gauge');"],
+    // the lens's arrow keys step to cards the wall has not scrolled to; the card that takes focus back comes into view
+    ["      focusSoon(() => { if (!I.id) cards[id].el.focus({ preventScroll: true }); });", "      focusSoon(() => { if (!I.id) { const el = cards[id].el, r = el.getBoundingClientRect(); if (r.bottom <= 0 || r.top >= innerHeight) el.scrollIntoView({ block: 'nearest' }); el.focus({ preventScroll: true }); } });"],
+    // reduced motion starts the page paused (Base.astro), and the boot call saved that as the visitor's own choice; only
+    // the Pause key's press saves now
+    ["  function setPaused(on) {", "  function setPaused(on, save) {"],
+    ["    try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}", "    if (save) try { localStorage.setItem('ill-pause', on ? '1' : '0'); } catch (e) {}"],
+    // a lens that Forward reopened is on its own history entry too: leaving it steps back, as a pushed lens does, where
+    // replaceState left two identical entries
+    ["        if (I.pushed && history.state && history.state.card) history.back();", "        if (history.state && history.state.card) history.back();"],
+    // the Machine view hides the lens (machine.css), so a card's history entry opens nothing there
+    ["    if (id && cards[id]) openInspect(id, { push: false });", "    if (id && cards[id] && root.dataset.mode !== 'machine') openInspect(id, { push: false });"],
+    // while the lens holds /cards/<id> the tab, the history entry and a bookmark carry that card page's own title
+    // (Seo.astro: "<card> | Kevin Liu"); the wall's own title comes back when the address does
+    ["  const titleOf = (id) => F[id].title;", after("\n  const TITLE0 = document.title;\n  const retitle = () => { const c = history.state && history.state.card; document.title = c && F[c] ? `${F[c].title} | ${TITLE0}` : TITLE0; };")],
+    ["  addEventListener('popstate', (e) => {\n    const id = e.state && e.state.card;", "  addEventListener('popstate', (e) => {\n    retitle();\n    const id = e.state && e.state.card;"],
   ]),
   'public/ex/rituals.js': (t) => patch('rituals.js', t, [
     ["const win = M.win;", after(SND.replace(/\n  /g, '\n    '))],

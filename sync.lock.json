@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T02:18:48.682Z",
+ "synced": "2026-11-10T08:59:54.361Z",
  "stages": {
   "cards": {
-   "files": 1033,
-   "bytes": 107534200,
+   "files": 1034,
+   "bytes": 107509941,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -19,8 +19,8 @@
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
-     "sha256": "dc4a53a807940ba60fd64ae1b5b53c82b8cac65af2ffea8e50b0112c1610c944",
-     "bytes": 142913
+     "sha256": "18f8e7baba0f3972df0cc58ccd3747868791df11fba086f72fef8efc414c662a",
+     "bytes": 112359
     },
     "public/ex/rituals.css": {
      "src": "r4/ex/rituals.css",
@@ -54,8 +54,8 @@
     },
     "public/ex/markup.js": {
      "src": "r4/ex/markup.js",
-     "sha256": "03d6406f0b112e6881dd44dc2e4131c144b8ede4edd72dbda04aecabbc40f4c4",
-     "bytes": 52326
+     "sha256": "8ea9ae51febd938012fab5bd1fa3b9f08e774e594bc52f7edcca153bd1da5092",
+     "bytes": 52339
     },
     "public/ex/rituals.js": {
      "src": "r4/ex/rituals.js",
@@ -64,8 +64,8 @@
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "c9da7604ed9a2b201039beb4ed5f2f29e22a062f25c3292efd8dcd8021c1860b",
-     "bytes": 64116
+     "sha256": "4a319e5660d9d3ac8d01bc3b79c4b4ede37b16ae99c0da4f209b457471514732",
+     "bytes": 64790
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
@@ -5166,6 +5166,11 @@
      "src": "r4/ex/copy/overrides.json",
      "sha256": "210cddfa6a3e8855e4a20e56ddf7c5d6bffa084ba498b402885e3a099984204b",
      "bytes": 134646
+    },
+    "vendor/ex/posters/posters.json": {
+     "src": "r4/ex/posters/posters.json",
+     "sha256": "2e18cd35ee6005b922c80cb7480f426e0afe411d7d770fe6f564b52c0c4afbca",
+     "bytes": 5608
     },
     "public/ex/face.gen.js": {
      "src": "r4/ex/face.gen.js",
