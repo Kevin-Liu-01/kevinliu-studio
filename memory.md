@@ -684,3 +684,9 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
     - Arena and the five-minute soak are within noise.
 - **Open**: plan 019's back-forward restore could only be simulated (headless browsers never restore from that cache); no
   real phone, Safari or screen reader; negotiated Markdown has no canonical Link header (also on production).
+- **Shipped** (2026-11-10): Kevin said "Yes, push main". main fast-forwarded d3fc558 to 8888233; production deployment
+  `kevinliu-studio-qus6l73l6` (dpl_4c6GLm19ffiyGVkmPJDUYezUHDLd) Ready on www.kevinliu.studio, .biz and kevin-liu.tech, built on
+  Node 24 with the guard passing; smoke.mjs passes on www; nine live pages and files byte-identical to the checked build;
+  /es/no-such-page 404. Rollback: `kevinliu-studio-bpspo4ajg` (d3fc558), docs/deploy.md. The first GitHub Actions run of
+  check.yml did not start: the account is locked for a billing issue (the same annotation on turboslide), not a workflow
+  error. This record is committed on release/next and not pushed.

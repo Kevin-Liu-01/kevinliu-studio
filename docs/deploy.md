@@ -66,6 +66,12 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The audit release (`release/next`, promoted 2026-11-10 as deployment `kevinliu-studio-qus6l73l6`,
+dpl_4c6GLm19ffiyGVkmPJDUYezUHDLd, main 8888233) replaced production deployment
+`kevinliu-studio-bpspo4ajg-kl01s-projects.vercel.app` (dpl_oa7hzrbwF1xYPd1HUtb4EZRDtLZs, main d3fc558). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert `main`
+to d3fc558 with a revert commit.
+
 The eight-language release (`release/next`, promoted 2026-11-09 as deployment `kevinliu-studio-bpspo4ajg`,
 dpl_oa7hzrbwF1xYPd1HUtb4EZRDtLZs, main d3fc558) replaced production deployment
 `kevinliu-studio-5o2libd3l-kl01s-projects.vercel.app` (dpl_8iyQxnrH6giLx9yrqesqEvjTNV9r, main c6245d9). To undo it,
