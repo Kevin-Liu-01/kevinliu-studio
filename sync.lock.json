@@ -6,7 +6,7 @@
   "sound": "30e69931",
   "battle": "42ff51c7"
  },
- "synced": "2026-11-10T02:18:48.682Z",
+ "synced": "2026-11-10T08:44:47.029Z",
  "stages": {
   "cards": {
    "files": 1033,
@@ -10677,11 +10677,11 @@
   },
   "battle": {
    "files": 893,
-   "bytes": 144496115,
+   "bytes": 144496926,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "803408f1e749096ad99016f6ea22272535a198d5858ec230f8e1f0ead369fafd",
+     "sha256": "bf2acb5e2ad5cbd959ffb7ae4eb2fb4e6f6db15ea6edda3fb93c6b12876d72b8",
      "bytes": 32329
     },
     "public/battle/arena/board.js": {
@@ -10706,8 +10706,8 @@
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "2efde40a80b11e9042e6ad6593d312f2b131a25e8a9163849446c02aca60b7bc",
-     "bytes": 27223
+     "sha256": "32e7afb1be8f4a7efc63e8a5e458de4f04e0e983e89e59facf7ab26e403f3607",
+     "bytes": 27363
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
@@ -10721,8 +10721,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "2a6cb1221d39c12d90f4ae5a8d5718fcb5a26841d1e78481fe78d934df29c613",
-     "bytes": 62935
+     "sha256": "b2716a72a2eaa6f8b9d3f9cae620047cb0280abbb16c3f9c00ae34826b9274c8",
+     "bytes": 63606
     },
     "public/battle/shared/excard.js": {
      "src": "r4/play/shared/excard.js",

@@ -210,6 +210,17 @@ const TRANSFORMS = {
     ["  $('#error').textContent = '';\n  hud.bind(match);", "  $('#error').textContent = keptError; keptError = '';\n  hud.bind(match);"],
     ["else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);", "else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);"],
     ["if (q.get('fixture')) runFixture(q.get('fixture'));", "if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);"],
+    // one batch's outcomes are announced together: a shot lands all its events in one loop, and each one overwrote
+    // the live region, so a hit was lost behind the knockout that followed it
+    ["function live(text) { $('#live').textContent = text; }", "// kevinliu.studio: one batch's outcomes are announced together, not only the last one written (scripts/sync.mjs)\nlet liveLines = [];\nfunction live(text) { if (!liveLines.length) queueMicrotask(() => { $('#live').textContent = liveLines.join(' '); liveLines = []; }); liveLines.push(text); }"],
+    // Enter or Space on a focused speed, mode or sound key presses that key instead of skipping the scene, as a
+    // pointer press on them already does (r4/play SPEC.md: "the speed buttons never skip")
+    ["  if (stage.playing && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); e.stopPropagation(); skip(); return; }", "  if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)"],
+    // the page's h1 is its wordmark (src/lib/battle.ts); the result's title is the next level down
+    ["  el('h1', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat');", "  el('h2', '', r, win === 'draw' ? 'Draw' : win === 'player' ? 'Victory' : 'Defeat'); // kevinliu.studio: the page keeps one h1 (scripts/sync.mjs)"],
+    // a replay that a new battle overtakes leaves that battle's state alone, and one that throws unlocks the console
+    ["  if (busy || !lastShot?.scene) return;\n  busy = true; render();\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };", "  if (busy || !lastShot?.scene) return;\n  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)\n  busy = true; render();\n  try {\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };"],
+    ["  await stage.play(s, c, {});\n  delete app.dataset.scene;\n  busy = false; render();\n}\n$('#replay').onclick = () => replayLast();", "  await stage.play(s, c, {});\n  } finally {\n    if (app.dataset.scene === 'replay') delete app.dataset.scene;\n    if (my === gen) { busy = false; render(); }\n  }\n}\n$('#replay').onclick = () => replayLast();"],
   ]),
   // `map=` is checked as the list's own key: an inherited name ("constructor") passed, its ground file was a 404 and
   // the Arena's boot rejected with the page still hidden
@@ -248,11 +259,19 @@ const TRANSFORMS = {
   // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
   // accessibility tree
   // a key's raise and colour change at once; only its press moves (transform), so no frame repaints a shadow
-  'public/battle/mat/mat.css': (t) => patch('mat.css', t, [['  .mark { display: none; }', HIDE], [KEY_EASE, KEY_MOVE]]),
+  // the result's title is an h2 here (the page's h1 is its wordmark), so its two rules follow it. The Mat's
+  // reduced-motion rule arrived from the round-5 merge with an unclosed selector list and no declarations, so the
+  // browser dropped it and the Mat's rail, console, keys and slots kept their transitions under reduced motion; it is
+  // the rule from before that merge again, less the retired .kit-chip
+  'public/battle/mat/mat.css': (t) => patch('mat.css', everyOf('mat.css', t, '.result h1 {', '.result h2 {', 2), [
+    ['  .mark { display: none; }', HIDE],
+    [KEY_EASE, KEY_MOVE],
+    ['  .rail, .console, .key, .slot-lift, .slot[data-dim], }', '  .rail, .console, .key, .slot-lift, .slot[data-dim], .result, #app[data-scene] .rail, #app[data-scene] .console, .slot[data-zone="finale"] :is(.chips, .tokens) { transition: none !important; }\n}'],
+  ]),
   // at 320 px the Arena's team rail (two teams of pips and the turn) was 33 px wider than the rail, and the grid column
   // it shares with the keys grew with it, so Leave slid off screen: the column holds the rail's width, and the pips and
   // gaps tighten until the team rail fits
-  'public/battle/arena/arena.css': (t) => patch('arena.css', everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2), [
+  'public/battle/arena/arena.css': (t) => patch('arena.css', everyOf('arena.css', everyOf('arena.css', t, '  .mark { display: none; }', HIDE, 2), '.result h1 {', '.result h2 {', 2), [
     ['/* ============================================================ reduced motion: every step a still */', before(NARROW_ARENA)],
     [KEY_EASE, KEY_MOVE],
   ]),
