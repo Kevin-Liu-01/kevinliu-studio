@@ -293,3 +293,21 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   kevinliu-studio-r0tt2e1aa is Ready on www.kevinliu.studio, www.kevinliu.biz and www.kevin-liu.tech; smoke passes on
   www, and live / and /battle are byte-identical to the checked build of 1eb1c0f. Rollback target
   kevinliu-studio-ai52pppxd (cc54526).
+
+## 2026-11-09: a cue before the context is unlocked fetches nothing (plan 005, Claude Code)
+
+- **Type**: fix
+- **Changed**: `scripts/sync.mjs` (two pairs on the sound.js entry), `public/sound/sound.js` and `sync.lock.json`
+  (rewritten by the sync), `docs/sound.md`, `docs/sync.md`.
+- **Why**: on /battle the player makes its context at load (resumeAtLoad), so cues played before any gesture (the deal,
+  the leads' entrances) passed playCue's check, fetched and decoded files, and were dropped by the suspended context.
+  playCue and stinger now return unless the context is unlocked.
+- **Measured** (production build, local preview): /battle with no input, 25 s: 0 files under /sound/out/ (plan baseline:
+  10); after one click on #app: 127. Home page, a real mouse down/up on the first card (two presses, 8 s): 69 files
+  loaded on the unpatched sound.js and 69 on the patched one, 0 before the press.
+- **Check note**: the plan's home-page check (`agent-browser click ".wall .card"`, then count resource-timing entries
+  under /sound/out/) cannot tell fixed from broken: that click did not reach a card press, and the home page's many
+  images fill the 250-entry resource-timing buffer, so late sound requests never appear in it. The check that works is a
+  real mouse move/down/up at (196, 250) (`agent-browser mouse move|down|up`) and `Object.keys(Sound.stats().files).length`.
+  The /battle counts are unaffected (127 after the click shows the buffer was not full there).
+- **Open**: the rounds should take this upstream (the request in plan 005).
