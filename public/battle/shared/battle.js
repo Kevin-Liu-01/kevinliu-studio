@@ -199,7 +199,7 @@ let layout = null, switching = null;
 // ============================================================ sound (r4/sound, INTEGRATION.md section 3)
 // A dynamic import, so a page whose player fails to load still deals and plays in silence; every hook calls `Sound?.`,
 // and what a battle's start asks for waits for the import through `soundReady`.
-let Sound = null, shotSound = null;
+let Sound = null, shotSound = null, soundCards = new Set();
 const soundReady = import('../../sound/sound.js').then((m) => {
   Sound = m.default;
   Sound.init({ manifest: new URL('../../sound/manifest.battle.json', import.meta.url).href, page: 'battle', resumeAtLoad: true, groups: ['battle', mode, `music:mus.${mode}`] });
@@ -937,7 +937,8 @@ async function start(p, replay = false, resume = false) {
   match = next;
   if (groundG) groundG.paused = false;
   // a new hand stops the last one's sound and loads this one's six cards (a hand replaced before the import lands does nothing)
-  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });
+  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)
+  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });
   for (const id of [...match.team, ...match.rival]) groundCards.add(id);
   auto = false;
   busy = true;

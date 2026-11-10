@@ -187,3 +187,29 @@ rounds against the view it replaced: pictures 48.5 MB both, canvas equal or lowe
 The terminal (2026-11-08) adds Katagami Mono, 21.7 KB, fetched at idle after a Human page has loaded (cached a year,
 like the site face), and each card's art as text: home HTML 43.5 to 50.6 KB gzip, a card page 15.1 to 16.6, About
 14.0 to 15.2. The art is built from the cards' own pictures at build, so no picture is decoded for it.
+
+### Decoded audio across hands (2026-11-10)
+
+Method: Playwright Chromium with the iPhone 14 descriptor (coarse pointer true), three Auto hands at double speed with New Rival after each result, reading the player's own `Sound.stats().pcm` (decoded bytes). Before (build of `7245c52`; every New Rival hand kept its three new rival cards' kits for the rest of the visit):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 32.5 | 28.5 | 60.9 |
+| hand 2, result | 32.5 | 2.3 | 34.8 |
+| hand 3, kit loaded | 39.3 | 28.5 | 67.7 |
+| hand 3, result | 39.3 | 1.8 | 41.1 |
+
+After (a new hand unloads the card kits it does not hold; the same three hands were dealt):
+
+| Moment | One-shots MB | Music MB | Total MB |
+| --- | --- | --- | --- |
+| hand 1, kit loaded | 26.2 | 0 | 26.2 |
+| hand 1, result | 26.2 | 0 | 26.2 |
+| hand 2, kit loaded | 27.1 | 28.5 | 55.6 |
+| hand 2, result | 27.1 | 2.0 | 29.1 |
+| hand 3, kit loaded | 27.6 | 28.5 | 56.1 |
+| hand 3, result | 27.6 | 1.8 | 29.4 |
+
+`d` (one-shots at hand 3 loaded minus hand 1 loaded) was 13.1 MB before and is 1.4 MB after; at the third hand the page holds 11.7 MB less decoded audio (39.3 to 27.6). A group unloaded and loaded again through the player's own face gave its bytes back and took them again (`card:katagami`: 27.6, 26.1 after unload, 27.6 after load). An emulated phone on a loaded Mac is not a real phone: the decoded sizes are exact, the process totals on an iPhone were not measured. Themes are still decoded whole on every iPhone (28.5 MB while a hand plays), because the player's low-memory path tests `navigator.deviceMemory`, which Safari does not have; that is Kevin's decision.

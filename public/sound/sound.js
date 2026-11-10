@@ -239,6 +239,8 @@ function loadFile(file, group, priority = 'low') {
 }
 /** Let a decoded file go (a theme after it has faded): the next request fetches it again. */
 function evict(file) { const rec = S.files.get(file); if (rec) { rec.buf = null; S.files.delete(file); } }
+/** kevinliu.studio: let a group's decoded files go (a hand's card kits when the next hand holds other cards); a later load fetches them again (scripts/sync.mjs) */
+function unload(group) { S.groups.delete(group); S.wantGroups.delete(group); for (const [file, rec] of [...S.files]) if (rec.group === group) { rec.buf = null; S.files.delete(file); } }
 /** Decoded PCM the player holds, in bytes (length x channels x 4), split by music and one-shots; and the bytes of
  * fetched files it holds undecoded. */
 function pcm() {
@@ -1274,7 +1276,7 @@ function stop(what, fadeMs = 120) {
   emit('stop', { what });
 }
 const Sound = {
-  init, load, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,
+  init, load, unload, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,
   cuesOf, packCues, dealCues, entryCues, versusCues,
   get enabled() { return S.enabled; },
   get context() { return S.ctx; },

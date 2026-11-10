@@ -46,6 +46,7 @@ patch quietly. `node scripts/phone-memory.mjs` on its own patches every file in 
   (`/cards/<id>` instead of a folder under `<base>`).
 - `boot.gallery.js`: the gallery's music loop is left out (docs/sound.md).
 - `sound.js`: a cue played before the first gesture neither counts as one nor fetches the kit, and a cue or fanfare asked for before the context is unlocked fetches nothing (docs/sound.md); the saved choice is read again on a back-forward restore, the battle's speaker key answers with its own cue, the player's timers keep real time under the battle's clock, and a failed manifest is retried.
+- `sound.js`, `battle/shared/battle.js`: the player can unload a group, and a new hand unloads the card kits it does not hold (docs/performance.md, Memory).
 - `battle/shared/battle.js`: Arena by path without a trailing slash, and Leave returns to `/`.
 - `battle/shared/battle.js`: the layout switch keeps this site's page titles.
 - `battle/shared/battle.js`, `battle/mat/mat.css`, `battle/arena/arena.css`: one batch's outcomes are announced together; Enter or Space on a focused speed, mode or sound key presses it; the result's title is an h2; Replay is guarded by the battle's generation; and the Mat's reduced-motion rule, which round 5 shipped empty, is whole again.

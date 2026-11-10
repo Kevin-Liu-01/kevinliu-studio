@@ -221,6 +221,10 @@ const TRANSFORMS = {
     // a replay that a new battle overtakes leaves that battle's state alone, and one that throws unlocks the console
     ["  if (busy || !lastShot?.scene) return;\n  busy = true; render();\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };", "  if (busy || !lastShot?.scene) return;\n  const my = gen; // kevinliu.studio: a replay that a new battle overtakes leaves that battle's state alone (scripts/sync.mjs)\n  busy = true; render();\n  try {\n  const s = { ...lastShot.scene, variant: reduced() ? 'reduced' : 'full' };"],
     ["  await stage.play(s, c, {});\n  delete app.dataset.scene;\n  busy = false; render();\n}\n$('#replay').onclick = () => replayLast();", "  await stage.play(s, c, {});\n  } finally {\n    if (app.dataset.scene === 'replay') delete app.dataset.scene;\n    if (my === gen) { busy = false; render(); }\n  }\n}\n$('#replay').onclick = () => replayLast();"],
+    // a new hand lets the card kits of cards it does not hold go: each kit is 0.7 to 2.6 MB decoded and none was
+    // ever released, so New Rival hands piled them up
+    ["  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });", "  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)\n  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });"],
+    ["let Sound = null, shotSound = null;", "let Sound = null, shotSound = null, soundCards = new Set();"],
   ]),
   // `map=` is checked as the list's own key: an inherited name ("constructor") passed, its ground file was a 404 and
   // the Arena's boot rejected with the page still hidden
@@ -325,6 +329,9 @@ const TRANSFORMS = {
     ['  if (!S.m) return ensureManifest().then(() => load(group));', '  if (!S.m) return ensureManifest().then(() => load(group)).catch(() => { S.wantGroups.add(group); });'],
     ['    ensureManifest(); // its request goes first', '    ensureManifest().catch(() => {}); // its request goes first'],
     ["    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest();", "    if (o.eager || o.resumeAtLoad || typeof o.manifest === 'object') await ensureManifest().catch(() => {});"],
+    // a group's decoded files can be let go (the last hand's card kits): nothing but a faded theme ever was
+    ['function evict(file) { const rec = S.files.get(file); if (rec) { rec.buf = null; S.files.delete(file); } }', after("\n/** kevinliu.studio: let a group's decoded files go (a hand's card kits when the next hand holds other cards); a later load fetches them again (scripts/sync.mjs) */\nfunction unload(group) { S.groups.delete(group); S.wantGroups.delete(group); for (const [file, rec] of [...S.files]) if (rec.group === group) { rec.buf = null; S.files.delete(file); } }")],
+    ['  init, load, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,', '  init, load, unload, play, schedule, scene, board, music, intensity, stinger, duck, stop, setEnabled, setPage, bindToggle, unlock, panOf,'],
   ]),
   // the gallery's music loop is left out: sound answers the visitor's own actions (docs/sound.md)
   'public/sound/boot.gallery.js': (t) => patch('boot.gallery.js', t, [[/^Sound\.music\('mus\.gallery'.*\n/m.exec(t)?.[0] ?? '<none>', '']]),
