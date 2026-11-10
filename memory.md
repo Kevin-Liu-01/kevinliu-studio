@@ -416,3 +416,14 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   false after.
 - **Open**: the upstream request to the play lane (r4/play/REQUESTS.md): cap kept grounds, `fetchOnce` resolves to true,
   `groundG.paused` at the result and Log; the reviewer appends it.
+
+## 2026-11-10: Striking a fact no longer puts the wrong answer under a question on /about (improve/p2-checks, plan 011)
+
+- **Type**: fix
+- **Changed**: `src/lib/site.ts` (`FACT_LIST` with a `q` per fact, `factsFor`, the one `QA`), `src/lib/twins.ts` (reads `QA`),
+  `src/i18n/source.mjs` (reads `QA`), `scripts/facts.test.mjs` (new), `docs/seo.md`, `src/lib/SKILL.md`.
+- **Rationale**: the two answers were picked from `FACTS` by position (`FACTS[3]`, `FACTS[4]`, `FACTS.slice(5)`), in two files, so
+  deleting an early line moved every later answer. Each fact now names its question; a question left empty stops the build.
+- **Checked**: every built page, twin and text file (523) is byte-identical to before; `node scripts/i18n-extract.mjs --check`
+  passes, `content.json` unchanged; `pnpm test` 13 tests, 0 fail (10 before); a positional mutant fails the strike test.
+- **Open**: none.

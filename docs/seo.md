@@ -26,7 +26,9 @@ og:images in all my links. and make more links!"
 
 `FACTS` and `ALSO_KNOWN_AS` in `src/lib/site.ts`, each line with its public source in a comment. They feed the About
 section of `llms.txt` and `llms-full.txt` and the questions on `/about`. Only public sources: this site, his previous
-site, his GitHub profile and Kevin-Wiki pages `kb` does not mark private. Strike a line by deleting it.
+site, his GitHub profile and Kevin-Wiki pages `kb` does not mark private. Strike a line by deleting it: a line's `q` files it under one of the questions on `/about`, so its answer gets
+shorter and no other answer moves; a question left with no line stops the build and says so
+(`scripts/facts.test.mjs`, in `pnpm test`, checks both).
 
 ## Checking it
 
