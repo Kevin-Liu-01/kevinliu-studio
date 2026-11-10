@@ -17,17 +17,22 @@ const cardList = cardListIn(code);
 const DESCRIPTION = descriptionIn(code);
 
 const ART_RATIO = 88 / 63;
-// The wall's first screen (two rows of up to seven, the widest the gallery sets) loads with the page and its first
-// poster first; the cards below wait until the page has loaded, then fetch at idle (the script under the wall), so the
-// first screen never shares the line with pictures nobody can see yet, and no lens, pack or dock ever opens on a hole.
-// On a touch screen the rest stay lazy: a phone decodes only the cards it has scrolled to (docs/performance.md, Memory).
+// The wall's first screen on a desktop (two rows of up to seven, the widest the gallery sets) loads with the page
+// and its first poster first; the cards below wait until the page has loaded, then fetch at idle (the script under
+// the wall), so the first screen never shares the line with pictures nobody can see yet, and no lens, pack or dock
+// ever opens on a hole. A touch screen's first screen is one column, about a card and a half: only the first
+// TOUCH_FIRST cards load with the page there, and the rest stay lazy, so a phone fetches and decodes only the cards
+// it has scrolled to (docs/performance.md, Memory). Cards TOUCH_FIRST + 1 to FIRST_SCREEN print lazy and the script
+// right under the wall (EAGER) makes them eager again on a fine pointer while the page is still parsing.
 const FIRST_SCREEN = 14;
+const TOUCH_FIRST = 2;
+const EAGER = `if(!matchMedia("(pointer: coarse)").matches)document.querySelectorAll('.wall > .pocket:nth-child(-n+${FIRST_SCREEN}) img[loading="lazy"]').forEach(function(i){i.loading="eager"})`;
 const lazy = (html: string) => html.replace(/<img (?!loading=)/g, '<img loading="lazy" ');
 // the Machine view's art: each card's subject as text, 40 characters wide (lib/ascii.ts)
 const arts = await Promise.all(fighters.map((f) => asciiArt(f.id, 40)));
 const wall = fighters.map((f, i) => {
   const c = card(f);
-  const html = i === 0 ? c.replaceAll('<img class="poster" ', '<img class="poster" fetchpriority="high" ') : i < FIRST_SCREEN ? c : lazy(c);
+  const html = i === 0 ? c.replaceAll('<img class="poster" ', '<img class="poster" fetchpriority="high" ') : i < TOUCH_FIRST ? c : lazy(c);
   // the card is the lens's button; its page is a plain link beside it, for crawlers, agents and pages without scripts
   return `<li class="pocket" style="--n:${i}">${roomIn(html, code)}<a class="sr" href="${cardPath(f, code)}" tabindex="-1" aria-hidden="true">${f.title}</a>${recordHtml(f.title, cardRecord(f, { code }), { label: cardLabel(f), art: arts[i], color: hueOf(f).energy })}</li>`;
 }).join('\n');
@@ -62,6 +67,7 @@ const shim = l.en ? null : `${l.p('/gallery.js')}?v=${shimHash(galleryShim(code,
   <main class="gallery" id="gallery">
     <ul class="wall" aria-label={l.t('home.wall')} set:html={`${wall}\n<li class="pocket tile">${deck}</li>\n<li class="pocket tile">${pack}</li>`} />
     <script is:inline set:html={FRAMED} />
+    <script is:inline set:html={EAGER} />
     <script is:inline>/* the page shows once the pictures of the cards on screen are decoded (1 s at most), so it paints whole instead of card by card; in the Machine view no picture shows, so it waits on none and fetches none ahead; the cards below load unseen, and the rest fetch at idle once the page has loaded (on a touch screen they stay lazy and load as they near the screen, so a phone holds only the pictures it has shown). At that idle one silent context is made and closed: the browser's first AudioContext waits on its audio service starting (seconds on a busy phone), and the sound kit makes its own in the visitor's first press, so that press no longer pays for it. Nothing plays and nothing is fetched (docs/sound.md) */(function(d){var vh=innerHeight,imgs=[],mx=d.dataset.mode==="machine";if(!mx)document.querySelectorAll(".wall > .pocket").forEach(function(p){var r=p.getBoundingClientRect();if(r.top<vh&&r.bottom>0)p.querySelectorAll("img").forEach(function(i){imgs.push(i.decode().catch(function(){}))})});Promise.race([Promise.all(imgs),new Promise(function(r){setTimeout(r,1000)})]).then(function(){delete d.dataset.hold});addEventListener("load",function(){(self.requestIdleCallback||setTimeout)(function(){if(!mx&&!matchMedia("(pointer: coarse)").matches)document.querySelectorAll('img[loading="lazy"]').forEach(function(i){i.loading="eager"});try{var k=localStorage.getItem("kevin-liu-studio:sound"),C=self.AudioContext||self.webkitAudioContext;if(C&&(k==="on"||k===null&&!matchMedia("(prefers-reduced-motion: reduce)").matches))new C().close()}catch(e){}})},{once:true})})(document.documentElement)</script>
     <script is:inline>/* a card more than a screen away drops its filters (the cracks' glow, the symbols' shadows, a cost 4 card's colour): WebKit keeps a device-size buffer for every filtered box it has painted, about 190 MB for the 26 cards on an iPhone. It takes them back a screen before it shows (site.css, docs/performance.md) */if("IntersectionObserver"in self){var far=new IntersectionObserver(function(es){es.forEach(function(e){e.target.toggleAttribute("data-far",!e.isIntersecting)})},{rootMargin:"100% 0px"});document.querySelectorAll(".wall > .pocket").forEach(function(p){far.observe(p)})}</script>
   </main>
