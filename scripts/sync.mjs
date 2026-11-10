@@ -27,8 +27,9 @@ const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ROUNDS_GIT = path.join(os.homedir(), 'Documents/ChatGPT/portfolio-design-rounds/2026-10-30');
 const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
-// final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1)
-const PIN = { cards: '30e69931', sound: '30e69931', battle: '42ff51c7' };
+// final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1), and on it the battle's string table
+// and the HUD's card-text overrides (0a919baa, branch play/strings-on-42ff51c7: round 5 with shared/strings.js, no round 6)
+const PIN = { cards: '30e69931', sound: '30e69931', battle: '0a919baa' };
 const CHECK = process.argv.includes('--check');
 // a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
 const ADMIT = process.argv.includes('--admit-unpinned');

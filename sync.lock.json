@@ -1,12 +1,12 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "30e69931 + 42ff51c7",
+ "head": "30e69931 + 0a919baa",
  "pins": {
   "cards": "30e69931",
   "sound": "30e69931",
-  "battle": "42ff51c7"
+  "battle": "0a919baa"
  },
- "synced": "2026-11-10T02:18:48.682Z",
+ "synced": "2026-11-10T18:18:43.105Z",
  "stages": {
   "cards": {
    "files": 1033,
@@ -10676,8 +10676,8 @@
    }
   },
   "battle": {
-   "files": 893,
-   "bytes": 144496115,
+   "files": 894,
+   "bytes": 144519432,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -10686,8 +10686,8 @@
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
-     "sha256": "8c5b0d2a2d3f3e1c4362895ee985bf24fab2fe2cba407c8f9f88be6430e44565",
-     "bytes": 92913
+     "sha256": "804fd18698fdf80b76a71d334d71b601d5a4ba147101d809467e3e11ad7ee09d",
+     "bytes": 93110
     },
     "public/battle/arena/ground.js": {
      "src": "r4/play/arena/ground.js",
@@ -10701,8 +10701,8 @@
     },
     "public/battle/mat/board.js": {
      "src": "r4/play/mat/board.js",
-     "sha256": "8ac06718e7ef22b9fffe587f16872cfd09dd289e85fd20b6d5a3e7618d278607",
-     "bytes": 69933
+     "sha256": "5adb72fbdcec3ffc8f0c08bdb2748950d5fe9b13cb12cd39e8e973fbc303a7c9",
+     "bytes": 70028
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
@@ -10721,8 +10721,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "2a6cb1221d39c12d90f4ae5a8d5718fcb5a26841d1e78481fe78d934df29c613",
-     "bytes": 62935
+     "sha256": "165e743f9bece63c70ac02e299ba47650d3e46fa6c4055159d788d020f768f69",
+     "bytes": 63754
     },
     "public/battle/shared/excard.js": {
      "src": "r4/play/shared/excard.js",
@@ -10731,8 +10731,8 @@
     },
     "public/battle/shared/fx.js": {
      "src": "r4/play/shared/fx.js",
-     "sha256": "2a450e52ea4c2c6838d0a1e9a7d7360a8a504497c7988f8aa21adcf9260aea60",
-     "bytes": 15471
+     "sha256": "e75f1bf38a21c3d7b3db4d2ab5431afbf86ad91cf24d847532761886cfd346f6",
+     "bytes": 15838
     },
     "public/battle/shared/hud.css": {
      "src": "r4/play/shared/hud.css",
@@ -10741,18 +10741,18 @@
     },
     "public/battle/shared/hud.js": {
      "src": "r4/play/shared/hud.js",
-     "sha256": "9eaa9c3f25b04f0467f4cff0d41d6c257d3bea0502c73b898d688c711e1535d3",
-     "bytes": 62355
+     "sha256": "aeec978af5667e2912567528fc73ef79bbb676bddd2e7ea12401aa0c152a8af2",
+     "bytes": 64993
     },
     "public/battle/shared/icons.js": {
      "src": "r4/play/shared/icons.js",
-     "sha256": "19ae3cd0edac5bab06bdbfe0fee9c685b593ca7869c9dce350814c163cf7e4b6",
+     "sha256": "6a2d0d2fce6f1d2815facf0568841e8493aa9b3f11da0828ae49142c18feaf9c",
      "bytes": 7984
     },
     "public/battle/shared/leaders.js": {
      "src": "r4/play/shared/leaders.js",
-     "sha256": "3b9b165dde9ca64460cec7c74a77a310af017dc472d390048eecb4220223db79",
-     "bytes": 12231
+     "sha256": "1b90e60bff2f497364b06ec38da034cfb72a9f15a144c7b1db8131c61185eadb",
+     "bytes": 12288
     },
     "public/battle/shared/pace.js": {
      "src": "r4/play/shared/pace.js",
@@ -10761,8 +10761,8 @@
     },
     "public/battle/shared/plan.js": {
      "src": "r4/play/shared/plan.js",
-     "sha256": "d04653277759a48ffd115e80553dcbcf93852028bef0d048649eaf2793611309",
-     "bytes": 5234
+     "sha256": "b168f74fdae0bba45a570e8a0522d65612eb65f5e33dd8ab32e6a223d44e19c4",
+     "bytes": 5351
     },
     "public/battle/shared/room.css": {
      "src": "r4/play/shared/room.css",
@@ -10773,6 +10773,11 @@
      "src": "r4/play/shared/runtime.js",
      "sha256": "2dbf77d2811b4f198e76413c1536730533b653b32c29de24d9fc09c3ae6dcf11",
      "bytes": 36178
+    },
+    "public/battle/shared/strings.js": {
+     "src": "r4/play/shared/strings.js",
+     "sha256": "49c7f04f64370b445db1efee7d3fc41f187c2b91fe80d774a971f48c61a5e653",
+     "bytes": 19027
     },
     "public/battle/vendor/broadcast/broadcast.css": {
      "src": "r4/play/vendor/broadcast/broadcast.css",

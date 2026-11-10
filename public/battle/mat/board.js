@@ -6,6 +6,7 @@
 import { Leader, loadLeaders, tallOf, finalePoses } from '../shared/leaders.js';
 import { Layout, el, wait, clamp, lerp, R, SIDES, EASE, perHit, chipsHtml, setChips, countTo, numeral, hitTags, NUMBER_HOLD, frameOn, inkOn } from '../shared/fx.js';
 import { specials } from './specials.js';
+import { t as txt } from '../shared/strings.js';
 
 const K = window.bcKit;
 const E = window.showdown.engine;
@@ -240,7 +241,7 @@ export class MatBoard extends Layout {
     const d = document.documentElement;
     try { if (matchMedia('(prefers-color-scheme: dark)').matches) d.dataset.theme = 'dark'; else delete d.dataset.theme; } catch { delete d.dataset.theme; }
     host.textContent = '';
-    host.setAttribute('aria-label', 'Card mat');
+    host.setAttribute('aria-label', txt('mat.aria'));
     // the camera is one 2D transform on everything the mat holds
     this.camEl = el('div', 'mat-cam', host);
     const m = this.matEl = el('div', 'mat', this.camEl);
@@ -482,7 +483,7 @@ export class MatBoard extends Layout {
       if (motion && moved && !this.reduced()) jobs.push(this.tween(sl.el, tf, ms, IN_OUT));
       else this.tween(sl.el, tf, 0);
       // the bench wells are buttons for that card
-      if (sl.side === 'player' && z.zone === 'bench') { const w = this.wells.player.bench[z.n]; w.dataset.uidSlot = String(sl.i); w.setAttribute('aria-label', `Switch to ${this.ctx.title(sl.id)}`); }
+      if (sl.side === 'player' && z.zone === 'bench') { const w = this.wells.player.bench[z.n]; w.dataset.uidSlot = String(sl.i); w.setAttribute('aria-label', txt('mat.switchTo', { card: this.ctx.title(sl.id) })); }
       sl.el.dataset.down = z.zone === 'ko' ? 'true' : 'false';
       if (z.zone === 'active') sl.num.dataset.hpShown = sl.side; else delete sl.num.dataset.hpShown;
     }
@@ -550,7 +551,7 @@ export class MatBoard extends Layout {
       const n = side.team.filter((f) => f.hp <= 0).length;
       this.koCount[s].textContent = n ? String(n) : '';
       this.wells[s].ko.dataset.none = n ? 'false' : 'true';
-      this.koCount[s].setAttribute('aria-label', `${n} out`);
+      this.koCount[s].setAttribute('aria-label', txt('mat.out', { n }, n));
     }
   }
   drawWorlds(view, motion = true) {
@@ -973,7 +974,7 @@ export class MatBoard extends Layout {
   sidestep(sl) {
     const k = sl.side === 'rival' ? -1 : 1;
     this.anim(sl.shake, [{ transform: 'none' }, { transform: `translate3d(${18 * k}px,-3px,0) rotate(${3 * k}deg)`, offset: 0.4 }, { transform: 'none' }], { duration: 240, easing: OUT });
-    this.stampText(sl, 'Miss', 'miss', 700);
+    this.stampText(sl, txt('scene.miss'), 'miss', 700);
   }
 
   /** The battle's opening: the six cards dealt face down from each side's deck edge, then the benches turned face up.

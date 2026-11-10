@@ -9,7 +9,9 @@ export const SIDES = ['player', 'rival'];
 export const other = (s) => (s === 'player' ? 'rival' : 'player');
 export const EASE = { SLAM: 'cubic-bezier(.2,.9,.1,1)', OUT: 'cubic-bezier(.2,.8,.2,1)', IN_OUT: 'cubic-bezier(.65,0,.35,1)', WHIP: 'cubic-bezier(.7,0,.2,1)' };
 export const NS = 'http://www.w3.org/2000/svg';
-const STAT_NAME = { atk: 'Reach', def: 'Proof', spd: 'Pace' };
+import { t as txt, list as listOf } from './strings.js';
+const esc = (x) => String(x ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const STAT_NAME = { get atk() { return txt('stat.atk'); }, get def() { return txt('stat.def'); }, get spd() { return txt('stat.spd'); } };
 
 export function el(tag, cls, parent, text) {
   const e = document.createElement(tag);
@@ -30,9 +32,9 @@ export const perHit = (lost, hits) => (hits > 1 ? Array.from({ length: hits }, (
 /** A card's status, stat stages (by the card's own names, never ATK, DEF or SPD) and barrier, as chips. */
 export function chipsHtml(f, icon = null) {
   const out = [];
-  if (f.status) out.push(`<i data-down>${f.status === 'stun' ? 'Stunned' : f.status[0].toUpperCase() + f.status.slice(1)}</i>`);
-  for (const k of ['atk', 'def', 'spd']) if (f.stages?.[k]) out.push(`<i${f.stages[k] < 0 ? ' data-down' : ''}>${icon ? icon(k) : ''}${STAT_NAME[k]} ${f.stages[k] > 0 ? '+' : '−'}${Math.abs(f.stages[k])}</i>`);
-  if (f.barrier) out.push('<i>Barrier</i>');
+  if (f.status) out.push(`<i data-down>${esc(txt(`chip.status.${f.status}`) || f.status[0].toUpperCase() + f.status.slice(1))}</i>`);
+  for (const k of ['atk', 'def', 'spd']) if (f.stages?.[k]) out.push(`<i${f.stages[k] < 0 ? ' data-down' : ''}>${icon ? icon(k) : ''}${esc(txt('stat.stage', { stat: STAT_NAME[k], n: `${f.stages[k] > 0 ? '+' : '−'}${Math.abs(f.stages[k])}` }))}</i>`);
+  if (f.barrier) out.push(`<i>${esc(txt('chip.barrier'))}</i>`);
   return out.join('');
 }
 const lum = (hex) => { const n = parseInt(String(hex).replace('#', ''), 16); const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
@@ -148,12 +150,12 @@ export const NUMBER_HOLD = 600;
  *  and no knockout scene follows to say so. */
 export function hitTags(hit, out = false) {
   const t = [];
-  if (hit?.crit) t.push({ text: 'Critical', kind: 'crit' });
+  if (hit?.crit) t.push({ text: txt('chip.critical'), kind: 'crit' });
   // the ring's real multiplier (a dual discipline makes ×2.25 or ×0.45), green when it helps the hit, red when it does not
   const m = Math.round((hit?.effectiveness ?? 1) * 100) / 100;
   if (m > 1) t.push({ text: `↑ ×${m}`, kind: 'ring' });
   else if (m > 0 && m < 1) t.push({ text: `↓ ×${m}`, kind: 'weak' });
-  if (out) t.push({ text: 'Out', kind: 'out' });
+  if (out) t.push({ text: txt('chip.out'), kind: 'out' });
   return t;
 }
 /** The damage numeral, its top centre at (x, y) in its layer: one number per hit, owned by the board. It shows the
@@ -172,7 +174,7 @@ export function numeral(motion, layer, o) {
   const tags = o.tags ?? [];
   const row = tags.length || hits > 1 ? el('span', 'num-tags', n) : null;
   for (const t of tags) el('i', 'num-tag', row, t.text).dataset.kind = t.kind;
-  const count = hits > 1 ? el('i', 'num-tag', row, `${hits} hits`) : null;
+  const count = hits > 1 ? el('i', 'num-tag', row, txt('chip.hits.n', { n: hits }, hits)) : null;
   if (count) count.dataset.kind = 'hits';
   const every = o.every ?? 70, hold = o.hold ?? NUMBER_HOLD, SLAM_MS = 126;
   // the whole transform in each keyframe, so the scale never multiplies the position

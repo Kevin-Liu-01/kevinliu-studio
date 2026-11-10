@@ -38,7 +38,7 @@ for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg
   if (!exists(need)) fail(need, 'missing');
 }
 // every page and text file in every language (src/i18n/locales.mjs)
-for (const c of OTHER) for (const need of [`/${c}.html`, `/${c}/index.md`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/about.html`, `/${c}/about.md`, `/${c}/battle.html`, `/${c}/battle.md`, `/${c}/battle/arena.html`, `/${c}/battle/arena.md`, `/${c}/404.html`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`, `/${c}/cards/atlas.html`, `/${c}/cards/atlas.md`]) {
+for (const c of OTHER) for (const need of [`/${c}.html`, `/${c}/index.md`, `/${c}/cards.html`, `/${c}/cards.md`, `/${c}/about.html`, `/${c}/about.md`, `/${c}/battle.html`, `/${c}/battle.md`, `/${c}/battle/arena.html`, `/${c}/battle/arena.md`, `/${c}/404.html`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`, `/${c}/battle-strings.js`, `/${c}/cards/atlas.html`, `/${c}/cards/atlas.md`]) {
   if (!exists(need)) fail(need, 'missing');
 }
 const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')})/404\\.html$`).test(page);

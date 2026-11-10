@@ -1,7 +1,8 @@
 // The shot plan, one for both modes, and the one store of what has been seen. scenesFrom picks each shot's variant
 // (full on a move's first use this visit, short on a repeat or under Auto, minor beats once); the plan then says which
 // shots the board carries alone, which play full anyway, and which reduced-motion stills are worth holding.
-const STATWORD = { ATK: 'Reach', DEF: 'Proof', SPD: 'Pace' };
+import { t as txt } from './strings.js';
+const STATWORD = { get ATK() { return txt('stat.atk'); }, get DEF() { return txt('stat.def'); }, get SPD() { return txt('stat.spd'); } };
 /** The battle's shorts say ATK, DEF and SPD; the cards say Reach, Proof and Pace. */
 export const words = (s) => String(s ?? '').replace(/\b(ATK|DEF|SPD)\b/g, (m) => STATWORD[m]);
 export { STATWORD };

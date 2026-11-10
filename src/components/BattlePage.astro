@@ -8,6 +8,7 @@ import { SITE, NAME, person } from '../lib/site';
 import { L } from '../i18n';
 import { versioned } from '../lib/assets';
 import FACES from '../i18n/fonts.json';
+import { battleStringsSrc } from '../lib/i18n-battle';
 interface Props { mode: 'mat' | 'arena'; code?: string }
 const { mode, code = 'en' } = Astro.props;
 const l = L(code), t = l.t;
@@ -76,6 +77,8 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 {faces.filter((f) => f.locales.includes(l.code)).map((f) => <link rel="preload" href={versioned(f.file)} as="font" type="font/woff2" crossorigin />)}
 {faceCss && <style is:inline set:html={faceCss} />}
+{/* the battle's words in this language, read by its modules (deferred, so it runs before them) */}
+{!l.en && <script is:inline defer src={battleStringsSrc(l.code)}></script>}
 {railCss && <style is:inline set:html={railCss} />}
 {fixScript && <script is:inline set:html={fixScript} />}
 <script is:inline>/* the page writes its state as a bare "#..." address; under <base> that would move it into its folder, so a hash-only address stays on this page */(function(h){['replaceState','pushState'].forEach(function(k){var f=h[k];h[k]=function(s,t,u){if(typeof u==='string'&&u.charAt(0)==='#')u=location.pathname+location.search+'#'+u.replace(/^#+/,'');return f.call(h,s,t,u)}})})(history)</script>
