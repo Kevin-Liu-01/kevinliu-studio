@@ -738,3 +738,8 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: at 1280 the Mat's turn tab shows the round's short labels (the pace stays in its tooltip) up to 1439 px on
   translated pages; the move tooltip's rule line and card/move/trait names stay English by design; Spanish HP reads
   both "PV" and "PS".
+- **Shipped** (2026-11-11): Kevin said "Yes, push main". main fast-forwarded 8888233 to c08f0fe; production deployment
+  `kevinliu-studio-810jiizk6` (dpl_HNgtUJ3tg5yxPCKA4PpX1tznUhoe) Ready on www.kevinliu.studio, .biz and kevin-liu.tech, guard
+  passing on Vercel; smoke.mjs passes on www; nine live pages and files byte-identical to the checked build
+  (dist-release-6f7fac9); /ja/battle-strings.js?v= serves a year, immutable; /es/no-such-page 404. Rollback:
+  `kevinliu-studio-qus6l73l6` (8888233), docs/deploy.md. This record is committed on release/next and not pushed.
