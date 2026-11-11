@@ -709,3 +709,32 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: still English by design: card faces, move and trait names, the tooltip's move rule line (it carries
   in-battle accuracy edits). GT wrote HP as both "PV" and "PS" in Spanish. The rounds worktree
   `~/Documents/ChatGPT/portfolio-design-rounds/2026-10-30-strings` can go once its branch is kept elsewhere.
+
+## 2026-11-11: ship check of the translated battle release, candidate 6f7fac9 (release/next, Claude Code)
+
+- **Type**: release check
+- **Candidate**: fb2d27d (shipped audit release + its record) + merge of feat/i18n c21d5f2 (8d93bfb) + the i18n session's
+  layout fixes 34e0bf8, 4320309, 318e2b0 and 6f7fac9 (fast-forwards).
+  - Battle pin 0a919baa, re-synced from `~/k7-rescue/release-next/rounds-0a919baa`: rounds-42ff51c7 with the 12 files of `git diff 42ff51c7 0a919baa` laid over it. c21d5f2 reads in sync against it.
+  - Plan 018's h2 patch now anchors on the `txt('result.*')` line.
+  - vercel.json adds battle-strings.js to the `?v=` year rule.
+- **Gates**: sync in sync; `pnpm test` 20/20; `pnpm check` 0 errors; negotiation 16; i18n-extract (battle.json matches the
+  synced table); build `256 pages, 248 sitemap URLs, 3573 files`; check-release 7.
+- **Preview** `kevinliu-studio-b676ywgpv` (Kevin: "Yes, deploy a preview"):
+  - The Vercel guard passes; smoke and check-seo (249 pages, 490 links) pass.
+  - `/<code>/battle-strings.js?v=` gets a year, immutable; the plain address gets max-age=0.
+  - Five pages are byte-identical to the local build.
+- **Browser checks** (~/k7-rescue/release-next/checks/bs-*):
+  - Function on 8d93bfb, 4 of 4:
+    - English battle text and results are identical to production.
+    - All seven languages play to the result, translated, with no placeholders or raw keys.
+    - The audit battle fixes (018, 019, 023) hold; the /es dock battle plays in Spanish.
+  - Memory on 8d93bfb:
+    - The plan 022 kits are unchanged (26.2/27.1/27.6 MB); the Arena is within noise.
+    - Every battle page's heap is +0.2 to 0.3 MB from the new 19 KB shared/strings.js.
+    - /<code>/battle-strings.js is about 15 KB gzipped.
+  - Layout failed on 8d93bfb, 4320309 and 318e2b0: the move tooltip at 320; the result summary, turn tab and plates at 1280; the ja/ko bench label; then the trait-name ellipsis and the de result key at 320.
+  - Layout passes 6 of 6 on 6f7fac9 in Chromium and WebKit, in all seven languages at 320, SE, 390, 1100, 1280 and 1440. English is 0px against production.
+- **Open**: at 1280 the Mat's turn tab shows the round's short labels (the pace stays in its tooltip) up to 1439 px on
+  translated pages; the move tooltip's rule line and card/move/trait names stay English by design; Spanish HP reads
+  both "PV" and "PS".
