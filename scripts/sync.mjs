@@ -29,7 +29,7 @@ const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
 // final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1), and on it the battle's string table
 // and the HUD's card-text overrides (0a919baa, branch play/strings-on-42ff51c7: round 5 with shared/strings.js, no round 6)
-const PIN = { cards: '8c77bd35', sound: '30e69931', battle: '0a919baa' };
+const PIN = { cards: '1061ba7c', sound: '30e69931', battle: '0a919baa' };
 const CHECK = process.argv.includes('--check');
 // a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
 const ADMIT = process.argv.includes('--admit-unpinned');
@@ -135,7 +135,9 @@ function pageFiles(list) {
     out.add(f);
     if (/\.(css|js)$/.test(f) && seeds.includes(f)) read(fs.readFileSync(`${EX}/${f}`, 'utf8'), f.endsWith('.css') ? path.posix.dirname(f) : '');
   }
-  return [...out].sort();
+  // design/bake/ holds the round page's baked rims, which it prints through data-bake; the site's pages print none, so
+  // the rungs (2.3 MB) would ship unused (release ship check 2026-11-11)
+  return [...out].filter((f) => !f.startsWith('design/bake/')).sort();
 }
 
 function soundFiles(list) {

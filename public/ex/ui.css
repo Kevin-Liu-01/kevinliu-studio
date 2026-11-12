@@ -303,7 +303,7 @@ html.inspecting .dock { opacity: 0; z-index: 29; }
 /* contain: the lens lays out its own subtree only (engineer ex9: the lift's first long task was one Layout of the whole
    document, 28 to 52 ms at 4x, partialLayout false). Layout containment alone is no relayout boundary in Chrome: size
    containment is, and the lens's size is the viewport's (fixed, inset 0), never its content's; paint containment clips
-   nothing it shows, as it already scrolls its own overflow */
+   nothing it shows, as it already scrolls its own overflow. Under 1056 px it is none (below) */
 .inspect { contain: strict; position: fixed; inset: 0; z-index: 30; overflow-y: auto; --iw: max(164px, min(560px, (100vh - 80px) / 1.397, 100vw - 56px)); /* 28 px a side: the pop-out reaches 0.066W past the trim */ overscroll-behavior: contain;
   --sg: max(32px, calc(var(--iw) * 0.07 + 8px)); /* the sheet stands clear of the lens card's pop-out (0.066W past its trim) */ }
 .inspect:focus { outline: none; }
@@ -380,7 +380,10 @@ code { display: block; margin-top: 2px; font: 500 12px/16px var(--sans); color: 
 .arts .press { padding: 0 12px; }
 @media (max-width: 1055px) { .arts .press { padding: 0 10px; } }
 @media (max-width: 1055px) {
-  .inspect { overflow-y: auto; }
+  /* no containment where the tray is fixed (release check ex-wall, 11-11): layout or paint containment makes the lens the
+     containing block of its fixed descendants, so the tray scrolled away with the sheet (Agent Machines' at -513 px at
+     390 wide); size and style alone keep it pinned but are no relayout boundary, so the narrow lens lays out as production's */
+  .inspect { overflow-y: auto; contain: none; }
   .ins-card { position: relative; left: auto; top: auto; margin: 16px auto 0; }
   /* the sheet ends clear of the tray however many rows it wraps to: its height (--trayh, gallery.js) plus its 8 px inset,
      the plate's 32 px rise and 4 px */

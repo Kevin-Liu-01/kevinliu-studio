@@ -1,21 +1,21 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "8c77bd35 + 30e69931 + 0a919baa",
+ "head": "1061ba7c + 30e69931 + 0a919baa",
  "pins": {
-  "cards": "8c77bd35",
+  "cards": "1061ba7c",
   "sound": "30e69931",
   "battle": "0a919baa"
  },
- "synced": "2026-11-12T00:29:47.954Z",
+ "synced": "2026-11-12T03:28:16.179Z",
  "stages": {
   "cards": {
-   "files": 1099,
-   "bytes": 109906556,
+   "files": 1090,
+   "bytes": 107554520,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
-     "sha256": "dc72d5ee96a46d73b11bc5ac5b6bb7d24778b1a7ff0a325f2cf019eed0c15785",
-     "bytes": 40795
+     "sha256": "d85584ac1619367dc6f2c35884bcf787e49b460e97db1fcdaeab8110bf0b65b2",
+     "bytes": 41216
     },
     "public/ex/card.css": {
      "src": "r4/ex/card.css",
@@ -69,8 +69,8 @@
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
-     "sha256": "4304e30b7e9d84339f347da87720ff810ceb90ec92a2421584e6149b8e0342ae",
-     "bytes": 53713
+     "sha256": "85f18cbc135edf2996a43d50f1f202bbd513e9e3271bcd14c155d64df1297a6a",
+     "bytes": 54120
     },
     "public/ex/grounds/shell.js": {
      "src": "r4/ex/grounds/shell.js",
@@ -3122,51 +3122,6 @@
      "sha256": "404567432d1e879029453816143b62e5daf8b49ebb67e67843a8fd5bda621828",
      "bytes": 49119
     },
-    "public/ex/design/bake/fx.webp": {
-     "src": "r4/ex/design/bake/fx.webp",
-     "sha256": "82c33bf5fc8b55a21821949e5c000b4af214221712ce76f34d11380cfd1f2738",
-     "bytes": 137038
-    },
-    "public/ex/design/bake/rims-150.webp": {
-     "src": "r4/ex/design/bake/rims-150.webp",
-     "sha256": "2c5772f83d72ebcc31f8f8a66ed3f0db7b840d2c3678ea530ba9f076f90833d5",
-     "bytes": 93084
-    },
-    "public/ex/design/bake/rims-180.webp": {
-     "src": "r4/ex/design/bake/rims-180.webp",
-     "sha256": "8176f37f770c5bb791b78c23c600bc80554427e964be3959a51ee185c9045eb5",
-     "bytes": 119612
-    },
-    "public/ex/design/bake/rims-240.webp": {
-     "src": "r4/ex/design/bake/rims-240.webp",
-     "sha256": "18ec25828b0bd9c5a7db0fccf1724984b1ac84d654950250bf8a535578aeb324",
-     "bytes": 171828
-    },
-    "public/ex/design/bake/rims-300.webp": {
-     "src": "r4/ex/design/bake/rims-300.webp",
-     "sha256": "c9f1807feea2c2b3f4f7a2c1073083782e188547b78b8fc79c6866cca9627465",
-     "bytes": 237776
-    },
-    "public/ex/design/bake/rims-360.webp": {
-     "src": "r4/ex/design/bake/rims-360.webp",
-     "sha256": "b66b577bdd7b9b9adfcc75b1c55b929effae9f7baef50cbc1ed79a14d48d8587",
-     "bytes": 304992
-    },
-    "public/ex/design/bake/rims-420.webp": {
-     "src": "r4/ex/design/bake/rims-420.webp",
-     "sha256": "76fff1980188443bfde2a2d013dcd961fc013f250b60871439620d7167db82f8",
-     "bytes": 366306
-    },
-    "public/ex/design/bake/rims-480.webp": {
-     "src": "r4/ex/design/bake/rims-480.webp",
-     "sha256": "69c82e0ff288aa62c135a1d3d8cc72cc217573c3d3477d30b689b913fe68f36e",
-     "bytes": 435736
-    },
-    "public/ex/design/bake/rims.webp": {
-     "src": "r4/ex/design/bake/rims.webp",
-     "sha256": "d48b5aaf16d658c4d0fd757ba882068780713e81a6f774d8de646b0896a4fb53",
-     "bytes": 486492
-    },
     "public/ex/design/card.js": {
      "src": "r4/ex/design/card.js",
      "sha256": "685f73414d90be876cac1907423d374efd33016fdf00f7a20a888720f1c94554",
@@ -5494,7 +5449,7 @@
     },
     "vendor/ex/posters/posters.json": {
      "src": "r4/ex/posters/posters.json",
-     "sha256": "491056d8506270a9b93f979850f44ec2cdc8980cec642359f6107ad0ca8b29e3",
+     "sha256": "4b9ed98a0deb004c6ff42de37bc846febd77d816da7135fb1c2814aede23474d",
      "bytes": 5608
     },
     "public/ex/face.gen.js": {

@@ -452,12 +452,17 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     L.painted = false;
     if (L.poster) L.poster.style.visibility = '';
   }
+  // A held canvas is always 0 x 0 (release check ex-memory, 11-11: a print queued on its first frame was sized by jobsOf's
+  // back() while still display none, and an early return on display none left 13 of 26 phone loads holding every
+  // off-screen card's ground and fx at full size, 74 to 80 MB of canvas); hiding it is done once, zeroing every time
   function hold(L) {
-    if (!L || L.box === L.el || L.el.style.display === 'none') return;
-    L.el.style.display = 'none';
-    L.el.width = L.el.height = 0;
-    L.painted = false;
-    if (L.poster) L.poster.style.visibility = '';
+    if (!L || L.box === L.el) return;
+    if (L.el.style.display !== 'none') {
+      L.el.style.display = 'none';
+      L.painted = false;
+      if (L.poster) L.poster.style.visibility = '';
+    }
+    if (L.el.width || L.el.height) L.el.width = L.el.height = 0;
   }
   function surface(id, el, card, S = 1, opts = {}) {
     if (!recipes()[card] && !(energy().cards || {})[card]) return null;

@@ -136,32 +136,32 @@
   }
  },
  "source": {
-  "turboslide": "1677aa50478193d3",
-  "glyphfield": "2eab001143a6889a",
-  "jarhead": "95cd31264447e6da",
-  "katagami": "75c11313e8850ad4",
-  "claude-of-tanks": "52bc31a753fc1fa1",
-  "mailroom": "34e3e9027ce4773c",
-  "local-search": "574c1a72ee76b462",
-  "agent-pets": "7d9b0dc048a8dea4",
-  "loop": "50944b4e3d9ad949",
-  "agent-machines": "5fbbc0f3b30e1ffb",
-  "prototemplate": "6e138f203b3f45b5",
-  "bday-land": "e00b95290180a42a",
-  "powerlifting": "1b34a5eda8d8ef60",
-  "elo": "130a5ada631fcb5b",
-  "cotfly": "bf81ddb75b321c83",
-  "relay": "846c8c5978e65066",
-  "princeton-td": "50bd72cda9cd82ee",
-  "kevin-wiki": "bab8d361f58d11c2",
-  "sandbox-arena": "36f9bbe3ecf84c6e",
-  "ariadne": "95fc2acff5d9243f",
-  "sigil-ui": "954f36184a9b422d",
-  "dedalus-terminal": "efbccaa23262983e",
-  "sevenfold": "44ad0e37e8ea2c0b",
-  "podium": "4cda26fd3df0c471",
-  "ommc": "9939284f4158f0e0",
-  "atlas": "6af194239188de6f"
+  "turboslide": "6c4ce4ab6390116f",
+  "glyphfield": "e5aa0de31325e536",
+  "jarhead": "66ceae53d628f7eb",
+  "katagami": "8ffb575ad77a3521",
+  "claude-of-tanks": "7f5fab6407b894f8",
+  "mailroom": "d0bf1ca915b3ad6f",
+  "local-search": "81f38cc543209623",
+  "agent-pets": "6e9946485df1e287",
+  "loop": "56cfd418a8652628",
+  "agent-machines": "bf494f29e6a87df2",
+  "prototemplate": "855fec83b1d9b4e0",
+  "bday-land": "4e06c1b7aa8d5a66",
+  "powerlifting": "2cbe0c562ebe794e",
+  "elo": "1e177a5759a7b67f",
+  "cotfly": "43b4172c771ac717",
+  "relay": "fb1aa3dc4c190ffb",
+  "princeton-td": "133d94d4947b83f4",
+  "kevin-wiki": "4fcf27ab7fb27988",
+  "sandbox-arena": "036f1169d28027ee",
+  "ariadne": "71d397fd505a58ff",
+  "sigil-ui": "0e9731910d761ee4",
+  "dedalus-terminal": "c78a090e25987bb0",
+  "sevenfold": "62d717ff925ce43f",
+  "podium": "821e6d6d4ffefc19",
+  "ommc": "88e7850d3904db78",
+  "atlas": "5ee3251426737f54"
  },
  "room": {
   "W": 560,
@@ -172,107 +172,107 @@
  },
  "rooms": {
   "turboslide": {
-   "source": "a1da6e65f852ae5c",
+   "source": "bd6d3d04fe1d93b3",
    "bytes": 314116
   },
   "glyphfield": {
-   "source": "8b5bf48f52bbf4cd",
+   "source": "23cd818ddfa58add",
    "bytes": 1052854
   },
   "jarhead": {
-   "source": "7e830c4ab89a6179",
+   "source": "68219f922d1a0aa1",
    "bytes": 151700
   },
   "katagami": {
-   "source": "501d8e0b371b4696",
+   "source": "32318a16c9e021d2",
    "bytes": 264776
   },
   "claude-of-tanks": {
-   "source": "6a072212d10ee868",
+   "source": "029712df345a39a7",
    "bytes": 304356
   },
   "mailroom": {
-   "source": "b792aa12a6c5fb93",
+   "source": "3afdccbaf79d36be",
    "bytes": 183110
   },
   "local-search": {
-   "source": "d8d4d55c1579cd2f",
+   "source": "690845f6b8d28f73",
    "bytes": 159740
   },
   "agent-pets": {
-   "source": "b6e170f96c693528",
+   "source": "c9f7ea50909c2433",
    "bytes": 249826
   },
   "loop": {
-   "source": "f46e6f2167fd972a",
+   "source": "c43fa483d39aa344",
    "bytes": 157406
   },
   "agent-machines": {
-   "source": "e79e2deb84b2ee8a",
+   "source": "79fa23c807ecb29c",
    "bytes": 272942
   },
   "prototemplate": {
-   "source": "668809bfc61de7a3",
+   "source": "95feed5ee1de4ff2",
    "bytes": 216152
   },
   "bday-land": {
-   "source": "60abf0cfac7c4cfc",
+   "source": "d189aabeb7372e4a",
    "bytes": 213454
   },
   "powerlifting": {
-   "source": "6e9c7b35ae4731cb",
+   "source": "e3d13779af51405f",
    "bytes": 227296
   },
   "elo": {
-   "source": "d55a87e1344426a2",
+   "source": "c560c4924b4fec78",
    "bytes": 243148
   },
   "cotfly": {
-   "source": "07a5899ccec13a36",
+   "source": "daa56cc93ebe8b73",
    "bytes": 172474
   },
   "relay": {
-   "source": "3e2d3e3a085a1913",
+   "source": "0c2fcec867cc150d",
    "bytes": 129596
   },
   "princeton-td": {
-   "source": "a03cb2ea72732647",
+   "source": "928015cee4bccb57",
    "bytes": 120804
   },
   "kevin-wiki": {
-   "source": "8e5df09c95d195e8",
+   "source": "43a72851fad677d8",
    "bytes": 268266
   },
   "sandbox-arena": {
-   "source": "10c5cd79499aab74",
+   "source": "881692d6ed04e9a5",
    "bytes": 750628
   },
   "ariadne": {
-   "source": "7ff533c0f7633f0e",
+   "source": "19310178bccfba52",
    "bytes": 668310
   },
   "sigil-ui": {
-   "source": "26277a4758754aa0",
+   "source": "fe2735172d183d3e",
    "bytes": 193928
   },
   "dedalus-terminal": {
-   "source": "ce925884f063f948",
+   "source": "d1d31fecbcbbcb70",
    "bytes": 309106
   },
   "sevenfold": {
-   "source": "bac2bbccf64a49ed",
+   "source": "b6ccfd4373967230",
    "bytes": 250386
   },
   "podium": {
-   "source": "41044235a6691f5c",
+   "source": "c11a6a047d1db2fa",
    "bytes": 323560
   },
   "ommc": {
-   "source": "21887b346a1355a7",
+   "source": "aeaa01dbfb8e6a6e",
    "bytes": 264340
   },
   "atlas": {
-   "source": "a130741b5deadb23",
+   "source": "4dbbe797889e02dd",
    "bytes": 247282
   }
  }
