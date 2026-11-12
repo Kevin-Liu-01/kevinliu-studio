@@ -88,42 +88,42 @@
     },
     {
       "fileId": "818ed29feefa8e38ed41d0a7bf07fe134225415d98f0f8670b8d6b09e51c13b8",
-      "versionId": "35fff036435442f02b81249c92f280e307f1707f8df8f20cf89e69f867deeca8",
+      "versionId": "7cb658be86fc090a32252e4784090f523bbda732d288256b8057b0551bb2ae1b",
       "translations": {
         "de": {
-          "updatedAt": "2026-11-10T17:58:12.329Z",
+          "updatedAt": "2026-11-12T17:55:29.943Z",
           "fileName": "src/i18n/de/battle.json",
-          "postProcessHash": "93e25bea5efb5129b0f3a5cc1dffcd8d345d0128fb009e609cb2c6496012984d"
-        },
-        "zh-CN": {
-          "updatedAt": "2026-11-10T17:58:12.332Z",
-          "fileName": "src/i18n/zh-CN/battle.json",
-          "postProcessHash": "cba9e5d04d7bcd8bf895f45b982628776442eb17af30709b76e8dc30eb90de59"
+          "postProcessHash": "b9fcfa8b38981028721b45469976f336dfa989d4356ff788107c3b4003f7d2f0"
         },
         "ja": {
-          "updatedAt": "2026-11-10T17:58:12.334Z",
+          "updatedAt": "2026-11-12T17:55:29.949Z",
           "fileName": "src/i18n/ja/battle.json",
-          "postProcessHash": "82eefca27df6e8174ebaf5c2c78513ad9f08f3eb768d99a3a4b454837a60d466"
-        },
-        "ko": {
-          "updatedAt": "2026-11-10T17:58:12.340Z",
-          "fileName": "src/i18n/ko/battle.json",
-          "postProcessHash": "b37cfa0905484886f9c079ca19ea3ef849fadde9c825fe7e57ea613070702671"
-        },
-        "es": {
-          "updatedAt": "2026-11-10T17:58:12.349Z",
-          "fileName": "src/i18n/es/battle.json",
-          "postProcessHash": "638ae1c16cf0af9fc95f1811670ca2b0c2c54f04da8ad849ee7f4988c5c4fbf5"
+          "postProcessHash": "7de55358c1382f0f1555ef85f1484b2af214b6821af1029fc00e1d35400592b5"
         },
         "fr": {
-          "updatedAt": "2026-11-10T17:58:12.355Z",
+          "updatedAt": "2026-11-12T17:55:29.953Z",
           "fileName": "src/i18n/fr/battle.json",
-          "postProcessHash": "43cfe8ddd9d3f23c91930b9e4386c5dbf7a70ab8d960ef22bff167d0a3142419"
+          "postProcessHash": "1d671d1c195195805035d8eed9d641149eb17e4a3e16cc44806b2b562c1de172"
+        },
+        "es": {
+          "updatedAt": "2026-11-12T17:55:29.957Z",
+          "fileName": "src/i18n/es/battle.json",
+          "postProcessHash": "2b1682a730732015a987523645ae89200d384915050060fbcae2f0dba80e9f4d"
         },
         "pt-BR": {
-          "updatedAt": "2026-11-10T17:58:12.364Z",
+          "updatedAt": "2026-11-12T17:55:29.958Z",
           "fileName": "src/i18n/pt-BR/battle.json",
-          "postProcessHash": "3dce0c6506dd7dc35732f75d846b3634fe3d04673fc39ad5f398fb13a2fa2e94"
+          "postProcessHash": "851ebfe308cd661fb7696103d2f4ac78846d251c563a502fb31f50e19feb0ae6"
+        },
+        "zh-CN": {
+          "updatedAt": "2026-11-12T17:55:29.959Z",
+          "fileName": "src/i18n/zh-CN/battle.json",
+          "postProcessHash": "3fd84c3864bef24cd3a3472a1bbfcf7915f5df6f845b938f9c4c3bc868cfb8d3"
+        },
+        "ko": {
+          "updatedAt": "2026-11-12T17:55:29.960Z",
+          "fileName": "src/i18n/ko/battle.json",
+          "postProcessHash": "5e345d95aac7699765abe7401f972a14d69e6b1e0be98dcb14c8150def674b66"
         }
       },
       "fileName": "src/i18n/en/battle.json"
