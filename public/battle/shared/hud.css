@@ -286,9 +286,9 @@ dialog#log .lg-r { font-size: 11.5px; }
 #app .num-tag[data-kind="weak"] { background: var(--down); color: #fff; }
 #app .num-tag[data-kind="crit"] { background: oklch(76% 0.16 80); color: oklch(18% 0.03 70); }
 
-/* an open panel (Switch, Send In, Kit) rises over the plates, and the turn tab steps aside for it */
+/* an open panel (Switch, Send In, Kit) rises over the plates; the turn tab stands on the panel's top edge (hud.js
+   liftTab, fix1 C3), so who acts first stays in view while you choose */
 #app .console:has(.panel:not([hidden])) { z-index: 24; }
-#app:has(.panel:not([hidden])) .hud .ttab { opacity: 0; pointer-events: none; }
 .hud .ttab { transition: opacity .2s .1s; }
 
 /* a long press opens a tooltip on a phone: no text selection or callout menu on what carries one */
@@ -340,8 +340,8 @@ dialog#log .lg-r { font-size: 11.5px; }
   .skiphint { display: inline-flex; right: 50%; translate: 50% 0; bottom: 12px; }
   .sk-key { display: none; } .sk-tap { display: inline; }
   /* the turn tab rides the console's first line, at its right */
-  .ttab { display: flex; left: auto; right: calc(100vw - var(--console-x, 8px) - var(--console-w, 374px) + 12px); top: calc(var(--console-y, 560px) + 9px); height: 24px; padding: 0 8px; gap: 6px; border-radius: 7px; background: var(--room-fill); box-shadow: none; font-size: 11.5px; }
-  .ttab > .bi, .ttab > b, .tt-first i { display: none; }
+  .ttab { display: flex; left: calc(var(--console-x, 8px) + var(--console-w, 374px) - 12px); right: auto; translate: -100% 0; top: calc(var(--console-y, 560px) + 9px); height: 24px; padding: 0 8px; gap: 6px; border-radius: 7px; background: var(--room-fill); box-shadow: none; font-size: 11.5px; }
+  .tt-main > .bi, .tt-main > b, .tt-first i { display: none; }
   #app .say { padding-right: 168px; }
 }
 
@@ -362,9 +362,8 @@ dialog#log .lg-r { font-size: 11.5px; }
 #app .panel .key.bench .bn-art { grid-row: 1 / 4; width: 40px; height: 56px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px oklch(0% 0 0 / .25); }
 #app .panel .key.bench > :not(.bn-art) { grid-column: 2; }
 
-/* hidden means hidden to focus too: while a full scene holds the screen, or a panel covers the turn tab */
+/* hidden means hidden to focus too: while a full scene holds the screen */
 #app[data-scene]:not([data-band]) .hud :is(.plate, .blog, .ttab) { visibility: hidden; transition: opacity .12s, visibility 0s .12s; }
-#app:has(.panel:not([hidden])) .hud .ttab { visibility: hidden; }
 button.pk-left { border: 0; font: inherit; color: inherit; cursor: pointer; }
 
 /* the Arena's flags step back: each plate names its card and carries its HP */
@@ -415,7 +414,7 @@ button.pk-left { border: 0; font: inherit; color: inherit; cursor: pointer; }
 /* the turn tab: T2 on a phone */
 .tt-t { display: none; }
 @media (max-width: 719px) {
-  .ttab > b.tt-turn { display: inline; }
+  .tt-main > b.tt-turn { display: inline; }
   .tt-word { display: none; } .tt-t { display: inline; }
   .mf { display: none; }
 }
@@ -469,18 +468,20 @@ button.pk-left { border: 0; font: inherit; color: inherit; cursor: pointer; }
 body:has(.tip[data-on="true"]) #app .cmove .move-thumb { opacity: 0 !important; }
 /* the flags drop whole when they do not fit */
 .ms-flags { flex-wrap: wrap; max-height: 21px; overflow: hidden; }
-/* the turn tab sits at the console's right end, clear of your leader's name */
-.ttab { left: auto; right: calc(100vw - var(--console-x, 24px) - var(--console-w, 1100px) + 14px); }
+/* the turn tab sits at the console's right end, clear of your leader's name (its right edge held by a left anchor and a
+   -100% translate, so its width changing with the turn's order never shifts layout: CLS 0) */
+.ttab { left: calc(var(--console-x, 24px) + var(--console-w, 1100px) - 14px); right: auto; translate: -100% 0; }
 /* the receipt under the scene's number reads after the number: smaller and lighter */
 #app #stage .sd-receipt { filter: opacity(.62); font-size: .86em; }
 @media (max-width: 719px) {
-  /* a phone: the Kit and Switch sheets stay under the rail and scroll inside */
-  #app .panel { max-height: calc(var(--console-y, 560px) - 76px); overflow-y: auto; overscroll-behavior: contain; }
+  /* a phone: the Kit and Switch sheets stay under the rail and scroll inside, leaving the turn tab a row over their top
+     edge (hud.js liftTab stands it there while a sheet is open) */
+  #app .panel { max-height: calc(var(--console-y, 560px) - var(--hud-rail-b, 64px) - 44px); overflow-y: auto; overscroll-behavior: contain; }
   /* the description line goes (a long press shows a move's tooltip); the turn tab takes its row */
   /* the line stays a polite live region for screen readers (a leader's line, a move's text); the turn tab takes its row */
   #app .say { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   #app .console .moves { grid-row: 2; } #app .console .acts { grid-row: 3; }
-  .ttab { left: calc(var(--console-x, 8px) + 8px); right: auto; top: calc(var(--console-y, 560px) + 8px); }
+  .ttab { left: calc(var(--console-x, 8px) + 8px); right: auto; translate: none; top: calc(var(--console-y, 560px) + 8px); }
   #app .console { grid-template-rows: 30px minmax(0, 1fr) 48px; }
   /* skip: the top corner, clear of the console's keys and the attacker's name */
   .skiphint { top: 10px; bottom: auto; right: 10px; translate: none; }
@@ -494,7 +495,7 @@ body:has(.tip[data-on="true"]) #app .cmove .move-thumb { opacity: 0 !important; 
 #app[data-hudlog] .slot[data-zone="active"] .tab { opacity: 0; }
 /* the Mat's turn tab rides the top rail, clear of every card and name */
 @media (min-width: 720px) {
-  .hud[data-mode="mat"] .ttab { top: 14px; left: 150px; right: auto; height: 34px; border-radius: 10px; box-shadow: var(--room-raise-s); }
+  .hud[data-mode="mat"] .ttab { top: 14px; left: 150px; right: auto; translate: none; height: 34px; border-radius: 10px; box-shadow: var(--room-raise-s); }
 }
 /* the Kit's icons in their kind's colour (the room's own rule greys every span in a panel key) */
 #app .panel .key .it-ic[data-kind="heal"] { color: var(--up); }
@@ -532,7 +533,7 @@ body:has(.tip[data-on="true"]) #app .cmove .move-thumb { opacity: 0 !important; 
 .plate[data-strip="true"] .ps { padding: 2px 3px; } .plate[data-strip="true"] .ps em { font-size: 9.5px; padding: 1px 3px; }
 /* the Mat's turn tab between 720 and 1180: back over the console, its short labels (the rail has no room for it) */
 @media (min-width: 720px) and (max-width: 1179px) {
-  .hud[data-mode="mat"] .ttab { top: calc(var(--console-y, 640px) - 30px); left: auto; right: calc(100vw - var(--console-x, 24px) - var(--console-w, 900px) + 14px); height: 30px; border-radius: 10px 10px 0 0; box-shadow: 0 -2px 6px oklch(0% 0 0 / .08); }
+  .hud[data-mode="mat"] .ttab { top: calc(var(--console-y, 640px) - 30px); left: calc(var(--console-x, 24px) + var(--console-w, 900px) - 14px); right: auto; translate: -100% 0; height: 30px; border-radius: 10px 10px 0 0; box-shadow: 0 -2px 6px oklch(0% 0 0 / .08); }
   .hud[data-mode="mat"] .tt-long, .hud[data-mode="mat"] .tt-first i { display: none; } .hud[data-mode="mat"] .tt-short { display: inline; }
 }
 /* under 1180 the turn tab sits over the console and the buttons are narrow: the poster peek and the flag chips step
@@ -556,7 +557,9 @@ body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
 #app .moves { container-type: inline-size; container-name: moves; }
 /* (the mode's sheet loads after this one, so each rule carries #app to win) */
 @container moves (max-width: 900px) {
-  #app .cmove[data-ring="even"] .move-ring { display: none; }
+  /* (an even ring keeps its room, unseen: a key's name wraps the same whatever the rival across, so a send-in never
+     moves the words under it, fixes-3 R4) */
+  #app .cmove[data-ring="even"] .move-ring { visibility: hidden; }
   #app .cmove .move-name { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; line-height: 1.05; }
   #app .cmove .move-stats > .ms-flags { display: none; }
 }
@@ -628,3 +631,234 @@ body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
   #app .speed .key { min-width: 38px; padding: 0 6px; }
   #app .key.snd { min-width: 34px; padding: 0 6px; }
 }
+
+/* ============================================================ round 6: forms and the turn's order (shared/hud.js, shared/tower.js)
+   A form card's tower reads as its still, its name and its gold star pips (a star, never the round crit glyph); the
+   branch mark at Level 4 is a diamond (A) or a circle (B) in the tower's accent. Tower accents sit only on the tower's
+   own marks, never on a chip that means better or worse. */
+.tw-still { display: inline-grid; place-items: center; flex: none; height: var(--h, 20px); aspect-ratio: 413 / 600; border-radius: 4px; background: color-mix(in oklch, var(--ta, var(--ink-3)) 22%, transparent); overflow: hidden; }
+.tw-still img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.tw-pips { display: inline-flex; align-items: center; gap: 1px; flex: none; }
+.tw-star { width: 10px; height: 10px; fill: var(--crit, oklch(70% 0.16 80)); }
+.tw-star[data-on="false"] { fill: none; stroke: var(--ink-3); stroke-width: 1.2; }
+.tw-branch { width: 12px; height: 12px; margin-left: 2px; }
+.tw-branch :is(path, circle) { fill: var(--ta); }
+.tw-branch text { font: 800 7.5px/1 var(--sans); fill: oklch(14% 0.01 75); }
+.tw-line { display: inline-flex; align-items: center; gap: 5px; min-width: 0; font: 700 12px/1 var(--sans); }
+.tw-line b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* the plate's form row, under the card's name */
+.pl-form { display: flex; align-items: center; min-height: 22px; margin-top: -3px; }
+.pl-form[hidden] { display: none; }
+.plate[data-strip="true"] .pl-form { display: none; }
+/* the bench row's form line */
+.bn-form { display: flex; align-items: center; gap: 6px; font: 600 12px/1.1 var(--sans); color: var(--ink-2); }
+.bn-form .tw-line b, .bn-form .tw-pips { display: none; }
+.bn-form i { font-style: normal; }
+/* the log's tower lines */
+.lg-tw { color: var(--ta); display: inline-grid; }
+
+/* the turn tab while a turn plays: the order of who acts, as side chips (shared/beats.js); the chip playing now wears a
+   2 px underline in its side colour, the finished ones step back */
+.tt-main, .tt-firstbox { display: contents; }
+.tt-order { display: none; align-items: center; gap: 5px; min-width: 0; }
+.ttab[data-order] .tt-order { display: inline-flex; }
+.ttab[data-order] .tt-phase { display: none; }
+.to-chip { position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 3px 0 4px; font: 800 12px/1 var(--sans); white-space: nowrap; transition: opacity .12s; }
+.to-chip::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; border-radius: 1px; background: var(--you); transform: scaleX(0); transform-origin: 0 50%; transition: transform .12s cubic-bezier(.2,.8,.2,1); }
+.to-chip[data-side="rival"]::after { background: var(--rival); }
+.to-chip[data-state="now"]::after { transform: none; }
+.to-chip[data-state="done"] { opacity: .55; }
+.to-side { padding: 2px 4px; border-radius: 4px; font: 800 10px/1 var(--sans); font-style: normal; color: #fff; background: var(--you); }
+.to-chip[data-side="rival"] .to-side { background: var(--rival); }
+.to-d { display: none; }
+.to-d .i { width: 16px; height: 16px; }
+.to-sep { font-style: normal; color: var(--ink-3); }
+@media (max-width: 719px) {
+  .to-chip b { display: none; }
+  .to-d { display: inline-grid; }
+}
+:root[data-reduced="true"] .to-chip, :root[data-reduced="true"] .to-chip::after { transition: none; }
+
+/* ============================================================ round 6: the Tower key, first in the action group
+   1180 and up a tall key over both rows (84 px: the still, the name on two lines, the pips, T); 720 to 1179 a 64 px key
+   (the still and "Tower"); a phone's row of five keys (Tower, Guard, Switch, Kit, Auto). */
+#app .console .acts .key.tower { position: relative; display: grid; justify-items: center; align-content: center; gap: 3px; padding: 6px 4px; min-width: 0; text-align: center; white-space: normal; }
+#app .console .acts .key.tower[hidden] { display: none; }
+/* a fighter without forms in a battle that holds one keeps the key's slot, unseen, so the keys beside it never move
+   (fixes-3 R4) */
+#app .console .acts .key.tower[data-off] { visibility: hidden; pointer-events: none; }
+#app .console .acts .key.tower::before { content: ""; position: absolute; left: 8px; right: 8px; top: 0; height: 3px; border-radius: 0 0 3px 3px; background: var(--ta, var(--ink-3)); }
+.tw-key-still { display: grid; place-items: center; }
+.tw-key-name { font: 700 13px/1.05 var(--sans); max-width: 76px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.tw-key-word { display: none; font: 700 13px/1 var(--sans); }
+#app .acts .key.tower kbd { font: 700 10px/1 var(--sans); padding: 2px 4px; border-radius: 4px; background: var(--room-fill); color: var(--ink-2); }
+.tw-nudge { position: absolute; right: -4px; top: -8px; padding: 3px 5px; border-radius: 6px; font: 800 11px/1 var(--sans); font-variant-numeric: tabular-nums; background: var(--up-soft); color: var(--up-ink); box-shadow: 0 0 0 1.5px var(--up); background-color: var(--room-clay); pointer-events: none; }
+.tw-nudge[hidden] { display: none; }
+@media (min-width: 1440px) {
+  #app .console .acts[data-tower] { grid-template-columns: 84px repeat(2, minmax(84px, 1fr)); }
+  #app .console .acts[data-tower] .key.tower { grid-row: span 2; width: 84px; }
+}
+/* 1180 to 1439: the same 84 px key (ROUND6.md section 7, "Tower UI"); the four keys beside it take their least width,
+   so the move keys lose as little as they can */
+@media (min-width: 1180px) and (max-width: 1439px) {
+  #app .console .acts[data-tower] { grid-template-columns: 84px repeat(2, minmax(64px, 1fr)); }
+  #app .console .acts[data-tower] .key.tower { grid-row: span 2; width: 84px; }
+  #app .acts[data-tower] .key.act:not(.tower) { padding: 0 6px; }
+}
+/* 720 to 1179: a 64 px key, the still and "Tower" */
+@media (min-width: 720px) and (max-width: 1179px) {
+  #app .console .acts[data-tower] { grid-template-columns: 64px repeat(2, minmax(64px, 1fr)); }
+  #app .console .acts[data-tower] .key.tower { grid-row: span 2; width: 64px; }
+  #app .acts .key.tower .tw-key-word { font-size: 12px; }
+  #app .acts[data-tower] .key.act:not(.tower) { padding: 0 6px; }
+  #app .acts .key.tower :is(.tw-key-name, .tw-key-pips, kbd) { display: none; }
+  #app .acts .key.tower .tw-key-word { display: block; }
+}
+@media (max-width: 719px) {
+  #app .console .acts[data-tower] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  #app .acts .key.tower { grid-auto-flow: column; gap: 4px; padding: 0 4px; }
+  #app .acts .key.tower :is(.tw-key-name, .tw-key-pips, kbd) { display: none; }
+  #app .acts .key.tower .tw-key-word { display: block; font-size: 13px; }
+  #app .acts .key.tower .tw-still { --h: 20px !important; }
+  #app .acts[data-tower] .key { padding: 0 4px; font-size: 13px; }
+}
+
+/* ============================================================ round 6: the Tower panel (the console's panel, data-kind="tower") */
+#app .panel[data-kind="tower"] { gap: 10px; }
+.panel[data-kind="tower"] .panel-head { flex-wrap: wrap; }
+.tw-up { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: var(--room-fill); box-shadow: inset 3px 0 0 var(--ta); }
+.tw-up-name { display: grid; gap: 3px; min-width: 120px; }
+.tw-up-name b { font: 800 15px/1.1 var(--sans); }
+.tw-up-name i { font: 600 12px/1.1 var(--sans); font-style: normal; color: var(--ink-2); }
+.tw-why { margin: 0 0 0 auto; font: 700 12px/1 var(--sans); color: var(--ink-2); }
+.tw-pair { display: inline-flex; align-items: flex-end; gap: 4px; color: var(--ink-3); }
+.tw-pair i { font-style: normal; font-weight: 800; }
+.tw-branches { display: flex; flex: 1 1 340px; gap: 8px; flex-wrap: wrap; }
+#app .panel .key.tw-do { flex: 1 1 200px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 56px; padding: 8px 12px; text-align: left; }
+.tw-do-t { grid-column: 2; display: grid; gap: 4px; min-width: 0; }
+#app .panel .key.tw-do > kbd { grid-column: 3; }
+#app .panel .key.tw-do .tw-do-t > b { font: 800 14px/1.1 var(--sans); color: var(--ink); }
+.tw-gains { display: flex; flex-wrap: wrap; gap: 4px; }
+.tw-move { display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: baseline; }
+#app .panel .tw-move b { font: 700 12px/1.1 var(--sans); color: var(--ink); }
+#app .panel .tw-move i { font: 600 11.5px/1.1 var(--sans); font-style: normal; color: var(--ink-2); }
+#app .panel .key em { font: 700 11.5px/1 var(--sans); font-style: normal; color: var(--ink-2); }
+#app .panel .key kbd, .tw-tile kbd { font: 700 10px/1 var(--sans); padding: 2px 4px; border-radius: 4px; background: var(--room-fill); color: var(--ink-2); align-self: start; }
+.tw-grid { display: grid; grid-template-columns: repeat(var(--n, 7), minmax(0, 1fr)); gap: 6px; }
+#app .panel .key.tw-tile { position: relative; display: grid; justify-items: center; align-content: start; gap: 5px; min-width: 0; min-height: 132px; padding: 10px 6px 8px; text-align: center; white-space: normal; box-shadow: inset 0 3px 0 var(--ta), var(--room-raise-s); }
+#app .panel .key.tw-tile kbd { position: absolute; left: 6px; top: 7px; }
+.tw-tile-t { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+#app .panel .key.tw-tile .tw-tile-t > b { font: 800 12.5px/1.1 var(--sans); color: var(--ink); }
+.tw-tile-l { display: inline-flex; align-items: center; gap: 3px; }
+#app .panel .tw-tile-l i { font: 700 11px/1 var(--sans); font-style: normal; color: var(--ink-2); }
+.tw-tile-l .i { width: 14px; height: 14px; }
+#app .panel .key.tw-tile[data-standing="true"] { box-shadow: inset 0 0 0 2px var(--ta); }
+#app .panel .key[aria-disabled="true"]:is(.tw-tile, .tw-do):not([data-standing="true"]) .tw-still { filter: grayscale(.7); opacity: .6; }
+/* a tile's tower drawn whole at the still's height on its accent wash (fixes-3 R6): the opaque box, not a portrait thumbnail */
+.tw-still.tw-tfill { position: relative; aspect-ratio: auto; width: calc(var(--h) * var(--tw, .8)); border-radius: 8px; background: radial-gradient(ellipse 70% 60% at 50% 78%, color-mix(in oklch, var(--ta, var(--ink-3)) 46%, transparent), color-mix(in oklch, var(--ta, var(--ink-3)) 14%, transparent) 72%); }
+.tw-still.tw-tfill img { position: absolute; max-width: none; object-fit: fill; }
+.tw-rule { margin: 0; padding: 0 4px; font: 600 12px/1.3 var(--sans); color: var(--ink-2); }
+@media (max-width: 1279px) { .tw-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } #app .panel .key.tw-tile { min-height: 116px; } }
+@media (max-width: 719px) {
+  #app .panel[data-kind="tower"] { position: fixed; left: 8px; right: 8px; bottom: 8px; top: auto; max-height: min(78vh, calc(100vh - 80px), calc(100vh - var(--hud-rail-b, 36px) - 44px)); overflow-y: auto; overscroll-behavior: contain; }
+  .tw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #app .panel .key.tw-tile { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; min-height: 56px; padding: 6px 8px 6px 26px; text-align: left; }
+  #app .panel .key.tw-tile .tw-still { --h: 58px !important; }
+  .tw-tile-t { justify-items: start; }
+  #app .panel .key.tw-tile kbd { top: 50%; translate: 0 -50%; }
+  .tw-up .tw-still { --h: 44px !important; }
+}
+/* tower tooltips */
+.tw-tip header .tw-still { margin-right: 4px; }
+.tw-tip-move { display: flex; align-items: center; gap: 6px; }
+.tw-tip-move span { color: var(--ink-2); font-weight: 600; }
+.ttab[data-order] .tt-firstbox { display: none; }
+
+/* ============================================================ round 6, first fix pass, lane C (fixes-1.md C1-C7) */
+/* C1: the plate's HP number reads at every HP. It is printed twice: the ink copy is clipped to the fill, the second
+   copy to the empty track, in the ink that track needs (dark on the Mat's light clay, light on the Arena's dark one).
+   The dark track's drain ghost is a deep amber, so the light copy reads over it while it drains. */
+.pl-hp { --hp-e-ink: oklch(14% 0.01 75); }
+:root[data-theme="dark"] .pl-hp { --hp-e-ink: oklch(96% 0.006 80); }
+:root[data-theme="dark"] .pl-ghost { background: oklch(44% 0.09 50); }
+.pl-hpnum { clip-path: inset(0 calc((1 - var(--hpr, 1)) * 100%) 0 0); }
+.pl-hpnum small { opacity: 1; }
+.pl-hpnum.pl-hpnum-e { color: var(--hp-e-ink); clip-path: inset(0 0 0 calc(var(--hpr, 1) * 100%)); }
+.pl-hp > .pl-hpnum { z-index: 2; }
+/* C4: PP and the damage range never touch, and a name is never cut. PP keeps its count whole (its bar may shrink to
+   nothing); when any key in the bar holds a range or a KO mark, the bar's keys take two rows of numbers, power and
+   accuracy over PP and the damage; from 720 to 1365 the multiplier chip leaves the name's row for the numbers' row. */
+#app .cmove .move-pp { min-width: max-content; }
+#app .cmove .pp-bar { flex: 1 1 0; min-width: 0; }
+#app .cmove .move-ring-s { display: none; }
+@media (min-width: 720px) {
+  #app .moves:has(.cmove[data-range="true"]) .cmove { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head head" "about about" "stats stats" "pp dmg"; }
+}
+@media (min-width: 720px) and (max-width: 1365px) {
+  #app .cmove .move-head .move-ring { display: none; }
+  #app .cmove .move-ring-s { display: inline-flex; margin-left: auto; }
+}
+/* a move's name wraps whole at every width, never an ellipsis ("Every Sentence" beside its chip at 1440) */
+#app .cmove .move-name { white-space: normal; overflow-wrap: normal; display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; line-height: 1.08; text-overflow: clip; }
+/* (C1: the low band a step lighter, so the ink copy on it reads past 4.5:1 with room to spare) */
+:root { --hp-low: oklch(63% 0.2 27); }
+/* C3: the turn tab stays in view with a panel open: it stands on the panel's top edge (hud.js liftTab sets the lift) */
+.hud .ttab { transform: translate(calc(-1 * var(--tt-slide, 0px)), calc(-1 * var(--tt-lift, 0px))); }
+/* C6: from 960 to 1279 the seven tower tiles stand in one row, as at 1440, so the panel leaves the board's top half
+   for the tile's tooltip (it stands over the board, above the panel, never on a tile) */
+@media (min-width: 960px) and (max-width: 1279px) {
+  .tw-grid { grid-template-columns: repeat(var(--n, 7), minmax(0, 1fr)); gap: 5px; }
+  #app .panel .key.tw-tile { min-height: 0; padding: 8px 4px 7px; }
+  #app .panel .key.tw-tile .tw-still { --h: 48px !important; }
+}
+/* the tower tooltip's lines sit close, so it fits over the board above the panel */
+.tw-tip { gap: 5px; }
+.tw-tip .tp-row { line-height: 1.15; }
+/* C7: on the Mat the aim's chip stands just above the rival card's top edge, where the card's HP tab would be, so the
+   card's printed name and HP stay readable */
+.aim[data-mode="mat"] .aim-chip { top: auto; bottom: calc(100% + 4px); padding: 3px 8px 3px 6px; font-size: 13px; }
+.aim[data-mode="mat"] .aim-chip em { font-size: 11px; }
+/* (fix1 C4, after the critic) from 720 to 1365 the numbers row's chip drops its chevron and steps down, as a phone's
+   does, so power, accuracy and the chip fit the key (a 176 px key at 1280); where they still do not, the chip wraps to
+   its own line at the row's right end, never past the key's edge. Its icon, where one shows, takes the chip's ink. */
+#app .cmove .move-stats .move-ring .bi { color: currentColor; }
+@media (min-width: 720px) and (max-width: 1365px) {
+  #app .cmove .move-stats { gap: 4px 8px; flex-wrap: wrap; white-space: nowrap; }
+  #app .cmove[data-ring]:not([data-ring="support"]) .move-ring-s .bi { display: none; }
+  #app .cmove .move-ring-s { min-width: 0; padding: 3px 5px; font-size: 11.5px; }
+}
+/* (C3, after the critic) a tab lifted onto an open sheet's top edge is a tab of that sheet: solid, on the sheet's clay,
+   so it reads over the board's art (a phone's tab is otherwise a flat chip inside the console's first line) */
+.hud .ttab[data-lifted="true"] { background: var(--room-clay); box-shadow: 0 -2px 6px oklch(0% 0 0 / .1), var(--room-raise-s, 0 2px 6px oklch(0% 0 0 / .14)); }
+.ttab .tt-first[hidden] { display: none !important; }
+
+/* fixes-2 R4: a move's priority on its key, at every width (the sign and the number), so a touch screen's tab, which
+   weighs nothing before the tap, never contradicts it */
+#app .cmove .ms-prio { display: inline-flex; align-items: center; padding: 2px 5px; border-radius: 5px; font: 800 11px/1 var(--sans); font-variant-numeric: tabular-nums; background: var(--up-soft); color: var(--up-ink); white-space: nowrap; }
+#app .cmove .ms-prio[data-tone="down"] { background: var(--down-soft); color: var(--down-ink); }
+#app .cmove .ms-prio[hidden] { display: none; }
+/* fixes-2 R9: a refused upgrade or branch row reads as refused: its reason is a pill in the refusal tone, its gains and
+   its headline step back (the tiles keep their own reason line) */
+#app .panel .key.tw-do[aria-disabled="true"] em { justify-self: start; padding: 3px 7px; border-radius: 6px; background: var(--down-soft); color: var(--down-ink); font-weight: 800; }
+#app .panel .key.tw-do[aria-disabled="true"] .tw-do-t > b { color: var(--ink-2); }
+#app .panel .key.tw-do[aria-disabled="true"] :is(.tw-gains, .tw-move, .hx) { filter: grayscale(1); opacity: .55; }
+#app .panel .key.tw-do[aria-disabled="true"] .tw-still { filter: grayscale(.7); opacity: .6; }
+/* fixes-2 R10: a lifted tab that a plate would cover may take its short form ("T7, Rival first") to stand clear */
+.tt-mini { display: none; }
+.ttab[data-compact="true"] .tt-word, .ttab[data-compact="true"] .tt-phase, .ttab[data-compact="true"] .tt-long, .ttab[data-compact="true"] .tt-short, .ttab[data-compact="true"] .tt-first i { display: none; }
+.ttab[data-compact="true"] .tt-t, .ttab[data-compact="true"] .tt-mini { display: inline; }
+/* fixes-3 R4: from 1366 the multiplier chip on the name's row keeps one width whatever it reads (x1, x0.67, x2.25), so
+   a new rival changing a ring never rewraps a name and moves the words under it (the Mat's knockout path measured the
+   move's words 14 px up when Wave Schedule's chip changed) */
+@media (min-width: 1366px) { #app .cmove:not([data-ring="support"]) .move-head .move-ring { box-sizing: border-box; min-width: 0; width: 5.4em; flex: none; white-space: nowrap; } }
+/* (after the critic) a name that fits its row alone but not beside that room takes its chip on the numbers' row
+   (hud.js ringRow): "Tesla Zapper" and "Boss Wave" on one line, no empty room beside them; the chip there keeps one
+   width at the row's right end, so it moves nothing either */
+@media (min-width: 1366px) {
+  #app .cmove[data-ringrow="stats"] .move-head .move-ring { display: none; }
+  #app .cmove[data-ringrow="stats"] .move-ring-s { display: inline-flex; margin-left: auto; box-sizing: border-box; width: 4.8em; min-width: 0; padding: 3px 5px; font-size: 11.5px; white-space: nowrap; }
+  #app .cmove[data-ringrow="stats"][data-ring]:not([data-ring="support"]) .move-ring-s .bi { display: none; }
+}
+/* fixes-3 R4: the plate's HP count keeps three figures' room, right-aligned, so "/ 328" never slides as the count runs
+   down from three figures to two (the knockout path's last shifts) */
+.pl-hpnum b { display: inline-block; min-width: 3ch; text-align: end; }

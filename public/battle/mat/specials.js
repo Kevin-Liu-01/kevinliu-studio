@@ -58,7 +58,14 @@ defineSpecial({
     const mid = { x: (land.x + home.x) / 2, y: (land.y + home.y) / 2 };
     const apex = (a, b, k) => ({ x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - k });
     const A = apex(land, mid, from.h * 0.35), B = apex(mid, home, from.h * 0.28);
-    return anim(img, [
+    // the flight ends on the battle's paced clock too (shared/pace.js patches setTimeout), so a recorder's frozen clock
+    // that steps the animation past its end, or a held board, never leaves the blob parked on the felt (fixes-1 I4)
+    let done = null;
+    const end = new Promise((r) => { done = r; });
+    let a = null, t = 0;
+    const backstop = (ms) => { t = setTimeout(() => { if (a?.playState === 'paused' && !window.battlePace?.manual) { backstop(200); return; } img.remove(); done(); }, ms); };
+    backstop(860);
+    a = anim(img, [
       { transform: at(land.x, land.y - h * 0.4, 0.4, 0.4), opacity: 0 },
       { transform: at(land.x, land.y, 1.32, 0.66), opacity: 1, offset: 0.12 },
       { transform: at(land.x, land.y, 0.9, 1.12), opacity: 1, offset: 0.2 },
@@ -67,7 +74,9 @@ defineSpecial({
       { transform: at(B.x, B.y, 0.95, 1.06), opacity: 1, offset: 0.74 },
       { transform: at(home.x, home.y, 1.1, 0.86), opacity: 1, offset: 0.9 },
       { transform: at(home.x, home.y, 0.3, 0.3), opacity: 0 },
-    ], { duration: 820, easing: 'linear' }).finished.catch(() => {}).then(() => img.remove());
+    ], { duration: 820, easing: 'linear' });
+    a.finished.catch(() => {}).then(() => { clearTimeout(t); img.remove(); done(); });
+    return end;
   },
 });
 

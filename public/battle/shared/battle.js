@@ -8,6 +8,10 @@ import { install, Stage, Director, boardShort } from './runtime.js';
 import { createStore, createPlan } from './plan.js';
 import { leaderData, leadersFor, faceOf, POSE } from './leaders.js';
 import { createHud, tone as hudTone } from './hud.js';
+import { createRules } from './rules.js';
+import { createBeats } from './beats.js';
+import { createTowerUi } from './tower.js';
+import { ico } from './icons.js';
 import { t as txt, list as listOf, override, word, sceneWords } from './strings.js';
 
 /** Each layout's code and sheet, loaded once: the mode on screen at boot, the other once the battle is under way. */
@@ -24,7 +28,11 @@ function layoutOf(name) {
 const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };
 const K = window.bcKit;
 const sd = window.showdown;
-const { runtime, engine } = sd;
+const { runtime } = sd;
+const R = createRules(sd.engine, { runtime });
+const engine = R.engine;
+/** A battle's address without the leading # (the engine's toHash has one), with forms=1 when forms are on (decision 8). */
+const hashOf = (m) => R.toHash({ team: m.team, rival: m.rival, seed: m.seed, forms: Boolean(m.forms) }).replace(/^#/, '');
 const $ = (s) => document.querySelector(s);
 const el = (tag, cls, parent, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; parent?.append(e); return e; };
 const app = $('#app');
@@ -51,14 +59,126 @@ const groundCards = new Set();
 })();
 
 // ============================================================ the runtime: effects and scenes, the Stage, the matte HUD
-install(K, engine, q.get('scenes') === 'three' ? K.SCENES.filter((d) => /^(claude-of-tanks|jarhead|katagami)\//.test(d.id)) : K.SCENES);
+install(K, { ...engine, FIGHTERS: [...engine.FIGHTERS, ...R.moveDefs()] }, q.get('scenes') === 'three' ? K.SCENES.filter((d) => /^(claude-of-tanks|jarhead|katagami)\//.test(d.id)) : K.SCENES);
 const media = runtime.createMedia(window.BROADCAST_MEDIA, window.MAT_BATTLE_BASE);
 const shaderOn = q.get('gpu') !== '0' && q.get('shader') !== '0';
 const stage = new Stage($('#stage'), { media, input: false, shaderGrounds: shaderOn, fit: (ref) => (narrow() || ref.kind === 'image' ? 'contain' : 'cover') });
 K.ensureSprite();
+// a card with forms is pictured in its scenes as the form it stands in (fixes-1 I1): the still of that form at its
+// level, your cannon and mortar from behind (their player aim), the struck form as the target, the new form in its
+// own transform scene. Undefined for a card without forms (its cut-out), null when no form can be read.
+const AIMED_REAR = new Set(['cannon', 'mortar']);
+stage.formRef = (scene, role, st = view) => {
+  const card = role === 'subject' ? scene.card : scene.kind === 'ko' ? scene.card : scene.target;
+  if (!card || !R.hasForms?.(card)) return undefined;
+  let f = null, side = '';
+  if (scene.kind === 'transform' && role === 'subject') {
+    const e = scene.post?.find((x) => x.kind === 'transform');
+    if (e?.to) { f = { id: card, form: e.to.form, level: e.to.level }; side = e.side ?? scene.side; }
+  }
+  if (!f && st) {
+    const want = role === 'subject' ? [scene.side] : scene.kind === 'ko' ? ['player', 'rival'] : [scene.side === 'player' ? 'rival' : 'player'];
+    for (const x of want) {
+      const sd = st.sides[x], a = sd?.team[sd.active];
+      const hit = a?.id === card ? a : sd?.team.find((t) => t.id === card && (scene.kind !== 'ko' || t.hp <= 0));
+      if (hit) { f = hit; side = x; break; }
+    }
+  }
+  // (forms off: the card stands as itself, its own cut-out)
+  if (f && !f.form) return undefined;
+  return formStill(card, f, side);
+};
+function formStill(card, f, side) {
+  const fo = f && R.formOf({ ...f, id: card });
+  if (!fo) return null;
+  const file = `${fo.key}${side === 'player' && AIMED_REAR.has(fo.form) ? '-rear' : ''}@2x.webp`;
+  return { kind: 'image', form: true, key: fo.key, file, src: new URL(`../media/figures/${card}/forms/${file}`, import.meta.url).href };
+}
+/** As each batch is planned, before any of it plays: the forms it builds or upgrades into, and every form standing on
+ *  either side, start cropping, so a new form's first scene finds its still ready (critic of fixes-1 I1). */
+// a card print a scene deals (the KO card, a reduced still's struck card) of a card with forms shows the form that
+// stands, or fell, in its art pane: that form's front still from Princeton TD's worker (stage.cropOnce), on its accent's
+// wash, as the Mat's slots and its own dealt prints do (fixes-3 I5). The Mat's dealtArt dresses first where its slot
+// holds the form; this dresses only a print it left as the card's own.
+function standingForm(id) {
+  const st = view ?? match?.state;
+  for (const x of ['player', 'rival']) { const t = st?.sides?.[x]?.team?.find((m) => m.id === id); if (t?.form) return t; }
+  return null;
+}
+// the print sits in the pane's place under the glass (z 1, as the Mat's .form-art), so the card's own subject, which
+// breaks out of the frame above the pane (.pop.art z 5, its .cast and its glow), is hidden while a print stands
+// (critic of fix pass 3: the overlay sat under the Lab illustration and nothing on screen changed)
+let printCss = null;
+function printStyle() {
+  if (printCss) return;
+  printCss = document.createElement('style');
+  printCss.textContent = '.bc-card[data-art="print"] .face:has(> .form-print) :is(.cast, .pop.art, img.glw) { visibility: hidden; }';
+  document.head.append(printCss);
+}
+function dressPrint(card) {
+  const id = card.dataset.card, face = card.querySelector('.face');
+  if (!id || !face || card.closest('.slot') || card.dataset.art === 'form' || face.querySelector(':scope > .form-art') || !R.hasForms?.(id)) return;
+  const f = standingForm(id), ref = f && formStill(id, f, 'rival');
+  if (!ref) return;
+  if (face.querySelector(':scope > .form-print')?.dataset.key === ref.key) return;
+  card.dataset.art = 'print';
+  printStyle();
+  stage.cropOnce(ref).then((r) => {
+    if (!r || !card.isConnected || face.querySelector(':scope > .form-art')) return;
+    const pn = face.querySelector('.pane'), W = face.offsetWidth, H = face.offsetHeight;
+    if (!pn || !W || !H) return;
+    face.querySelector(':scope > .form-print')?.remove();
+    const accent = R.formOf?.({ ...f, id })?.accent ?? '#8ea2ff';
+    const pc = (v, L) => `${((v / L) * 100).toFixed(2)}%`;
+    const a = document.createElement('div');
+    a.className = 'form-print';
+    a.dataset.key = r.key; a.dataset.file = r.file;
+    a.setAttribute('aria-hidden', 'true');
+    a.style.cssText = `position:absolute;left:${pc(pn.offsetLeft, W)};top:${pc(pn.offsetTop, H)};width:${pc(pn.offsetWidth, W)};height:${pc(pn.offsetHeight, H)};z-index:1;overflow:hidden;pointer-events:none;border-radius:3px;background:radial-gradient(70% 60% at 50% 78%, color-mix(in oklch, ${accent} 55%, transparent), transparent 72%), linear-gradient(#141826, #0b0d14)`;
+    const im = new Image();
+    im.alt = ''; im.decoding = 'async'; im.src = r.src;
+    im.style.cssText = 'position:absolute;left:50%;bottom:4%;height:90%;width:auto;max-width:94%;object-fit:contain;transform:translateX(-50%);filter:drop-shadow(0 4px 6px rgb(0 0 0 / .5))';
+    a.append(im);
+    pn.after(a);
+  }, () => {});
+}
+if (typeof MutationObserver !== 'undefined' && $('#stage')) {
+  new MutationObserver((recs) => {
+    const cards = [];
+    for (const r of recs) for (const n of r.addedNodes) {
+      if (n.nodeType !== 1) continue;
+      if (n.matches?.('.bc-card[data-card]')) cards.push(n);
+      for (const c of n.querySelectorAll?.('.bc-card[data-card]') ?? []) cards.push(c);
+    }
+    // after every observer of this change has run, so a print the Mat's slot dressed is left as it is
+    if (cards.length) queueMicrotask(() => { for (const c of cards) { try { dressPrint(c); } catch (err) { if (DEBUG) M.errors.push(String(err)); } } });
+  }).observe($('#stage'), { childList: true, subtree: true });
+}
+/** Whether no card with forms stands on either side any more (every one knocked out, or none dealt). */
+let formsGone = false;
+function formsDone() {
+  const st = match?.state;
+  if (!st || formsGone) return false;
+  const any = ['player', 'rival'].some((x) => (st.sides[x]?.team ?? []).some((t) => R.hasForms?.(t.id)));
+  const left = ['player', 'rival'].some((x) => (st.sides[x]?.team ?? []).some((t) => t.hp > 0 && R.hasForms?.(t.id)));
+  return any && !left && (formsGone = true);
+}
+function warmForms(shot) {
+  const refs = [];
+  for (const e of shot.post ?? []) if (e.kind === 'transform' && e.to?.form && R.hasForms?.(e.card)) refs.push(formStill(e.card, { id: e.card, form: e.to.form, level: e.to.level }, e.side));
+  const st = shot.post?.find((e) => e.state)?.state;
+  for (const x of st ? ['player', 'rival'] : []) for (const t of st.sides[x]?.team ?? []) if (t.form && R.hasForms?.(t.id)) {
+    refs.push(formStill(t.id, t, x));
+    // (its front still too, for a print that pictures it: the knockout card, a reduced still's struck card; fixes-3 I5)
+    if (x === 'player') refs.push(formStill(t.id, t, 'rival'));
+  }
+  stage.warmForms(refs);
+  // whether any card on either side has forms (a battle with none lets Princeton TD's worker go)
+  return Boolean(st && ['player', 'rival'].some((x) => (st.sides[x]?.team ?? []).some((t) => R.hasForms?.(t.id))));
+}
 // the information layer (round 5): plates, the live log, tooltips, the multiplier call-out, the console's rows
 const pace = window.battlePace;
-const hud = createHud({ app, engine, K, title, reduced, narrow: () => narrow(), realTimeout: pace?.realTimeout ?? setTimeout });
+const hud = createHud({ app, engine, K, title, reduced, narrow: () => narrow(), realTimeout: pace?.realTimeout ?? setTimeout, R });
 // a phone's move list scrolls inside its console: a fade at its foot says more moves wait below, until the last is in view
 function moreBelow() { const m = $('#moves'); if (m) m.dataset.more = String(m.scrollTop + m.clientHeight < m.scrollHeight - 2); }
 $('#moves').addEventListener('scroll', moreBelow, { passive: true });
@@ -95,6 +215,7 @@ const mhud = (() => {
   }
   return { box, tags, turn: el('b', 'bc-mhud-turn', box) };
 })();
+const beats = createBeats(app, () => layout, { mhud, cardOf: (uid) => match?.cardOf(uid) ?? uid, title, formOf: (f) => R.formOf(f), reduced, auto: () => auto });
 function drawMhud(v) {
   if (!v) return;
   mhud.turn.textContent = String(v.turn);
@@ -192,7 +313,11 @@ let lastMove = 0, lastWasMove = false;
 let match = null, view = null, busy = false, auto = false, gen = 0, panel = null, kitItem = null, lastShot = null;
 let leadersNow = [], mapNow, said = new Set();
 const store = createStore();
-const plan = createPlan(store, { specials: q.get('specials') !== 'off', repeats: q.get('repeats') !== 'off' });
+const plan = createPlan(store, {
+  specials: q.get('specials') !== 'off', repeats: q.get('repeats') !== 'off',
+  // a form still known not to load: that shot plays on the board alone, never over another form's picture (I1)
+  formFailed: (shot) => shot.scene?.kind === 'attack' && stage.cropFailed(stage.formRef(shot.scene, 'subject', shot.post.find((e) => e.state)?.state ?? view)),
+});
 const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
 let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') : /\/arena(\/|$)/.test(location.pathname) ? 'arena' : 'mat';
 let layout = null, switching = null;
@@ -245,8 +370,9 @@ function sceneSound(s, shot) {
   };
   // the stage takes the scene a frame or so after its start hook (`started`); once it has, another scene ends this one
   const mine = () => { const k = stage.current; return Boolean(k) && (k === c || (k.duration === c.duration && k.impact === c.impact && k.variant === c.variant)); };
-  let started = false, first = true, contactSeen = false, from = null;
-  const hist = [];
+  let started = false, first = true, contactSeen = false, from = null, lastR = 0;
+  const hist = [], gaps = [];
+  const coarseNow = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
   const until = (pace?.realNow ?? performance.now.bind(performance))() + 3000;
   const frame = () => {
     if (!live) return;
@@ -266,7 +392,16 @@ function sceneSound(s, shot) {
     const h0 = hist[0], seen = hist.length > 1 && nowR - h0.r > 30 ? (t - h0.t) / (nowR - h0.r) : null;
     // the next frame is expected about one frame gap away: a cue is sent on the last frame before its file must start
     const gap = hist.length > 1 ? nowR - hist[hist.length - 2].r : 16;
-    const ahead = Math.min(LOOK, Math.max(20, gap * 1.25));
+    // the window widens by the page's measured overrun (the mean of the last 10 frames past 16.7 ms, at most 250), so a
+    // stalled page sends a signature that much earlier (fixes-3 I9)
+    const look = LOOK + Math.min(250, gaps.length ? gaps.reduce((a, b) => a + Math.max(0, b - 16.7), 0) / gaps.length : 0);
+    const ahead = Math.min(look, Math.max(20, gap * 1.25));
+    // a loaded page (a coarse pointer, or the last 10 frames over 33 ms on average) sends a peak-aligned cue one LOOK
+    // window earlier, up to 2 x LOOK ahead: its start is scheduled on the audio clock, so early is exact and late is
+    // lost (fixes-2 I7: late card signatures on a loaded phone)
+    if (lastR) { gaps.push(nowR - lastR); if (gaps.length > 10) gaps.shift(); }
+    lastR = nowR;
+    const loaded = coarseNow || (gaps.length >= 10 && gaps.reduce((a, b) => a + b, 0) / gaps.length > 33);
     // the pace carried to the next scene: the stage's progress against the page clock over this whole scene so far
     const vNow = pace?.now?.() ?? nowR;
     from ??= { t, v: vNow };
@@ -279,7 +414,7 @@ function sceneSound(s, shot) {
     for (let k = 0; k < pending.length; k++) {
       const q = pending[k], lead = leadOf(q), start = q.atMs - startLead(q) * rate;
       const contact = q.atMs >= I && (q.role === 'impact' || q.atMs === I);
-      if (start > t + ahead * rate) continue;
+      if (start > t + (loaded && lead > 0 ? Math.min(2 * look, ahead + look) : ahead) * rate) continue;
       // a contact sound with a take that peaks within 40 ms of its start (the generic hits) waits for the frame that
       // shows the contact: late by its peak at most, never early by a stalled frame
       if (contact && !q.theme && Math.min(...peaksOf(q)) <= 40 && t < I - 1) continue;
@@ -338,7 +473,8 @@ if (DEBUG) {
   addEventListener('unhandledrejection', (e) => M.errors.push(String(e.reason)));
 }
 /** The HP each side's board shows now, read from the board's own figures (each layout marks them). */
-M.hpShown = () => Object.fromEntries(['player', 'rival'].map((s) => [s, $(`#board [data-hp-shown="${s}"]`)?.textContent ?? '']));
+// (the board's own numeral where it has one, the Mat's card; else the HUD plate's, the Arena's since its flags went in round 6)
+M.hpShown = () => Object.fromEntries(['player', 'rival'].map((s) => [s, ($(`#board [data-hp-shown="${s}"]`) ?? $(`.plate[data-side="${s}"] .pl-hpnum b`))?.textContent ?? '']));
 
 // ============================================================ the stage layout, behind the seam
 function ctxFor(dealing) {
@@ -357,6 +493,8 @@ function ctxFor(dealing) {
 /** Load what the next layout draws, then hand back the swap: unmount, mount and set(view), one frame. */
 async function nextLayout(name, dealing) {
   const next = new (await layoutOf(name))();
+  // the actor tag (shared/beats.js) says a cut's move: the board stamps no second copy of its name (decision 17)
+  next.moveStamp = false;
   const c = ctxFor(dealing);
   await next.prepare(c);
   const swapIn = () => {
@@ -381,6 +519,7 @@ const yieldTask = () => new Promise((r) => { const ch = new MessageChannel(); ch
  *  the console and the Stage go on untouched: a scene playing keeps playing over the new board. */
 async function setMode(name) {
   if (name === mode || switching || !match) return;
+  try { beats.clear(); } catch { /* none */ }
   const t0 = performance.now();
   switching = (async () => {
     const swap = await nextLayout(name, false);
@@ -426,7 +565,7 @@ function warmAhead() {
   for (const side of ['player', 'rival']) {
     const f = active(side), foe = active(side === 'player' ? 'rival' : 'player');
     if (!f || f.hp <= 0) continue;
-    engine.fighterDef(f.id).moves.forEach((mv, index) => list.push({ kind: 'attack', side, card: f.id, target: foe?.id, move: { index }, variant: reduced() ? 'reduced' : 'short' }));
+    engine.fighterDef(f.id, f).moves.forEach((mv, index) => list.push({ kind: 'attack', side, card: f.id, target: foe?.id, move: { index }, variant: reduced() ? 'reduced' : 'short' }));
   }
   stage.ahead(list);
 }
@@ -434,7 +573,7 @@ function warmAhead() {
 // ============================================================ the Director, with the seam
 const STILL_BEATS = new Set(['ko', 'switch', 'item']), STILL_BEAT = 360;
 const director = new Director(stage, {
-  cardOf: (uid) => match.cardOf(uid), titleOf: title, reduced, session: store.session, seen: () => store.seen, plan,
+  cardOf: (uid) => match.cardOf(uid), titleOf: title, reduced, scenes: (ev, o) => R.scenesOf(ev, o), session: store.session, seen: () => store.seen, plan: (shot, a) => { try { warmForms(shot); } catch (err) { if (DEBUG) M.errors.push(String(err)); } plan(shot, a); },
   shaderGrounds: shaderOn, hold: DEBUG ? (shot) => window.__hold?.(shot) : null, // a test hook: a capture can stop between pre-roll and scene
   hooks: {
     event: onEvent,
@@ -457,6 +596,8 @@ const director = new Director(stage, {
       staging = null;
       const p = cue(shot.verbs.land, shot, 'post');
       if (reduced() && shot.variant === 'off' && (shot.cut || STILL_BEATS.has(shot.scene.kind))) return Promise.all([p, new Promise((r) => setTimeout(r, STILL_BEAT))]);
+      // an item the board carries alone keeps its post window, so its number is seen in its own shot (plan.js)
+      if (shot.postMs) return Promise.all([p, new Promise((r) => setTimeout(r, shot.postMs))]);
       return shot.board && auto && !shot.cut ? undefined : p;
     },
     flush: (shot) => layout.flush(shot),
@@ -469,10 +610,13 @@ const director = new Director(stage, {
 function onEvent(e) {
   if (e.state) view = e.state;
   M.lands.push(e.id);
+  beats.onEvent(e);
   layout.land(e, view);
   drawMhud(view);
   hud.draw(view);
   hud.event(e, view);
+  // a transform's impact re-keys the console in the frame its tower changes on the board (render reads `view` while busy)
+  if (e.kind === 'transform' && e.side === 'player') render();
   const who = (uid) => title(match?.cardOf(uid) ?? uid);
   if (e.kind === 'hit') live(txt('live.hit', { move: e.move.name, damage: e.damage, target: who(e.target) }));
   else if (e.kind === 'miss') live(txt('live.miss', { move: e.move.name }));
@@ -487,14 +631,19 @@ function onEvent(e) {
   if (e.kind === 'turn' && !auto) Sound?.play('bt.turn');
 }
 function onShot(shot, phase) {
+  try { beats.onShot(shot, phase); } catch (err) { if (DEBUG) M.errors.push(String(err)); }
   const s = shot.scene;
   const v = shot.verbs;
   switch (phase) {
     case 'plan':
+      // a shot handed the scene (fixes-2 I4) that plays on the board alone after all (formCut) gives the HUD back
+      if (handoff === shot) handoff = null;
+      // a board-only shot always plays with the HUD up, whatever the shot before it handed on
+      if (shot.variant === 'off') { delete app.dataset.scene; delete app.dataset.band; }
       if (s.receipt) s.receipt = hud.receiptWords(s.receipt);
       // the kit's own scene words (Miss, KO, Guard, a condition, the result), in the page's strings
       sceneWords(s);
-      shot.rec = { kind: s.kind, card: s.card, move: s.move?.id, variant: shot.variant, board: shot.board, framing: shot.framing ?? '', cut: Boolean(shot.cut), finish: Boolean(shot.finish), stops: shot.stops, t: performance.now(), duration: shot.compiled.duration, impact: shot.compiled.impact };
+      shot.rec = { kind: s.kind, side: s.side, card: s.card, move: s.move?.id, variant: shot.variant, board: shot.board, framing: shot.framing ?? '', cut: Boolean(shot.cut), formCut: Boolean(shot.formCut), finish: Boolean(shot.finish), stops: shot.stops, t: performance.now(), duration: shot.compiled.duration, impact: shot.compiled.impact };
       M.shots.push(shot.rec);
       // every full attack brings its leader on; a scene in a band leaves the leaders' lines on the board
       staging = shot.variant === 'full' || shot.variant === 'short' ? { side: s.side, started: false, line: '', box: Boolean(shot.box), rect: shot.box, face: s.kind === 'attack' && shot.variant === 'full' } : null;
@@ -506,7 +655,7 @@ function onShot(shot, phase) {
       if (staging?.face && cutins[staging.side]?.style.opacity !== '1') cutinSet(staging.side, staging.line, true);
       return;
     case 'start':
-      if (shot.rec) { shot.rec.preMs = shot.preMs; shot.rec.prepMs = shot.prepMs; shot.rec.start = performance.now(); }
+      if (shot.rec) { shot.rec.preMs = shot.preMs; shot.rec.prepMs = shot.prepMs; shot.rec.start = performance.now(); if (shot.variant !== 'off') shot.rec.subjectFile = stage.subjectFile ?? ''; }
       if (shot.variant !== 'off') app.dataset.scene = s.kind;
       if (shot.box) app.dataset.band = ''; else delete app.dataset.band;
       delete app.dataset.landed;
@@ -547,7 +696,23 @@ function onShot(shot, phase) {
     case 'end':
       clearTimeout(rushT); pace?.unrush();
       if (shot.rec) { shot.rec.end = performance.now(); shot.rec.playMs = shot.playMs; shot.rec.afterMs = shot.afterMs; }
-      delete app.dataset.scene; delete app.dataset.landed; delete app.dataset.band;
+      delete app.dataset.landed;
+      // the batch's next shot, when it is a full or letterboxed scene, takes the scene over at once (and its band, where
+      // it plays in one), so the plates, log, turn tab, rail and console never fade in for its pre-roll and out again
+      // between two full shots (fixes-2 I4); otherwise the HUD comes back
+      handoff = null;
+      {
+        // the very next shot of the batch, not the next scened one: a board-only (off) or scene-less shot between two
+        // scenes plays with the HUD up (critic, fix pass 2)
+        const nx = director.adjacent;
+        if (nx && nx !== shot && nx.scene && (nx.scene.variant === 'full' || nx.scene.variant === 'short')) {
+          handoff = nx;
+          app.dataset.scene = nx.scene.kind;
+          let box = null;
+          try { box = layout.stageBox?.(nx) ?? null; } catch { /* none */ }
+          if (box) app.dataset.band = ''; else delete app.dataset.band;
+        } else { delete app.dataset.scene; delete app.dataset.band; }
+      }
       endLook();
       staging = null;
       for (const side of Object.keys(cutins)) cutout(side, true);
@@ -557,6 +722,8 @@ function onShot(shot, phase) {
 }
 // a card's own call-out look (looks.ts), as the Broadcast's dress() sets it for the scene
 let lookDone = null, rushT = 0;
+/** The shot a finished shot handed `data-scene` to (fixes-2 I4), until that shot plans. */
+let handoff = null;
 function endLook() { lookDone?.(); lookDone = null; }
 function dress(s, compiled) {
   endLook();
@@ -616,16 +783,20 @@ function render() {
   // a layout error never stops the console's own state from being written (render goes on past it)
   if (turn !== turnShown) { turnShown = turn; try { layout?.layout(); hud.place(); } catch (err) { if (DEBUG) M.errors.push(String(err)); reportError?.(err); } }
   if (!turn && st.phase === 'command') groundAtRest();
-  const me = engine.activeOf(st, 'player'), foe = engine.activeOf(st, 'rival');
-  const d = engine.fighterDef(me.id);
+  // while a batch plays, the console shows what the board shows (the director's shown view), as the plates do: a new
+  // tower's keys arrive with its transform's impact, never on the command frame (fixes-1 I3)
+  const shown = busy && view?.sides ? view : st;
+  const me = engine.activeOf(shown, 'player'), foe = engine.activeOf(shown, 'rival');
+  const d = engine.fighterDef(me.id, me);
   const can = !busy && st.phase === 'command';
   app.dataset.busy = busy ? 'true' : 'false';
   hud.turn(st, busy || auto);
   if (!busy && st.phase === 'command') layout?.turnTo?.(st.turn);
   const legal = match.legal();
   const moves = $('#moves');
-  if (moves.dataset.card !== me.uid) {
-    moves.dataset.card = me.uid;
+  const mkey = `${me.uid}:${me.form ?? ''}:${me.level ?? ''}`;
+  if (moves.dataset.card !== mkey) {
+    moves.dataset.card = mkey;
     lastMove = 0;
     moves.textContent = '';
     d.moves.forEach((m, i) => {
@@ -655,6 +826,7 @@ function render() {
     b.setAttribute('aria-label', txt('move.aria', { name: m.name, discipline: word('discipline', m.discipline), stats: listOf(parts), ring: nums.power > 0 && hudTone(rg) !== 'even' ? txt('move.aria.ring', { m: Math.round(rg * 100) / 100, foe: title(foe.id) }) : '', share: share ? txt('move.aria.share', { n: share }) : '', about: hud.cardMoveText(me.id, m) }));
   });
   moreBelow();
+  tower.render(me, foe, can ? 'command' : busy ? 'busy' : st.phase);
   $('#guard').setAttribute('aria-disabled', String(!can));
   $('#switch').setAttribute('aria-disabled', String(!can || !legal.some((a) => a.kind === 'switch')));
   $('#kit').setAttribute('aria-disabled', String(!can || !legal.some((a) => a.kind === 'item')));
@@ -666,7 +838,7 @@ function render() {
   if (!busy && match.mustReplace) { if (auto) queueMicrotask(() => { if (!busy && auto && match.mustReplace) present(match.step()); }); else if (panel !== 'replace') openPanel('replace'); }
   else if (panel === 'replace' && !match.mustReplace) closePanel();
 }
-let sayT = 0, sayRest = '';
+let sayT = 0, sayRest = '', focusAtCommand = null;
 function say(text, ms = 0) {
   const s = $('#say');
   if (s.textContent !== text) s.textContent = text;
@@ -682,17 +854,50 @@ function command(action) {
   hud.aim(null); hud.hideTip();
   if (action.kind === 'move') lastMove = action.index;
   lastWasMove = action.kind === 'move';
+  focusAtCommand = document.activeElement;
   if (match.validate(action).length) { Sound?.play('bt.ui.refuse'); return; }
   Sound?.play('bt.ui.key');
-  closePanel();
   if (!M.firstCommandAt) M.firstCommandAt = performance.now();
-  warmOther();
-  present(match.act(action));
+  // the pressed state paints first: the console's busy dim and the panel closing, written in the key's own task; the
+  // console's render (which lays the board out again for the turn), the engine's turn and the batch plan each take a
+  // task of their own after that frame (fixes-3 I8: on the 4x phone the turn and the plan ran in one 54-177 ms task
+  // from the keydown; after that, the render's relayout alone kept the key's task at 10-94 ms)
+  runTurn(() => match.act(action));
 }
+/** One turn off the input's task (I8; the engineer's fourth sitting LM-1: a bench or Kit click ran the turn in its own
+ *  handler, 280-328 ms to paint on the 4x phone): the busy dim and the panel closing paint first, then the console's
+ *  render, the engine's turn and the batch plan each take a task of their own. Moves, Guard, the Tower, a switch, an
+ *  item and a replacement all come through here. */
+function runTurn(play) {
+  // a second press while a turn is under way (a doubled Enter on a bench, engineer sitting 5 L-1) plays nothing
+  if (busy) return;
+  const my = gen;
+  busy = true;
+  app.dataset.busy = 'true';
+  closePanel(false, true);
+  afterPaint().then(() => {
+    if (my !== gen || !match) return;
+    render();
+    return yieldTask();
+  }).then(() => {
+    if (my !== gen || !match) return;
+    const events = play();
+    return yieldTask().then(() => { if (my === gen) { warmOther(); present(events); } });
+  }).catch((err) => {
+    // a turn that throws frees the console again and says so (it ran in the key handler before I8)
+    M.errors.push(`command: ${String(err?.message ?? err)}`);
+    console.error(err);
+    if (my !== gen) return;
+    busy = false;
+    render();
+  });
+}
+/** The next task after the next frame has painted (the real clock: a frozen recorder still paints). */
+function afterPaint() { return new Promise((r) => (pace?.realRaf ?? requestAnimationFrame)(() => yieldTask().then(r))); }
 /** The address keeps the record, so a reload resumes this battle where it stands, in the mode it is in. */
 function address() {
   const rec = match.record();
-  const parts = [sd.toHash({ team: match.team, rival: match.rival, seed: match.seed })];
+  const parts = [hashOf(match)];
   if (rec.log) parts.push(`log=${rec.log}`, 'resume=1');
   parts.push(`mode=${mode}`, `leaders=${leadersNow.join(',')}`);
   if (mapNow) parts.push(`map=${mapNow}`);
@@ -705,10 +910,15 @@ async function present(events, o = {}) {
   render();
   const t0 = performance.now(), n0 = M.shots.length;
   await director.play(events, { auto, ...o });
+  // a scene handed to a shot that never started (a skip, a new battle) is given back
+  if (handoff) { handoff = null; delete app.dataset.scene; delete app.dataset.band; }
   (M.batchMs ??= []).push({ ms: Math.round(performance.now() - t0), shots: M.shots.slice(n0).map((x) => `${x.kind}:${x.variant}`) });
   if (my !== gen) return;
   busy = false;
   store.keep();
+  // the last forms card has fallen on both sides: Princeton TD's worker and its sprite heap go once nothing is drawn
+  // (fixes-3 I10; after the batch, so its knockout card has drawn its still)
+  if (formsDone()) { try { stage.releaseForms(true); } catch (err) { if (DEBUG) M.errors.push(String(err)); } }
   warmAhead();
   if (!o.replay) history.replaceState(null, '', `#${address()}`);
   if (match.state.phase === 'over') { showResult(); return; }
@@ -716,7 +926,8 @@ async function present(events, o = {}) {
   if (!auto) {
     const a = document.activeElement;
     // the cursor stays on the move used last (also after the number keys), as a handheld's move menu keeps it
-    if (!panel && (a?.closest?.('#moves') || (lastWasMove && (!a || a === document.body || !a.isConnected)))) ($(`#moves [data-i="${lastMove}"]:not([aria-disabled="true"])`) ?? $('#moves button:not([aria-disabled="true"])') ?? a)?.focus({ preventScroll: true });
+    // (and when it still stands where the command left it: Switch or Kit or Tower, Escape, then a number key; I6)
+    if (!panel && (a?.closest?.('#moves') || (lastWasMove && (!a || a === document.body || !a.isConnected || a === focusAtCommand)))) ($(`#moves [data-i="${lastMove}"]:not([aria-disabled="true"])`) ?? $('#moves button:not([aria-disabled="true"])') ?? a)?.focus({ preventScroll: true });
     else if (!a || a === document.body || !a.isConnected || a.getAttribute('aria-disabled') === 'true') {
       if (panel) ($('#panel .panel-list button:not([aria-disabled="true"])') ?? $('#panel button'))?.focus({ preventScroll: true });
       // the cursor comes back to the move used last, as a handheld's move menu keeps it
@@ -727,8 +938,22 @@ async function present(events, o = {}) {
   if (auto) setTimeout(() => { if (my === gen && !busy && auto && match.state.phase !== 'over') present(match.step()); }, 40);
 }
 
+const tower = createTowerUi({ R, hud, openPanel: (k, html) => (k ? openPanel(k, html) : closePanel(true)), closePanel: (refocus) => closePanel(refocus), act: (a) => command(a) });
+tower.mount($('#console .acts'));
 // ---------- panels: the bench (switch, send in) and the Kit; focus goes to the first real choice
 function openPanel(kind, chosen = null) {
+  if (kind === 'tower') {
+    if (busy || match.state.phase !== 'command') return;
+    const p = $('#panel'), was = panel === 'tower' && !p.hidden;
+    if (!was) Sound?.play('bt.ui.open');
+    panel = 'tower'; p.hidden = false; p.dataset.kind = 'tower';
+    const keep = document.activeElement && p.contains(document.activeElement) ? [...p.querySelectorAll('button')].indexOf(document.activeElement) : -1;
+    p.innerHTML = chosen ?? '';
+    render();
+    const btns = [...p.querySelectorAll('button')];
+    queueMicrotask(() => (keep >= 0 ? btns[keep] : was ? null : p.querySelector('.tw-tile:not([aria-disabled="true"]), .tw-do:not([aria-disabled="true"]), button'))?.focus({ preventScroll: true }));
+    return;
+  }
   if (kind !== 'replace' && (busy || match.state.phase !== 'command')) return;
   panel = kind;
   Sound?.play('bt.ui.open');
@@ -738,7 +963,7 @@ function openPanel(kind, chosen = null) {
   p.textContent = '';
   const head = el('div', 'panel-head', p);
   el('b', '', head, kind === 'kit' ? (kitItem ? txt('panel.kitOn', { item: engine.itemById(kitItem).name }) : txt('panel.kit')) : kind === 'replace' ? txt('panel.sendIn') : txt('panel.switch'));
-  if (kind === 'kit') { const used = match.state.stats.player.items; const u = el('span', 'panel-uses', head); u.textContent = txt('panel.kitUses', { n: Math.max(0, 2 - used) }, Math.max(0, 2 - used)); }
+  if (kind === 'kit') { const used = match.state.stats.player.items; const u = el('span', 'panel-uses', head); const kit = match.state.sides.player.kit, left = Object.values(kit).reduce((a, b) => a + Math.max(0, b), 0); u.textContent = txt('kit.aria.you', { n: left, all: Object.keys(kit).length }, left); void used; }
   if (kind !== 'replace') { const c = el('button', 'key', head, txt('panel.close')); c.type = 'button'; c.onclick = () => closePanel(true); }
   const list = el('div', 'panel-list', p);
   const team = match.state.sides.player.team;
@@ -754,7 +979,7 @@ function openPanel(kind, chosen = null) {
     const legal = kind === 'replace' ? match.reserves('player') : match.legal().filter((a) => a.kind === 'switch').map((a) => a.to);
     team.forEach((f, i) => {
       if ((i === match.state.sides.player.active && kind === 'switch') || f.hp <= 0) return;
-      const b = bench(f, i, legal.includes(i), () => { closePanel(); present(kind === 'replace' ? match.replace(i) : match.act({ kind: 'switch', to: i })); });
+      const b = bench(f, i, legal.includes(i), () => runTurn(() => (kind === 'replace' ? match.replace(i) : match.act({ kind: 'switch', to: i }))));
       if (chosen === i) queueMicrotask(() => b.focus({ preventScroll: true }));
     });
   } else {
@@ -776,20 +1001,21 @@ function openPanel(kind, chosen = null) {
       }
     } else {
       const it = kit.find((x) => x.id === kitItem);
-      team.forEach((f, i) => bench(f, i, it.targets.includes(i), () => { const item = kitItem; kitItem = null; closePanel(); present(match.act({ kind: 'item', item, target: i })); }));
+      team.forEach((f, i) => bench(f, i, it.targets.includes(i), () => { const item = kitItem; kitItem = null; runTurn(() => match.act({ kind: 'item', item, target: i })); }));
     }
   }
   render();
   if (chosen === null) queueMicrotask(() => ($('#panel .panel-list button:not([aria-disabled="true"])') ?? $('#panel button'))?.focus({ preventScroll: true }));
 }
-function closePanel(refocus = false) {
+function closePanel(refocus = false, quiet = false) {
   if (!panel) return;
   const was = panel;
   Sound?.play('bt.ui.close');
   panel = null; kitItem = null;
   $('#panel').hidden = true;
-  render();
-  if (refocus) $(`#${was === 'kit' ? 'kit' : 'switch'}`)?.focus({ preventScroll: true });
+  // a command closes the panel without rendering: its own render follows the pressed frame (I8)
+  if (!quiet) render();
+  if (refocus) $(`#${was === 'kit' ? 'kit' : was === 'tower' ? 'tower' : 'switch'}`)?.focus({ preventScroll: true });
 }
 
 // ---------- the result
@@ -797,7 +1023,7 @@ function showResult() {
   M.resultAt = performance.now();
   M.phase = 'result';
   app.dataset.phase = 'result';
-  if (groundG) groundG.paused = true; // kevinliu.studio phone memory: the cards' live prints stop behind the result and the Log (scripts/phone-memory.mjs)
+  if (groundG) groundG.paused = true; // the cards' live prints stop behind the result and the Log (REQUESTS :57)
   const st = match.state;
   const win = st.winner;
   const r = $('#result');
@@ -867,6 +1093,7 @@ addEventListener('keydown', (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if ($('#log').open) return;
   if (stage.playing && (e.key === ' ' || e.key === 'Enter') && !e.target?.closest?.('dialog, .seg, .speed, .tip, #sound')) { e.preventDefault(); e.stopPropagation(); skip(); return; } // kevinliu.studio: a focused speed, mode or sound key is pressed, not skipped (scripts/sync.mjs)
+  if (!busy && match?.state.phase === 'command' && (panel === 'tower' || e.key.toLowerCase() === 't') && tower.keydown(e)) { e.stopPropagation(); return; }
   const k = e.key.toLowerCase();
   if (k === 'escape') { if (panel && panel !== 'replace') { closePanel(true); e.preventDefault(); } return; }
   const refuse = () => { if (!busy && match?.state.phase === 'command') Sound?.play('bt.ui.refuse'); };
@@ -916,23 +1143,73 @@ addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout((
 
 // ============================================================ starting a battle: the deal, then the leads' entrances
 const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };
-// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that
-// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)
+// why an address could not start, kept on screen after the hand that plays instead begins; and a boot that rejects (a
+// layout, map or figure file that will not load) un-hides the page with the reason (REQUESTS :54, the site's plan 008)
 let keptError = '';
-function bootFailed(err) {
-  if (document.documentElement.dataset.boot === undefined) return;
-  delete document.documentElement.dataset.boot;
-  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;
+/** Why an address could not play, as the log's first entry (fixes-2 I5): the log's own markup, never loose text over the
+ *  plates or the top bar. `#error` is for a boot that fails outright. */
+function logNote(text) {
+  const list = document.querySelector('.hud .blog-list');
+  if (!list || !text) { if (text) $('#error').textContent = text; return; }
+  const li = document.createElement('li');
+  // a note, not a combat event: the log's neutral ink (the miss class drew it in the down colour; critic of fixes-2 I5)
+  li.className = 'lg lg-note';
+  li.dataset.side = 'none';
+  li.innerHTML = `<span class="lg-i">${ico('info')}</span><span class="lg-t"></span>`;
+  li.lastChild.textContent = text;
+  list.prepend(li);
 }
-async function start(p, replay = false, resume = false) {
+function bootFailed(err) {
+  // a failure before the battle goes live is never silent (fixes-3 I2: two boots hung after "Failed to fetch" once the
+  // boot curtain had lifted); once it is live, the page's own error paths report it
+  if (document.documentElement.dataset.boot === undefined && (M.phase === 'live' || M.phase === 'result')) return;
+  delete document.documentElement.dataset.boot;
+  M.errors.push(`boot: ${String(err?.message ?? err)} (at ${M.stage ?? M.phase})`);
+  $('#error').textContent = txt('boot.failed', { reason: String(err?.message ?? err) });
+}
+/** The deal's watchdog (fixes-3 I2): a deal whose stage has not moved for 60 s (a slow but moving boot is left alone)
+ *  logs the stage it stands at and deals once more; a second stall of the same deal says so on screen. Each new battle
+ *  gets its own retry (the critic of fix pass 3: a module-wide flag failed a later battle on its first stall). */
+const STALL_MS = 60000;
+/** The stall line `#error` shows, so a battle that goes live after all can take it down (a thrown boot's stays). */
+let stallError = '';
+function watchDeal(my, again, retried = false) {
+  // only visible time counts (the engineer's fourth sitting M-1): a hidden tab draws no frames, so the entrance stands
+  // still there however well the boot went; the count starts again when the tab shows
+  let at = M.stage, since = performance.now();
+  const shown = () => { if (!document.hidden) since = performance.now(); };
+  document.addEventListener('visibilitychange', shown);
+  const stop = () => { clearInterval(tick); document.removeEventListener('visibilitychange', shown); };
+  const tick = setInterval(() => {
+    if (my !== gen || M.phase === 'live' || M.phase === 'result') { stop(); return; }
+    if (document.hidden) return;
+    if (M.stage !== at) { at = M.stage; since = performance.now(); return; }
+    if (performance.now() - since < STALL_MS) return;
+    stop();
+    M.errors.push(`boot stalled: the deal stood at ${M.stage ?? M.phase} for 60 s${retried ? '' : '; dealing again'}`);
+    if (retried) { bootFailed(new Error(`stalled at ${M.stage ?? M.phase}`)); stallError = $('#error').textContent; return; }
+    again(true).catch((err) => bootFailed(err)); // not the site's landed text (M5 counts its three)
+  }, 1000);
+}
+/** Both figures stand and both hands are dealt (the layout's promise, fixes-3 H7), on the paced clock, at most 10 s;
+ *  past the cap the battle goes live and the stage is logged (fixes-3 I2). */
+async function untilStanding() {
+  if (typeof layout?.dealt !== 'function') return true;
+  let cap;
+  const stood = await Promise.race([Promise.resolve().then(() => layout.dealt(9500)).then((v) => v !== false, () => false), new Promise((r) => { cap = setTimeout(() => r(false), 10000); })]);
+  clearTimeout(cap);
+  if (!stood) { (M.stalls ??= []).push({ at: M.stage ?? M.phase, cap: 10000, layout: layout?.dealStall ?? null }); console.warn('battle: went live before both figures stood (10 s cap)'); }
+  return stood;
+}
+async function start(p, replay = false, resume = false, retried = false) {
   let next;
-  try { next = sd.start({ team: p.team, rival: p.rival, seed: p.seed, log: replay || resume ? p.log : undefined }); }
+  try { next = R.start({ team: p.team, rival: p.rival, seed: p.seed, log: replay || resume ? p.log : undefined, forms: p.forms }); }
   catch (err) {
     const retry = (replay || resume) && p.log;
-    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;
-    $('#error').textContent = String(err.message ?? err);
-    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);
-    else keptError = '';
+    keptError = `${String(err.message ?? err)} ${retry ? txt('boot.retryHand') : txt('boot.retryDefault')}`;
+    // the same teams from their start take forms as a fresh battle would (a log without forms=1 had turned them off)
+    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined, forms: null } : DEFAULT).catch(bootFailed);
+    else { keptError = ''; logNote(String(err.message ?? err)); }
     return;
   }
   const my = ++gen;
@@ -940,6 +1217,7 @@ async function start(p, replay = false, resume = false) {
   clearTimeout(rushT); pace?.unrush();
   match = next;
   if (groundG) groundG.paused = false;
+  if (handoff) { handoff = null; delete app.dataset.scene; delete app.dataset.band; }
   // a new hand stops the last one's sound and loads this one's six cards (a hand replaced before the import lands does nothing)
   // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)
   soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });
@@ -949,25 +1227,33 @@ async function start(p, replay = false, resume = false) {
   panel = null; kitItem = null;
   $('#panel').hidden = true;
   $('#result').hidden = true;
-  $('#error').textContent = keptError; keptError = '';
+  $('#error').textContent = '';
   hud.bind(match);
+  logNote(keptError); keptError = '';
   lastShot = null;
+  try { beats.clear(); beats.idle(); } catch { /* first boot */ }
   store.begin(`${match.team.join(',')}|${match.rival.join(',')}|${match.seed}`, resume);
+  formsGone = false;
   said = new Set();
   warmed = false;
   M.lands.length = 0; M.shots.length = 0; M.impacts.length = 0; M.firstCommandAt = 0; M.resultAt = 0; M.batches = 0;
   leadersNow = leadersFor(match.seed, p.leaders);
   mapNow = p.map || undefined;
   M.leaders = leadersNow;
-  const hp = sd.toHash({ team: match.team, rival: match.rival, seed: match.seed });
+  const hp = hashOf(match);
   history.replaceState(null, '', `#${hp}${(replay || resume) && p.log ? `&log=${p.log}${resume ? '&resume=1' : ''}` : ''}&mode=${mode}${p.leaders ? `&leaders=${leadersNow.join(',')}` : ''}${mapNow ? `&map=${mapNow}` : ''}`);
   $('#leave').href = leaveHref();
   const opening = match.opening;
   view = resume ? engine.snapshot(match.state) : opening.at(-1)?.state ?? engine.snapshot(match.state);
+  // the forms standing at the deal start cropping now, so the first tower scene has its picture (I1)
+  try { if (!warmForms({ post: [{ state: view }] })) stage.releaseForms(); else stage.keepForms?.(); } catch (err) { if (DEBUG) M.errors.push(String(err)); }
   app.dataset.phase = 'deal';
   M.phase = 'deal';
+  M.stage = 'layout';
+  watchDeal(my, (again) => start(p, replay, resume, again), retried);
   const swap = await nextLayout(mode, !resume);
   if (my !== gen) return;
+  M.stage = 'swap';
   if (document.documentElement.dataset.boot !== undefined) await swap.steps(); else swap();
   if (my !== gen) return;
   delete document.documentElement.dataset.boot;
@@ -988,15 +1274,25 @@ async function start(p, replay = false, resume = false) {
     });
   } else {
     soundReady.then((S) => { if (S && my === gen) S.music(`mus.${mode}`, { fade: 0, from: S.context && S.context.state === 'running' ? 'start' : 'loop' }); });
+    M.stage = 'deal cue';
     await cue('deal', null, 'pre');
     if (my !== gen) return;
     app.dataset.phase = 'entrance';
     M.phase = 'entrance';
+    M.stage = 'entrance';
     await director.play(opening, { replay });
     if (my !== gen) return;
   }
+  // live only with both figures standing and both hands dealt (fixes-3 I2)
+  M.stage = 'standing';
+  await untilStanding();
+  if (my !== gen) return;
+  M.stage = 'live';
   app.dataset.phase = 'live';
   M.phase = 'live';
+  // a stall this deal reported, and the deal went live after all: the line comes down, the record keeps a note
+  if (stallError && $('#error').textContent === stallError) { $('#error').textContent = ''; M.errors.push('boot recovered: the deal went live after its stall'); }
+  stallError = '';
   if (replay) {
     await director.play(match.events.filter((e) => !opening.includes(e)), { replay: true });
     if (my !== gen) return;
@@ -1018,7 +1314,7 @@ async function runFixture(n) {
   // start() presented the opening (batch 0) from this page's match; the fixture's later batches follow it
   for (const b of fixture.batches.slice(1)) { if (my !== gen) return; await director.play(b.events, { auto: true }); }
   busy = false;
-  const check = sd.start({ team: fixture.team, rival: fixture.rival, seed: fixture.seed, log: fixture.hash.match(/log=([^&]+)/)?.[1] });
+  const check = R.start({ team: fixture.team, rival: fixture.rival, seed: fixture.seed, log: fixture.hash.match(/log=([^&]+)/)?.[1] });
   M.fixture.replayHash = check.hash();
   M.fixture.replayResult = { winner: check.state.winner, turns: check.state.turn };
   match = check;
@@ -1027,7 +1323,7 @@ async function runFixture(n) {
 }
 
 // ============================================================ boot
-const first = sd.parseHash(location.hash);
+const first = R.parseHash(location.hash);
 const resuming = Boolean(first.log) && hashParams.get('resume') === '1';
 if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);
 else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);
@@ -1042,5 +1338,5 @@ async function previewScene(s, o = {}) {
   const done = stage.play(s, c, {});
   return { duration: c.duration, impact: c.impact ?? 0, done: done.then(() => { delete app.dataset.scene; endLook(); }) };
 }
-const api = { previewScene, stage, director, start, skip, setMode, boardShort, get sound() { return Sound; }, get layout() { return layout; }, get board() { return layout; }, get mode() { return mode; }, get match() { return match; }, get view() { return view; } };
+const api = { R, beats, tower, previewScene, stage, director, start, skip, setMode, boardShort, get sound() { return Sound; }, get layout() { return layout; }, get board() { return layout; }, get mode() { return mode; }, get match() { return match; }, get view() { return view; } };
 if (DEBUG) window.__battleApi = window.__matApi = window.__arenaApi = api;

@@ -29,7 +29,7 @@ const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
 // final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1), and on it the battle's string table
 // and the HUD's card-text overrides (0a919baa, branch play/strings-on-42ff51c7: round 5 with shared/strings.js, no round 6)
-const PIN = { cards: 'c2b17715', sound: '30e69931', battle: '0a919baa' };
+const PIN = { cards: 'c2b17715', sound: '30e69931', battle: '3bc364c1' };
 const CHECK = process.argv.includes('--check');
 // a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
 const ADMIT = process.argv.includes('--admit-unpinned');
@@ -64,6 +64,8 @@ const STAGES = {
     { from: EX, to: 'public/ex', files: only('ui.css', 'card.css', 'rituals.css', 'fighters.js', 'engine.js', 'media.gen.js', 'art.js', 'motion.js', 'markup.js', 'rituals.js', 'gallery.js', 'ground.js', 'grounds/shell.js', 'grounds/recipes.js', 'grounds/programs.gen.js') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^posters\/[\w-]+(@0\.5x)?\.(webp|avif)$/.test(f)) },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^grounds\/[\w-]+\.webp$/.test(f)) },
+    // the Arena's auras (round 6) read each card's grounds/matter.js through EX_CARD.base (/ex/), beside fx/<id>/fx.svg
+    { from: EX, to: 'public/ex', files: only('grounds/matter.js') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => CARD_MEDIA.test(f) || f === 'media/prototemplate/window@2x.webp') },
     { from: EX, to: 'public/ex', files: (l) => l.filter((f) => /^(borders\/[\w-]+\/(border|over|trim)\.svg|fx\/[\w-]+\/fx\.svg|design\/(frames|lit|fxcut)\/[\w.-]+\.svg|icons\/frost(@2x)?\.webp)$/.test(f)) },
     { from: `${EX}/og`, to: 'public/og', files: (l) => l.filter((f) => /^[\w-]+\.(jpg|mp4)$/.test(f)) },
@@ -90,6 +92,8 @@ const STAGES = {
     // excard scripts with its hud and room sheets
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^(mat|arena)\/[\w.-]+\.(js|css)$/.test(f) || /^shared\/[\w.-]+\.(js|css)$/.test(f)) },
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: only('shared/pace.js', 'shared/hud.js', 'shared/icons.js', 'shared/excard.js', 'shared/hud.css', 'shared/room.css') },
+    // round 6: each Princeton TD still's ink box, read by shared/runtime.js and arena/ptd-worker.js
+    { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: only('arena/ptd-ink.json') },
     // what is left of the battle's card copies (round 5 prints r4/ex's): the art masks and the kit's card sprite
     { from: `${ROUNDS}/r4/play`, to: 'public/battle', files: (l) => l.filter((f) => /^vendor\/(cards|broadcast|fonts)\//.test(f) && !/\.md$/.test(f)) },
     // each move's loop and its poster at the contact, for the move tooltip (shared/hud.js PREVIEWS)
@@ -209,16 +213,8 @@ const TRANSFORMS = {
     ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
     ["return `../../../r3/cards/index.html${p}`;", "return `/${p}`;"],
-    // an address that cannot start: `mode=` is checked as the list's own key (an inherited name such as "constructor"
-    // passed, the layout failed to load and the page stayed hidden); the reason stays on screen after the hand that
-    // plays instead begins (its start cleared the alert in the same task); a log that will not replay is retried as
-    // the same teams without it before the default hand; and a start that rejects un-hides the page and says so
-    ["let mode = MODES[hashParams.get('mode')] ? hashParams.get('mode') :", "let mode = Object.hasOwn(MODES, hashParams.get('mode') ?? '') ? hashParams.get('mode') :"],
-    ["const DEFAULT = { team: ['claude-of-tanks', 'katagami', 'bday-land'], rival: ['jarhead', 'mailroom', 'cotfly'], seed: 30 };\n", after("// kevinliu.studio: why an address could not start, kept on screen after the hand that plays instead begins; and a boot that\n// rejects (a layout, map or figure file that will not load) un-hides the page with the reason (scripts/sync.mjs)\nlet keptError = '';\nfunction bootFailed(err) {\n  if (document.documentElement.dataset.boot === undefined) return;\n  delete document.documentElement.dataset.boot;\n  $('#error').textContent = `The battle could not start (${String(err?.message ?? err)}). Reload the page, or Leave.`;\n}\n")],
-    ["  catch (err) { $('#error').textContent = String(err.message ?? err); if (!match) start(DEFAULT); return; }", "  catch (err) {\n    const retry = (replay || resume) && p.log;\n    keptError = `${String(err.message ?? err)} ${retry ? 'Playing this hand from its start.' : 'Playing the default hand.'}`;\n    $('#error').textContent = String(err.message ?? err);\n    if (!match && p !== DEFAULT) start(retry ? { ...p, log: undefined } : DEFAULT).catch(bootFailed);\n    else keptError = '';\n    return;\n  }"],
-    ["  $('#error').textContent = '';\n  hud.bind(match);", "  $('#error').textContent = keptError; keptError = '';\n  hud.bind(match);"],
-    ["else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming);", "else start({ ...DEFAULT, ...first, leaders: hashParams.get('leaders') ?? undefined, map: hashParams.get('map') ?? undefined }, Boolean(first.log) && !resuming, resuming).catch(bootFailed);"],
-    ["if (q.get('fixture')) runFixture(q.get('fixture'));", "if (q.get('fixture')) runFixture(q.get('fixture')).catch(bootFailed);"],
+    // (plan 008's address and boot errors, the mode key, keptError, bootFailed and the fixture's catch, are round 6's own
+    // code from battle pin 3bc364c1: r4/play REQUESTS.md "Round 6 closed")
     // one batch's outcomes are announced together: a shot lands all its events in one loop, and each one overwrote
     // the live region, so a hit was lost behind the knockout that followed it
     ["function live(text) { $('#live').textContent = text; }", "// kevinliu.studio: one batch's outcomes are announced together, not only the last one written (scripts/sync.mjs)\nlet liveLines = [];\nfunction live(text) { if (!liveLines.length) queueMicrotask(() => { $('#live').textContent = liveLines.join(' '); liveLines = []; }); liveLines.push(text); }"],
@@ -235,14 +231,7 @@ const TRANSFORMS = {
     ["  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); for (const id of [...match.team, ...match.rival]) S.load(`card:${id}`); });", "  // kevinliu.studio: the last hand's card kits that this hand does not hold give their decoded audio back (scripts/sync.mjs)\n  soundReady.then((S) => { if (!S || my !== gen) return; S.stop(undefined, 120); const hand = new Set([...match.team, ...match.rival]); for (const id of soundCards) if (!hand.has(id)) S.unload?.(`card:${id}`); soundCards = hand; for (const id of hand) S.load(`card:${id}`); });"],
     ["let Sound = null, shotSound = null;", "let Sound = null, shotSound = null, soundCards = new Set();"],
   ]),
-  // `map=` is checked as the list's own key: an inherited name ("constructor") passed, its ground file was a 404 and
-  // the Arena's boot rejected with the page still hidden
-  'public/battle/arena/board.js': (t) => patch('board.js', t, [
-    ["  const map = ctx.map && MAPS[ctx.map] ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';", "  const map = ctx.map && Object.hasOwn(MAPS, ctx.map) ? ctx.map : HOME[ctx.leaders[1]] ?? 'atelier';"],
-    // on a deal the Arena made its pads visible, laid the board out, and only then marked them hidden, so they faded
-    // out in front of the visitor at the reveal and came back with the first cards; on a deal they start hidden
-    ["    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s }, this.groundSvg);", "    for (const s of SIDES) this.padG[s] = sv('g', { class: 'arena-pad', 'data-side': s, ...(this.ctx.dealing ? { 'data-on': 'false' } : {}) }, this.groundSvg); // kevinliu.studio: on a deal the pads start hidden, as drawSides marks them a moment later (scripts/sync.mjs)"],
-  ]),
+  // (the Arena's map key and the deal's hidden pads are round 6's own code from battle pin 3bc364c1)
   // the card code is the wall's, served at /ex/ (the rounds' ../../../r4/ex/). A phone prints each card plain, as the
   // wall does (Kevin, 11-08, "Desktop-only frames"): a family's frame SVG layers held about 250 MB on an iPhone
   'public/battle/shared/excard.js': (t) => patch('excard.js', t, [

@@ -1,6 +1,6 @@
 {
  "contract": 1,
- "about": "The Arena's figures: per card a front view (the rival's side) and a rear view (yours), at 2x (src) and 1x (lo), each with its foot anchor, opaque box and footprint in 2x px of src. Paths are relative to this file. Copied from r4/stage/figures by .work/stage/build.mjs; never edit by hand.",
+ "about": "The Arena's figures: per card a front view (the rival's side) and a rear view (yours), at 2x (src) and 1x (lo), each with its foot anchor, opaque box, footprint and fx anchors (anchor: where its shots leave; core: its body's middle) in 2x px of src. A card with forms (Princeton TD) carries forms[key] = { front, rear } in the same view shape, all at one scale. parts are living layers: { name, view, src, motion, cells, w, h (one cell in file px), px (view px a file px; pixel: draw with image-rendering: pixelated), ms (each cell's hold; rate is the mean cells a second), loop, rest (the cell shown when it does not move), pivot (where a cell's top-left sits in the view's px), box and foot (its envelope and paws there, inside the view's box), fx (its own anchor and core while it shows), cover (while mounted it replaces the still outright) }. Paths are relative to this file. Copied from r4/stage/figures and the battle's own tools by .work/stage/build.mjs; never edit by hand.",
  "views": {
   "front": {
    "side": "rival",
@@ -40,6 +40,16 @@
     "sha": {
      "src": "713b411c7e16",
      "lo": "cca3ad0a4c39"
+    },
+    "fx": {
+     "anchor": [
+      435.5,
+      311
+     ],
+     "core": [
+      435.5,
+      475.2
+     ]
     }
    },
    "rear": {
@@ -64,6 +74,16 @@
     "sha": {
      "src": "f7069120abbc",
      "lo": "39e2efa17521"
+    },
+    "fx": {
+     "anchor": [
+      452.9,
+      314.6
+     ],
+     "core": [
+      435.5,
+      480.7
+     ]
     }
    }
   },
@@ -93,6 +113,16 @@
     "sha": {
      "src": "87cbf44da51e",
      "lo": "dc6698f538a4"
+    },
+    "fx": {
+     "anchor": [
+      341,
+      375.3
+     ],
+     "core": [
+      341,
+      433.7
+     ]
     }
    },
    "rear": {
@@ -117,6 +147,16 @@
     "sha": {
      "src": "904113850940",
      "lo": "ed6d91c60246"
+    },
+    "fx": {
+     "anchor": [
+      341,
+      393.3
+     ],
+     "core": [
+      341,
+      454.5
+     ]
     }
    }
   },
@@ -148,6 +188,16 @@
     "sha": {
      "src": "5ccf43000f27",
      "lo": "bcf5c3c09548"
+    },
+    "fx": {
+     "anchor": [
+      325.6,
+      390.6
+     ],
+     "core": [
+      340.4,
+      520.8
+     ]
     }
    },
    "rear": {
@@ -172,6 +222,16 @@
     "sha": {
      "src": "b1780c64efe0",
      "lo": "d49f85d1d9f0"
+    },
+    "fx": {
+     "anchor": [
+      370,
+      390.6
+     ],
+     "core": [
+      370,
+      520.8
+     ]
     }
    }
   },
@@ -201,6 +261,16 @@
     "sha": {
      "src": "f033305b904c",
      "lo": "810654e73817"
+    },
+    "fx": {
+     "anchor": [
+      276.8,
+      435.2
+     ],
+     "core": [
+      346,
+      460.4
+     ]
     }
    },
    "rear": {
@@ -225,6 +295,16 @@
     "sha": {
      "src": "811ccc593408",
      "lo": "9537a72b587e"
+    },
+    "fx": {
+     "anchor": [
+      387.5,
+      402
+     ],
+     "core": [
+      346,
+      480.7
+     ]
     }
    }
   },
@@ -254,6 +334,16 @@
     "sha": {
      "src": "d574ebe14044",
      "lo": "c044ba8ebcf2"
+    },
+    "fx": {
+     "anchor": [
+      40.3,
+      383.8
+     ],
+     "core": [
+      438,
+      328.2
+     ]
     }
    },
    "rear": {
@@ -278,6 +368,16 @@
     "sha": {
      "src": "0867cdb5ea49",
      "lo": "18f505986fc2"
+    },
+    "fx": {
+     "anchor": [
+      824.4,
+      91.1
+     ],
+     "core": [
+      438.5,
+      303.5
+     ]
     }
    }
   },
@@ -307,6 +407,16 @@
     "sha": {
      "src": "65462871388a",
      "lo": "7b0d0be48b59"
+    },
+    "fx": {
+     "anchor": [
+      35.1,
+      233.5
+     ],
+     "core": [
+      439,
+      155.7
+     ]
     }
    },
    "rear": {
@@ -331,6 +441,16 @@
     "sha": {
      "src": "491400ee0764",
      "lo": "164e1da58991"
+    },
+    "fx": {
+     "anchor": [
+      825.3,
+      165.1
+     ],
+     "core": [
+      439,
+      215
+     ]
     }
    }
   },
@@ -360,6 +480,16 @@
     "sha": {
      "src": "7b30591d187a",
      "lo": "2a607622a38b"
+    },
+    "fx": {
+     "anchor": [
+      262.2,
+      250.8
+     ],
+     "core": [
+      437,
+      255.4
+     ]
     }
    },
    "rear": {
@@ -384,6 +514,16 @@
     "sha": {
      "src": "946de389ab96",
      "lo": "e50e450f352e"
+    },
+    "fx": {
+     "anchor": [
+      437,
+      175
+     ],
+     "core": [
+      437,
+      306.3
+     ]
     }
    }
   },
@@ -415,6 +555,16 @@
     "sha": {
      "src": "546bda57dc73",
      "lo": "dee618f5c2d9"
+    },
+    "fx": {
+     "anchor": [
+      100.8,
+      305.5
+     ],
+     "core": [
+      315,
+      403
+     ]
     }
    },
    "rear": {
@@ -439,8 +589,68 @@
     "sha": {
      "src": "cc8d2e6e22a6",
      "lo": "ad7af2024d0a"
+    },
+    "fx": {
+     "anchor": [
+      348,
+      187.2
+     ],
+     "core": [
+      290,
+      446.4
+     ]
     }
-   }
+   },
+   "parts": [
+    {
+     "name": "idle",
+     "view": "front",
+     "src": "agent-pets/idle-front.webp",
+     "motion": "frames",
+     "rate": 0.909,
+     "cells": 6,
+     "w": 74,
+     "h": 79,
+     "px": 8,
+     "ms": [
+      1680,
+      660,
+      660,
+      840,
+      840,
+      1920
+     ],
+     "loop": 6600,
+     "rest": 0,
+     "pivot": [
+      38,
+      18
+     ],
+     "box": [
+      38,
+      18,
+      630,
+      650
+     ],
+     "foot": [
+      246,
+      650
+     ],
+     "pixel": true,
+     "cover": true,
+     "sha": "7b09755b7e12",
+     "fx": {
+      "anchor": [
+       252,
+       295.8
+      ],
+      "core": [
+       270.9,
+       481
+      ]
+     }
+    }
+   ]
   },
   "loop": {
    "scale": 8.3364,
@@ -468,6 +678,16 @@
     "sha": {
      "src": "e880a2c74470",
      "lo": "1c77722ebbe5"
+    },
+    "fx": {
+     "anchor": [
+      381.5,
+      437
+     ],
+     "core": [
+      381.5,
+      437
+     ]
     }
    },
    "rear": {
@@ -492,6 +712,16 @@
     "sha": {
      "src": "71a6e3fb0a72",
      "lo": "7ca356f0c111"
+    },
+    "fx": {
+     "anchor": [
+      381,
+      437
+     ],
+     "core": [
+      381,
+      437
+     ]
     }
    }
   },
@@ -521,6 +751,16 @@
     "sha": {
      "src": "98b907d98e29",
      "lo": "4818bae813c5"
+    },
+    "fx": {
+     "anchor": [
+      322.6,
+      404.5
+     ],
+     "core": [
+      345.6,
+      445
+     ]
     }
    },
    "rear": {
@@ -545,6 +785,16 @@
     "sha": {
      "src": "0ecf318c5aaa",
      "lo": "360842b7080e"
+    },
+    "fx": {
+     "anchor": [
+      384,
+      393.3
+     ],
+     "core": [
+      384,
+      480.7
+     ]
     }
    }
   },
@@ -574,6 +824,16 @@
     "sha": {
      "src": "713c34a67f17",
      "lo": "da03053ffffc"
+    },
+    "fx": {
+     "anchor": [
+      437,
+      232.5
+     ],
+     "core": [
+      437,
+      232.5
+     ]
     }
    },
    "rear": {
@@ -598,6 +858,16 @@
     "sha": {
      "src": "000467f65862",
      "lo": "afc4ba059b2a"
+    },
+    "fx": {
+     "anchor": [
+      436.5,
+      232.5
+     ],
+     "core": [
+      436.5,
+      232.5
+     ]
     }
    }
   },
@@ -627,6 +897,16 @@
     "sha": {
      "src": "df85bdf7e240",
      "lo": "906c8168ff9a"
+    },
+    "fx": {
+     "anchor": [
+      337.9,
+      524.4
+     ],
+     "core": [
+      345.1,
+      611.8
+     ]
     }
    },
    "rear": {
@@ -651,6 +931,16 @@
     "sha": {
      "src": "5ae3e4b44bb4",
      "lo": "b84b6c741772"
+    },
+    "fx": {
+     "anchor": [
+      359.5,
+      517.1
+     ],
+     "core": [
+      359.5,
+      600.5
+     ]
     }
    }
   },
@@ -680,6 +970,16 @@
     "sha": {
      "src": "d27db6b5abd9",
      "lo": "6c8d9e0ecdbf"
+    },
+    "fx": {
+     "anchor": [
+      148.6,
+      463.1
+     ],
+     "core": [
+      437,
+      413.5
+     ]
     }
    },
    "rear": {
@@ -704,6 +1004,16 @@
     "sha": {
      "src": "785852d018e9",
      "lo": "7c9ccb584193"
+    },
+    "fx": {
+     "anchor": [
+      332.1,
+      469.2
+     ],
+     "core": [
+      437,
+      426.5
+     ]
     }
    }
   },
@@ -733,6 +1043,16 @@
     "sha": {
      "src": "9bf9966ac2cf",
      "lo": "2fcbebf5ab87"
+    },
+    "fx": {
+     "anchor": [
+      437,
+      291.5
+     ],
+     "core": [
+      437,
+      291.5
+     ]
     }
    },
    "rear": {
@@ -757,6 +1077,16 @@
     "sha": {
      "src": "9c36114d7111",
      "lo": "a51e4295b6d3"
+    },
+    "fx": {
+     "anchor": [
+      437,
+      303
+     ],
+     "core": [
+      437,
+      303
+     ]
     }
    }
   },
@@ -786,6 +1116,16 @@
     "sha": {
      "src": "83483f155b9e",
      "lo": "4588775a94e7"
+    },
+    "fx": {
+     "anchor": [
+      293.6,
+      99.4
+     ],
+     "core": [
+      367,
+      463.7
+     ]
     }
    },
    "rear": {
@@ -810,6 +1150,16 @@
     "sha": {
      "src": "07841522549e",
      "lo": "a8d73f3ca2ec"
+    },
+    "fx": {
+     "anchor": [
+      337.6,
+      104.9
+     ],
+     "core": [
+      367,
+      489.4
+     ]
     }
    }
   },
@@ -839,6 +1189,16 @@
     "sha": {
      "src": "956f93bbf116",
      "lo": "e382635e307a"
+    },
+    "fx": {
+     "anchor": [
+      321.3,
+      430.5
+     ],
+     "core": [
+      357,
+      430.5
+     ]
     }
    },
    "rear": {
@@ -863,59 +1223,2541 @@
     "sha": {
      "src": "c31bf656e8bb",
      "lo": "1ae7e4c250b0"
+    },
+    "fx": {
+     "anchor": [
+      357,
+      437
+     ],
+     "core": [
+      357,
+      437
+     ]
     }
    }
   },
   "princeton-td": {
    "scale": 6.2672,
    "pixel": null,
-   "native": true,
+   "native": "one isometric view, aimed by the sprite rotation (CONTRACT §1 exception, Kevin 2026-11-10)",
    "front": {
-    "src": "princeton-td/front@2x.webp",
-    "lo": "princeton-td/front.webp",
-    "w": 413,
-    "h": 842,
+    "src": "princeton-td/forms/lab-4b@2x.webp",
+    "lo": "princeton-td/forms/lab-4b.webp",
+    "w": 352,
+    "h": 586,
     "foot": [
-     206.5,
-     812.6
+     176,
+     528.8
     ],
     "box": [
-     0,
-     6,
-     413,
-     841
+     70,
+     160,
+     277,
+     580
     ],
     "base": {
-     "w": 411.8,
-     "d": 411.8
+     "w": 235.2,
+     "d": 235.2
     },
     "sha": {
-     "src": "bfd6b480e65f",
-     "lo": "8ef0350be6c2"
+     "src": "feee3046a56e",
+     "lo": "dbb20dfa30da"
+    },
+    "fx": {
+     "anchor": [
+      176,
+      185.2
+     ],
+     "core": [
+      176,
+      336
+     ]
     }
    },
    "rear": {
-    "src": "princeton-td/rear@2x.webp",
-    "lo": "princeton-td/rear.webp",
-    "w": 413,
-    "h": 874,
+    "src": "princeton-td/forms/lab-4b@2x.webp",
+    "lo": "princeton-td/forms/lab-4b.webp",
+    "w": 352,
+    "h": 586,
     "foot": [
-     206.5,
-     820.1
+     176,
+     528.8
     ],
     "box": [
-     0,
-     8,
-     413,
-     873
+     70,
+     160,
+     277,
+     580
     ],
     "base": {
-     "w": 411.8,
-     "d": 411.8
+     "w": 235.2,
+     "d": 235.2
     },
     "sha": {
-     "src": "dab4c9ebe2a2",
-     "lo": "2c46e46c7ee2"
+     "src": "feee3046a56e",
+     "lo": "dbb20dfa30da"
+    },
+    "fx": {
+     "anchor": [
+      176,
+      185.2
+     ],
+     "core": [
+      176,
+      336
+     ]
+    }
+   },
+   "forms": {
+    "cannon-1": {
+     "front": {
+      "src": "princeton-td/forms/cannon-1@2x.webp",
+      "lo": "princeton-td/forms/cannon-1.webp",
+      "w": 350,
+      "h": 302,
+      "foot": [
+       234,
+       250.8
+      ],
+      "box": [
+       140,
+       18,
+       317,
+       296
+      ],
+      "base": {
+       "w": 193.2,
+       "d": 193.2
+      },
+      "sha": {
+       "src": "b5f58d761a23",
+       "lo": "af71403fd56e"
+      },
+      "fx": {
+       "anchor": [
+        144,
+        146
+       ],
+       "core": [
+        234,
+        126
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/cannon-1-rear@2x.webp",
+      "lo": "princeton-td/forms/cannon-1-rear.webp",
+      "w": 350,
+      "h": 352,
+      "foot": [
+       116,
+       300.8
+      ],
+      "box": [
+       33,
+       89,
+       209,
+       346
+      ],
+      "base": {
+       "w": 193.2,
+       "d": 193.2
+      },
+      "sha": {
+       "src": "74af99393a61",
+       "lo": "4c77af514916"
+      },
+      "fx": {
+       "anchor": [
+        204,
+        95
+       ],
+       "core": [
+        116,
+        186.5
+       ]
+      }
+     }
+    },
+    "cannon-2": {
+     "front": {
+      "src": "princeton-td/forms/cannon-2@2x.webp",
+      "lo": "princeton-td/forms/cannon-2.webp",
+      "w": 394,
+      "h": 340,
+      "foot": [
+       266,
+       286.8
+      ],
+      "box": [
+       151,
+       26,
+       360,
+       334
+      ],
+      "base": {
+       "w": 218.4,
+       "d": 218.4
+      },
+      "sha": {
+       "src": "ce50a385e34d",
+       "lo": "7e3b4127a0e3"
+      },
+      "fx": {
+       "anchor": [
+        156,
+        167
+       ],
+       "core": [
+        266,
+        148
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/cannon-2-rear@2x.webp",
+      "lo": "princeton-td/forms/cannon-2-rear.webp",
+      "w": 394,
+      "h": 392,
+      "foot": [
+       128,
+       338.8
+      ],
+      "box": [
+       34,
+       88,
+       243,
+       386
+      ],
+      "base": {
+       "w": 218.4,
+       "d": 218.4
+      },
+      "sha": {
+       "src": "d83fdeaddec7",
+       "lo": "d80cfe054389"
+      },
+      "fx": {
+       "anchor": [
+        236,
+        94
+       ],
+       "core": [
+        128,
+        205
+       ]
+      }
+     }
+    },
+    "cannon-3": {
+     "front": {
+      "src": "princeton-td/forms/cannon-3@2x.webp",
+      "lo": "princeton-td/forms/cannon-3.webp",
+      "w": 508,
+      "h": 418,
+      "foot": [
+       334,
+       362.8
+      ],
+      "box": [
+       205,
+       50,
+       439,
+       413
+      ],
+      "base": {
+       "w": 243.6,
+       "d": 243.6
+      },
+      "sha": {
+       "src": "957a0dd465b2",
+       "lo": "793d308cf1f4"
+      },
+      "fx": {
+       "anchor": [
+        209,
+        212
+       ],
+       "core": [
+        334,
+        198
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/cannon-3-rear@2x.webp",
+      "lo": "princeton-td/forms/cannon-3-rear.webp",
+      "w": 508,
+      "h": 450,
+      "foot": [
+       174,
+       394.8
+      ],
+      "box": [
+       69,
+       102,
+       303,
+       445
+      ],
+      "base": {
+       "w": 243.6,
+       "d": 243.6
+      },
+      "sha": {
+       "src": "e72cb967d0cf",
+       "lo": "2c0feea3c77c"
+      },
+      "fx": {
+       "anchor": [
+        296,
+        109
+       ],
+       "core": [
+        174,
+        240
+       ]
+      }
+     }
+    },
+    "cannon-4a": {
+     "front": {
+      "src": "princeton-td/forms/cannon-4a@2x.webp",
+      "lo": "princeton-td/forms/cannon-4a.webp",
+      "w": 308,
+      "h": 422,
+      "foot": [
+       188,
+       362.8
+      ],
+      "box": [
+       62,
+       17,
+       303,
+       416
+      ],
+      "base": {
+       "w": 268.8,
+       "d": 268.8
+      },
+      "sha": {
+       "src": "416a6375a4aa",
+       "lo": "641446f63e6e"
+      },
+      "fx": {
+       "anchor": [
+        70,
+        189
+       ],
+       "core": [
+        188,
+        181.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/cannon-4a-rear@2x.webp",
+      "lo": "princeton-td/forms/cannon-4a-rear.webp",
+      "w": 294,
+      "h": 450,
+      "foot": [
+       120,
+       390.8
+      ],
+      "box": [
+       4,
+       67,
+       245,
+       444
+      ],
+      "base": {
+       "w": 268.8,
+       "d": 268.8
+      },
+      "sha": {
+       "src": "421802d7fcdf",
+       "lo": "b92567c2225d"
+      },
+      "fx": {
+       "anchor": [
+        235,
+        77
+       ],
+       "core": [
+        120,
+        220.5
+       ]
+      }
+     }
+    },
+    "cannon-4b": {
+     "front": {
+      "src": "princeton-td/forms/cannon-4b@2x.webp",
+      "lo": "princeton-td/forms/cannon-4b.webp",
+      "w": 326,
+      "h": 384,
+      "foot": [
+       206,
+       324.8
+      ],
+      "box": [
+       90,
+       21,
+       321,
+       378
+      ],
+      "base": {
+       "w": 268.8,
+       "d": 268.8
+      },
+      "sha": {
+       "src": "f74eb4e6b316",
+       "lo": "2d4256047338"
+      },
+      "fx": {
+       "anchor": [
+        199,
+        51
+       ],
+       "core": [
+        206,
+        164.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/cannon-4b-rear@2x.webp",
+      "lo": "princeton-td/forms/cannon-4b-rear.webp",
+      "w": 326,
+      "h": 384,
+      "foot": [
+       120,
+       324.8
+      ],
+      "box": [
+       4,
+       21,
+       235,
+       378
+      ],
+      "base": {
+       "w": 268.8,
+       "d": 268.8
+      },
+      "sha": {
+       "src": "bc5f5277b087",
+       "lo": "d21d47695ca9"
+      },
+      "fx": {
+       "anchor": [
+        185,
+        47
+       ],
+       "core": [
+        120,
+        164.5
+       ]
+      }
+     }
+    },
+    "station-1": {
+     "front": {
+      "src": "princeton-td/forms/station-1@2x.webp",
+      "lo": "princeton-td/forms/station-1.webp",
+      "w": 312,
+      "h": 378,
+      "foot": [
+       156,
+       298.8
+      ],
+      "box": [
+       19,
+       68,
+       293,
+       373
+      ],
+      "base": {
+       "w": 305.2,
+       "d": 302.4
+      },
+      "sha": {
+       "src": "4383bf5aaecf",
+       "lo": "4fd1418a7e4f"
+      },
+      "fx": {
+       "anchor": [
+        156,
+        183.9
+       ],
+       "core": [
+        156,
+        175
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/station-1@2x.webp",
+      "lo": "princeton-td/forms/station-1.webp",
+      "w": 312,
+      "h": 378,
+      "foot": [
+       156,
+       298.8
+      ],
+      "box": [
+       19,
+       68,
+       293,
+       373
+      ],
+      "base": {
+       "w": 305.2,
+       "d": 302.4
+      },
+      "sha": {
+       "src": "4383bf5aaecf",
+       "lo": "4fd1418a7e4f"
+      },
+      "fx": {
+       "anchor": [
+        156,
+        183.9
+       ],
+       "core": [
+        156,
+        175
+       ]
+      }
+     }
+    },
+    "station-2": {
+     "front": {
+      "src": "princeton-td/forms/station-2@2x.webp",
+      "lo": "princeton-td/forms/station-2.webp",
+      "w": 324,
+      "h": 364,
+      "foot": [
+       162,
+       292.8
+      ],
+      "box": [
+       19,
+       22,
+       305,
+       358
+      ],
+      "base": {
+       "w": 322,
+       "d": 316.4
+      },
+      "sha": {
+       "src": "c0b28f8dcf68",
+       "lo": "0012e14bd60a"
+      },
+      "fx": {
+       "anchor": [
+        162,
+        149.7
+       ],
+       "core": [
+        162,
+        149
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/station-2@2x.webp",
+      "lo": "princeton-td/forms/station-2.webp",
+      "w": 324,
+      "h": 364,
+      "foot": [
+       162,
+       292.8
+      ],
+      "box": [
+       19,
+       22,
+       305,
+       358
+      ],
+      "base": {
+       "w": 322,
+       "d": 316.4
+      },
+      "sha": {
+       "src": "c0b28f8dcf68",
+       "lo": "0012e14bd60a"
+      },
+      "fx": {
+       "anchor": [
+        162,
+        149.7
+       ],
+       "core": [
+        162,
+        149
+       ]
+      }
+     }
+    },
+    "station-3": {
+     "front": {
+      "src": "princeton-td/forms/station-3@2x.webp",
+      "lo": "princeton-td/forms/station-3.webp",
+      "w": 332,
+      "h": 386,
+      "foot": [
+       166,
+       308.8
+      ],
+      "box": [
+       12,
+       12,
+       320,
+       380
+      ],
+      "base": {
+       "w": 338.8,
+       "d": 330.4
+      },
+      "sha": {
+       "src": "82ac8dce6f63",
+       "lo": "ac789f5bbe04"
+      },
+      "fx": {
+       "anchor": [
+        166,
+        151.8
+       ],
+       "core": [
+        166,
+        152
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/station-3@2x.webp",
+      "lo": "princeton-td/forms/station-3.webp",
+      "w": 332,
+      "h": 386,
+      "foot": [
+       166,
+       308.8
+      ],
+      "box": [
+       12,
+       12,
+       320,
+       380
+      ],
+      "base": {
+       "w": 338.8,
+       "d": 330.4
+      },
+      "sha": {
+       "src": "82ac8dce6f63",
+       "lo": "ac789f5bbe04"
+      },
+      "fx": {
+       "anchor": [
+        166,
+        151.8
+       ],
+       "core": [
+        166,
+        152
+       ]
+      }
+     }
+    },
+    "station-4a": {
+     "front": {
+      "src": "princeton-td/forms/station-4a@2x.webp",
+      "lo": "princeton-td/forms/station-4a.webp",
+      "w": 400,
+      "h": 394,
+      "foot": [
+       200,
+       316.8
+      ],
+      "box": [
+       36,
+       37,
+       364,
+       387
+      ],
+      "base": {
+       "w": 355.6,
+       "d": 344.4
+      },
+      "sha": {
+       "src": "07bbc9e22ac5",
+       "lo": "258c763b9f87"
+      },
+      "fx": {
+       "anchor": [
+        200,
+        170
+       ],
+       "core": [
+        200,
+        168.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/station-4a@2x.webp",
+      "lo": "princeton-td/forms/station-4a.webp",
+      "w": 400,
+      "h": 394,
+      "foot": [
+       200,
+       316.8
+      ],
+      "box": [
+       36,
+       37,
+       364,
+       387
+      ],
+      "base": {
+       "w": 355.6,
+       "d": 344.4
+      },
+      "sha": {
+       "src": "07bbc9e22ac5",
+       "lo": "258c763b9f87"
+      },
+      "fx": {
+       "anchor": [
+        200,
+        170
+       ],
+       "core": [
+        200,
+        168.5
+       ]
+      }
+     }
+    },
+    "station-4b": {
+     "front": {
+      "src": "princeton-td/forms/station-4b@2x.webp",
+      "lo": "princeton-td/forms/station-4b.webp",
+      "w": 344,
+      "h": 412,
+      "foot": [
+       172,
+       334.8
+      ],
+      "box": [
+       7,
+       9,
+       337,
+       406
+      ],
+      "base": {
+       "w": 355.6,
+       "d": 344.4
+      },
+      "sha": {
+       "src": "d20e6e955d17",
+       "lo": "b68e4a030145"
+      },
+      "fx": {
+       "anchor": [
+        172,
+        159.9
+       ],
+       "core": [
+        172,
+        163.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/station-4b@2x.webp",
+      "lo": "princeton-td/forms/station-4b.webp",
+      "w": 344,
+      "h": 412,
+      "foot": [
+       172,
+       334.8
+      ],
+      "box": [
+       7,
+       9,
+       337,
+       406
+      ],
+      "base": {
+       "w": 355.6,
+       "d": 344.4
+      },
+      "sha": {
+       "src": "d20e6e955d17",
+       "lo": "b68e4a030145"
+      },
+      "fx": {
+       "anchor": [
+        172,
+        159.9
+       ],
+       "core": [
+        172,
+        163.5
+       ]
+      }
+     }
+    },
+    "library-1": {
+     "front": {
+      "src": "princeton-td/forms/library-1@2x.webp",
+      "lo": "princeton-td/forms/library-1.webp",
+      "w": 480,
+      "h": 446,
+      "foot": [
+       240,
+       352.8
+      ],
+      "box": [
+       135,
+       59,
+       345,
+       401
+      ],
+      "base": {
+       "w": 196,
+       "d": 196
+      },
+      "sha": {
+       "src": "b0eb8917e5bc",
+       "lo": "cec32be05cf8"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        79.5
+       ],
+       "core": [
+        240,
+        197.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/library-1@2x.webp",
+      "lo": "princeton-td/forms/library-1.webp",
+      "w": 480,
+      "h": 446,
+      "foot": [
+       240,
+       352.8
+      ],
+      "box": [
+       135,
+       59,
+       345,
+       401
+      ],
+      "base": {
+       "w": 196,
+       "d": 196
+      },
+      "sha": {
+       "src": "b0eb8917e5bc",
+       "lo": "cec32be05cf8"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        79.5
+       ],
+       "core": [
+        240,
+        197.5
+       ]
+      }
+     }
+    },
+    "library-2": {
+     "front": {
+      "src": "princeton-td/forms/library-2@2x.webp",
+      "lo": "princeton-td/forms/library-2.webp",
+      "w": 480,
+      "h": 484,
+      "foot": [
+       240,
+       396.8
+      ],
+      "box": [
+       127,
+       61,
+       353,
+       451
+      ],
+      "base": {
+       "w": 224,
+       "d": 224
+      },
+      "sha": {
+       "src": "9ffe5f712498",
+       "lo": "c006e4c8d576"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        84.4
+       ],
+       "core": [
+        240,
+        220.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/library-2@2x.webp",
+      "lo": "princeton-td/forms/library-2.webp",
+      "w": 480,
+      "h": 484,
+      "foot": [
+       240,
+       396.8
+      ],
+      "box": [
+       127,
+       61,
+       353,
+       451
+      ],
+      "base": {
+       "w": 224,
+       "d": 224
+      },
+      "sha": {
+       "src": "9ffe5f712498",
+       "lo": "c006e4c8d576"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        84.4
+       ],
+       "core": [
+        240,
+        220.5
+       ]
+      }
+     }
+    },
+    "library-3": {
+     "front": {
+      "src": "princeton-td/forms/library-3@2x.webp",
+      "lo": "princeton-td/forms/library-3.webp",
+      "w": 480,
+      "h": 528,
+      "foot": [
+       240,
+       444.8
+      ],
+      "box": [
+       118,
+       68,
+       362,
+       505
+      ],
+      "base": {
+       "w": 252,
+       "d": 252
+      },
+      "sha": {
+       "src": "d0ff6c59a73f",
+       "lo": "cc7a5af64205"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        94.2
+       ],
+       "core": [
+        240,
+        248
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/library-3@2x.webp",
+      "lo": "princeton-td/forms/library-3.webp",
+      "w": 480,
+      "h": 528,
+      "foot": [
+       240,
+       444.8
+      ],
+      "box": [
+       118,
+       68,
+       362,
+       505
+      ],
+      "base": {
+       "w": 252,
+       "d": 252
+      },
+      "sha": {
+       "src": "d0ff6c59a73f",
+       "lo": "cc7a5af64205"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        94.2
+       ],
+       "core": [
+        240,
+        248
+       ]
+      }
+     }
+    },
+    "library-4a": {
+     "front": {
+      "src": "princeton-td/forms/library-4a@2x.webp",
+      "lo": "princeton-td/forms/library-4a.webp",
+      "w": 480,
+      "h": 570,
+      "foot": [
+       240,
+       492.8
+      ],
+      "box": [
+       110,
+       74,
+       370,
+       559
+      ],
+      "base": {
+       "w": 280,
+       "d": 280
+      },
+      "sha": {
+       "src": "ac6006714671",
+       "lo": "e3661a9be7f8"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        103.1
+       ],
+       "core": [
+        240,
+        275
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/library-4a@2x.webp",
+      "lo": "princeton-td/forms/library-4a.webp",
+      "w": 480,
+      "h": 570,
+      "foot": [
+       240,
+       492.8
+      ],
+      "box": [
+       110,
+       74,
+       370,
+       559
+      ],
+      "base": {
+       "w": 280,
+       "d": 280
+      },
+      "sha": {
+       "src": "ac6006714671",
+       "lo": "e3661a9be7f8"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        103.1
+       ],
+       "core": [
+        240,
+        275
+       ]
+      }
+     }
+    },
+    "library-4b": {
+     "front": {
+      "src": "princeton-td/forms/library-4b@2x.webp",
+      "lo": "princeton-td/forms/library-4b.webp",
+      "w": 480,
+      "h": 570,
+      "foot": [
+       240,
+       492.8
+      ],
+      "box": [
+       110,
+       74,
+       370,
+       559
+      ],
+      "base": {
+       "w": 280,
+       "d": 280
+      },
+      "sha": {
+       "src": "c83bbe81cb68",
+       "lo": "d13cbb8c4c35"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        103.1
+       ],
+       "core": [
+        240,
+        275
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/library-4b@2x.webp",
+      "lo": "princeton-td/forms/library-4b.webp",
+      "w": 480,
+      "h": 570,
+      "foot": [
+       240,
+       492.8
+      ],
+      "box": [
+       110,
+       74,
+       370,
+       559
+      ],
+      "base": {
+       "w": 280,
+       "d": 280
+      },
+      "sha": {
+       "src": "c83bbe81cb68",
+       "lo": "d13cbb8c4c35"
+      },
+      "fx": {
+       "anchor": [
+        240,
+        103.1
+       ],
+       "core": [
+        240,
+        275
+       ]
+      }
+     }
+    },
+    "mortar-1": {
+     "front": {
+      "src": "princeton-td/forms/mortar-1@2x.webp",
+      "lo": "princeton-td/forms/mortar-1.webp",
+      "w": 252,
+      "h": 270,
+      "foot": [
+       120,
+       222.8
+      ],
+      "box": [
+       31,
+       46,
+       209,
+       252
+      ],
+      "base": {
+       "w": 187.6,
+       "d": 182
+      },
+      "sha": {
+       "src": "6277c95477d6",
+       "lo": "585e6aa5367e"
+      },
+      "fx": {
+       "anchor": [
+        84,
+        54
+       ],
+       "core": [
+        120,
+        126
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/mortar-1-rear@2x.webp",
+      "lo": "princeton-td/forms/mortar-1-rear.webp",
+      "w": 252,
+      "h": 280,
+      "foot": [
+       120,
+       232.8
+      ],
+      "box": [
+       31,
+       47,
+       209,
+       262
+      ],
+      "base": {
+       "w": 187.6,
+       "d": 182
+      },
+      "sha": {
+       "src": "e1de0dd68ec0",
+       "lo": "abfb9827264e"
+      },
+      "fx": {
+       "anchor": [
+        152,
+        54
+       ],
+       "core": [
+        120,
+        131.5
+       ]
+      }
+     }
+    },
+    "mortar-2": {
+     "front": {
+      "src": "princeton-td/forms/mortar-2@2x.webp",
+      "lo": "princeton-td/forms/mortar-2.webp",
+      "w": 280,
+      "h": 308,
+      "foot": [
+       134,
+       256.8
+      ],
+      "box": [
+       37,
+       59,
+       231,
+       290
+      ],
+      "base": {
+       "w": 201.6,
+       "d": 196
+      },
+      "sha": {
+       "src": "051f904219dc",
+       "lo": "06cc511ce8fd"
+      },
+      "fx": {
+       "anchor": [
+        96,
+        65
+       ],
+       "core": [
+        134,
+        149.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/mortar-2-rear@2x.webp",
+      "lo": "princeton-td/forms/mortar-2-rear.webp",
+      "w": 280,
+      "h": 320,
+      "foot": [
+       134,
+       268.8
+      ],
+      "box": [
+       37,
+       62,
+       231,
+       302
+      ],
+      "base": {
+       "w": 201.6,
+       "d": 196
+      },
+      "sha": {
+       "src": "b47ebb36db25",
+       "lo": "a634dcac4b65"
+      },
+      "fx": {
+       "anchor": [
+        170,
+        67
+       ],
+       "core": [
+        134,
+        157
+       ]
+      }
+     }
+    },
+    "mortar-3": {
+     "front": {
+      "src": "princeton-td/forms/mortar-3@2x.webp",
+      "lo": "princeton-td/forms/mortar-3.webp",
+      "w": 308,
+      "h": 348,
+      "foot": [
+       148,
+       292.8
+      ],
+      "box": [
+       43,
+       74,
+       253,
+       330
+      ],
+      "base": {
+       "w": 215.6,
+       "d": 210
+      },
+      "sha": {
+       "src": "b3582bbc79b1",
+       "lo": "4f1abd49055a"
+      },
+      "fx": {
+       "anchor": [
+        76,
+        95
+       ],
+       "core": [
+        148,
+        175
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/mortar-3-rear@2x.webp",
+      "lo": "princeton-td/forms/mortar-3-rear.webp",
+      "w": 308,
+      "h": 360,
+      "foot": [
+       148,
+       304.8
+      ],
+      "box": [
+       43,
+       76,
+       253,
+       342
+      ],
+      "base": {
+       "w": 215.6,
+       "d": 210
+      },
+      "sha": {
+       "src": "a65d992a6fd0",
+       "lo": "dc751601eb81"
+      },
+      "fx": {
+       "anchor": [
+        189,
+        82
+       ],
+       "core": [
+        148,
+        182
+       ]
+      }
+     }
+    },
+    "mortar-4a": {
+     "front": {
+      "src": "princeton-td/forms/mortar-4a@2x.webp",
+      "lo": "princeton-td/forms/mortar-4a.webp",
+      "w": 336,
+      "h": 322,
+      "foot": [
+       162,
+       262.8
+      ],
+      "box": [
+       49,
+       26,
+       275,
+       304
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 224
+      },
+      "sha": {
+       "src": "a846488645b1",
+       "lo": "f4b89a00c90a"
+      },
+      "fx": {
+       "anchor": [
+        115,
+        35
+       ],
+       "core": [
+        162,
+        136
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/mortar-4a-rear@2x.webp",
+      "lo": "princeton-td/forms/mortar-4a-rear.webp",
+      "w": 336,
+      "h": 320,
+      "foot": [
+       162,
+       260.8
+      ],
+      "box": [
+       49,
+       16,
+       275,
+       302
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 224
+      },
+      "sha": {
+       "src": "5ed1efc3a678",
+       "lo": "4cdfb26eee12"
+      },
+      "fx": {
+       "anchor": [
+        208,
+        24
+       ],
+       "core": [
+        162,
+        130
+       ]
+      }
+     }
+    },
+    "mortar-4b": {
+     "front": {
+      "src": "princeton-td/forms/mortar-4b@2x.webp",
+      "lo": "princeton-td/forms/mortar-4b.webp",
+      "w": 336,
+      "h": 318,
+      "foot": [
+       162,
+       258.8
+      ],
+      "box": [
+       49,
+       31,
+       275,
+       300
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 224
+      },
+      "sha": {
+       "src": "7f7415efcecd",
+       "lo": "fd417188fda0"
+      },
+      "fx": {
+       "anchor": [
+        113,
+        44
+       ],
+       "core": [
+        162,
+        136.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/mortar-4b-rear@2x.webp",
+      "lo": "princeton-td/forms/mortar-4b-rear.webp",
+      "w": 336,
+      "h": 324,
+      "foot": [
+       162,
+       264.8
+      ],
+      "box": [
+       49,
+       28,
+       275,
+       306
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 224
+      },
+      "sha": {
+       "src": "b26501e9164e",
+       "lo": "d4d91be4c3f4"
+      },
+      "fx": {
+       "anchor": [
+        210,
+        29
+       ],
+       "core": [
+        162,
+        138
+       ]
+      }
+     }
+    },
+    "lab-1": {
+     "front": {
+      "src": "princeton-td/forms/lab-1@2x.webp",
+      "lo": "princeton-td/forms/lab-1.webp",
+      "w": 404,
+      "h": 462,
+      "foot": [
+       202,
+       418.8
+      ],
+      "box": [
+       108,
+       169,
+       275,
+       456
+      ],
+      "base": {
+       "w": 168,
+       "d": 168
+      },
+      "sha": {
+       "src": "01c4e57eb958",
+       "lo": "abdf16309aec"
+      },
+      "fx": {
+       "anchor": [
+        202,
+        186.2
+       ],
+       "core": [
+        202,
+        285.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/lab-1@2x.webp",
+      "lo": "princeton-td/forms/lab-1.webp",
+      "w": 404,
+      "h": 462,
+      "foot": [
+       202,
+       418.8
+      ],
+      "box": [
+       108,
+       169,
+       275,
+       456
+      ],
+      "base": {
+       "w": 168,
+       "d": 168
+      },
+      "sha": {
+       "src": "01c4e57eb958",
+       "lo": "abdf16309aec"
+      },
+      "fx": {
+       "anchor": [
+        202,
+        186.2
+       ],
+       "core": [
+        202,
+        285.5
+       ]
+      }
+     }
+    },
+    "lab-2": {
+     "front": {
+      "src": "princeton-td/forms/lab-2@2x.webp",
+      "lo": "princeton-td/forms/lab-2.webp",
+      "w": 440,
+      "h": 524,
+      "foot": [
+       220,
+       476.8
+      ],
+      "box": [
+       138,
+       180,
+       302,
+       519
+      ],
+      "base": {
+       "w": 190.4,
+       "d": 190.4
+      },
+      "sha": {
+       "src": "036c26a94474",
+       "lo": "4debf809be02"
+      },
+      "fx": {
+       "anchor": [
+        220,
+        200.3
+       ],
+       "core": [
+        220,
+        320
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/lab-2@2x.webp",
+      "lo": "princeton-td/forms/lab-2.webp",
+      "w": 440,
+      "h": 524,
+      "foot": [
+       220,
+       476.8
+      ],
+      "box": [
+       138,
+       180,
+       302,
+       519
+      ],
+      "base": {
+       "w": 190.4,
+       "d": 190.4
+      },
+      "sha": {
+       "src": "036c26a94474",
+       "lo": "4debf809be02"
+      },
+      "fx": {
+       "anchor": [
+        220,
+        200.3
+       ],
+       "core": [
+        220,
+        320
+       ]
+      }
+     }
+    },
+    "lab-3": {
+     "front": {
+      "src": "princeton-td/forms/lab-3@2x.webp",
+      "lo": "princeton-td/forms/lab-3.webp",
+      "w": 464,
+      "h": 586,
+      "foot": [
+       232,
+       532.8
+      ],
+      "box": [
+       139,
+       188,
+       325,
+       579
+      ],
+      "base": {
+       "w": 212.8,
+       "d": 212.8
+      },
+      "sha": {
+       "src": "bd409acf0f58",
+       "lo": "f464eac539bd"
+      },
+      "fx": {
+       "anchor": [
+        232,
+        211.5
+       ],
+       "core": [
+        232,
+        352
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/lab-3@2x.webp",
+      "lo": "princeton-td/forms/lab-3.webp",
+      "w": 464,
+      "h": 586,
+      "foot": [
+       232,
+       532.8
+      ],
+      "box": [
+       139,
+       188,
+       325,
+       579
+      ],
+      "base": {
+       "w": 212.8,
+       "d": 212.8
+      },
+      "sha": {
+       "src": "bd409acf0f58",
+       "lo": "f464eac539bd"
+      },
+      "fx": {
+       "anchor": [
+        232,
+        211.5
+       ],
+       "core": [
+        232,
+        352
+       ]
+      }
+     }
+    },
+    "lab-4a": {
+     "front": {
+      "src": "princeton-td/forms/lab-4a@2x.webp",
+      "lo": "princeton-td/forms/lab-4a.webp",
+      "w": 312,
+      "h": 544,
+      "foot": [
+       156,
+       486.8
+      ],
+      "box": [
+       55,
+       114,
+       257,
+       538
+      ],
+      "base": {
+       "w": 235.2,
+       "d": 235.2
+      },
+      "sha": {
+       "src": "c69c07df102b",
+       "lo": "e73064becd53"
+      },
+      "fx": {
+       "anchor": [
+        156,
+        139.4
+       ],
+       "core": [
+        156,
+        292
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/lab-4a@2x.webp",
+      "lo": "princeton-td/forms/lab-4a.webp",
+      "w": 312,
+      "h": 544,
+      "foot": [
+       156,
+       486.8
+      ],
+      "box": [
+       55,
+       114,
+       257,
+       538
+      ],
+      "base": {
+       "w": 235.2,
+       "d": 235.2
+      },
+      "sha": {
+       "src": "c69c07df102b",
+       "lo": "e73064becd53"
+      },
+      "fx": {
+       "anchor": [
+        156,
+        139.4
+       ],
+       "core": [
+        156,
+        292
+       ]
+      }
+     }
+    },
+    "lab-4b": {
+     "front": {
+      "src": "princeton-td/forms/lab-4b@2x.webp",
+      "lo": "princeton-td/forms/lab-4b.webp",
+      "w": 352,
+      "h": 586,
+      "foot": [
+       176,
+       528.8
+      ],
+      "box": [
+       70,
+       160,
+       277,
+       580
+      ],
+      "base": {
+       "w": 235.2,
+       "d": 235.2
+      },
+      "sha": {
+       "src": "feee3046a56e",
+       "lo": "dbb20dfa30da"
+      },
+      "fx": {
+       "anchor": [
+        176,
+        185.2
+       ],
+       "core": [
+        176,
+        336
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/lab-4b@2x.webp",
+      "lo": "princeton-td/forms/lab-4b.webp",
+      "w": 352,
+      "h": 586,
+      "foot": [
+       176,
+       528.8
+      ],
+      "box": [
+       70,
+       160,
+       277,
+       580
+      ],
+      "base": {
+       "w": 235.2,
+       "d": 235.2
+      },
+      "sha": {
+       "src": "feee3046a56e",
+       "lo": "dbb20dfa30da"
+      },
+      "fx": {
+       "anchor": [
+        176,
+        185.2
+       ],
+       "core": [
+        176,
+        336
+       ]
+      }
+     }
+    },
+    "arch-1": {
+     "front": {
+      "src": "princeton-td/forms/arch-1@2x.webp",
+      "lo": "princeton-td/forms/arch-1.webp",
+      "w": 368,
+      "h": 442,
+      "foot": [
+       184,
+       348.8
+      ],
+      "box": [
+       68,
+       81,
+       300,
+       437
+      ],
+      "base": {
+       "w": 266,
+       "d": 263.2
+      },
+      "sha": {
+       "src": "f2dd5fa1e65d",
+       "lo": "6ebbdc11e490"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        169.8
+       ],
+       "core": [
+        184,
+        206.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/arch-1@2x.webp",
+      "lo": "princeton-td/forms/arch-1.webp",
+      "w": 368,
+      "h": 442,
+      "foot": [
+       184,
+       348.8
+      ],
+      "box": [
+       68,
+       81,
+       300,
+       437
+      ],
+      "base": {
+       "w": 266,
+       "d": 263.2
+      },
+      "sha": {
+       "src": "f2dd5fa1e65d",
+       "lo": "6ebbdc11e490"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        169.8
+       ],
+       "core": [
+        184,
+        206.5
+       ]
+      }
+     }
+    },
+    "arch-2": {
+     "front": {
+      "src": "princeton-td/forms/arch-2@2x.webp",
+      "lo": "princeton-td/forms/arch-2.webp",
+      "w": 368,
+      "h": 474,
+      "foot": [
+       184,
+       376.8
+      ],
+      "box": [
+       61,
+       94,
+       307,
+       467
+      ],
+      "base": {
+       "w": 280,
+       "d": 274.4
+      },
+      "sha": {
+       "src": "c8a268f15c53",
+       "lo": "a57694bafa83"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        182.5
+       ],
+       "core": [
+        184,
+        227
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/arch-2@2x.webp",
+      "lo": "princeton-td/forms/arch-2.webp",
+      "w": 368,
+      "h": 474,
+      "foot": [
+       184,
+       376.8
+      ],
+      "box": [
+       61,
+       94,
+       307,
+       467
+      ],
+      "base": {
+       "w": 280,
+       "d": 274.4
+      },
+      "sha": {
+       "src": "c8a268f15c53",
+       "lo": "a57694bafa83"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        182.5
+       ],
+       "core": [
+        184,
+        227
+       ]
+      }
+     }
+    },
+    "arch-3": {
+     "front": {
+      "src": "princeton-td/forms/arch-3@2x.webp",
+      "lo": "princeton-td/forms/arch-3.webp",
+      "w": 368,
+      "h": 490,
+      "foot": [
+       184,
+       390.8
+      ],
+      "box": [
+       48,
+       93,
+       314,
+       484
+      ],
+      "base": {
+       "w": 294,
+       "d": 285.6
+      },
+      "sha": {
+       "src": "83709d284791",
+       "lo": "e4a3d6573f2b"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        181.2
+       ],
+       "core": [
+        184,
+        233.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/arch-3@2x.webp",
+      "lo": "princeton-td/forms/arch-3.webp",
+      "w": 368,
+      "h": 490,
+      "foot": [
+       184,
+       390.8
+      ],
+      "box": [
+       48,
+       93,
+       314,
+       484
+      ],
+      "base": {
+       "w": 294,
+       "d": 285.6
+      },
+      "sha": {
+       "src": "83709d284791",
+       "lo": "e4a3d6573f2b"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        181.2
+       ],
+       "core": [
+        184,
+        233.5
+       ]
+      }
+     }
+    },
+    "arch-4a": {
+     "front": {
+      "src": "princeton-td/forms/arch-4a@2x.webp",
+      "lo": "princeton-td/forms/arch-4a.webp",
+      "w": 448,
+      "h": 498,
+      "foot": [
+       224,
+       396.8
+      ],
+      "box": [
+       87,
+       83,
+       361,
+       492
+      ],
+      "base": {
+       "w": 308,
+       "d": 296.8
+      },
+      "sha": {
+       "src": "05fc3bb05245",
+       "lo": "1b25d7d327a1"
+      },
+      "fx": {
+       "anchor": [
+        224,
+        172
+       ],
+       "core": [
+        224,
+        231.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/arch-4a@2x.webp",
+      "lo": "princeton-td/forms/arch-4a.webp",
+      "w": 448,
+      "h": 498,
+      "foot": [
+       224,
+       396.8
+      ],
+      "box": [
+       87,
+       83,
+       361,
+       492
+      ],
+      "base": {
+       "w": 308,
+       "d": 296.8
+      },
+      "sha": {
+       "src": "05fc3bb05245",
+       "lo": "1b25d7d327a1"
+      },
+      "fx": {
+       "anchor": [
+        224,
+        172
+       ],
+       "core": [
+        224,
+        231.5
+       ]
+      }
+     }
+    },
+    "arch-4b": {
+     "front": {
+      "src": "princeton-td/forms/arch-4b@2x.webp",
+      "lo": "princeton-td/forms/arch-4b.webp",
+      "w": 368,
+      "h": 498,
+      "foot": [
+       184,
+       396.8
+      ],
+      "box": [
+       47,
+       83,
+       321,
+       492
+      ],
+      "base": {
+       "w": 308,
+       "d": 296.8
+      },
+      "sha": {
+       "src": "0686daeceee9",
+       "lo": "0e24a488ea27"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        172
+       ],
+       "core": [
+        184,
+        231.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/arch-4b@2x.webp",
+      "lo": "princeton-td/forms/arch-4b.webp",
+      "w": 368,
+      "h": 498,
+      "foot": [
+       184,
+       396.8
+      ],
+      "box": [
+       47,
+       83,
+       321,
+       492
+      ],
+      "base": {
+       "w": 308,
+       "d": 296.8
+      },
+      "sha": {
+       "src": "0686daeceee9",
+       "lo": "0e24a488ea27"
+      },
+      "fx": {
+       "anchor": [
+        184,
+        172
+       ],
+       "core": [
+        184,
+        231.5
+       ]
+      }
+     }
+    },
+    "club-1": {
+     "front": {
+      "src": "princeton-td/forms/club-1@2x.webp",
+      "lo": "princeton-td/forms/club-1.webp",
+      "w": 204,
+      "h": 356,
+      "foot": [
+       102,
+       308.8
+      ],
+      "box": [
+       9,
+       46,
+       195,
+       350
+      ],
+      "base": {
+       "w": 215.6,
+       "d": 215.6
+      },
+      "sha": {
+       "src": "33068e7a92bf",
+       "lo": "1144968b290a"
+      },
+      "fx": {
+       "anchor": [
+        102,
+        161.5
+       ],
+       "core": [
+        102,
+        169
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/club-1@2x.webp",
+      "lo": "princeton-td/forms/club-1.webp",
+      "w": 204,
+      "h": 356,
+      "foot": [
+       102,
+       308.8
+      ],
+      "box": [
+       9,
+       46,
+       195,
+       350
+      ],
+      "base": {
+       "w": 215.6,
+       "d": 215.6
+      },
+      "sha": {
+       "src": "33068e7a92bf",
+       "lo": "1144968b290a"
+      },
+      "fx": {
+       "anchor": [
+        102,
+        161.5
+       ],
+       "core": [
+        102,
+        169
+       ]
+      }
+     }
+    },
+    "club-2": {
+     "front": {
+      "src": "princeton-td/forms/club-2@2x.webp",
+      "lo": "princeton-td/forms/club-2.webp",
+      "w": 208,
+      "h": 382,
+      "foot": [
+       104,
+       332.8
+      ],
+      "box": [
+       5,
+       45,
+       203,
+       377
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 229.6
+      },
+      "sha": {
+       "src": "82dda621f657",
+       "lo": "7527f4950d23"
+      },
+      "fx": {
+       "anchor": [
+        104,
+        171.2
+       ],
+       "core": [
+        104,
+        180.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/club-2@2x.webp",
+      "lo": "princeton-td/forms/club-2.webp",
+      "w": 208,
+      "h": 382,
+      "foot": [
+       104,
+       332.8
+      ],
+      "box": [
+       5,
+       45,
+       203,
+       377
+      ],
+      "base": {
+       "w": 229.6,
+       "d": 229.6
+      },
+      "sha": {
+       "src": "82dda621f657",
+       "lo": "7527f4950d23"
+      },
+      "fx": {
+       "anchor": [
+        104,
+        171.2
+       ],
+       "core": [
+        104,
+        180.5
+       ]
+      }
+     }
+    },
+    "club-3": {
+     "front": {
+      "src": "princeton-td/forms/club-3@2x.webp",
+      "lo": "princeton-td/forms/club-3.webp",
+      "w": 220,
+      "h": 412,
+      "foot": [
+       110,
+       358.8
+      ],
+      "box": [
+       5,
+       46,
+       215,
+       406
+      ],
+      "base": {
+       "w": 243.6,
+       "d": 243.6
+      },
+      "sha": {
+       "src": "876802563490",
+       "lo": "b27bbd45c9d1"
+      },
+      "fx": {
+       "anchor": [
+        110,
+        182.8
+       ],
+       "core": [
+        110,
+        194
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/club-3@2x.webp",
+      "lo": "princeton-td/forms/club-3.webp",
+      "w": 220,
+      "h": 412,
+      "foot": [
+       110,
+       358.8
+      ],
+      "box": [
+       5,
+       46,
+       215,
+       406
+      ],
+      "base": {
+       "w": 243.6,
+       "d": 243.6
+      },
+      "sha": {
+       "src": "876802563490",
+       "lo": "b27bbd45c9d1"
+      },
+      "fx": {
+       "anchor": [
+        110,
+        182.8
+       ],
+       "core": [
+        110,
+        194
+       ]
+      }
+     }
+    },
+    "club-4a": {
+     "front": {
+      "src": "princeton-td/forms/club-4a@2x.webp",
+      "lo": "princeton-td/forms/club-4a.webp",
+      "w": 232,
+      "h": 484,
+      "foot": [
+       116,
+       428.8
+      ],
+      "box": [
+       5,
+       24,
+       227,
+       479
+      ],
+      "base": {
+       "w": 257.6,
+       "d": 257.6
+      },
+      "sha": {
+       "src": "ea9d0f7e142d",
+       "lo": "609c7a1f0ba7"
+      },
+      "fx": {
+       "anchor": [
+        116,
+        196.9
+       ],
+       "core": [
+        116,
+        218
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/club-4a@2x.webp",
+      "lo": "princeton-td/forms/club-4a.webp",
+      "w": 232,
+      "h": 484,
+      "foot": [
+       116,
+       428.8
+      ],
+      "box": [
+       5,
+       24,
+       227,
+       479
+      ],
+      "base": {
+       "w": 257.6,
+       "d": 257.6
+      },
+      "sha": {
+       "src": "ea9d0f7e142d",
+       "lo": "609c7a1f0ba7"
+      },
+      "fx": {
+       "anchor": [
+        116,
+        196.9
+       ],
+       "core": [
+        116,
+        218
+       ]
+      }
+     }
+    },
+    "club-4b": {
+     "front": {
+      "src": "princeton-td/forms/club-4b@2x.webp",
+      "lo": "princeton-td/forms/club-4b.webp",
+      "w": 232,
+      "h": 440,
+      "foot": [
+       116,
+       384.8
+      ],
+      "box": [
+       5,
+       27,
+       227,
+       435
+      ],
+      "base": {
+       "w": 257.6,
+       "d": 257.6
+      },
+      "sha": {
+       "src": "5f9792cae8ca",
+       "lo": "21ef5b262cbd"
+      },
+      "fx": {
+       "anchor": [
+        116,
+        182
+       ],
+       "core": [
+        116,
+        197.5
+       ]
+      }
+     },
+     "rear": {
+      "src": "princeton-td/forms/club-4b@2x.webp",
+      "lo": "princeton-td/forms/club-4b.webp",
+      "w": 232,
+      "h": 440,
+      "foot": [
+       116,
+       384.8
+      ],
+      "box": [
+       5,
+       27,
+       227,
+       435
+      ],
+      "base": {
+       "w": 257.6,
+       "d": 257.6
+      },
+      "sha": {
+       "src": "5f9792cae8ca",
+       "lo": "21ef5b262cbd"
+      },
+      "fx": {
+       "anchor": [
+        116,
+        182
+       ],
+       "core": [
+        116,
+        197.5
+       ]
+      }
+     }
     }
    }
   },
@@ -945,6 +3787,16 @@
     "sha": {
      "src": "fa45293d3a74",
      "lo": "c569a2fa062a"
+    },
+    "fx": {
+     "anchor": [
+      405,
+      349.6
+     ],
+     "core": [
+      405,
+      437
+     ]
     }
    },
    "rear": {
@@ -969,6 +3821,16 @@
     "sha": {
      "src": "357a4d9ddcf3",
      "lo": "20c5897dd0a4"
+    },
+    "fx": {
+     "anchor": [
+      405,
+      338.4
+     ],
+     "core": [
+      405,
+      423
+     ]
     }
    }
   }

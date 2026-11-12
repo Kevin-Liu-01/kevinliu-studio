@@ -1,16 +1,16 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "c2b17715 + 30e69931 + 0a919baa",
+ "head": "c2b17715 + 30e69931 + 3bc364c1",
  "pins": {
   "cards": "c2b17715",
   "sound": "30e69931",
-  "battle": "0a919baa"
+  "battle": "3bc364c1"
  },
- "synced": "2026-11-12T08:10:34.220Z",
+ "synced": "2026-11-12T16:48:07.719Z",
  "stages": {
   "cards": {
-   "files": 1090,
-   "bytes": 107620590,
+   "files": 1091,
+   "bytes": 107660372,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -736,6 +736,11 @@
      "src": "r4/ex/grounds/turboslide.webp",
      "sha256": "f816040355cbb0140ff711b63389bc7d9e6c6c1de1f589f10b3476732b126f53",
      "bytes": 314116
+    },
+    "public/ex/grounds/matter.js": {
+     "src": "r4/ex/grounds/matter.js",
+     "sha256": "8ed0b56b851dfd5965b219c75078ffeff587965ba772cb210887795545ea3ec2",
+     "bytes": 39782
     },
     "public/ex/media/agent-machines/cast.webp": {
      "src": "r4/ex/media/agent-machines/cast.webp",
@@ -10961,73 +10966,113 @@
    }
   },
   "battle": {
-   "files": 894,
-   "bytes": 144520678,
+   "files": 997,
+   "bytes": 152707690,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
-     "sha256": "bf2acb5e2ad5cbd959ffb7ae4eb2fb4e6f6db15ea6edda3fb93c6b12876d72b8",
-     "bytes": 32329
+     "sha256": "1753807b6de8056f2a85ece21146f0e2027ef6e87b534d7769b1f9a612c75086",
+     "bytes": 33773
+    },
+    "public/battle/arena/aura.js": {
+     "src": "r4/play/arena/aura.js",
+     "sha256": "8d75471d96844769b2b9acb322cbc633edb931b9a8602ebf968fdf6a241f9a83",
+     "bytes": 179020
     },
     "public/battle/arena/board.js": {
      "src": "r4/play/arena/board.js",
-     "sha256": "06c8f296d1450b295f8066428d65f1c04166288f30c058020a4180e7dfd3ffc6",
-     "bytes": 93274
+     "sha256": "84622a4ad748cb6b15730df4448a076c535a3ed465b1b6fd077e033061dfe557",
+     "bytes": 177182
+    },
+    "public/battle/arena/body.js": {
+     "src": "r4/play/arena/body.js",
+     "sha256": "d7f1b27b6c8dd14e7021d744ae12b4988f5279bf83002bf5702edb9824349167",
+     "bytes": 7234
+    },
+    "public/battle/arena/exfx.js": {
+     "src": "r4/play/arena/exfx.js",
+     "sha256": "5b81205ba2ba789f421aeb73ad75d92e575e6c6620c1a0d65291ed47b9d310ef",
+     "bytes": 20891
     },
     "public/battle/arena/ground.js": {
      "src": "r4/play/arena/ground.js",
-     "sha256": "11abe3564adba3993ffe48ece2e97352ca50226f84a233b86fdb8fd9c00f9234",
-     "bytes": 25467
+     "sha256": "dd0f2a1e110451e18b8c97ecf3a8982c2398af89a5d2f254b826ac4223bdaede",
+     "bytes": 75797
+    },
+    "public/battle/arena/ptd-figure.js": {
+     "src": "r4/play/arena/ptd-figure.js",
+     "sha256": "a2d7f2fa8286548ddde26a597cf9fd8269fddc4ab51a827c6bc888ce59e62329",
+     "bytes": 36843
+    },
+    "public/battle/arena/ptd-sprite.js": {
+     "src": "r4/play/arena/ptd-sprite.js",
+     "sha256": "c5fc6436593bfdd03937d7a0b5c624a439fdcc9cfcf408c14bab8abb5e6a7876",
+     "bytes": 722302
+    },
+    "public/battle/arena/ptd-worker.js": {
+     "src": "r4/play/arena/ptd-worker.js",
+     "sha256": "56a80c6187f8f342fe86958c55be6f1d81257bc60322ddc2361d4a8a509ae276",
+     "bytes": 9620
     },
     "public/battle/arena/specials.js": {
      "src": "r4/play/arena/specials.js",
-     "sha256": "ec337cc5fb730ff11c70b1c4434a7905f07e5573b013b909dc56e1f2f8f53db4",
-     "bytes": 11105
+     "sha256": "417cfe46e76ab39b9bef29b3d4e4ecee5fa492e14c997c3d305f136f5d53231e",
+     "bytes": 61733
     },
     "public/battle/mat/board.js": {
      "src": "r4/play/mat/board.js",
-     "sha256": "5adb72fbdcec3ffc8f0c08bdb2748950d5fe9b13cb12cd39e8e973fbc303a7c9",
-     "bytes": 70028
+     "sha256": "0e35c14aa4841f3cccefb6af4cae14c9cc3d6fc64520edacf4bad99b3f82577b",
+     "bytes": 110631
     },
     "public/battle/mat/mat.css": {
      "src": "r4/play/mat/mat.css",
-     "sha256": "32e7afb1be8f4a7efc63e8a5e458de4f04e0e983e89e59facf7ab26e403f3607",
-     "bytes": 27363
+     "sha256": "edccc0f167c9f16c5659c46f70b8c89b97b1295e646722cb2dffa164e2cb6447",
+     "bytes": 40234
     },
     "public/battle/mat/specials.js": {
      "src": "r4/play/mat/specials.js",
-     "sha256": "b3feba87ec0dcd2feb60c23e95891722ca0430e00103c802910c72a63ed9424f",
-     "bytes": 7745
+     "sha256": "49f02f2579e95ca0be11cc2d56d28cc09615b2aa5a0610952c8c939bbb17243b",
+     "bytes": 8324
     },
     "public/battle/shared/battle.css": {
      "src": "r4/play/shared/battle.css",
-     "sha256": "8b151e5ee620b3d3eb28635cb4ef8175292f58b923ffb2dc019ab8d3ab19ad33",
-     "bytes": 5858
+     "sha256": "5dfdd9442f03fe00b0c2a21090fd515795b0eb9166719c578b804ed8d320f1d5",
+     "bytes": 17551
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "6f2671f80799db016be569f8978417593cdc46ce2091d2df427ebe34430ade6a",
-     "bytes": 64696
+     "sha256": "7311af0667bec68fe3d7db808fb8738824c67850745b109f8714f14620eb8220",
+     "bytes": 85052
+    },
+    "public/battle/shared/beats.js": {
+     "src": "r4/play/shared/beats.js",
+     "sha256": "9227559bfada0eeed460694d121e1a094218b6e86df6f6d8f08a3ef0232309b5",
+     "bytes": 55583
     },
     "public/battle/shared/excard.js": {
      "src": "r4/play/shared/excard.js",
      "sha256": "c44417529421201c7f47b2a44badf5d50913474ad5a4ec46fef3bb9f07580516",
      "bytes": 3846
     },
+    "public/battle/shared/forms.js": {
+     "src": "r4/play/shared/forms.js",
+     "sha256": "7e726112f37b922c728bea2899b1f11f48305f82de5eeaa68eccf46adcc522a1",
+     "bytes": 12639
+    },
     "public/battle/shared/fx.js": {
      "src": "r4/play/shared/fx.js",
-     "sha256": "e75f1bf38a21c3d7b3db4d2ab5431afbf86ad91cf24d847532761886cfd346f6",
-     "bytes": 15838
+     "sha256": "7f032946e25801a1bd4755e5ed3fc4d0b0c3db044d6b7348fca457d45ca33311",
+     "bytes": 42899
     },
     "public/battle/shared/hud.css": {
      "src": "r4/play/shared/hud.css",
-     "sha256": "143355df5647c4a2d02148462396109a826948433080d1b25b6390000400c1e5",
-     "bytes": 50393
+     "sha256": "f688b2492a6c4787fb21c699be8ce910cb8b722861ea9809f0b8547f0b54ef4e",
+     "bytes": 70104
     },
     "public/battle/shared/hud.js": {
      "src": "r4/play/shared/hud.js",
-     "sha256": "aeec978af5667e2912567528fc73ef79bbb676bddd2e7ea12401aa0c152a8af2",
-     "bytes": 64993
+     "sha256": "a9faafc162fb89f6da981f0a72b06d89ce394e8c7a3a602671955b84a3115d1b",
+     "bytes": 101169
     },
     "public/battle/shared/icons.js": {
      "src": "r4/play/shared/icons.js",
@@ -11036,33 +11081,48 @@
     },
     "public/battle/shared/leaders.js": {
      "src": "r4/play/shared/leaders.js",
-     "sha256": "1b90e60bff2f497364b06ec38da034cfb72a9f15a144c7b1db8131c61185eadb",
-     "bytes": 12288
+     "sha256": "f0b9c7126b3cb41853d27d67244a9b66d57a75a1487189ee2378f0d415624a1b",
+     "bytes": 16155
     },
     "public/battle/shared/pace.js": {
      "src": "r4/play/shared/pace.js",
-     "sha256": "f1fc6eb460c8210bb0881a90435e635cfacfaae554eaadff10e224cc89870933",
-     "bytes": 12267
+     "sha256": "d6fa3224220a732c3f8273c230ecf75d5c9712581e9260cc3f2562d85307c09e",
+     "bytes": 13848
     },
     "public/battle/shared/plan.js": {
      "src": "r4/play/shared/plan.js",
-     "sha256": "b168f74fdae0bba45a570e8a0522d65612eb65f5e33dd8ab32e6a223d44e19c4",
-     "bytes": 5351
+     "sha256": "fc2fdd3541fdf96db2cff5372c46aca11ce8760355efa77d8357db1f4eea3cff",
+     "bytes": 8014
     },
     "public/battle/shared/room.css": {
      "src": "r4/play/shared/room.css",
      "sha256": "c4baa98db4c5042825dd0acc35be028af799173b7af77550dc377ac156e051f7",
      "bytes": 10090
     },
+    "public/battle/shared/rules.js": {
+     "src": "r4/play/shared/rules.js",
+     "sha256": "151c4d6257223731687ef1899f695d2fe1e6be07c5e2b6f42b594421a5ef16cd",
+     "bytes": 56414
+    },
     "public/battle/shared/runtime.js": {
      "src": "r4/play/shared/runtime.js",
-     "sha256": "2dbf77d2811b4f198e76413c1536730533b653b32c29de24d9fc09c3ae6dcf11",
-     "bytes": 36178
+     "sha256": "9fbe541443a6c81662d3b533eae5a15daac7a921560b887880a6648482038a19",
+     "bytes": 53604
     },
     "public/battle/shared/strings.js": {
      "src": "r4/play/shared/strings.js",
-     "sha256": "49c7f04f64370b445db1efee7d3fc41f187c2b91fe80d774a971f48c61a5e653",
-     "bytes": 19027
+     "sha256": "4cf47311447bbea05ae2c20d4f60106fccafe477189a316e6de840f0c8f50ba3",
+     "bytes": 24456
+    },
+    "public/battle/shared/tower.js": {
+     "src": "r4/play/shared/tower.js",
+     "sha256": "fe5b45c139cfee5ab412142dcf0dc205bf286a619052c606e2ee79bbd1a877c7",
+     "bytes": 29951
+    },
+    "public/battle/arena/ptd-ink.json": {
+     "src": "r4/play/arena/ptd-ink.json",
+     "sha256": "1b3c89799e73a01ad53e198c35d701d938d284bed9103a942929ef2de408ff6c",
+     "bytes": 2403
     },
     "public/battle/vendor/broadcast/broadcast.css": {
      "src": "r4/play/vendor/broadcast/broadcast.css",
@@ -11076,8 +11136,8 @@
     },
     "public/battle/vendor/broadcast/media.js": {
      "src": "r4/play/vendor/broadcast/media.js",
-     "sha256": "2d2ab33600277cadaf75d1968cc2f304fcf8bc33d6c60e455144e6a1d8e61c83",
-     "bytes": 103057
+     "sha256": "9a26b4e9937f6810277a43156d87967bee09932322ad67b53c0fba8f6e687a93",
+     "bytes": 102765
     },
     "public/battle/vendor/broadcast/stage.css": {
      "src": "r4/play/vendor/broadcast/stage.css",
@@ -11241,13 +11301,13 @@
     },
     "public/battle/previews/claude-of-tanks.column-fire.webm": {
      "src": "r4/play/previews/claude-of-tanks.column-fire.webm",
-     "sha256": "120daa3cbbe48f1887e5b14f6804f6b90ee0bfa8d6cbc585db65599ada52a92f",
-     "bytes": 158600
+     "sha256": "449911f5084559821efcafabcf6ab7281f4e354eea14db4d483c1fba1596f64d",
+     "bytes": 215979
     },
     "public/battle/previews/claude-of-tanks.column-fire.webp": {
      "src": "r4/play/previews/claude-of-tanks.column-fire.webp",
-     "sha256": "cff81f50f4e289b079cba18bf74c1bda156027425b6b897bf9ade47a7af38419",
-     "bytes": 11886
+     "sha256": "f89b65391b2172176a273d235d1fd60745cbd700a4cd8b19c3ecd2ff30b0d38f",
+     "bytes": 12952
     },
     "public/battle/previews/claude-of-tanks.killcam.webm": {
      "src": "r4/play/previews/claude-of-tanks.killcam.webm",
@@ -11261,13 +11321,13 @@
     },
     "public/battle/previews/claude-of-tanks.one-spec.webm": {
      "src": "r4/play/previews/claude-of-tanks.one-spec.webm",
-     "sha256": "b4f39eb96c46346e860c65937c06ef7e70513e23ca77d16ca918801d4fa6aac4",
-     "bytes": 150432
+     "sha256": "55c8099a84565921b38b6027f469827dbf10e40d248a2a9385c92d49abefc080",
+     "bytes": 253369
     },
     "public/battle/previews/claude-of-tanks.one-spec.webp": {
      "src": "r4/play/previews/claude-of-tanks.one-spec.webp",
-     "sha256": "a0c28babbaefa4f04574342520a7b708a515f5f2447d00443e38cda5948a7797",
-     "bytes": 17636
+     "sha256": "72b196d00bfe197db668521a66e7ef5b9106823d9ae8a193cf3e127605fe0093",
+     "bytes": 28704
     },
     "public/battle/previews/claude-of-tanks.sabot-round.webm": {
      "src": "r4/play/previews/claude-of-tanks.sabot-round.webm",
@@ -11869,6 +11929,11 @@
      "sha256": "546bda57dc7391541f6016b2d8afdfe86b7f629225ec5c8b8e21398a772472e0",
      "bytes": 3764
     },
+    "public/battle/media/figures/agent-pets/idle-front.webp": {
+     "src": "r4/play/media/figures/agent-pets/idle-front.webp",
+     "sha256": "7b09755b7e12c39cb4096e70f80c46ff53639bd62cbcd1fdc5f11a875edec1bc",
+     "bytes": 16682
+    },
     "public/battle/media/figures/agent-pets/rear.webp": {
      "src": "r4/play/media/figures/agent-pets/rear.webp",
      "sha256": "ad7af2024d0ab3ff82448e9593ad3e40962c6737776cbb496bb3750a74d76fe8",
@@ -12161,8 +12226,8 @@
     },
     "public/battle/media/figures/manifest.json": {
      "src": "r4/play/media/figures/manifest.json",
-     "sha256": "4876909f00a1e427b0156b3adc8f2c0bef99daa3f0fd96897743c3ae00c561a1",
-     "bytes": 14331
+     "sha256": "1c3acefe85839d4d9567e0425da618fee661fe1ac72d58df14dabb239be35b5b",
+     "bytes": 59011
     },
     "public/battle/media/figures/ommc/front.webp": {
      "src": "r4/play/media/figures/ommc/front.webp",
@@ -12224,25 +12289,460 @@
      "sha256": "785852d018e968945e1ea1170b8028d9a510f340ebbb3ea3289dd18092ad7e3c",
      "bytes": 78016
     },
-    "public/battle/media/figures/princeton-td/front.webp": {
-     "src": "r4/play/media/figures/princeton-td/front.webp",
-     "sha256": "8ef0350be6c267fa930d29b7a05e6e3e7310123270748f50c73c0cbbff29d6a2",
-     "bytes": 34222
+    "public/battle/media/figures/princeton-td/forms/arch-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-1.webp",
+     "sha256": "6ebbdc11e4909b596299e2f76b895a5371d25a1c274ec0eb3412e73dc06a52d7",
+     "bytes": 13302
     },
-    "public/battle/media/figures/princeton-td/front@2x.webp": {
-     "src": "r4/play/media/figures/princeton-td/front@2x.webp",
-     "sha256": "bfd6b480e65f9a83753528781bb2e3a4c6de07cd0afee7b696423424d9ab873d",
-     "bytes": 61064
+    "public/battle/media/figures/princeton-td/forms/arch-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-1@2x.webp",
+     "sha256": "f2dd5fa1e65d20737a7af34e84dfb8ed1bf0de5b541f72a4966df947116f752a",
+     "bytes": 35180
     },
-    "public/battle/media/figures/princeton-td/rear.webp": {
-     "src": "r4/play/media/figures/princeton-td/rear.webp",
-     "sha256": "2c46e46c7ee2e9bf81498e58dbc77ee7673cd6d1e19dda565f1436416aeb83b7",
-     "bytes": 35308
+    "public/battle/media/figures/princeton-td/forms/arch-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-2.webp",
+     "sha256": "a57694bafa83e4c5c0493c1b91759a794e64fa3bca71c6f4b651851f684ba045",
+     "bytes": 15366
     },
-    "public/battle/media/figures/princeton-td/rear@2x.webp": {
-     "src": "r4/play/media/figures/princeton-td/rear@2x.webp",
-     "sha256": "dab4c9ebe2a24521826b69ccf6977fe50309736257248a15ca6dd1b961508d16",
-     "bytes": 63714
+    "public/battle/media/figures/princeton-td/forms/arch-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-2@2x.webp",
+     "sha256": "c8a268f15c53d292e84cb2bce2d5f0b69f75214eeed72e76974076877a6d8f22",
+     "bytes": 42940
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-3.webp",
+     "sha256": "e4a3d6573f2b6a8cd8d7d42e627c33ceb85448e1422ae22d00dc2428fed3dd34",
+     "bytes": 17426
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-3@2x.webp",
+     "sha256": "83709d28479194d17259075bffbd10ae55ed83323c48716e5dd33daa2d0ddfb1",
+     "bytes": 48300
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-4a.webp",
+     "sha256": "1b25d7d327a10e2f41ce18692f17df3281f3c86e1af9bc86ece214311ece17a8",
+     "bytes": 18044
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-4a@2x.webp",
+     "sha256": "05fc3bb05245ff8a9bbddc74547533c15e8b7bbacf12d4f2e4afa0b1f1827987",
+     "bytes": 49546
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-4b.webp",
+     "sha256": "0e24a488ea273635208ba54b8d8956fc32c7b8c93b1c45e83c4b693f77e8808b",
+     "bytes": 19864
+    },
+    "public/battle/media/figures/princeton-td/forms/arch-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/arch-4b@2x.webp",
+     "sha256": "0686daeceee9ff62ad5f3ca86c69fdc1f3faa18f63f93b7d0d0d4127d8006319",
+     "bytes": 57492
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-1-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-1-rear.webp",
+     "sha256": "4c77af514916ec040eaa78f36ef31755b5b62152c95166bf20b4bd6ca751de99",
+     "bytes": 6450
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-1-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-1-rear@2x.webp",
+     "sha256": "74af99393a61f0c99afcc5d4d7c3762c9167b44ad76cff37f5c167f282298e07",
+     "bytes": 15420
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-1.webp",
+     "sha256": "af71403fd56ecae92844893e4ae55251e3e6ee06d45d1880744ccd73c7658acf",
+     "bytes": 6766
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-1@2x.webp",
+     "sha256": "b5f58d761a23f4073a184654f2ac5e302bcd57d691535c412ecff1e0363957da",
+     "bytes": 16118
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-2-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-2-rear.webp",
+     "sha256": "d80cfe054389cdcd8e519b05ef9d3e7c6f4253110364c0c95f184dce8e5ae9a5",
+     "bytes": 7570
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-2-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-2-rear@2x.webp",
+     "sha256": "d83fdeaddec7d444cd6a64f31bebc0bcdf40ea768acd7170920dcffbb4cc09cb",
+     "bytes": 18284
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-2.webp",
+     "sha256": "7e3b4127a0e3dc41ac4dc5489d756743826b02781ef87f93804cc36d7c1bf8ac",
+     "bytes": 7726
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-2@2x.webp",
+     "sha256": "ce50a385e34dbd829ea98c1d06795c5f63f62eb703afddd6ba239c0b32190d15",
+     "bytes": 19076
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-3-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-3-rear.webp",
+     "sha256": "2c0feea3c77c1e98d3be2e5f31dad4e426b49527a636d887c3c9ea7500d1f2c4",
+     "bytes": 9410
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-3-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-3-rear@2x.webp",
+     "sha256": "e72cb967d0cf444f2e3eb4f4fdb97fc1db10f8b4481d0c6014dd8587a02a1a30",
+     "bytes": 22854
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-3.webp",
+     "sha256": "793d308cf1f4a5b950dd91600820c07ba34d13cb30e223ecd3872bf71d007b71",
+     "bytes": 9498
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-3@2x.webp",
+     "sha256": "957a0dd465b2410d1146920eafac361635106a1f1cf0c4551ad66dffeae30a24",
+     "bytes": 23386
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4a-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4a-rear.webp",
+     "sha256": "b92567c2225df2efdafdc0cbd9a6154435d1921d7f3466d8b7bd0b12c50f0d26",
+     "bytes": 9972
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4a-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4a-rear@2x.webp",
+     "sha256": "421802d7fcdf622a9747e55422cca60b5a483279bf3b760c5583b60207082123",
+     "bytes": 25350
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4a.webp",
+     "sha256": "641446f63e6ecf20f949183ab82d00bdc1f01ec16f62a140ced49eb83c17bd03",
+     "bytes": 10370
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4a@2x.webp",
+     "sha256": "416a6375a4aaa66567ac24a24675040c04af13cba274c04cb69985fdf497abd7",
+     "bytes": 26080
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4b-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4b-rear.webp",
+     "sha256": "d21d47695ca99068ce039d09bfb5a7171b90f6f45a5d1e63146e957ac359d78f",
+     "bytes": 10534
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4b-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4b-rear@2x.webp",
+     "sha256": "bc5f5277b087c61ef5eaf36f5d7a46637654291599969cfb5e875df225eb721a",
+     "bytes": 26342
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4b.webp",
+     "sha256": "2d425604733803f5cd708824c72dc78ebaa0a4a994ebb7b65eb9806f89334033",
+     "bytes": 9632
+    },
+    "public/battle/media/figures/princeton-td/forms/cannon-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/cannon-4b@2x.webp",
+     "sha256": "f74eb4e6b316f76649f0d4ee88af8e0a049acb2597f33c4bc5ab324d1fc48f73",
+     "bytes": 24784
+    },
+    "public/battle/media/figures/princeton-td/forms/club-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-1.webp",
+     "sha256": "1144968b290a13aa7a966c060d9fbedc690c52c3a6522352cce6dea2aa43736b",
+     "bytes": 8418
+    },
+    "public/battle/media/figures/princeton-td/forms/club-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-1@2x.webp",
+     "sha256": "33068e7a92bf4392b62dc9969e6759d8a7faff535e16a399fa4bb8c7de4011de",
+     "bytes": 20936
+    },
+    "public/battle/media/figures/princeton-td/forms/club-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-2.webp",
+     "sha256": "7527f4950d23939cc889f62c949af758a949a0137db75f382837f90b530167ab",
+     "bytes": 9766
+    },
+    "public/battle/media/figures/princeton-td/forms/club-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-2@2x.webp",
+     "sha256": "82dda621f657e5ef8469354989a1501163d0c5d63aafe154669da7d33755c643",
+     "bytes": 25012
+    },
+    "public/battle/media/figures/princeton-td/forms/club-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-3.webp",
+     "sha256": "b27bbd45c9d1d501bd109ac802a0f2fecbdf69729eb7a2e732d9d44234c0a218",
+     "bytes": 11606
+    },
+    "public/battle/media/figures/princeton-td/forms/club-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-3@2x.webp",
+     "sha256": "87680256349018a373bfd07977e2a10d67bcf85d85324d4afab0dfbc4b5a0885",
+     "bytes": 30934
+    },
+    "public/battle/media/figures/princeton-td/forms/club-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-4a.webp",
+     "sha256": "609c7a1f0ba742b0765643df1380497f0e8eab649be90d0f1d58fc366a0a4d32",
+     "bytes": 15958
+    },
+    "public/battle/media/figures/princeton-td/forms/club-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-4a@2x.webp",
+     "sha256": "ea9d0f7e142d7ad66171035b6eb12da5414251301345518a4496b4e80322ef29",
+     "bytes": 41864
+    },
+    "public/battle/media/figures/princeton-td/forms/club-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-4b.webp",
+     "sha256": "21ef5b262cbd3b06766035c18aaab95038b6add0877a3c003dacf41ca46cc12c",
+     "bytes": 12410
+    },
+    "public/battle/media/figures/princeton-td/forms/club-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/club-4b@2x.webp",
+     "sha256": "5f9792cae8cae67bd4c1e67af1f7b809d22ea199f2d182506712dfbd3fffa100",
+     "bytes": 31690
+    },
+    "public/battle/media/figures/princeton-td/forms/forms.json": {
+     "src": "r4/play/media/figures/princeton-td/forms/forms.json",
+     "sha256": "7eb25cef8b65b940fca766b80a848701ff5ac1fd46b8b041cc0f934e5ac1a4d4",
+     "bytes": 41446
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-1.webp",
+     "sha256": "abdf16309aec5335f73fee7fe9d17e910cce2ec8acb2481ffb84ac9c11e2efd6",
+     "bytes": 11210
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-1@2x.webp",
+     "sha256": "01c4e57eb958a23e197025f597a3425f0b1f6ba4f76745489050779e35595068",
+     "bytes": 29402
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-2.webp",
+     "sha256": "4debf809be022681fffae6b6c4b748dc80ca06574b27b7f9e9cea4b7faaa148d",
+     "bytes": 13222
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-2@2x.webp",
+     "sha256": "036c26a9447463b8aa54e1a05930475c0c58c2fb409922c7312748622d9beba9",
+     "bytes": 34876
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-3.webp",
+     "sha256": "f464eac539bded990a52b2f8d0febac707cc5ff7245ea7c1d6781f29fb48633f",
+     "bytes": 16522
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-3@2x.webp",
+     "sha256": "bd409acf0f58f266ad4358da82ad3eadbed512cd67161d6f2250f8a87a0eba13",
+     "bytes": 45180
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-4a.webp",
+     "sha256": "e73064becd5371a14da303625e5f2534ca4a9a375f57d96bf1112245a6849edd",
+     "bytes": 15390
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-4a@2x.webp",
+     "sha256": "c69c07df102b1d5e08269068d07f5bb7dbbc6177ceb300d41d3acce86b94ed7f",
+     "bytes": 40152
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-4b.webp",
+     "sha256": "dbb20dfa30dafd63523125345e22d43aa8e219f5864bcece3ae42304054db384",
+     "bytes": 19268
+    },
+    "public/battle/media/figures/princeton-td/forms/lab-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/lab-4b@2x.webp",
+     "sha256": "feee3046a56e2e919fb2a76e922aa91279c6d498e2205a1798c9fe95aaeb6c53",
+     "bytes": 55276
+    },
+    "public/battle/media/figures/princeton-td/forms/library-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-1.webp",
+     "sha256": "cec32be05cf8769f6aaa7235508f7128f33b90a89d225eb84436c49fc4583e77",
+     "bytes": 10436
+    },
+    "public/battle/media/figures/princeton-td/forms/library-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-1@2x.webp",
+     "sha256": "b0eb8917e5bc5ea2703839c6b368b260d4f3d9d9419ecb8acd9cb17c4f716706",
+     "bytes": 28256
+    },
+    "public/battle/media/figures/princeton-td/forms/library-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-2.webp",
+     "sha256": "c006e4c8d57608ce4df2847cda9dfdd85c6c5b74eb1ec833e9c34c1c417aed66",
+     "bytes": 12452
+    },
+    "public/battle/media/figures/princeton-td/forms/library-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-2@2x.webp",
+     "sha256": "9ffe5f712498cf0706884ee4086cfc4fcf826f0bb2e110533854ecbf06d448fa",
+     "bytes": 34142
+    },
+    "public/battle/media/figures/princeton-td/forms/library-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-3.webp",
+     "sha256": "cc7a5af6420504ac9247c1c2911632ee2ee19b382572762b34be80db941d44a5",
+     "bytes": 15992
+    },
+    "public/battle/media/figures/princeton-td/forms/library-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-3@2x.webp",
+     "sha256": "d0ff6c59a73ff88ddd822707da439b3e2659acaa45cbc32393e38d82496af572",
+     "bytes": 45232
+    },
+    "public/battle/media/figures/princeton-td/forms/library-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-4a.webp",
+     "sha256": "e3661a9be7f8dcca181955cd39efbc4122eee880ae52e86c79c7dcd6e1a8668b",
+     "bytes": 17918
+    },
+    "public/battle/media/figures/princeton-td/forms/library-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-4a@2x.webp",
+     "sha256": "ac6006714671db989e5dec9cdd48bc53acceb6e850af4844431e8f2fca8b6eac",
+     "bytes": 51094
+    },
+    "public/battle/media/figures/princeton-td/forms/library-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-4b.webp",
+     "sha256": "d13cbb8c4c35dfddac14be029d1d0bfb0380098ec2a52457dbbe68f48fe14b9e",
+     "bytes": 18608
+    },
+    "public/battle/media/figures/princeton-td/forms/library-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/library-4b@2x.webp",
+     "sha256": "c83bbe81cb68602ac47ea01de42f046d6a44edabe4aa447df1b86d06726fd6ef",
+     "bytes": 53258
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-1-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-1-rear.webp",
+     "sha256": "abfb9827264e5f3e3ad7f4554133fb98618e6b21985f39d15e684c76ec260bf5",
+     "bytes": 6524
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-1-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-1-rear@2x.webp",
+     "sha256": "e1de0dd68ec0ff1c50e571ff5cd0e96cd218bf1ded878bfc0cd28b0550cc8cf6",
+     "bytes": 15650
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-1.webp",
+     "sha256": "585e6aa5367e283950d9213d1d0da152ae13b475cbfeb3c4566c6ef3ce0b573f",
+     "bytes": 6564
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-1@2x.webp",
+     "sha256": "6277c95477d6cc14ca31f61ceb40b718c1402d05420dc8adcd6892f05e68837a",
+     "bytes": 15956
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-2-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-2-rear.webp",
+     "sha256": "a634dcac4b65aef2e877f0436138c467ffb63e8c3c77bd3fda57ad2e28e506bf",
+     "bytes": 7736
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-2-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-2-rear@2x.webp",
+     "sha256": "b47ebb36db25dcd291138ea618194bb8837ea761f1bc82835ef4b2a2b70f29c8",
+     "bytes": 19188
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-2.webp",
+     "sha256": "06cc511ce8fd37b252825d3add935f4a00d3cc36d989e3b0b66586a913df8c41",
+     "bytes": 7548
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-2@2x.webp",
+     "sha256": "051f904219dca36193a406865668d4d315ca62d2270f54914cc615fd9ced83f9",
+     "bytes": 19188
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-3-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-3-rear.webp",
+     "sha256": "dc751601eb812e919fef0e5f7fa837f4f1cb426d261424f95ac8830d42d8c7e7",
+     "bytes": 9358
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-3-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-3-rear@2x.webp",
+     "sha256": "a65d992a6fd047030d33bdc466631a615fbe10096d553983ebe2600cdbe32b93",
+     "bytes": 24024
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-3.webp",
+     "sha256": "4f1abd49055ab4bd2acecc6740843723b5e0a950a64aae6a23f99f5d33e512ca",
+     "bytes": 9232
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-3@2x.webp",
+     "sha256": "b3582bbc79b14f2965b3e0e6c20ad8ba964a407415f2ce8c5a24244bb1ad8906",
+     "bytes": 23720
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4a-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4a-rear.webp",
+     "sha256": "4cdfb26eee128d78cf471f3984660eb563043bf904f1768bc6f84761cb0906fe",
+     "bytes": 9696
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4a-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4a-rear@2x.webp",
+     "sha256": "5ed1efc3a678a1d888024f06adee9e890ad783f1256f86c4a07ce921c9a3d7c3",
+     "bytes": 25078
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4a.webp",
+     "sha256": "f4b89a00c90adc0527cbf629a59cef913fee9a4e977662640843c7008d49572e",
+     "bytes": 9960
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4a@2x.webp",
+     "sha256": "a846488645b1dd47b7af29e8dc7521c0a9dad618220a3ea564333433385edf02",
+     "bytes": 25048
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4b-rear.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4b-rear.webp",
+     "sha256": "d4d91be4c3f48effcb396b1292cdfc2a676868547a71e4152936747d1c530648",
+     "bytes": 10538
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4b-rear@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4b-rear@2x.webp",
+     "sha256": "b26501e9164e0a99b7a9b1f19fb4ac990a0b35b657fee6fafaea595acd996d04",
+     "bytes": 26656
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4b.webp",
+     "sha256": "fd417188fda0eaca89d93f98aac22599b73d793debf3c349a4b5a2896b9075c5",
+     "bytes": 10426
+    },
+    "public/battle/media/figures/princeton-td/forms/mortar-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/mortar-4b@2x.webp",
+     "sha256": "7f7415efcecd55729095a8fb3ec4859ac1ca49c80bc52d77aa32f8edf66971c0",
+     "bytes": 26106
+    },
+    "public/battle/media/figures/princeton-td/forms/station-1.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-1.webp",
+     "sha256": "4fd1418a7e4f781f8526ffc9cf602622052c1616eafdc0b096b3f644fc574dd4",
+     "bytes": 13144
+    },
+    "public/battle/media/figures/princeton-td/forms/station-1@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-1@2x.webp",
+     "sha256": "4383bf5aaecfc403330f38824c37f7e4befa704ca88c89b9b5ba11cbf4bc504d",
+     "bytes": 34144
+    },
+    "public/battle/media/figures/princeton-td/forms/station-2.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-2.webp",
+     "sha256": "0012e14bd60a58af18060c30867c34dac038f937c4585e635795b2bd27f51cd7",
+     "bytes": 13714
+    },
+    "public/battle/media/figures/princeton-td/forms/station-2@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-2@2x.webp",
+     "sha256": "c0b28f8dcf682603cfd464da3a4e2c9f50fbae04567dd3f8cca6a72807dab236",
+     "bytes": 34478
+    },
+    "public/battle/media/figures/princeton-td/forms/station-3.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-3.webp",
+     "sha256": "ac789f5bbe041a6283762156665110a82ebe4123726c7bdb6571c080aeae76f2",
+     "bytes": 14374
+    },
+    "public/battle/media/figures/princeton-td/forms/station-3@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-3@2x.webp",
+     "sha256": "82ac8dce6f63a02a63e2f135978ebc5da70d9fef9881d9e693eaa4a9bbb51b27",
+     "bytes": 34966
+    },
+    "public/battle/media/figures/princeton-td/forms/station-4a.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-4a.webp",
+     "sha256": "258c763b9f87139d4cb8b03204954072c2922cf74260787e1a662b61bc497072",
+     "bytes": 16042
+    },
+    "public/battle/media/figures/princeton-td/forms/station-4a@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-4a@2x.webp",
+     "sha256": "07bbc9e22ac502ac5e2cb168a81e243bab5553106d7782eb36330eac64ad5dbc",
+     "bytes": 42176
+    },
+    "public/battle/media/figures/princeton-td/forms/station-4b.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-4b.webp",
+     "sha256": "b68e4a030145bbf2120870fc0c202af8308e110cf1e777a8ade82a858604c468",
+     "bytes": 18876
+    },
+    "public/battle/media/figures/princeton-td/forms/station-4b@2x.webp": {
+     "src": "r4/play/media/figures/princeton-td/forms/station-4b@2x.webp",
+     "sha256": "d20e6e955d170255509b7c305a7474a99b1cfb27dfabf0b511333e49ed010066",
+     "bytes": 48646
     },
     "public/battle/media/figures/prototemplate/front.webp": {
      "src": "r4/play/media/figures/prototemplate/front.webp",
@@ -13849,6 +14349,11 @@
      "sha256": "896b8e2235d3af9c0b756e9fc452805750b89620a59b84ec20bfa08ce52c0882",
      "bytes": 114008
     },
+    "public/battle/r3/media-moves/claude-of-tanks/column-fire-oct.webp": {
+     "src": "r3/battle/media-moves/claude-of-tanks/column-fire-oct.webp",
+     "sha256": "90e63cc588a162f9dc8be8dcb1c8e6ae67331858f51ba7468c1090eed41b8647",
+     "bytes": 181518
+    },
     "public/battle/r3/media-moves/claude-of-tanks/column-fire.webp": {
      "src": "r3/battle/media-moves/claude-of-tanks/column-fire.webp",
      "sha256": "4d287755c78755ae2196ff553bb5d370045cb7051b702f7c07311fe228f150c4",
@@ -13858,6 +14363,11 @@
      "src": "r3/battle/media-moves/claude-of-tanks/cot-column-fire-clean.mp4",
      "sha256": "44e50a6555bb4c11906b0dc2947c6715789a4153eb7807c0ff491afecf1d5b05",
      "bytes": 2255250
+    },
+    "public/battle/r3/media-moves/claude-of-tanks/cot-column-fire-oct.mp4": {
+     "src": "r3/battle/media-moves/claude-of-tanks/cot-column-fire-oct.mp4",
+     "sha256": "efd78eac5b484aa2add1a640621ffc36bd3c64aeb71809d18fc63f31b4d5ff1f",
+     "bytes": 2070938
     },
     "public/battle/r3/media-moves/claude-of-tanks/cot-killcam-clean.mp4": {
      "src": "r3/battle/media-moves/claude-of-tanks/cot-killcam-clean.mp4",
@@ -13869,6 +14379,11 @@
      "sha256": "605f4e7cb2adedb743ae53cc94e6894b4275734fdb4b697ad1b382435edd40ea",
      "bytes": 1008490
     },
+    "public/battle/r3/media-moves/claude-of-tanks/cot-one-spec-oct.mp4": {
+     "src": "r3/battle/media-moves/claude-of-tanks/cot-one-spec-oct.mp4",
+     "sha256": "1c8a29284eabf6c9b5d99aee1ea060f5cb6e322f103c7e332f93bb42e8bf6b27",
+     "bytes": 2097728
+    },
     "public/battle/r3/media-moves/claude-of-tanks/cot-sabot-round-clean.mp4": {
      "src": "r3/battle/media-moves/claude-of-tanks/cot-sabot-round-clean.mp4",
      "sha256": "ba3d7f01c5076e8bf630d33e47afc008260cad4500deb51cb54807a5b31d68fe",
@@ -13878,6 +14393,11 @@
      "src": "r3/battle/media-moves/claude-of-tanks/killcam.webp",
      "sha256": "2b9bacabb7c5e14cb8bb816c061ab8f5fd8ad7db1e466cf36ce8e950a2b22370",
      "bytes": 98632
+    },
+    "public/battle/r3/media-moves/claude-of-tanks/one-spec-oct.webp": {
+     "src": "r3/battle/media-moves/claude-of-tanks/one-spec-oct.webp",
+     "sha256": "26422b15e688a8f703940473a0527871eb5243161934047a91d900e46d0760dd",
+     "bytes": 258626
     },
     "public/battle/r3/media-moves/claude-of-tanks/one-spec.webp": {
      "src": "r3/battle/media-moves/claude-of-tanks/one-spec.webp",

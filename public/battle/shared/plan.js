@@ -1,7 +1,8 @@
 // The shot plan, one for both modes, and the one store of what has been seen. scenesFrom picks each shot's variant
 // (full on a move's first use this visit, short on a repeat or under Auto, minor beats once); the plan then says which
 // shots the board carries alone, which play full anyway, and which reduced-motion stills are worth holding.
-import { t as txt } from './strings.js';
+import { t as txt, list as listOf, role } from './strings.js';
+import { FORMS } from './forms.js';
 const STATWORD = { get ATK() { return txt('stat.atk'); }, get DEF() { return txt('stat.def'); }, get SPD() { return txt('stat.spd'); } };
 /** The battle's shorts say ATK, DEF and SPD; the cards say Reach, Proof and Pace. */
 export const words = (s) => String(s ?? '').replace(/\b(ATK|DEF|SPD)\b/g, (m) => STATWORD[m]);
@@ -43,7 +44,45 @@ const ends = (shot) => shot.post.some((e) => e.state && Object.values(e.state.si
  *  shows once by hand and never under Auto, knockouts and send-ins under Auto are the board's, repeats from the third
  *  use are cuts, and the still of a repeat or of an attack under Auto (`shot.brief`) holds no longer than its short
  *  scene would run. */
+/** A transform (ROUND6.md 5.4). A side's first build of the battle and an upgrade to 4A or 4B play full by hand and
+ *  short under Auto, their reduced still held 900; every later build and an upgrade to Level 2 or 3 play short by hand
+ *  and on the board alone under Auto (420). In reduced motion a later build is the board's still alone (360) and a
+ *  Level 2 or 3 upgrade keeps its 800 still. A transform is never cut: it changes the state. The first build is kept
+ *  per battle with the minor beats, so a reload does not stage it full twice. */
+function transform(store, shot, auto) {
+  const s = shot.scene, e = shot.post.find((x) => x.kind === 'transform');
+  // a 4A or 4B upgrade: the headline is the tower (rules.js), the line its role and level ("Lightning Damage, Level
+  // 4A"); the branch's move is named by its own shot, so a 4A turn says it at most twice (fixes-3 I6)
+  const lv = String(e?.to?.level ?? '');
+  if (e?.change === 'upgrade' && /[ab]$/i.test(lv)) {
+    const info = FORMS[s.card]?.forms?.[e.to.form];
+    s.line = listOf([info ? role(e.to.form, info.role) : '', txt('level', { n: lv.toUpperCase() })].filter(Boolean));
+  }
+  const key = `transform:${s.side}:build`;
+  const first = e?.change === 'build' && !store.minor.has(key);
+  if (e?.change === 'build') store.minor.add(key);
+  const big = first || (e?.change === 'upgrade' && /[ab]$/i.test(String(e.to?.level ?? '')));
+  if (s.variant === 'off') return;
+  if (s.variant === 'reduced') { if (!big && e?.change === 'build') s.variant = 'off'; return; }
+  s.variant = auto ? (big ? 'short' : 'off') : big ? 'full' : 'short';
+}
+
+/** An item the board carries alone (Auto) lands and ends on the same instant, so its number would first be seen in the
+ *  next shot's pre-roll: it keeps a short post window of its own (fixes-2 R3, I8). A missed attack the board carries
+ *  alone (a cut, or Auto's board) keeps the same window, so "Miss" reads about five frames in its own shot and never
+ *  rides into the next one (fixes-3 I3). */
+const ITEM_POST = 300;
+
 export function createPlan(store, o = {}) {
+  const plan = planShot(store, o);
+  return (shot, auto) => {
+    plan(shot, auto);
+    const s = shot.scene;
+    if (s?.variant === 'off' && (s.kind === 'item' || (s.kind === 'attack' && s.outcome?.has?.('miss')))) shot.postMs = ITEM_POST;
+  };
+}
+
+function planShot(store, o) {
   return (shot, auto) => {
     const s = shot.scene;
     if (!s) return;
@@ -58,6 +97,9 @@ export function createPlan(store, o = {}) {
     const special = o.specials !== false && s.kind === 'attack' && SPECIAL.has(s.card) && !store.special.has(`${s.side}:${s.card}`);
     if (special) store.special.add(`${s.side}:${s.card}`);
     if (s.kind === 'trait') { s.variant = 'off'; return; }
+    // a form's still that will not load: the board carries the shot alone (fixes-1 I1)
+    if (s.kind === 'attack' && s.variant !== 'off' && o.formFailed?.(shot)) { s.variant = 'off'; shot.cut = true; return; }
+    if (s.kind === 'transform') { transform(store, shot, auto); return; }
     if (s.variant === 'reduced') {
       const key = `${s.kind}:${s.side}:${s.card}:${s.title}`;
       const minor = onBoard && s.kind !== 'ko' && s.kind !== 'switch';

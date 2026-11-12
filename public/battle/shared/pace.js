@@ -74,12 +74,12 @@
     var media = document.querySelectorAll('#stage video, #board video');
     for (var j = 0; j < media.length; j++) { var m = media[j]; mediaRate.set.call(m, clampRate((m.__want !== undefined ? m.__want : 1) * (manual ? 1 : rate))); }
   }
-  addEventListener('play', function (e) { var v = e.target; if (manual && v && v.pause && follows(v)) v.pause(); }, true);
+  addEventListener('play', function (e) { var v = e.target; if (manual && v && v.pause && follows(v)) { v.pause(); stilled.add(v); } }, true);
   // animations: started at the clock's rate, scaled relatively when it changes (a reversed or custom rate keeps its sign)
   var scaled = new WeakMap();
   function track(a, target) {
     if (keepsTime(target)) return;
-    if (manual) { a.pause(); return; }
+    if (manual) { if (!frozen.has(a)) { a.pause(); frozen.add(a); } return; }
     if (!scaled.has(a)) { scaled.set(a, rate); if (rate !== 1) a.playbackRate = a.playbackRate * rate; }
   }
   Element.prototype.animate = function () { var a = realAnimate.apply(this, arguments); track(a, this); return a; };
@@ -140,13 +140,21 @@
 
   // ---------------------------------------------------------------- the recorder's frozen clock (never used in play)
   /** freeze() stops scene time: timers wait, animations hold, the stage's videos pause. step(ms) moves it on by ms,
-   *  runs the timers that fall due in order, and moves every animation and video with it. thaw() returns to play. */
+   *  runs the timers that fall due in order, and moves every animation and video with it. thaw() returns to play.
+   *  The recorder holds exactly what it paused (`frozen`, `stilled`): an animation the page held itself (a dialog)
+   *  stays held, and an animation a step carries to its end is finished there, so whatever awaits it goes on. (A
+   *  paused animation stepped past its end leaves document.getAnimations() and was never played again: the shot that
+   *  awaited it, a camera's return or a knockout's fall, hung for good. fixes-1 I4.) */
+  var frozen = new Set(), stilled = new Set();
   function freeze() {
     if (manual) return;
     anchorVirt = now(); anchorReal = realNow(); manual = true; rate = 0; rushing = false;
     timers.forEach(function (t) { realClear(t.real); t.real = 0; });
-    document.getAnimations().forEach(function (a) { if (!keepsTime(a.effect && a.effect.target)) a.pause(); });
+    document.getAnimations().forEach(function (a) { if (!keepsTime(a.effect && a.effect.target) && a.playState === 'running') { a.pause(); frozen.add(a); } });
+    var media = document.querySelectorAll('#stage video, #board video');
+    for (var j = 0; j < media.length; j++) if (!media[j].paused) { media[j].pause(); stilled.add(media[j]); }
   }
+  function endOf(an) { try { var c = an.effect && an.effect.getComputedTiming(); return c ? c.endTime : Infinity; } catch (e) { return Infinity; } }
   function step(ms) {
     if (!manual) return;
     var target = anchorVirt + ms;
@@ -158,24 +166,31 @@
       fire(next);
     }
     anchorVirt = target;
-    document.getAnimations().forEach(function (an) {
-      if (keepsTime(an.effect && an.effect.target)) return;
-      if (an.playState !== 'paused') an.pause();
-      if (an.playState !== 'finished') an.currentTime = (an.currentTime || 0) + ms * (an.playbackRate || 1);
+    // (also any the page started while frozen whose events the clock did not see)
+    document.getAnimations().forEach(function (an) { if (!keepsTime(an.effect && an.effect.target) && an.playState === 'running') { an.pause(); frozen.add(an); } });
+    frozen.forEach(function (an) {
+      if (an.playState === 'finished' || an.playState === 'idle') { frozen.delete(an); return; }
+      var r = an.playbackRate || 1, t = (an.currentTime || 0) + ms * r, end = endOf(an);
+      if (r > 0 && Number.isFinite(end) && t >= end) { frozen.delete(an); try { an.finish(); } catch (e) { an.currentTime = end; } return; }
+      an.currentTime = Math.max(0, t);
     });
     var media = document.querySelectorAll('#stage video, #board video');
-    for (var j = 0; j < media.length; j++) { var v = media[j]; if (!v.paused) v.pause(); if (v.readyState > 0) v.currentTime = Math.min(v.duration || 1e9, v.currentTime + (ms / 1000) * (v.__want || 1)); }
+    for (var j = 0; j < media.length; j++) { var v = media[j]; if (!v.paused) { v.pause(); stilled.add(v); } if (v.readyState > 0) v.currentTime = Math.min(v.duration || 1e9, v.currentTime + (ms / 1000) * (v.__want || 1)); }
   }
   function thaw() {
     if (!manual) return;
     manual = false; anchorReal = realNow(); rate = chosen;
     timers.forEach(arm);
-    document.getAnimations().forEach(function (a) {
-      if (keepsTime(a.effect && a.effect.target)) return;
+    frozen.forEach(function (a) {
+      if (a.playState !== 'paused') return;
       var was = scaled.get(a) || 1;
       if (was !== rate) { a.playbackRate = a.playbackRate / was * rate; scaled.set(a, rate); }
-      if (a.playState === 'paused') a.play();
+      a.play();
     });
+    frozen.clear();
+    // a video the recorder paused plays on unless its scene has ended it (or a step ran it to its end)
+    stilled.forEach(function (v) { if (v.isConnected && !v.hidden && !v.ended && v.closest('[data-playing]')) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } });
+    stilled.clear();
     retimeMedia();
   }
 

@@ -126,11 +126,32 @@ html[data-boot] #app { visibility: hidden; }
 .fig { position: absolute; left: 0; top: 0; }
 .fig-body { position: absolute; inset: 0; -webkit-mask-size: 8px 8px; mask-size: 8px 8px; -webkit-mask-repeat: repeat; mask-repeat: repeat; }
 .board[data-phone="true"] .fig-body { -webkit-mask-size: 6px 6px; mask-size: 6px 6px; }
-.fig-breath { position: absolute; inset: 0; animation: breathe var(--breath, 3s) ease-in-out var(--breath-at, 0s) infinite; }
-@keyframes breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.004, 1.014); } }
+.fig-breath { position: absolute; inset: 0; z-index: 1; -webkit-mask-size: 8px 8px; mask-size: 8px 8px; -webkit-mask-repeat: repeat; mask-repeat: repeat; }
+.board[data-phone="true"] .fig-breath { -webkit-mask-size: 6px 6px; mask-size: 6px 6px; }
+/* round 6: each figure wears its own card (arena/aura.js fills these): the back copies behind the picture, the front
+   copies before it, outside the picture's grade and inside the body, so every move carries them */
+.aura-back, .aura-front { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.aura-back { z-index: 0; }
+.aura-front { z-index: 2; }
+.arena-matter, .fig-matter { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }
+.fig-ring-front { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }
+/* what flies at the far figure passes behind the near one: under the actors, over the floor */
+.arena-fx.arena-fx-back { z-index: auto; }
+.arena-clock { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+/* the foundation a tower is built on, drawn round its pad in the tower's accent */
+.pad-build { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.pad-build circle { fill: none; stroke: var(--tower, var(--c, #fff)); stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; vector-effect: non-scaling-stroke; }
+/* Princeton TD: the game's tower on its canvas over the still (which stays until the canvas has drawn), its level badge
+   over its head and its scaffold round it, on the card it wears */
+.ptd-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fig[data-ptd="live"] .fig-img { visibility: hidden; }
+.ptd-scaffold { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ptd-badge { position: absolute; left: 50%; top: var(--fig-top, 0px); translate: -50% -110%; pointer-events: none; }
 .fig-img, .fig-flash { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
 .fig[data-pixel="true"] :is(.fig-img, .fig-flash, .lit-shade, .lit-rim), .fig-cast[data-pixel="true"] { image-rendering: pixelated; }
 .fig-flash { filter: brightness(0) invert(1); opacity: 0; }
+/* your leader breathes about its foot (arena/board.js leaderIdle) */
+.leader[data-side="player"] { will-change: transform; }
 /* the painting's light on a figure or a leader, cut to its own picture: the side toward the key lit in its colour,
    the far side in shade, and a rim of the key on the edges that face it (the picture less itself shifted toward the
    light). A leader's picture is its atlas at the pose's place (--bx, --by, --bs from shared/leaders.js). */
@@ -168,6 +189,7 @@ html[data-boot] #app { visibility: hidden; }
 /* the hands: each leader holds its side's other cards, real cards with their HP on a die-cut tab in the card's colour;
    a card that is out lies face down; yours are buttons that open Switch */
 .hand { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.hand[data-rail="true"] { display: none; }
 .hcard { position: absolute; left: 0; top: 0; width: var(--hw); height: var(--hh); padding: 0; border: 0; background: none; transform-origin: 50% 100%; pointer-events: none;
   transition: transform .26s var(--slam), opacity .16s; filter: drop-shadow(0 5px 7px oklch(0% 0 0 / .5)); }
 .hcard[data-in="false"] { opacity: 0; transition: none; }
@@ -177,40 +199,11 @@ button.hcard:focus-visible { outline-offset: 3px; }
 .hcard-back { position: absolute; inset: 0; border-radius: 5% / 3.6%; opacity: 0; background: color-mix(in oklab, var(--c) 42%, oklch(34% 0.01 70)) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23fff' fill-opacity='.22'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23fff' fill-opacity='.22'/%3E%3C/svg%3E") 0 0 / 8px 8px; box-shadow: inset 0 0 0 3px var(--c), inset 0 0 0 4px oklch(0% 0 0 / .35); }
 .hcard[data-out="true"] .hcard-back { opacity: 1; }
 .hcard-hp { position: absolute; left: 7%; top: 0; translate: 0 -58%; padding: .12em .36em .1em .32em; background: var(--tab); color: var(--tab-ink); font: 800 max(12px, calc(var(--hh) * .2))/1 var(--sans); font-variant-numeric: tabular-nums;
+  /* three tabular digits wide in em, whatever the HP reads and whichever face has landed, so neither a hit nor a
+     late face resizes the tab (test 6, CLS 0) */
+  inline-size: 2.25em; text-align: center; box-sizing: content-box; white-space: nowrap;
   border-radius: .26em .26em .1em .1em; clip-path: polygon(0 0, 100% 0, 100% 72%, calc(100% - .3em) 100%, 0 100%); }
 .hcard[data-out="true"] .hcard-hp { opacity: 0; }
-
-/* the flags: one planted at each pad's front corner, the name and the HP numerals on its cloth, the chips under it */
-.arena-flags { position: absolute; inset: 0; pointer-events: none; z-index: 1500; }
-.flag { --c: #999; position: absolute; left: 0; top: 0; width: 0; height: 0; transition: opacity .2s; }
-.flag[data-on="false"] { opacity: 0; }
-.flag-pole { position: absolute; left: -1px; bottom: 0; width: 2px; height: var(--pole); background: color-mix(in oklab, var(--c) 60%, #fff); }
-.flag-pole::after { content: ""; position: absolute; left: -3px; bottom: -3px; width: 8px; height: 4px; border-radius: 50%; background: oklch(0% 0 0 / .5); }
-.flag-cloth {
-  position: absolute; bottom: var(--lift, 0px); width: var(--cw); height: var(--ch); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 8px;
-  padding: 0 14px 0 12px; background: oklch(12% 0.01 70 / .88); color: var(--paper); border-bottom: 3px solid var(--c);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-}
-.flag[data-dir="left"] .flag-cloth { right: 2px; clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%); padding: 0 12px 0 16px; }
-.flag[data-dir="right"] .flag-cloth { left: 2px; }
-.flag-name { font: 700 13px/1.1 var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.flag-hp { margin: 0; display: flex; align-items: baseline; gap: 1px; white-space: nowrap; }
-.flag-num { font: 800 24px/1 var(--sans); font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; }
-.flag-max { font: 700 11px/1 var(--sans); color: oklch(100% 0 0 / .55); font-variant-numeric: tabular-nums; }
-.flag[data-low="true"] .flag-num { color: var(--c); }
-.flag[data-size="s"] .flag-name { font-size: 11px; }
-.flag[data-size="s"] .flag-num { font-size: 18px; }
-.flag[data-size="s"] .flag-cloth { padding: 0 10px 0 12px; column-gap: 6px; }
-.flag[data-size="s"][data-dir="left"] .flag-cloth { padding: 0 10px 0 14px; }
-.flag[data-stack="true"] .flag-cloth { grid-template-columns: minmax(0, 1fr); align-content: center; row-gap: 2px; }
-.flag-chips { position: absolute; top: 6px; display: flex; gap: 4px; white-space: nowrap; }
-/* a flag hung under its pad's front corner (a crowded frame): no pole, the chips under the cloth */
-.flag[data-hung="true"] .flag-pole { display: none; }
-.flag[data-hung="true"] .flag-chips { top: calc(var(--ch) + 8px); }
-.flag[data-dir="left"] .flag-chips { right: 4px; }
-.flag[data-dir="right"] .flag-chips { left: 4px; }
-.flag-chips i { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--paper); color: oklch(16% 0.01 75); font: 700 11px/1 var(--sans); font-style: normal; }
-.flag-chips i[data-down] { background: var(--rival); color: #fff; }
 
 /* the board's own effects: numerals, stamps, specials, cards in flight */
 .arena-fx { position: absolute; inset: 0; pointer-events: none; z-index: 1800; }
@@ -252,6 +245,20 @@ button.hcard:focus-visible { outline-offset: 3px; }
 #app[data-busy="false"]:not([data-scene]) :is(.rail, .console) { transition-delay: 0s; }
 #app[data-scene] .result { opacity: 0; }
 #app[data-landed] .bc-mhud { opacity: 1; }
+/* fix pass 3 H2: a phone's batch, the whole of it (board.js watchBusy sets data-batch): the HUD steps aside as for a
+   scene, so the duel framed on the floor holds from the batch's first shot to its last. The console keeps its key row
+   (Auto stays in reach), its prose and moves and the turn tab go, and your plate drops over the key row (--batch-plate,
+   a transform: nothing shifts). The rail goes as in a scene. */
+#app[data-batch] .rail { opacity: 0; transition: opacity .12s 0s; pointer-events: none; }
+#app[data-batch] .console { background: transparent; box-shadow: none; transition: opacity .2s .4s, background-color .12s, box-shadow .12s; }
+/* (between two scenes of a batch, about 400 ms, nothing comes back: the key row and your plate return only after 400 ms) */
+#app[data-batch][data-scene] .console { transition: opacity .12s 0s; }
+#app[data-batch] .hud .plate[data-side="player"][data-strip="true"] { transition: opacity .2s .4s, transform .24s cubic-bezier(.45, 0, .55, 1); }
+#app[data-batch] .console > :not(.acts) { opacity: 0; pointer-events: none; transition: opacity .12s; }
+#app[data-batch] .hud .ttab { opacity: 0; visibility: hidden; transition: opacity .12s, visibility 0s .12s; }
+#app .hud .plate[data-side="player"][data-strip="true"] { transform: translateY(var(--batch-plate, 0px)); transition: opacity .2s .1s, transform .24s cubic-bezier(.45, 0, .55, 1); }
+#app[data-scene]:not([data-band]) .hud .plate[data-side="player"][data-strip="true"] { transition: opacity .12s, visibility 0s .12s, transform .24s cubic-bezier(.45, 0, .55, 1); }
+:root[data-reduced="true"] #app .hud .plate[data-side="player"][data-strip="true"] { transition: none; }
 
 /* ============================================================ the console: four move keys with their numbers and one line of prose */
 .console {
@@ -363,7 +370,10 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 
 /* ============================================================ reduced motion: every step a still */
 @media (prefers-reduced-motion: reduce) {
-  .fig-breath { animation: none; }
-  .rail, .console, .key, .pip, .hcard, .result, .flag, .arena-pad, #app[data-scene] .rail, #app[data-scene] .console { transition: none !important; }
+  .rail, .console, .key, .pip, .hcard, .result, .arena-pad, #app[data-scene] .rail, #app[data-scene] .console, #app[data-batch] :is(.rail, .console, .console > *), #app .hud .plate[data-side="player"][data-strip="true"] { transition: none !important; }
 }
-:root[data-reduced] .fig-breath { animation: none; }
+:root[data-reduced] .pad-build circle { opacity: 0; }
+
+/* round 6 fix H7: the Arena's scene band opens its top bar only part way (about 54 px at 1440), so the score on the
+   matte stands on that bar's bottom edge and fits inside it, never cut by the window's top */
+.sd-bar-top .bc-mhud { bottom: 6px; height: min(5.6cqh, 40px); }

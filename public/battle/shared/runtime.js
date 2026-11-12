@@ -10,6 +10,8 @@
 //      contact clear at the impact, and the board carries the reaction and owns the number.
 //   4. A scene staged in a band over the board (`Stage.box`): the layout names the band, the Stage plays the scene in a
 //      host around it, its bars close on the band's edges and let the board through, dimmed.
+import { ruleLabel } from './strings.js';
+import { fullTail, contactReticle, transformDefs, transformDefOf } from './beats.js';
 const { runtime } = window.showdown;
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const easeInOut = (p) => { p = clamp(p); return p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2; };
@@ -109,6 +111,37 @@ export function finishStop(beats, ms = FINISH_STOP) {
   if (!stop) out.push({ at: I, dur: ms, do: 'hitstop' });
   return out;
 }
+/** A knockout blow's flash keeps the struck card in sight (fixes-1 I5; every blow whose outcome has 'ko', not only the
+ *  deciding one): a flash over the whole frame (any mode: a white,
+ *  an invert, a Bayer) becomes a plain wash of at most 0.12, and a full scene adds the struck figure's own silhouette
+ *  flash at 0.5 in its time, so the contact frame shows the target lit instead of erasing it. */
+// (0.12: with the struck card's 0.5 silhouette a phone's frame, where that card fills a third of it, steps 0.151 at 0.15)
+export const FINISH_WASH = 0.12;
+/** The most device px a form still's px is drawn at in a scene (Stage.fitForm). */
+export const FORM_UPSCALE = 2;
+/** Princeton TD's figure module: its one worker draws every scene's form still (fixes-2 I1). */
+const PTD_URL = new URL('../arena/ptd-figure.js', import.meta.url).href;
+/** Princeton TD's ink boxes (tools/ptd/ink.mjs): per form and view, the extent of the still's pixels over alpha 24. A
+ *  scene crop is that box grown by a margin, never forms.json's tighter opaque box, so no crop cuts its glow on a
+ *  straight line (critic of fixes-2 I1). */
+const INK_URL = new URL('../arena/ptd-ink.json', import.meta.url).href;
+/** The margin a crop keeps outside the ink box: 2 px of the 2x still; for a drawn still, one still px at its scale k
+ *  plus 2 device px (the drawing at k antialiases a little past the still's own edge). */
+const INK_PAD = 2;
+export function finishFlash(beats, full = true) {
+  if (!beats) return beats;
+  const out = [];
+  for (const b of beats) {
+    if (b.do !== 'flash' || (b.area && b.area !== 'frame')) { out.push(b); continue; }
+    const { mode, ...rest } = b;
+    out.push({ ...rest, peak: Math.min(b.peak ?? 1, FINISH_WASH) });
+    // (unless the scene already lights its target at that moment for the same outcomes)
+    const same = (x) => x.do === 'flash' && x.area === 'target' && Math.abs(x.at - b.at) <= 40 && String(x.when ?? '') === String(b.when ?? '') && String(x.unless ?? '') === String(b.unless ?? '');
+    if (full && !beats.some(same)) out.push({ ...rest, area: 'target', peak: 0.5 });
+    void mode;
+  }
+  return out;
+}
 /** A move's second use in a battle: its short scene framed again. The footage comes in tighter and off centre, drifting
  *  the other way, so the repeat reads as a new angle; the camera, the bars and the call-out keep the first use's frame. */
 export function altFraming(beats, side) {
@@ -184,36 +217,74 @@ function guarded(name, def) {
 }
 /** Register the Broadcast's effects and scenes as the Broadcast does, with the deal anchored and the board ending. */
 export function install(K, engine, scenes = K.SCENES) {
-  K.registerAll((name, def) => runtime.registerFx(name, guarded(name, name === 'deal' ? anchored(def, 'land') : name === 'popup' ? anchored(def, 'fly') : def)));
+  K.registerAll((name, def) => runtime.registerFx(name, guarded(name, name === 'deal' ? anchored(def, 'land') : name === 'popup' ? anchored(def, 'fly') : name === 'contact' ? contactReticle(def) : def)));
   for (const d of [...K.grammar(), ...K.defaults(engine.FIGHTERS), ...scenes]) {
     const kind = d.kind ?? 'attack';
-    if (kind === 'attack') runtime.defineCutscene({ ...d, full: d.full ? holdNumber(d.full) : d.full, ...(d.short ? { short: boardShort(d.short) } : {}) });
+    if (kind === 'attack') runtime.defineCutscene({ ...d, full: d.full ? fullTail(holdNumber(d.full)) : d.full, ...(d.short ? { short: boardShort(d.short) } : {}) });
     // the result's reduced still holds 1.3 s, so both leaders' poses stand under the title before the panel
     else if (kind === 'result') runtime.defineCutscene({ ...d, full: boardResult(), still: { at: 900 }, hold: 1300 });
     else runtime.defineCutscene(d);
   }
+  for (const d of transformDefs) runtime.defineCutscene(d);
 }
+/** A scene's per-hit pulses fit the window five hits take: a move with more hits (Chain Lightning's 7) pulses closer
+ *  together rather than run past the budgets (full <= 2400, short <= 900; S1). The count the board shows is the event's. */
+const PULSES = 5;
+const packHits = (beats, hits) => beats?.map((b) => (b.repeat === 'hits' ? { ...b, every: Math.floor(((b.every ?? 90) * (PULSES - 1)) / (hits - 1)) } : b));
 /** The shortest still with a number: it shows the frame after its contact, is read 640 ms and goes 80 ms before the end. */
 const STILL_MIN = 760;
+/** S2, carried (fixes-3 I12): a vendored scene's hard cuts (a picture layer's opacity stepping 0 to 1 in one frame) and
+ *  its compiled flashes can come more than 3 a second, which the page-wide flash count reads as flashing. Such a scene
+ *  takes a 120 ms opacity crossfade on the picture layer at each cut it compiles; the scene files are not edited, and
+ *  its impact, cues and duration stay as they are (S1). */
+const CUT_LAYERS = new Set(['ground', 'feature', 'cutout', 'target', 'plate']);
+const CROSSFADE = 120;
+export function softenCuts(c) {
+  if (!c || c.variant === 'reduced' || !Array.isArray(c.tracks)) return c;
+  const cuts = [];
+  for (const tr of c.tracks) if (tr?.prop === 'opacity' && CUT_LAYERS.has(tr.layer)) for (const g of tr.segs ?? []) if (g.t1 - g.t0 < 1 && g.to - g.from >= 0.5) cuts.push(g.t0);
+  const marks = [...cuts, ...(c.flashes ?? []).map((f) => f.t0)].sort((a, b) => a - b);
+  let most = 0;
+  for (let i = 0, j = 0; i < marks.length; i++) { while (marks[i] - marks[j] >= 1000) j++; most = Math.max(most, i - j + 1); }
+  if (most <= 3 || !cuts.length) return c;
+  // both sides of a cut fade over the same 120 ms from its frame: the layer coming in rises while the one going out
+  // falls (the critic of fix pass 3: softening only the rising step left a one-frame drop into what lay beneath)
+  const tracks = c.tracks.map((tr) => {
+    if (tr?.prop !== 'opacity' || !CUT_LAYERS.has(tr.layer)) return tr;
+    const segs = (tr.segs ?? []).map((g, k, all) => {
+      if (!(g.t1 - g.t0 < 1 && Math.abs(g.to - g.from) >= 0.5)) return g;
+      const next = all[k + 1]?.t0 ?? c.duration ?? Infinity;
+      return { ...g, t1: Math.min(g.t0 + CROSSFADE, next, c.duration ?? Infinity), ease: 'linear' };
+    });
+    return { ...tr, segs };
+  });
+  return { ...c, tracks, softened: cuts.length };
+}
 /** The scene a shot plays: the registry's, with the finish's hit-stop or the second use's framing when the plan says. */
-export function sceneOf(shot) {
+export function sceneOf(shot) { return softenCuts(sceneOf0(shot)); }
+function sceneOf0(shot) {
   const s = shot.scene, open = shot.box?.open;
+  if (s.kind === 'transform' && s.variant !== 'off' && transformDefOf) return runtime.compileScene(s, transformDefOf(s));
   // a brief still (a repeat, or an attack under Auto, in reduced motion) holds no longer than its short scene runs,
   // and never less than its number needs (read 640 ms, gone 80 ms before the still ends, Stage.play)
   if (s.variant === 'reduced' && shot.brief) {
     const def = runtime.findCutscene(s), short = runtime.compileScene({ ...s, variant: 'short' }).duration;
     return runtime.compileScene(s, { ...def, hold: Math.max(STILL_MIN, Math.min(def.hold ?? 1100, short)) });
   }
-  if (s.variant === 'off' || s.variant === 'reduced' || ((s.kind !== 'attack' || (!shot.finish && !shot.framing)) && !open)) return runtime.compileScene(s);
+  const many = s.kind === 'attack' && (s.hits ?? 1) > PULSES;
+  // a blow that knocks a card out, mid-battle or deciding, keeps its target in sight through the flash (fixes-1 I5)
+  const out = s.kind === 'attack' && Boolean(s.outcome?.has?.('ko'));
+  if (s.variant === 'off' || s.variant === 'reduced' || (!many && (s.kind !== 'attack' || (!shot.finish && !shot.framing && !out)) && !open)) return runtime.compileScene(s);
   const def = runtime.findCutscene(s);
   const shortOf = def.short ?? runtime.findCutscene({ kind: s.kind })?.short ?? def.full;
-  const timed = s.kind === 'attack' && (shot.finish || shot.framing);
-  const edit = (b) => banded(timed ? (shot.finish ? finishStop(b) : altFraming(b, s.side)) : b, open);
-  return runtime.compileScene(s, { ...def, full: edit(def.full), short: edit(shortOf) });
+  const timed = s.kind === 'attack' && (shot.finish || shot.framing || out);
+  const lit = (b, full) => (out || shot.finish ? finishFlash(b, full) : b);
+  const edit = (b, full) => { b = many ? packHits(b, s.hits) : b; return banded(timed ? (shot.finish ? finishStop(lit(b, full)) : shot.framing ? altFraming(lit(b, full), s.side) : lit(b, full)) : b, open); };
+  return runtime.compileScene(s, { ...def, full: edit(def.full, true), short: edit(shortOf, false) });
 }
 
-// kevinliu.studio phone memory: a touch screen or a small-memory device keeps one card's world besides the one on screen; the others give
-// their WebGL context back (scripts/phone-memory.mjs)
+// a touch screen or a small-memory device keeps one card's world besides the one on screen; the others give their
+// WebGL context back (REQUESTS :56, the site's plan 009)
 const LEAN_GROUNDS = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
 export class Stage extends runtime.Stage {
   /** Where the scene opens from and lands on, viewport px (the Director sets them from the layout before each play). */
@@ -315,11 +386,141 @@ export class Stage extends runtime.Stage {
     const wait = window.battlePace?.realTimeout ?? setTimeout;
     return Promise.race([Promise.all(list), new Promise((r) => wait(r, timeout))]);
   }
+  /** A card with forms (Princeton TD) is pictured as the form it stands in, never its card's cut-out: the page's
+   *  `formRef(scene, role)` names that form's still ({ kind, src, file, key, form: true }), undefined for a card
+   *  without forms. The still is cropped to its opaque box (`cropOnce`) so it fills the cut-out slot as an object
+   *  cut-out does; a still that will not load leaves the slot empty. */
+  formRef = null;
+  /** The form still cropped to its opaque box, once per file: { kind, src (a blob URL), w, h, file, key, drawn }, or
+   *  null when it cannot be read. Drawn at scene size in Princeton TD's worker where it may be (`drawForm`), else the
+   *  board-size still cropped by forms.json's `box` with one drawImage; never a pixel scan on the main thread, and the
+   *  picture is decoded (`img.decode()`) before the scene asks for it (fixes-2 I1). */
+  cropOnce(ref) {
+    this.crops ??= new Map();
+    let p = this.crops.get(ref.src);
+    if (!p) {
+      const decoded = (blob, w, h, drawn) => {
+        if (!blob) return null;
+        const r = { kind: 'image', src: URL.createObjectURL(blob), w, h, file: ref.file, key: ref.key, form: true, drawn };
+        const d = new Image();
+        d.src = r.src;
+        return (d.decode ? d.decode() : Promise.resolve()).catch(() => {}).then(() => r);
+      };
+      // the board-size still, cropped to its box (a 2x picture of about 300 x 550: a few ms)
+      const fromStill = () => this.formView(ref).then((v) => new Promise((done) => {
+        const im = new Image();
+        im.decoding = 'async';
+        im.onerror = () => done(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, sx = v?.w ? w / v.w : 1, sy = v?.h ? h / v.h : 1;
+            const b = v?.ink ?? [0, 0, w / sx, h / sy];
+            const x0 = Math.max(0, Math.floor(b[0] * sx) - INK_PAD), y0 = Math.max(0, Math.floor(b[1] * sy) - INK_PAD);
+            const cw = Math.min(w, Math.ceil(b[2] * sx) + INK_PAD) - x0, ch = Math.min(h, Math.ceil(b[3] * sy) + INK_PAD) - y0;
+            if (!(cw > 0 && ch > 0)) { done(null); return; }
+            const out = document.createElement('canvas');
+            out.width = cw; out.height = ch;
+            out.getContext('2d').drawImage(im, x0, y0, cw, ch, 0, 0, cw, ch);
+            out.toBlob((blob) => { out.width = out.height = 0; Promise.resolve(decoded(blob, cw, ch, false)).then(done, () => done(null)); }, 'image/png');
+          } catch { done(null); }
+        };
+        im.src = ref.src;
+      }));
+      p = this.drawForm(ref).then((r) => (r ? decoded(r.blob, r.w, r.h, true) : null)).catch(() => null).then((r) => r ?? fromStill()).catch(() => null);
+      p.then((r) => { p.done = true; p.value = r; });
+      this.crops.set(ref.src, p);
+    }
+    return p;
+  }
+  /** A form's view in forms.json (its film box w x h, tile point, opaque box and feather), with the file's zoom and aims:
+   *  the view or null. Fetched once per forms.json. */
+  formView(ref) {
+    this.formsData ??= new Map();
+    const dataUrl = new URL('forms.json', ref.src).href;
+    if (!this.formsData.has(dataUrl)) this.formsData.set(dataUrl, fetch(dataUrl).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+    Stage.ink ??= fetch(INK_URL).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    return Promise.all([this.formsData.get(dataUrl), Stage.ink]).then(([data, inks]) => {
+      const f = data?.forms?.[ref.key], view = /-rear@/.test(ref.file) ? 'rear' : 'front', v = f?.[view];
+      // the crop box: the ink box where it is known (it always holds the opaque box), else the whole film
+      return v?.box ? { ...v, ink: inks?.ink?.[ref.key]?.[view] ?? [0, 0, v.w, v.h], view, form: f, data } : null;
+    });
+  }
+  /** A form drawn by the game's own sprite (arena/ptd-sprite.js `drawForm`, as the board's live figure draws it) at
+   *  the size a full scene shows it, rather than its board-size still enlarged (about 5x at 1440, soft; critic of
+   *  fixes-1 I1): the still's own view from forms.json at a scale k that makes its opaque height about 1.3 times 80% of
+   *  the window in device px, the drawing at most 2048 px a side (1536 on a coarse pointer). Idle, at rest, the side's
+   *  own aim. Drawn and cropped in Princeton TD's one worker (arena/ptd-figure.js `ptdStill`), so the main thread never
+   *  fetches or parses the sprite (fixes-2 I1): resolves { blob, w, h }, or null where the sprite is not drawn (reduced
+   *  motion, Save-Data, deviceMemory 4 or less, `?ptd=still`, `?formdraw=0`, no worker) or cannot be; the still is used
+   *  then (ruling 10's boxed 2x still). */
+  drawForm(ref) {
+    const qs = new URLSearchParams(location.search);
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || navigator.connection?.saveData || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || qs.get('ptd') === 'still' || qs.get('formdraw') === '0') return Promise.resolve(null);
+    return this.formView(ref).then((v) => {
+      if (!v) return null;
+      const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+      const want = innerHeight * 0.8 * (window.devicePixelRatio || 1) * 1.3, boxH = v.box[3] - v.box[1];
+      const side = coarse ? 1536 : 2048, k = Math.max(1, Math.min(want / boxH, side / v.w, side / v.h));
+      if (k < 1.2) return null;
+      const f = v.form, data = v.data, level = /^\d$/.test(f.level) ? Number(f.level) : f.level;
+      const rotation = data.aims && (f.type === 'cannon' || f.type === 'mortar') ? data.aims[v.view] : null;
+      Stage.ptd ??= import(PTD_URL).catch(() => null);
+      return Stage.ptd.then((m) => m?.ptdStill?.({ type: f.type, level, zoom: data.zoom, rotation, k, view: { w: v.w, h: v.h, tile: v.tile, box: v.box, ink: v.ink, feather: v.feather ?? null } }) ?? null);
+    });
+  }
+  /** A form still drawn no larger than FORM_UPSCALE device px per still px. A form is drawn by the sprite at scene size
+   *  where it can be (`drawForm`) and then never enlarged past the cap; where only the board-size still is there (about
+   *  350-590 px, 5x in a full slot at 1440, soft; critic of fixes-1 I1) the picture and its silhouette are boxed to the
+   *  cap, centred across the slot and standing on its floor, so a form reads sharp at the size a 1x picture has on a 2x
+   *  screen. A card's cut-out, or a still the slot does not enlarge past the cap, keeps the kit's slot. */
+  fitForm(k, r) {
+    const img = this.img[k], sil = this.sil[k], layer = this.els[k];
+    const set = (box) => { for (const e of [img, sil]) { if (!e) continue; e.style.left = box?.left ?? ''; e.style.top = box?.top ?? ''; e.style.width = box?.width ?? ''; e.style.height = box?.height ?? ''; e.style.right = box ? 'auto' : ''; e.style.bottom = box ? 'auto' : ''; } if (img) img.dataset.cap = box ? 'true' : ''; };
+    const W = layer?.clientWidth > 2 ? layer.clientWidth : this.W, H = layer?.clientHeight > 2 ? layer.clientHeight : this.H;
+    if (!r?.form || !(r.w > 0) || !(r.h > 0) || !(W > 2) || !(H > 2)) return set(null);
+    const sw = W * 0.72, sh = H * 0.8, max = FORM_UPSCALE / (window.devicePixelRatio || 1);
+    if (Math.min(sw / r.w, sh / r.h) <= max) return set(null);
+    const w = r.w * max, h = r.h * max, pc = (v, L) => `${((v / L) * 100).toFixed(3)}%`;
+    set({ left: pc(W * 0.14 + (sw - w) / 2, W), top: pc(H * 0.1 + sh - h, H), width: pc(w, W), height: pc(h, H) });
+  }
+  /** Whether a form still is known not to load (the page's plan then plays that shot on the board alone). */
+  cropFailed(ref) { const p = ref && this.crops?.get(ref.src); return Boolean(p?.done && !p.value); }
+  /** Whether a scene's form stills (its subject's and its target's) are cropped and ready: true at once when the scene
+   *  pictures no form or every one is ready, false when one cannot be read, else a promise that settles within
+   *  `ms` of real time, false if a still is still not cropped by then. A shot whose answer is false plays on the board
+   *  alone (fixes-1 I1, ruling 10), never with an empty slot: a slow phone's first scene of a new form included. */
+  formReady(scene, ms = 1500) {
+    if (!this.formRef || scene.kind === 'ko') return true;
+    const refs = [];
+    for (const role of ['subject', 'target']) {
+      const card = role === 'subject' ? scene.card : scene.target;
+      if (!card) continue;
+      const r = this.formRef(scene, role);
+      if (r === null) return false;
+      if (r) refs.push(r);
+    }
+    if (!refs.length) return true;
+    const ps = refs.map((r) => this.cropOnce(r));
+    if (ps.every((p) => p.done)) return ps.every((p) => Boolean(p.value));
+    const wait = window.battlePace?.realTimeout ?? setTimeout;
+    return Promise.race([Promise.all(ps).then((v) => v.every(Boolean)), new Promise((r) => wait(() => r(false), ms))]);
+  }
+  /** Start cropping the forms a coming state shows (every form card's current form on both sides), so the first scene
+   *  of a new form finds its still ready: the page calls it as each batch is planned, before any shot plays. */
+  warmForms(refs) { for (const r of refs) if (r?.form) this.cropOnce(r); }
+  /** A battle with no forms on either side lets Princeton TD's worker go, where this page started one (critic of
+   *  fixes-2 I1); the module is never loaded for it. `wanted`: no forms card can play again in this battle (its last
+   *  one fell), so the worker goes as soon as no figure stands and no still is being drawn (fixes-3 I10). */
+  releaseForms(wanted = false) { Stage.ptd?.then((m) => m?.ptdRetire?.(wanted)); }
+  /** A battle that holds a forms card: a retire the last battle deferred is called off (fixes-3 I10). */
+  keepForms() { Stage.ptd?.then((m) => m?.ptdKeep?.()); }
   /** What a scene shows: its plate, its subject's cutout, its target, its footage (or still) and its world. */
   mediaOf(scene, still, stillFeature, shaderGrounds) {
     const m = this.media;
     const subject = scene.kind === 'ko' ? null : scene.card;
     const targetCard = scene.kind === 'ko' ? scene.card : scene.target;
+    const formS = subject ? this.formRef?.(scene, 'subject') : undefined, formT = targetCard ? this.formRef?.(scene, 'target') : undefined;
     const ground = m.ground(scene.card, shaderGrounds && !still);
     let feature = null;
     if (scene.move) {
@@ -327,8 +528,8 @@ export class Stage extends runtime.Stage {
       else if (stillFeature !== 'none') feature = m.still(scene.card, scene.move.index);
     }
     return {
-      subject, targetCard, ground, feature, plate: m.plate(scene.card), cutout: subject ? m.cutout(subject) : null,
-      target: targetCard ? m.cutout(targetCard) ?? m.portrait(targetCard) : null,
+      subject, targetCard, ground, feature, plate: m.plate(scene.card), cutout: subject ? (formS !== undefined ? formS : m.cutout(subject)) : null,
+      target: targetCard ? (formT !== undefined ? formT : m.cutout(targetCard) ?? m.portrait(targetCard)) : null,
       groundImage: ground && ground.kind !== 'shader' ? ground : ground?.kind === 'shader' ? ground.fallback : null,
     };
   }
@@ -360,21 +561,29 @@ export class Stage extends runtime.Stage {
   async prepare(scene, compiled) {
     const m = this.media;
     const x = this.mediaOf(scene, compiled.still, compiled.stillFeature, this.shaderGrounds);
-    const { subject, targetCard, ground, feature, plate, cutout, target, groundImage } = x;
+    const { subject, targetCard, ground, feature, plate, groundImage } = x;
+    let { cutout, target } = x;
     this.palette = m.palette(scene.card);
-    const wait = this.loadOnce([plate, cutout, target, feature, groundImage]);
-    if (wait) await wait;
+    // a form's still is cropped as it loads (real time, capped as a load is): never the card's own cut-out instead
+    const crop = (r) => (r?.form ? this.cropOnce(r) : r);
+    const cap = (p) => (p instanceof Promise ? (p.done ? p.value : Promise.race([p, new Promise((r) => (window.battlePace?.realTimeout ?? setTimeout)(() => r(null), 1500))])) : p);
+    const wait = this.loadOnce([plate, cutout?.form ? null : cutout, target?.form ? null : target, feature, groundImage]);
+    [cutout, target] = await Promise.all([cap(crop(cutout)), cap(crop(target)), wait]);
+    this.subjectFile = cutout?.file ?? (cutout ? String(cutout.src).split('/').pop() : '');
     this.refs = { ground: groundImage, plate, feature, cutout, target };
     const fit = feature ? (typeof this.fitOption === 'function' ? this.fitOption(feature, [this.W, this.H]) : this.fitOption ?? 'cover') : 'cover';
     this.rest = { feature: { ...(feature?.view ?? {}), cover: fit === 'contain' ? 0 : 1 } };
     this.setImage('plate', plate);
     this.setImage('cutout', cutout, subject ? m.title(subject) : '');
+    if (this.img.cutout) { this.img.cutout.dataset.file = this.subjectFile; this.img.cutout.dataset.drawn = cutout?.drawn ? 'true' : ''; }
     this.setImage('target', target, targetCard ? m.title(targetCard) : '');
+    if (this.img.target) this.img.target.dataset.file = target?.file ?? (target ? String(target.src).split('/').pop() : '');
     this.setGround(ground);
     for (const k of ['target', 'cutout']) {
       const r = k === 'target' ? target : cutout;
       this.sil[k].style.setProperty('--sd-sil-src', r?.kind === 'image' ? `url("${r.src}")` : 'none');
       this.sil[k].hidden = !(r?.kind === 'image');
+      try { this.fitForm(k, r); } catch { /* the kit's own slot */ }
     }
     if (feature?.kind === 'video') {
       this.img.feature.hidden = true;
@@ -400,7 +609,8 @@ export class Stage extends runtime.Stage {
     this.calloutText.textContent = scene.title;
     this.receiptText = runtime.receiptOf(scene);
     this.receipt.textContent = this.receiptText.full;
-    this.number.textContent = scene.label;
+    // (a transform's label is the rules' English, 'New' or 'Level 3', read elsewhere: shown here in the page's strings)
+    this.number.textContent = scene.kind === 'transform' ? ruleLabel(scene.label) : scene.label;
     this.number.style.minWidth = /^\d+$/.test(scene.label) ? `${scene.label.length}ch` : '';
     this.els.credit.textContent = m.credit(scene.card) ?? '';
     this.fxMedia = { feature, plate, cutout, target, ground: groundImage, palette: this.palette, plateFile: (name) => m.plateFile(scene.card, name) };
@@ -461,7 +671,7 @@ export function verbsOf(shot) {
   if (s.kind === 'result') { const v = s.title === 'Draw' ? 'draw' : s.side === 'player' ? 'victory' : 'defeat'; return { pre: v, land: v }; }
   return { pre: s.kind, land: s.kind };
 }
-const ANCHORED = new Set(['attack', 'switch', 'trait', 'status', 'item', 'guard']);
+const ANCHORED = new Set(['attack', 'switch', 'trait', 'status', 'item', 'guard', 'transform']);
 
 export class Director {
   /** o: { cardOf, titleOf, reduced(), session (a Set kept across battles), seen (this battle's minor beats), plan(shot,
@@ -472,7 +682,7 @@ export class Director {
   stop() { this.gen++; this.stage.stop(); this.stage.box(null); }
   async play(events, o = {}) {
     const my = this.gen, h = this.o.hooks;
-    const shots = runtime.scenesFrom(events, { mode: 'auto', auto: Boolean(o.auto), reduced: this.o.reduced(), cardOf: this.o.cardOf, titleOf: this.o.titleOf, seen: this.o.seen(), session: o.replay ? undefined : this.o.session });
+    const shots = (this.o.scenes ?? runtime.scenesFrom)(events, { mode: 'auto', auto: Boolean(o.auto), reduced: this.o.reduced(), cardOf: this.o.cardOf, titleOf: this.o.titleOf, seen: this.o.seen(), session: o.replay ? undefined : this.o.session });
     // the whole batch is planned first, in order, so a blow knows whether a knockout scene follows it
     for (const shot of shots) this.o.plan?.(shot, Boolean(o.auto));
     shots.forEach((shot, i) => {
@@ -489,6 +699,9 @@ export class Director {
       const next = shots.slice(i + 1).find((x) => x.scene && x.scene.variant !== 'off');
       this.stage.warm?.(next?.scene);
       this.upcoming = next ?? null;
+      // the shot right after this one in the batch, whatever it plays (a board-only or scene-less shot included): only a
+      // scene that follows at once may be handed the HUD's scene state (fixes-2 I4)
+      this.adjacent = shots[i + 1] ?? null;
       await this.present(shot, my);
     }
   }
@@ -506,6 +719,16 @@ export class Director {
    *  events land there and never earlier), the board moment, and the board's settle. */
   async present(shot, my = this.gen) {
     const s = shot.scene, h = this.o.hooks;
+    // a scene that pictures a form plays only with that form's still ready; else the board carries it alone, decided
+    // before anything of the shot has started (its pre-roll, its record) so every part tells the same shot (I1)
+    if (s.kind === 'attack' && s.variant !== 'off' && this.stage.formReady) {
+      let ok = this.stage.formReady(s);
+      // while the worker draws the form, the scene compiles in idle time, so the shot's own start does only its own work
+      // (a 4x phone spent one 56-67 ms task compiling it as the still arrived; fixes-2 I1)
+      if (ok instanceof Promise) { this.compileAhead(shot); ok = await ok; }
+      if (my !== this.gen) return;
+      if (!ok) { s.variant = 'off'; shot.cut = true; shot.framing = undefined; shot.ahead = null; shot.formCut = true; }
+    }
     // the layout may stage the scene in a band over its board (the Mat); else it plays over the whole window
     shot.box = s.variant === 'full' || s.variant === 'short' ? h.box?.(shot) ?? null : null;
     this.stage.box(shot.box);

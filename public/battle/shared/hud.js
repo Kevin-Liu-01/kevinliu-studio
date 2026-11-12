@@ -6,9 +6,11 @@
 // Every colour that means "better for this card" is green and "worse" is red, with the number beside it.
 import { ico, ensureIcons, STATUS_INFO } from './icons.js';
 import { words } from './plan.js';
+import { formLine, formInfo, levelWord, levelParts, stillHtml, stillFillHtml, stillUrl, formKey, pipsHtml, ruleOf } from './tower.js';
+import { drawnBox } from './fx.js';
+import { t as txt, word, engineWords } from './strings.js';
 
 const SIDES = ['player', 'rival'];
-import { t as txt, word, engineWords, cardText } from './strings.js';
 const STAT = { get atk() { return txt('stat.atk'); }, get def() { return txt('stat.def'); }, get spd() { return txt('stat.spd'); } };
 const STAT_ICON = { atk: 'atk', def: 'def', spd: 'spd' };
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -24,13 +26,37 @@ export const stageMult = (n) => (n >= 0 ? (2 + n) / 2 : 2 / (2 - n));
 /** What a multiplier means for you: a rival's gain is your loss. */
 export const povTone = (m, side) => { const t = tone(m); return side === 'rival' ? ({ up: 'down', down: 'up' })[t] ?? t : t; };
 export const hpBand = (hp, max) => { const r = max ? hp / max : 0; return r > 0.5 ? 'ok' : r > 0.2 ? 'mid' : 'low'; };
+/** A plate's HP bar at `hp` of `max`: its band, its fill, its ghost (draining when `drain`), and its number printed
+ *  twice, the ink copy clipped to the fill and the empty-track copy clipped to the rest (`--hpr`), so every glyph reads
+ *  on what is under it at any HP (fix1 C1; tools/card-check.mjs measures it). */
+export function paintHp(bar, hp, max, drain = false) {
+  const r = max ? Math.max(0, Math.min(1, hp / max)) : 0;
+  bar.dataset.band = hpBand(hp, max);
+  bar.style.setProperty('--hpr', String(Math.round(r * 10000) / 10000));
+  bar.querySelector('.pl-fill').style.transform = `scaleX(${r})`;
+  const g = bar.querySelector('.pl-ghost');
+  g.style.transition = drain ? 'transform .45s cubic-bezier(.4,0,.2,1) .18s' : 'none';
+  g.style.transform = `scaleX(${r})`;
+  for (const n of bar.querySelectorAll('.pl-hpnum')) {
+    const b = n.querySelector('b'), sm = n.querySelector('small');
+    if (b.textContent !== String(hp)) b.textContent = String(hp);
+    if (sm.textContent !== ` / ${max}`) sm.textContent = ` / ${max}`;
+  }
+}
 
-export function createHud({ app, engine, K, title, reduced, narrow, realTimeout = setTimeout }) {
+export function createHud({ app, engine, K, title, reduced, narrow, realTimeout = setTimeout, R = null }) {
   ensureIcons();
   const RING = engine.RING ?? ['Infra', 'Agent', 'Data', 'Game', 'Shader', 'Type', 'Interface'];
   const disc = (d) => K.icon(String(d).toLowerCase());
   const def = (id) => engine.fighterDef(id);
-  const hud = { match: null, view: null, layout: null };
+  /** A fighter's def as it stands now: a form card's four moves are its form's (the rules' facade composes them). */
+  const defOf = (f) => (f ? engine.fighterDef(f.id, f) : null);
+  const hud = { match: null, view: null, layout: null, R };
+  /** The form a fighter stands in (null for a card without forms, or while the page has no rules). */
+  const formOf = (f) => { try { return f ? (hud.R ?? R)?.formOf?.(f) ?? null : null; } catch { return null; } };
+  /** The Kit as the engine keeps it: one use of each item, so the count is what is left of the nine. */
+  const kitLeft = (side) => { const k = hud.match?.state.sides[side]?.kit; return k ? Object.values(k).reduce((a, b) => a + Math.max(0, b), 0) : 0; };
+  const kitAll = (side) => { const k = hud.match?.state.sides[side]?.kit; return k ? Object.keys(k).length : 9; };
   const root = el('div', 'hud', app);
   root.setAttribute('aria-hidden', 'false');
 
@@ -50,7 +76,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     // each passed through the attacker's trait (Seeded has no spread; Three Repeats and others fix the hits) and the
     // defender's (Per-Rule Cap caps each hit inside computeDamage). No crit, no guard.
     try {
-      const move = def(att.id).moves[i];
+      const move = defOf(att).moves[i];
       const nums = engine.moveNumbers(att, move, wght);
       if (nums.power <= 0) return null;
       const at = engine.traitOf?.(def(att.id)) ?? {};
@@ -87,11 +113,12 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     p.setAttribute('aria-label', txt(side === 'player' ? 'plate.aria.you' : 'plate.aria.rival'));
     p.innerHTML = `
       <header class="pl-head"><span class="pl-side">${esc(txt(side === 'player' ? 'side.you' : 'side.rival'))}</span><b class="pl-name"></b><span class="pl-disc"></span></header>
-      <div class="pl-hp" data-band="ok"><i class="pl-ghost"></i><i class="pl-fill"></i><span class="pl-hpnum"><b></b><small></small></span></div>
+      <div class="pl-form" hidden></div>
+      <div class="pl-hp" data-band="ok"><i class="pl-ghost"></i><i class="pl-fill"></i><span class="pl-hpnum"><b></b><small></small></span><span class="pl-hpnum pl-hpnum-e" aria-hidden="true"><b></b><small></small></span></div>
       <div class="pl-chips"></div>
       <footer class="pl-foot"><span class="pl-trait"></span><span class="pl-kit"></span></footer>
       <div class="pl-seen" hidden></div>`;
-    plates[side] = { el: p, name: p.querySelector('.pl-name'), disc: p.querySelector('.pl-disc'), hp: p.querySelector('.pl-hp'), ghost: p.querySelector('.pl-ghost'), fill: p.querySelector('.pl-fill'), hpb: p.querySelector('.pl-hpnum b'), hps: p.querySelector('.pl-hpnum small'), chips: p.querySelector('.pl-chips'), trait: p.querySelector('.pl-trait'), kit: p.querySelector('.pl-kit'), seen: p.querySelector('.pl-seen'), uid: '', hpShown: -1 };
+    plates[side] = { el: p, name: p.querySelector('.pl-name'), disc: p.querySelector('.pl-disc'), hp: p.querySelector('.pl-hp'), ghost: p.querySelector('.pl-ghost'), fill: p.querySelector('.pl-fill'), chips: p.querySelector('.pl-chips'), trait: p.querySelector('.pl-trait'), kit: p.querySelector('.pl-kit'), seen: p.querySelector('.pl-seen'), form: p.querySelector('.pl-form'), uid: '', hpShown: -1 };
   }
   /** One chip: an icon, a word or number, a tone and the tooltip it opens. */
   const chip = (icon, text, toneName, tip, extra = '') => `<span class="pc" data-tone="${toneName}" data-tip="${esc(tip)}" tabindex="0">${icon}<b>${text}</b>${extra}</span>`;
@@ -108,16 +135,26 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       P.trait.innerHTML = `<span class="pt" data-tip="trait:${f.id}" tabindex="0">${ico('trait')}<i>${esc(txt('plate.trait'))}</i><b>${esc(d.trait.name)}</b></span>`;
       P.hpShown = -1;
     }
+    // a form card's tower: a row under its name (its still, its name, its stars), re-keyed on uid, form and level
+    const fo = formOf(f);
+    // (a side whose team holds a forms card keeps the row's room, empty, for a card without one: a send-in after
+    // Princeton TD falls never moves the plate's HP and footer up, fixes-3 R4; held once seen, until the team changes)
+    const tk = S.team.map((x) => x?.uid ?? x?.id).join('|');
+    if (P.formTeam !== tk) { P.formTeam = tk; P.formHeld = false; }
+    if (!P.formHeld) P.formHeld = S.team.some((x) => { try { return Boolean(x && formOf(x)); } catch { return false; } });
+    const fk = fo ? `${f.uid}:${fo.form}:${fo.level}` : P.formHeld ? 'held' : '';
+    if (P.form.dataset.k !== fk) {
+      P.form.dataset.k = fk;
+      P.form.hidden = !fo && !P.formHeld;
+      if (!fo) { delete P.form.dataset.tip; P.form.removeAttribute('tabindex'); P.form.removeAttribute('aria-label'); }
+      P.form.innerHTML = fo ? formLine(fo, { h: 20, card: f.id }) : '';
+      if (fo) { P.form.dataset.tip = `tower:${fo.form}:${side}`; P.form.tabIndex = 0; P.form.setAttribute('aria-label', txt('form.aria', { name: fo.name, level: levelWord(fo.level) })); }
+    }
     // HP: the fill moves at once, the ghost drains after it (350 ms, the client convention), the number counts
     const r = f.maxHp ? f.hp / f.maxHp : 0;
     const was = P.hpShown < 0 ? r : P.hpShown;
-    P.hp.dataset.band = hpBand(f.hp, f.maxHp);
-    P.fill.style.transform = `scaleX(${r})`;
-    P.ghost.style.transition = drain && !reduced() && r < was ? 'transform .45s cubic-bezier(.4,0,.2,1) .18s' : 'none';
-    P.ghost.style.transform = `scaleX(${r})`;
+    paintHp(P.hp, f.hp, f.maxHp, drain && !reduced() && r < was);
     P.hpShown = r;
-    P.hpb.textContent = String(f.hp);
-    P.hps.textContent = ` / ${f.maxHp}`;
     P.hp.setAttribute('role', 'img');
     P.hp.setAttribute('aria-label', txt('hp.aria', { hp: f.hp, max: f.maxHp }));
     // chips: condition, stat stages, barrier, crit boost
@@ -134,16 +171,17 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     P.chips.hidden = !parts.length;
     if (P.chips.dataset.k !== html) { P.chips.dataset.k = html; P.chips.innerHTML = html; }
     // the Kit: uses left this battle (the Kit panel and its tooltips list the items)
-    const used = hud.match?.state.stats[side].items ?? 0, left = Math.max(0, 2 - used);
+    const left = kitLeft(side), all = kitAll(side);
     const kit = side === 'player'
-      ? `<button type="button" class="pk-left" data-tip="kit:${side}" aria-label="${esc(txt('kit.aria.you', { n: left }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/2</b></button>`
-      : `<span class="pk-left" data-tip="kit:${side}" tabindex="0" role="img" aria-label="${esc(txt('kit.aria.rival', { n: left }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/2</b></span>`;
+      ? `<button type="button" class="pk-left" data-tip="kit:${side}" aria-label="${esc(txt('kit.aria.you', { n: left, all }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/${all}</b></button>`
+      : `<span class="pk-left" data-tip="kit:${side}" tabindex="0" role="img" aria-label="${esc(txt('kit.aria.rival', { n: left, all }, left))}" data-none="${left === 0}">${ico('bag')}<i>${esc(txt('kit.word'))}</i><b>${left}/${all}</b></span>`;
     if (P.kit.dataset.k !== kit) { P.kit.dataset.k = kit; P.kit.innerHTML = kit; }
     P.el.dataset.quiet = parts.length ? 'false' : 'true';
     // the rival's moves you have seen, each with what it does to your card in play (red when it hits you hard)
     if (side === 'rival') {
       const mine = v.sides.player.team[v.sides.player.active];
-      const seen = d.moves.map((mv, i) => ({ mv, i })).filter((x) => seenMoves.has(`${f.uid}:${x.i}`));
+      // keyed by move id, so a form change never relabels a move seen before it
+      const seen = defOf(f).moves.map((mv, i) => ({ mv, i })).filter((x) => seenMoves.has(`${f.uid}:${x.mv.id}`));
       const html2 = seen.length ? `<i class="ps-label">${esc(txt('plate.seen'))}</i>${seen.map(({ mv, i }) => { const rg = mine && mv.power > 0 ? ringOf(f.id, mine.id, mv) : 1; return `<span class="ps" data-tip="rmove:${i}" tabindex="0" data-tone="${mv.power > 0 ? povTone(rg, 'rival') : 'even'}">${disc(mv.discipline)}<b>${esc(mv.name)}</b>${mv.power > 0 ? `<em>${times(rg)}</em>` : ''}</span>`; }).join('')}` : '';
       P.seen.dataset.many = String(seen.length > 1);
       const row = html2 || `<i class="ps-label">${esc(txt('plate.seen'))}</i><span class="ps-none">${esc(txt('plate.seen.none'))}</span>`;
@@ -177,35 +215,150 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (lb && !narrow()) { logEl.hidden = false; Object.assign(logEl.style, { translate: `${Math.round(lb.x)}px ${Math.round(lb.y)}px`, width: `${Math.round(lb.w)}px`, height: `${Math.round(lb.h)}px` }); }
     else logEl.hidden = true;
     app.dataset.hudlog = logEl.hidden ? 'off' : 'on';
+    // (a phone's open sheet stops a tab's row under the top furniture: the rail, and a plate standing in the screen's
+    // top half, so the rival's HP stays in view while you choose; hud.css reads its foot)
+    {
+      const cy = parseFloat(getComputedStyle(app).getPropertyValue('--console-y')) || innerHeight;
+      const feet = [document.querySelector('#app .rail'), ...SIDES.map((sd) => plates[sd].el)].map((e) => e?.getBoundingClientRect()).filter((q) => q?.height && q.bottom < cy / 2).map((q) => q.bottom);
+      if (feet.length) app.style.setProperty('--hud-rail-b', `${Math.round(Math.max(...feet))}px`);
+    }
+    hud.watchPanel?.(); liftTab();
   }
 
   // ======================================================== the turn tab: the turn, whose decision, who acts first
   const turnTab = el('div', 'ttab', root);
+  const ttMain = el('span', 'tt-main', turnTab), ttOrder = el('span', 'tt-order', turnTab), ttFirst = el('span', 'tt-firstbox', turnTab);
+  const ttFirstChip = el('span', 'tt-first', ttFirst);
+  ttFirstChip.dataset.tip = 'order'; ttFirstChip.tabIndex = 0; ttFirstChip.hidden = true;
   /** The turn whose beat has played (the first turn's opens quietly). */
   let beatTurn = -1;
   turnTab.setAttribute('aria-live', 'polite');
   /** The tab on the console's top edge: Turn N, then Your move / Playing / Send in a card / the result, then who acts
    *  first on Pace (a move's priority can still jump the order; the tooltip says so). */
+  /** The choice under the pointer or the focus (a move key, a Tower tile, an upgrade button) and the priority it acts
+   *  at, so the tab says who acts first with it (fix1 C3): a move's own priority (engine.priorityOf), a tower's key-1
+   *  attack's (a tower fires at its attack's priority, ruling 1). null when nothing is being chosen. */
+  function consideredPriority() {
+    const st = hud.match?.state, me = activeOf('player');
+    if (!st || st.phase !== 'command' || !me) return null;
+    const sel = '#moves .cmove, #panel[data-kind="tower"] [data-tw="build"], #panel[data-kind="tower"] [data-tw="upgrade"]';
+    // (focus on the tab's own order chip keeps the choice last weighed; a focus counts only once the keyboard drives
+    // it, so the cursor the page puts on move 1 at each command says nothing to a pointer player)
+    // (a pointer over a key or a tile since then releases that hold, fixes-2 R11: the key under it is weighed)
+    if (turnTab.contains(document.activeElement) && !tabReleased) return orderPri;
+    const t = document.querySelector(`:is(${sel}):hover`) ?? (lastInput === 'key' ? document.activeElement?.closest?.(sel) : null);
+    if (!t || t.getAttribute('aria-disabled') === 'true') return null;
+    try {
+      if (t.matches('#moves .cmove')) { const i = Number(String(t.dataset.tip ?? '').split(':')[1]); return Number.isFinite(i) ? engine.priorityOf(me, { kind: 'move', index: i }) : null; }
+      const rules = hud.R ?? R, slot = rules?.forms?.[me.id]?.slots?.[0] ?? 0;
+      const pv = rules?.towerPreview?.(st, 'player', t.dataset.tw === 'build' ? { form: t.dataset.form } : { branch: t.dataset.branch || null });
+      const k1 = pv?.moves?.[slot];
+      return k1 ? (k1.priority ?? 0) : null;
+    } catch { return null; }
+  }
+  let turnArgs = null, orderPri = null, lastInput = 'pointer', tabReleased = false;
+  document.addEventListener('keydown', () => { lastInput = 'key'; tabReleased = false; queueMicrotask(reorder); }, true);
+  document.addEventListener('pointerdown', () => { lastInput = 'pointer'; }, true);
+  document.addEventListener('focusin', (e) => { if (turnTab.contains(e.target)) tabReleased = false; }, true);
+  document.addEventListener('pointerover', (e) => { if (e.target?.closest?.('#moves .cmove, #panel[data-kind="tower"] [data-tw="build"], #panel[data-kind="tower"] [data-tw="upgrade"]')) tabReleased = true; }, true);
+  const reorder = () => { const pr = consideredPriority(); if (pr === orderPri) return; orderPri = pr; if (turnArgs) drawTurn(...turnArgs); };
+  for (const ev of ['pointerover', 'pointerout', 'focusin', 'focusout']) document.addEventListener(ev, () => queueMicrotask(reorder), true);
   function drawTurn(state, busy) {
     if (!state) return;
+    turnArgs = [state, busy];
+    if (busy) orderPri = null;
     const me = activeOf('player'), foe = activeOf('rival');
     const phase = esc(txt(state.phase === 'over' ? (state.winner === 'player' ? 'result.victory' : state.winner === 'rival' ? 'result.defeat' : 'result.draw')
       : state.phase === 'replace' && state.pending?.includes('player') ? 'turn.sendIn' : busy ? 'turn.playing' : 'turn.yourMove'));
-    let first = '';
+    let first = null;
     if (me && foe && state.phase === 'command') {
       const a = engine.effectiveSpeed(me), b = engine.effectiveSpeed(foe);
-      const w = a > b ? 'you' : a < b ? 'rival' : 'tie';
-      const who = esc(txt(`turn.first.${w}`)), short = esc(txt(`turn.first.${w}.short`));
+      // the choice being weighed acts at its priority; the rival's move is unknown, so it is weighed at 0
+      const pr = orderPri ?? 0;
+      const w = pr > 0 ? 'you' : pr < 0 ? 'rival' : a > b ? 'you' : a < b ? 'rival' : 'tie';
+      // (no choice weighed, as on a touch screen before its tap, while one of your keys has priority: the short form
+      // says the order is Pace's, so it never contradicts that key's chip, fixes-2 R4)
+      const keyPri = !pr && (defOf(me)?.moves ?? []).some((_, i) => { try { return engine.priorityOf(me, { kind: 'move', index: i }) !== 0; } catch { return false; } });
+      const who = esc(txt(`turn.first.${w}`)), short = esc(txt(keyPri ? `turn.first.${w}.pace` : `turn.first.${w}.short`));
       const pair = txt(a >= b ? 'turn.pace.youFirst' : 'turn.pace.rivalFirst', { you: Math.round(a), rival: Math.round(b) });
-      first = `<span class="tt-first" data-tone="${a > b ? 'up' : a < b ? 'down' : 'even'}" data-tip="order" tabindex="0">${ico('priority')}<b class="tt-long">${who}</b><b class="tt-short">${short}</b><i>${esc(txt('turn.pace', { pair }))}</i></span>`;
+      const why = pr ? txt('turn.priority', { n: `${pr > 0 ? '+' : '−'}${Math.abs(pr)}` }) : txt('turn.pace', { pair });
+      first = { tone: w === 'you' ? 'up' : w === 'rival' ? 'down' : 'even', prio: String(pr), html: `${ico('priority')}<b class="tt-long">${who}</b><b class="tt-short">${short}</b><b class="tt-mini">${esc(txt(`turn.first.${w}.short`))}</b><i>${esc(why)}</i>` };
     }
     const shown = busy && state.phase !== 'over' ? Math.max(1, state.turn - 1) : state.turn;
-    const html = `${ico('turn')}<b class="tt-turn"><span class="tt-word">${esc(txt('turn.word'))}</span><span class="tt-t">${esc(txt('turn.t'))}</span>${shown}</b><span class="tt-phase" data-busy="${busy}">${phase}</span>${first}`;
-    if (turnTab.dataset.k !== html) { turnTab.dataset.k = html; turnTab.innerHTML = html; }
+    const html = `${ico('turn')}<b class="tt-turn"><span class="tt-word">${esc(txt('turn.word'))}</span><span class="tt-t">${esc(txt('turn.t'))}</span>${shown}</b><span class="tt-phase" data-busy="${busy}">${phase}</span>`;
+    if (ttMain.dataset.k !== html) { ttMain.dataset.k = html; ttMain.innerHTML = html; }
+    // (the order chip is one element, updated in place, so a focus on it survives a redraw)
+    ttFirstChip.hidden = !first;
+    if (first) {
+      if (ttFirstChip.dataset.tone !== first.tone) ttFirstChip.dataset.tone = first.tone;
+      if (ttFirstChip.dataset.prio !== first.prio) ttFirstChip.dataset.prio = first.prio;
+      if (ttFirstChip.dataset.k !== first.html) { ttFirstChip.dataset.k = first.html; ttFirstChip.innerHTML = first.html; }
+    }
+    // the order strip (shared/beats.js) stands in for "Playing the turn" while a turn plays; the next command clears it
+    if ((!busy || state.phase === 'over') && ttOrder.childElementCount) { ttOrder.textContent = ''; ttOrder.dataset.k = ''; turnTab.removeAttribute('data-order'); }
     const ph = state.phase === 'over' ? 'over' : busy ? 'busy' : 'you';
     if (ph === 'you' && beatTurn !== state.turn && !reduced() && beatTurn !== -1) turnTab.animate([{ transform: 'scale(1.12)', boxShadow: '0 0 0 6px oklch(55% 0.15 255 / .35)' }, { transform: 'none', boxShadow: '0 0 0 0 oklch(55% 0.15 255 / 0)' }], { duration: 320, delay: 360, fill: 'backwards', easing: 'cubic-bezier(.2,.9,.1,1)' });
     if (ph === 'you') beatTurn = state.turn;
     turnTab.dataset.phase = ph;
+    liftTab();
+  }
+  /** An open panel rises over the console's top edge, where the tab stands, and its console rises over the HUD (a
+   *  phone's tab stands inside the console's first line): the tab then stands on the top edge of whichever of the two
+   *  covers it, panel or console, clear of both (a transform, so it shifts no layout), and comes back down when the
+   *  panel closes (fix1 C3). */
+  function liftTab() {
+    const pn = document.getElementById('panel');
+    if (turnTab.style.getPropertyValue('--tt-lift')) turnTab.style.removeProperty('--tt-lift');
+    if (turnTab.style.getPropertyValue('--tt-slide')) turnTab.style.removeProperty('--tt-slide');
+    if ('compact' in turnTab.dataset) delete turnTab.dataset.compact;
+    turnTab.dataset.lifted = 'false';
+    if (!pn || pn.hidden || !pn.getClientRects().length) return;
+    const t = turnTab.getBoundingClientRect();
+    if (!t.width) return;
+    const con = pn.closest('.console'), covers = [pn, con].filter(Boolean).map((e) => e.getBoundingClientRect()).filter((q) => q.width);
+    let top = t.top;
+    for (let n = 0; n < 4; n++) {
+      const q = covers.find((c) => t.right > c.left && t.left < c.right && top + t.height > c.top && top < c.bottom);
+      if (!q) break;
+      top = q.top - t.height - 4;
+    }
+    // (never under the top rail)
+    const rail = document.querySelector('#app .rail')?.getBoundingClientRect();
+    top = Math.max(rail?.height ? rail.bottom + 4 : 8, top);
+    turnTab.dataset.lifted = String(top < t.top);
+    if (top < t.top) turnTab.style.setProperty('--tt-lift', `${Math.round(t.top - top)}px`);
+    // lifted, it never stands on a plate (fixes-2 R10): it keeps its x where that clears both plates; else it slides
+    // along the panel's top edge to the nearest x that clears them (the panel paints over the HUD, so it never sinks
+    // onto the panel), in its short form ("T7, Rival first") where that stands nearer, and where it can off the cards or
+    // figures in play; a tooltip then stands clear of it (panelSpot weighs the tab as a key)
+    if (top < t.top) {
+      const box = (e) => (e && !e.hidden && e.getClientRects().length ? e.getBoundingClientRect() : null);
+      const plateQ = [plates.player.el, plates.rival.el].map(box).filter((q) => q?.width);
+      const soft = [...document.querySelectorAll('#board .slot[data-zone="active"], #board .fig')].map(box).filter((q) => q?.width);
+      const lap = (x, w, q) => Math.max(0, Math.min(x + w, q.right) - Math.max(x, q.left)) * Math.max(0, Math.min(top + t.height, q.bottom) - Math.max(top, q.top));
+      const hard = (x, w) => plateQ.reduce((n, q) => n + lap(x, w, q), 0);
+      if (hard(t.left, t.width) > 0) {
+        const pq = covers[0], L0 = Math.max(8, pq?.left ?? 8), R0 = Math.min(innerWidth - 8, pq?.right ?? innerWidth);
+        turnTab.dataset.compact = 'true';
+        const tc = turnTab.getBoundingClientRect(), cw = tc.width || t.width, cl = tc.width ? tc.left : t.left;
+        let best = null;
+        // (each form slides from where it stands: the short one may be anchored by its right edge)
+        for (const [w, x0, pen, compact] of [[t.width, t.left, 0, false], [cw, cl, 60, true]]) for (let x = Math.round(L0); x <= R0 - w; x += 8) {
+          // (a long slide costs most: it takes the board's upper left, where a tile's tooltip stands)
+          const c = 1e3 * hard(x, w) + soft.reduce((n, q) => n + lap(x, w, q), 0) + Math.abs(x0 - x) * 2 + pen;
+          if (!best || c < best.c) best = { x, x0, c, compact };
+        }
+        if (!best?.compact) delete turnTab.dataset.compact;
+        if (best && best.x !== best.x0) turnTab.style.setProperty('--tt-slide', `${Math.round(best.x0 - best.x)}px`);
+      }
+    }
+  }
+  hud.liftTab = liftTab;
+  {
+    let watched = null;
+    const mo = typeof MutationObserver === 'function' ? new MutationObserver(() => liftTab()) : null;
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => liftTab()) : null;
+    hud.watchPanel = () => { const pn = document.getElementById('panel'); if (!pn || pn === watched) return; watched = pn; mo?.observe(pn, { attributes: true, attributeFilter: ['hidden', 'data-kind'], childList: true }); ro?.observe(pn); };
   }
 
   // ======================================================== the battle log: turn headers, icons, multipliers, receipts
@@ -281,6 +434,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       }
       case 'guard': return { turn: e.turn, side: e.side, icon: ico('guard'), cls: 'lg-up', html: txt('log.guard', { who: `<b>${esc(owned(e.fighter))}</b>`, chip: `<span class="hx" data-tone="${povTone(2, e.side)}"><b>×0.5</b><i>${esc(txt('chip.guardTurn'))}</i></span>` }, undefined, true) };
       case 'item': return { turn: e.turn, side: e.side, icon: ico(e.item), cls: 'lg-item', html: txt('log.item', { side: tag(e.side), item: `<b>${esc(e.name)}</b>`, target: `<b>${esc(owned(e.target))}</b>`, detail: `<small>${esc(engineWords(words(e.detail)))}</small>` }, undefined, true) };
+      case 'transform': return { turn: e.turn, side: e.side, icon: `<span class="lg-tw" style="--ta:${e.accent ?? formInfo(e.card, e.to?.form).accent}">${towerGlyph}</span>`, cls: 'lg-up', html: transformLine(e) };
       case 'ko': return { turn: e.turn, side: e.side, icon: ico('ko'), cls: 'lg-ko', html: txt('log.ko', { who: `<b>${esc(txt(e.side === 'player' ? 'log.yours' : 'log.rivals', { card: title(e.card) }))}</b>` }, undefined, true) };
       case 'result': return { turn: e.turn, side: 'none', icon: ico('turn'), cls: 'lg-result', html: txt('log.result', { result: `<b>${esc(txt(e.winner === 'draw' ? 'result.draw' : e.winner === 'player' ? 'result.victory' : 'result.defeat'))}</b>`, n: e.turns }, e.turns, true) };
       default: return null;
@@ -317,7 +471,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   // over the scene's stage (z 25), so it reads at the contact of a full scene too; the HUD layer itself sits under it
   const callout = el('div', 'mcall', app);
   callout.setAttribute('aria-hidden', 'true');
-  let callT = 0;
+  let callT = 0, callGen = 0, callKeep = -1;
   /** At a hit's contact: the ring multiplier large (green Strong, red Resisted), the critical under it, near the struck
    *  card (rect, viewport px) or the frame's centre. Holds 900 ms, then fades. */
   function callMultiplier(hit, rect) {
@@ -337,15 +491,62 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       const num = vis('#board .num') ?? (app.dataset.scene ? vis('#stage .sd-damage .sd-number') : null), rec = num ? vis('#stage .sd-receipt') : null;
       const cw = callout.offsetWidth || 220, ch = callout.offsetHeight || 60;
       let x, y;
-      if (num && num.right + 20 + cw <= W - 12) { x = num.right + 20 + cw / 2; y = num.top + num.height / 2; } // beside the scene's number
+      // a phone (fix1 C2): the call-out takes its own row over the number and every chip beside it (its ring and hit
+      // tags, its ticks, the post chips), else under them; never on top of one. And never across the struck figure
+      // (fixes-2 R1): over the number's stack first (the slam's growth and its 18 px rise allowed for), under it only
+      // when the row's top clears the figure's foot, else over the figure's own top; the least covered of those last
+      const phoneRow = W < 720 && num ? (() => {
+        const parts = [...document.querySelectorAll('#board .num, #board .num-tags, #board .num-ticks, #board .ptags, #stage .sd-damage .sd-number, #stage .sd-receipt')].filter(shown).map((e) => e.getBoundingClientRect()).filter((q) => q.width && q.bottom > 0 && q.top < H && Math.abs(q.left + q.width / 2 - (num.left + num.width / 2)) < W * 0.45);
+        const U = parts.reduce((u, q) => ({ left: Math.min(u.left, q.left), top: Math.min(u.top, q.top), right: Math.max(u.right, q.right), bottom: Math.max(u.bottom, q.bottom) }), { left: num.left, top: num.top, right: num.right, bottom: num.bottom });
+        const pad = num.height * 0.3, RISE = 18, cx = (U.left + U.right) / 2;
+        const floor = (document.querySelector('#console')?.getBoundingClientRect().top ?? H) - 8;
+        const railB = document.querySelector('#app .rail')?.getBoundingClientRect();
+        const ceil = Math.max(60, railB?.height ? railB.bottom + 4 : 0);
+        // the struck figure as drawn (the layout's anchor where there is no drawn box: a card, a full scene's target)
+        const foeSide = hit.side === 'player' ? 'rival' : 'player';
+        const fig = drawnBox(hud.layout, foeSide) ?? rect ?? null;
+        // (and the actor tag as it stands, the Arena's or the Mat's: a row that rides the settling camera never lands on
+        // it, fixes-2 R1 after the critic: 390 #37 1514 px2; weighted over the figure, as a read)
+        const seen = (e) => { let a = 1; for (let x = e; x && x !== document.documentElement && a > 0.05; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.display === 'none' || cs.visibility === 'hidden') return 0; a *= +cs.opacity; } return a; };
+        const tags = [...document.querySelectorAll('.atag, .slot-tag')].filter((e) => e.dataset.blocked !== 'true' && seen(e) > 0.05).map((e) => e.getBoundingClientRect()).filter((q) => q.width && q.height);
+        const ov = (y, q) => { const l = Math.max(cx - cw / 2, q.left), r = Math.min(cx + cw / 2, q.right), t = Math.max(y - ch / 2, q.top), b = Math.min(y + ch / 2, q.bottom); return Math.max(0, r - l) * Math.max(0, b - t); };
+        const lap = (y) => (fig?.width ? ov(y, fig) : 0) + tags.reduce((n, q) => n + 3 * ov(y, q), 0);
+        const fits = (y) => y - ch / 2 >= ceil && y + ch / 2 <= floor;
+        const overNum = U.top - pad - RISE - 8 - ch / 2, underNum = U.bottom + pad + 8 + ch / 2;
+        // (by kind, so a follow keeps the kind it took while it stays clear: over the number, under it, over the figure,
+        // under the figure)
+        const spots = [overNum, !fig?.width || underNum - ch / 2 >= fig.bottom ? underNum : null, fig?.width ? Math.min(fig.top, U.top - pad - RISE) - 8 - ch / 2 : null, fig?.width ? Math.max(fig.bottom, U.bottom + pad) + 8 + ch / 2 : null];
+        const good = (k) => spots[k] !== null && fits(spots[k]) && !lap(spots[k]);
+        const k = good(callKeep) ? callKeep : spots.findIndex((_, i) => good(i));
+        if (k >= 0) { callKeep = k; return { x: cx, y: spots[k] }; }
+        // (nowhere clear: inside the window, the spot that covers least of the figure, over the number before under it)
+        const all = [overNum, underNum, ...spots.slice(2).filter((y) => y !== null)].map((y) => Math.min(floor - ch / 2, Math.max(ceil + ch / 2, y)));
+        return { x: cx, y: all.reduce((m, y) => (lap(y) < lap(m) ? y : m), all[0]) };
+      })() : null;
+      if (phoneRow) ({ x, y } = phoneRow);
+      else if (num && num.right + 20 + cw <= W - 12) { x = num.right + 20 + cw / 2; y = num.top + num.height / 2; } // beside the scene's number
       else if (num) { const b = Math.max(num.bottom, rec?.bottom ?? 0); x = num.left + cw / 2; y = b + 10 + ch / 2; } // under it and its receipt
       else { x = rect ? rect.left + rect.width / 2 : W / 2; y = rect ? rect.top + rect.height * 0.18 : H * 0.3; } // beside the struck card
       x = Math.min(W - cw / 2 - 12, Math.max(cw / 2 + 12, x)); y = Math.min(H - ch / 2 - 12, Math.max(ch / 2 + 60, y));
-      callout.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+      const tr = `${Math.round(x)}px ${Math.round(y)}px`;
+      if (callout.style.translate === tr) return;
+      callout.style.translate = tr;
+      // (the actor tag steps off it in the same frame: shared/beats.js listens, so a still never shows the tag one frame
+      // where the call-out has just landed, fixes-2 R1 after the critic: 1440 reduced #31 1134 px2)
+      if (callout.dataset.on === 'true') callout.dispatchEvent(new Event('mcall:placed', { bubbles: true }));
     };
+    // (placed now as well: shown at once under reduced motion, it never stands a frame where the last one stood)
+    at();
     requestAnimationFrame(at);
     setTimeout(at, 140); // the receipt writes its total once the count lands
+    if (innerWidth < 720) setTimeout(at, 470); // a phone: the post chips (impact + 450) join the row it stands clear of
+    // a phone's row rides the number while it shows (fixes-2 R1): the camera settling back to rest moves the number and
+    // the figure under a row placed in the window's px, so it is placed again each frame, keeping the kind of spot it took
+    const gen = ++callGen;
+    callKeep = -1;
+    if (innerWidth < 720) { const ride = () => { if (gen !== callGen || callout.dataset.on !== 'true') return; at(); requestAnimationFrame(ride); }; requestAnimationFrame(ride); }
     callout.dataset.on = 'true';
+    callout.dispatchEvent(new Event('mcall:placed', { bubbles: true }));
     clearTimeout(callT);
     if (!reduced()) callout.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(1.35)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: 0.35 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' }], { duration: 260, easing: 'cubic-bezier(.2,.9,.1,1)' });
     callT = setTimeout(() => { callout.dataset.on = 'false'; }, 1100); // battle time: the speed setting shortens it
@@ -357,6 +558,9 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   tip.id = 'battle-tip';
   let tipFor = null, tipT = 0, tipVideo = null;
   const PREVIEWS = new URL('../previews/', import.meta.url).href;
+  /** A move has a preview clip when it is one of its card's printed moves (previews/<card>.<move>.webm); a form's own
+   *  moves have none, so their tooltip and key show the tower's still instead of an empty poster. */
+  const hasPreview = (card, id) => { try { return engine.fighterDef(card).moves.some((x) => x.id === id); } catch { return false; } };
   /** The tooltip's content for a key ("move:2", "disc:Infra", "status:burn", "item:api-key", "trait:<id>", ...). */
   function tipHtml(key) {
     const [kind, a, b] = key.split(':');
@@ -365,7 +569,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       const side = kind === 'move' ? 'player' : 'rival';
       const att = activeOf(side), tgt = activeOf(side === 'player' ? 'rival' : 'player');
       if (!att) return '';
-      const d = def(att.id), i = Number(a), m = d.moves[i];
+      const d = defOf(att), i = Number(a), m = d.moves[i];
       if (!m) return '';
       const nums = engine.moveNumbers(att, m, m.axis ? 600 : undefined);
       const ring = tgt ? ringOf(att.id, tgt.id, m) : 1, home = homeOf(att.id, m);
@@ -383,7 +587,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       const desc = moveDesc(m, nums.accuracy), about = cardMoveText(att.id, m);
       const pp = att.pp[i];
       return `<div class="tp-move">
-        <video class="tp-vid" muted loop playsinline preload="none" data-src="${PREVIEWS}${att.id}.${m.id}.webm" poster="${PREVIEWS}${att.id}.${m.id}.webp"></video>
+        ${hasPreview(att.id, m.id) ? `<video class="tp-vid" muted loop playsinline preload="none" data-src="${PREVIEWS}${att.id}.${m.id}.webm" poster="${PREVIEWS}${att.id}.${m.id}.webp"></video>` : formOf(att) ? `<span class="tp-vid tp-still">${stillFillHtml(formOf(att).key, { h: 214, card: att.id, accent: formOf(att).accent })}</span>` : ''}
         <div class="tp-body">
           <header><span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[m.discipline]}">${disc(m.discipline)}<i>${esc(dname(m.discipline))}</i></span><b>${esc(m.name)}</b><span class="tp-cat">${nums.power > 0 ? `${ico('power')}${esc(txt('tip.attack'))}` : `${ico('support')}${esc(txt('tip.support'))}`}</span></header>
           <div class="tp-nums">${nums.power > 0 ? `<span>${ico('power')}<b>${nums.power}</b><i>${esc(txt('tip.power'))}</i></span>` : ''}<span>${ico('accuracy')}${nums.accuracy > m.accuracy + 1e-9 ? `<s>${Math.round(m.accuracy * 100)}%</s>` : ''}<b>${Math.round(nums.accuracy * 100)}%</b><i>${esc(nums.accuracy > m.accuracy + 1e-9 ? txt('tip.toHit.trait', { trait: d.trait.name }) : txt('tip.toHit'))}</i></span><span data-low="${pp <= Math.ceil(m.pp / 4)}">${ico('pp')}<b>${pp}/${m.pp}</b><i>${esc(txt('tip.pp'))}</i></span></div>
@@ -407,16 +611,17 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (kind === 'stat') return `<div class="tp-small"><header>${K.icon(a)}<b>${esc(txt('stat.stage', { stat: STAT[a], n: b }))}</b></header><p class="tp-desc">${esc(txt('tip.stat', { what: txt(`tip.stat.${a}`) }))}</p></div>`;
     if (kind === 'barrier') return `<div class="tp-small"><header>${ico('barrier')}<b>${esc(txt('tip.barrier.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.barrier', { n: Math.round(Number(a) * 100) }))}</p></div>`;
     if (kind === 'crit') return `<div class="tp-small"><header>${ico('crit')}<b>${esc(txt('tip.crit.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.crit', { n: Math.round(Number(a) * 100) }))}</p></div>`;
-    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">${esc(txt('plate.trait'))}</span></header><p class="tp-desc">${esc(cardText(a, 'trait.rule', words(d.trait.rule)))}</p></div>`; }
+    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">${esc(txt('plate.trait'))}</span></header><p class="tp-desc">${esc(words(d.trait.rule))}</p></div>`; }
     if (kind === 'item') {
       const it = engine.itemById(a);
       return `<div class="tp-small"><header>${ico(a)}<b>${esc(it.name)}</b><span class="tp-cat">${esc(engineWords(words(it.short)))}</span></header><p class="tp-desc">${esc(txt(`item.${a}`))}</p><p class="tp-note">${ico('priority')}${esc(txt('tip.item.note'))}</p></div>`;
     }
-    if (kind === 'kit') { const used = hud.match?.state.stats[a].items ?? 0; return `<div class="tp-small"><header>${ico('bag')}<b>${esc(txt('kit.word'))}</b></header><p class="tp-desc">${esc(txt('tip.kit', { n: Math.max(0, 2 - used) }, Math.max(0, 2 - used)))}</p></div>`; }
+    if (kind === 'kit') return `<div class="tp-small"><header>${ico('bag')}<b>${esc(txt('kit.word'))}</b></header><p class="tp-desc">${esc(txt('tip.kit', { n: kitLeft(a), all: kitAll(a) }, kitLeft(a)))}</p></div>`;
+    if (kind === 'tower' || kind === 'upgrade') return towerTip(kind, a, b);
     if (kind === 'bench') {
       const s = hud.match?.state.sides[a], t = s?.team[Number(b)];
       if (!t) return '';
-      const d = def(t.id), other = activeOf(a === 'player' ? 'rival' : 'player');
+      const d = defOf(t), other = activeOf(a === 'player' ? 'rival' : 'player');
       const best = other ? Math.max(...d.moves.map((mv) => ringOf(t.id, other.id, mv))) : 1;
       return `<div class="tp-small"><header><b>${esc(title(t.id))}</b><span class="tp-cat">${esc(t.hp <= 0 ? txt('chip.out') : txt('hp.short', { hp: t.hp, max: t.maxHp }))}</span></header><p class="tp-row">${d.disciplines.map((x) => `<span class="tp-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}<i>${esc(dname(x))}</i></span>`).join('')}${t.status ? `<span class="tc" style="--s:${STATUS_INFO[t.status].color}">${ico(t.status)}${esc(STATUS_INFO[t.status].label)}</span>` : ''}</p>${other && t.hp > 0 ? `<p class="tp-row">${txt('tip.bench.best', { card: esc(title(other.id)), chip: multChip(best) }, undefined, true)}</p>` : ''}</div>`;
     }
@@ -480,9 +685,11 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (y < 8) y = Math.min(H - t.height - 8, r.bottom + 10);
     // a move's tooltip on a wide screen stands over the log rail's foot, clear of your plate and leader
     const lb = hud.layout?.logBox?.();
-    if (target.closest('#moves') && lb && !narrow() && hud.layout?.mode === 'mat') { tip.dataset.compact = 'false'; const t2 = tip.getBoundingClientRect(); x = Math.max(8, lb.x + lb.w - t2.width); y = Math.max(8, r.top - t2.height - 10); }
+    const tb = tabBox();
+    if (target.closest('#panel')) ({ x, y } = panelSpot(target, r));
+    else if (target.closest('#moves, .acts .tower') && lb && !narrow()) { tip.dataset.compact = 'false'; const t2 = tip.getBoundingClientRect(); x = Math.max(8, lb.x + lb.w - t2.width); const over = tb && tb.right > x && tb.left < x + t2.width ? Math.min(r.top, tb.top) : r.top; y = Math.max(8, over - t2.height - 8); }
     // without the log rail (the Mat under 1280, the Arena), the first of a few spots that covers nothing the choice needs
-    else if (target.closest('#moves') && !narrow()) ({ x, y } = moveSpot(target, r));
+    else if (target.closest('#moves, .acts .tower') && !narrow()) ({ x, y } = moveSpot(target, r));
     // a plate's own parts: beside the plate (its HP and chips stay readable), else as above
     const pl = target.closest('.plate:not([data-strip="true"])');
     if (pl) {
@@ -492,7 +699,74 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     }
     // whatever spot won, the whole tooltip stays inside the window
     x = Math.max(8, Math.min(W - t.width - 8, x)); y = Math.max(8, Math.min(H - t.height - 8, y));
+    // and never over the turn tab (fix1 C3): above it, else below it, else beside it
+    const tw = tip.getBoundingClientRect().width || t.width, th = tip.getBoundingClientRect().height || t.height;
+    if (tb && !target.closest('#panel') && x < tb.right && x + tw > tb.left && y < tb.bottom && y + th > tb.top) {
+      if (tb.top - th - 8 >= 8) y = tb.top - th - 8;
+      else if (tb.bottom + 8 + th <= H - 8) y = tb.bottom + 8;
+      else x = tb.left - tw - 8 >= 8 ? tb.left - tw - 8 : Math.min(W - tw - 8, tb.right + 8);
+    }
     tip.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+  }
+  /** The turn tab's box while it shows (null when hidden or empty). */
+  function tabBox() {
+    if (!turnTab.isConnected) return null;
+    const cs = getComputedStyle(turnTab);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return null;
+    const q = turnTab.getBoundingClientRect();
+    return q.width && q.height ? q : null;
+  }
+  /** A tooltip for a panel's key (a Tower tile, an upgrade, a bench row, a Kit item): over the board above the panel's
+   *  head, at the key's x, clear of the turn tab; where the room over the panel is too short, beside the key, then the
+   *  spot that covers the fewest keys (fix1 C6). */
+  function panelSpot(target, r) {
+    const W = innerWidth, H = innerHeight, t = tip.getBoundingClientRect(), w = t.width, h = t.height;
+    const pn = target.closest('#panel').getBoundingClientRect(), tb = tabBox();
+    const top = Math.max(8, ...[document.querySelector('#app .rail')].map((e) => (e?.getBoundingClientRect().height ? e.getBoundingClientRect().bottom + 8 : 0)));
+    const keys = [...target.closest('#panel').querySelectorAll('.key, button')].filter((e) => e !== target).map((e) => e.getBoundingClientRect()).filter((q) => q.width);
+    const cons = [...document.querySelectorAll('.console .acts .key, #moves .cmove')].filter((e) => !target.closest('#panel').contains(e)).map((e) => e.getBoundingClientRect()).filter((q) => q.width);
+    const lap = (c, q) => Math.max(0, Math.min(c.x + c.w, q.right) - Math.max(c.x, q.left)) * Math.max(0, Math.min(c.y + c.h, q.bottom) - Math.max(c.y, q.top));
+    const cx = r.left + r.width / 2 - w / 2;
+    const over = tb ? Math.min(pn.top, tb.top) : pn.top;
+    const above = pn.top - h - 8;
+    // (what the board shows while you choose, as moveSpot weighs it: the plates and the log rail at 2, the cards or
+    // figures in play and the leaders at 3; fix1 C6 after the critic)
+    const box = (e) => e?.getBoundingClientRect();
+    const seen = (e) => e && !e.hidden && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden';
+    const board = [];
+    // (a plate is the HP the tip measures against: it weighs as a key, never a place to stand, fixes-3 R3: at 1440 every
+    // tile's tip stood on the rival plate)
+    for (const [e, k] of [[plates.player.el, 40], [plates.rival.el, 40], [logEl, 2]]) if (seen(e)) { const q = box(e); if (q.width) board.push([q, k]); }
+    // (your own figure is the tower you are changing, 12; the rival's and the leaders 3; the bench's cards and the team
+    // rosters, the HP the plates count, weigh as a plate, 40: at 1440 a tile tip stood on your bench stack and on your
+    // own figure, fixes-3 R3 after the critic)
+    const mat = hud.layout?.mode === 'mat';
+    for (const e of document.querySelectorAll(`${mat ? '#board .slot[data-zone="active"], ' : ''}#board .leader, .leader`)) if (seen(e)) { const q = box(e); if (q.width) board.push([q, e.dataset.side === 'player' ? 12 : 3]); }
+    // (the Arena's figures by their drawn box, the picture's opaque matter, not the figure's whole frame, so the tip may
+    // stand in the open board over them; a figure with no drawn box, its frame)
+    if (!mat) for (const side of ['player', 'rival']) {
+      let q = null;
+      try { q = drawnBox(hud.layout, side); } catch { q = null; }
+      if (!q?.width) { const e = document.querySelector(`#board .fig[data-side="${side}"]:not([hidden])`); q = e && seen(e) ? box(e) : null; }
+      if (q?.width) board.push([q, side === 'player' ? 12 : 3]);
+    }
+    for (const e of document.querySelectorAll(mat ? '#board .slot[data-zone="bench"]' : '#board .hand .hcard, #board .team')) if (seen(e)) { const q = box(e); if (q.width) board.push([q, 40]); }
+    // above the panel: at the key's x, beside the tab, then across the width in steps; then beside or under the key
+    const xs = [cx, ...(tb ? [tb.left - w - 8, tb.right + 8] : []), ...Array.from({ length: 9 }, (_, i) => 8 + ((W - w - 16) * i) / 8)];
+    const spots = [...xs.map((x) => ({ x, y: above })), ...xs.map((x) => ({ x, y: over - h - 8 })), { x: r.right + 10, y: r.top }, { x: r.left - w - 10, y: r.top }, { x: cx, y: r.bottom + 10 }, ...xs.map((x) => ({ x, y: top }))];
+    let best = null;
+    for (const s0 of spots) {
+      const c = { x: Math.max(8, Math.min(W - w - 8, s0.x)), y: Math.max(top, Math.min(H - h - 8, s0.y)), w, h };
+      // the key itself and the panel's other keys first, then the tab, then the board's reads, then the panel's body;
+      // a tie goes to the spot nearest the key
+      // (fixes-2 R11: the key under the pointer is never covered while any spot clears it, the panel's other keys,
+      // a disabled tile among them, and the console's keys weigh 12, so a tip stands over the board before a tile)
+      // (fixes-3 R3: the panel's keys, the disabled and the standing tile among them, weigh as a plate, 40)
+      const cost = 1e6 * lap(c, r) + 40 * keys.reduce((n, q) => n + lap(c, q), 0) + 12 * cons.reduce((n, q) => n + lap(c, q), 0) + 1e4 * (tb ? lap(c, tb) : 0) + board.reduce((n, [q, k]) => n + k * lap(c, q), 0) + lap(c, pn);
+      const dist = Math.abs(c.x + w / 2 - (r.left + r.width / 2)) + Math.abs(c.y + h - r.top);
+      if (!best || cost < best.cost || (cost === best.cost && dist < best.dist)) best = { ...c, cost, dist };
+    }
+    return best;
   }
   /** A move tooltip's spot. The Mat (under 1280): over the console's right end (the benches' side), else its left end.
    *  The Arena: over the log rail's foot (from 1280), else beside your plate, else above it (under the team rail), else
@@ -505,8 +779,21 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     const box = (e) => e?.getBoundingClientRect();
     const con = box(target.closest('.console')), pr = box(plates.player.el);
     const avoid = [];
-    for (const e of document.querySelectorAll(mode === 'mat' ? '#board .slot[data-zone="active"]' : '#board .fig')) { const q = box(e); if (q.width && !e.hidden) avoid.push([q, 3]); }
+    // (the Arena's figures as drawn where the layout gives them: a tower's element box stands far over its picture, so a
+    // tip over the board's empty upper left was scored as covering it and went across the rival instead, PTD 1024)
+    const drawn = mode === 'mat' ? null : { player: drawnBox(hud.layout, 'player'), rival: drawnBox(hud.layout, 'rival') };
+    if (drawn?.player?.width && drawn?.rival?.width) { avoid.push([drawn.player, 3], [drawn.rival, 3]); }
+    else for (const e of document.querySelectorAll(mode === 'mat' ? '#board .slot[data-zone="active"]' : '#board .fig')) { const q = box(e); if (q.width && !e.hidden) avoid.push([q, 3]); }
     for (const [e, k] of [[plates.player.el, 2], [plates.rival.el, 2], [aimEl.dataset.on === 'true' ? aimEl : null, 3]]) { const q = box(e); if (q?.width) avoid.push([q, k]); }
+    { const q = tabBox(); if (q) avoid.push([q, 2]); }
+    // (your own figure as drawn, at 1, fixes-2 R10: a tip over the board's free upper left is preferred to one across it)
+    { const q = drawn?.player; if (q?.width) avoid.push([q, 1]); }
+    // (and the hand stacks and their HP, at a quarter: between two spots that clear the figures, the one off the cards,
+    // fixes-2 R10 after the critic; never before a figure)
+    const hands = mode === 'mat' ? [] : [...document.querySelectorAll('#board .hand .hcard')].map(box).filter((q) => q?.width && q.height);
+    for (const q of hands) avoid.push([q, 0.25]);
+    // (and a spot of its own beside your hand stack, under the team rail: the board's upper left less the cards)
+    const handR = Math.max(0, ...hands.filter((q) => q.left < W / 2 && q.top < H / 2).map((q) => q.right));
     // (the console's keys are a soft cost: they choose between spots, but covering them never drops the preview)
     const soft = [...document.querySelectorAll('.console .acts .key')].map(box).filter((q) => q.width);
     const top = Math.max(8, ...[document.querySelector('.rail'), document.getElementById('team')].map((e) => (box(e)?.height ? box(e).bottom + 8 : 0)));
@@ -517,7 +804,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
       // (the Arena from 1280: first over the log rail's foot, which nothing reads while a move is chosen)
       const lb = hud.layout?.logBox?.();
       const spots = mode === 'mat' ? [{ x: con.right - w, y: over }, { x: con.left, y: over }]
-        : [...(lb ? [{ x: lb.x + lb.w - w, y: lb.y + lb.h - h, floor: lb.y + lb.h }] : []), { x: pr.right + 12, y: Math.min(r.top - h - 10, pr.bottom - h) }, { x: pr.left, y: pr.top - h - 8 }, { x: con.right - w, y: over }];
+        : [...(lb ? [{ x: lb.x + lb.w - w, y: lb.y + lb.h - h, floor: lb.y + lb.h }] : []), { x: pr.right + 12, y: Math.min(r.top - h - 10, pr.bottom - h) }, { x: pr.left, y: pr.top - h - 8 }, { x: con.right - w, y: over }, { x: pr.left, y: top }, ...(handR ? [{ x: handR + 8, y: top }] : []), { x: pr.right + 12, y: top }];
       let best = null;
       for (const s0 of spots) {
         const c = { x: Math.max(8, Math.min(right - w, s0.x)), y: s0.y, w, h };
@@ -543,9 +830,26 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   }
   const tipTarget = (e) => e.target?.closest?.('[data-tip]');
   const rnow = () => (window.battlePace?.realNow ?? performance.now.bind(performance))();
+  // a command closes the tooltip and none opens while the turn plays; after it, the key the pointer rested on opens
+  // its tooltip only on a new hover or focus (fix1 C5)
+  // (and a pointer that has not moved since the turn began opens nothing: a redraw, a hidden order chip shown again,
+  // brings a new element under a resting pointer, and the browser's own pointerover for it is not a hover, fixes-3 R3)
+  let tipBusy = false, staleTip = null, stalePt = null, lastPt = null;
+  hud.tipBusy = (busy) => {
+    if (busy && !tipBusy) { staleTip = tipFor ?? [...document.querySelectorAll('[data-tip]:hover')].at(-1) ?? null; stalePt = lastPt; hideTip(); }
+    tipBusy = Boolean(busy);
+  };
+  document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch') return;
+    lastPt = [e.clientX, e.clientY];
+    if (stalePt && Math.hypot(e.clientX - stalePt[0], e.clientY - stalePt[1]) > 2) stalePt = null;
+  }, true);
   document.addEventListener('pointerover', (e) => {
     if (e.pointerType === 'touch') return;
     const t = tipTarget(e);
+    if (tipBusy) return;
+    if (stalePt && Math.hypot(e.clientX - stalePt[0], e.clientY - stalePt[1]) <= 2) return;
+    if (staleTip) { if (t === staleTip) return; staleTip = null; }
     if (t === tipFor) return;
     clearTimeout(tipT);
     if (!t) { tipT = realTimeout(hideTip, 80); return; }
@@ -555,7 +859,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   let keyedAt = -1e9;
   hud.keyedRecently = () => rnow() - keyedAt < 150;
   document.addEventListener('keydown', (e) => { if (e.key === 'Tab' || e.key.startsWith('Arrow')) keyedAt = rnow(); }, true);
-  document.addEventListener('focusin', (e) => { const t = tipTarget(e); if (t && rnow() - keyedAt < 150) showTip(t); else if (tipFor && !t) hideTip(); });
+  document.addEventListener('focusin', (e) => { const t = tipTarget(e); if (t && !tipBusy && rnow() - keyedAt < 150) { staleTip = null; showTip(t); } else if (tipFor && !t) hideTip(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && tipFor) hideTip(); }, true);
   document.addEventListener('pointerdown', () => hideTip(), true);
   // a phone has no hover: a long press (450 ms) opens the tooltip, and the click that ends it does nothing
@@ -591,7 +895,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     aimFor = i;
     hud.lastAim = i;
     const me = activeOf('player'), foe = activeOf('rival');
-    const m = me && def(me.id).moves[i];
+    const m = me && defOf(me).moves[i];
     if (!m || !foe) return;
     const nums = engine.moveNumbers(me, m, m.axis ? 600 : undefined);
     // a support move acts on its own card: nothing to aim at across the table
@@ -624,11 +928,8 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   // ======================================================== the console's rows (battle.js prints them)
   /** One move button's inside: discipline, name, the multiplier into the card across (green or red, with the number),
    *  power, accuracy, PP pips and the move's effect icons. */
-  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own; a page's
-   *  translation of them first (shared/strings.js cardText, `card.<id>.move.<move name>.feature`), as it gives it. */
+  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own. */
   function cardMoveText(id, m) {
-    const own = cardText(id, `move.${m.name}.feature`);
-    if (own !== undefined) return own;
     const ex = globalThis.EX_CARD?.fighter(id), mv = ex?.moves.find((x) => x.name === m.name);
     // (the battle's own lines are fragments: each ends with a period, as the card's sentences do)
     const t = words((mv ?? m).feature ?? '').trim();
@@ -646,49 +947,91 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (m.critChance) flags.push(`${ico('crit')}${esc(txt('flag.crit', { n: Math.round(m.critChance * 100) }))}`);
     if (m.piercing) flags.push(`${ico('pierce')}${esc(txt('flag.pierce'))}`);
     return `<span class="move-head">${disc(m.discipline)}<span class="move-name">${esc(m.name)}</span><span class="move-ring"></span></span>
-      <span class="move-stats"><span class="ms-pow">${ico('power')}<b></b></span><span class="ms-acc">${ico('accuracy')}<b></b></span><span class="ms-flags">${flags.slice(0, 2).map((f) => `<span class="mf">${f}</span>`).join('')}</span></span>
+      <span class="move-stats"><span class="ms-pow">${ico('power')}<b></b></span><span class="ms-acc">${ico('accuracy')}<b></b></span><span class="ms-prio" hidden></span><span class="move-ring move-ring-s" aria-hidden="true"></span><span class="ms-flags">${flags.slice(0, 2).map((f) => `<span class="mf">${f}</span>`).join('')}</span></span>
       <span class="move-pp"><span class="pp-bar"><i></i></span><b></b></span>
       <span class="move-dmg"></span>
       <span class="move-about">${esc(cardMoveText(id, m))}</span>
       <img class="move-thumb" alt="" loading="lazy" decoding="async" data-poster="${m.id}">
       <kbd class="move-key">${i + 1}</kbd>`;
   }
+  /** From 1366 the chip keeps its room on the name's row whatever it reads (an even ring's room unseen), so a new rival
+   *  never rewraps a name (fixes-3 R4). A name that fits its row alone but not beside that room takes its chip on the
+   *  numbers' row instead (data-ringrow="stats", as from 720 to 1365): "Tesla Zapper" and "Boss Wave" stay on one line
+   *  beside no empty room. Decided by the name and the key's width only, never by the ring, so a ring that changes
+   *  moves nothing (fixes-3 R4 after the critic). */
+  const wideQ = typeof matchMedia === 'function' ? matchMedia('(min-width: 1366px)') : null;
+  let fitCtx = null;
+  function ringRow(b) {
+    const head = b.querySelector('.move-head'), name = head?.querySelector('.move-name'), ring = head?.querySelector('.move-ring');
+    if (!wideQ?.matches || !name || !ring || b.dataset.ring === 'support') { if (b.dataset.ringrow) delete b.dataset.ringrow; delete b.dataset.fitk; return; }
+    const hw = head.clientWidth, k = `${name.textContent}|${hw}`;
+    if (!hw || b.dataset.fitk === k) return;
+    b.dataset.fitk = k;
+    try {
+      const hs = getComputedStyle(head), ns = getComputedStyle(name), gap = parseFloat(hs.columnGap) || 0;
+      fitCtx ??= document.createElement('canvas').getContext('2d');
+      fitCtx.font = `${ns.fontStyle} ${ns.fontWeight} ${ns.fontSize} ${ns.fontFamily}`;
+      const nameW = fitCtx.measureText(name.textContent).width + (parseFloat(ns.letterSpacing) || 0) * name.textContent.length;
+      const room = hw - (parseFloat(hs.paddingLeft) || 0) - (parseFloat(hs.paddingRight) || 0);
+      const rest = [...head.children].filter((e) => e !== name && e !== ring && e.getClientRects().length).reduce((n, e) => n + e.getBoundingClientRect().width + gap, 0);
+      const ringW = 5.4 * (parseFloat(getComputedStyle(ring).fontSize) || 12.5) + gap;
+      const alone = nameW + rest <= room + 0.5, beside = nameW + rest + ringW <= room + 0.5;
+      const row = alone && !beside ? 'stats' : '';
+      if ((b.dataset.ringrow ?? '') !== row) { if (row) b.dataset.ringrow = row; else delete b.dataset.ringrow; }
+    } catch { /* the name's row */ }
+  }
   /** Fill a move button with the numbers of this moment: the card in play, the card across. */
   function moveFill(b, me, foe, m, i) {
     const nums = engine.moveNumbers(me, m, m.axis ? 600 : undefined);
     const ring = foe ? ringOf(me.id, foe.id, m) : 1;
     const set = (sel, text) => { const n = b.querySelector(sel); if (n && n.textContent !== text) n.textContent = text; };
-    set('.ms-pow b', nums.power > 0 ? String(nums.power) : '—');
+    // (no em or en dash on screen, decision 20: a support move's power is its 0)
+    set('.ms-pow b', nums.power > 0 ? String(nums.power) : txt('power.none'));
     b.querySelector('.ms-pow').dataset.none = String(nums.power <= 0);
     set('.ms-acc b', `${Math.round(nums.accuracy * 100)}%`);
+    // priority on the key itself, at every width (fixes-2 R4): a touch screen weighs nothing before the tap, so the key
+    // says it jumps the order and the tab reads the order on Pace
+    { const pr = (() => { try { return engine.priorityOf(me, { kind: 'move', index: i }) ?? 0; } catch { return m.priority ?? 0; } })(), e = b.querySelector('.ms-prio');
+      if (e) { const t = pr ? txt('chip.prio', { n: `${pr > 0 ? '+' : '−'}${Math.abs(pr)}` }) : ''; if (e.textContent !== t) e.textContent = t; e.hidden = !pr; e.dataset.tone = pr > 0 ? 'up' : 'down'; } }
     const pp = me.pp[i];
     set('.move-pp b', `${pp}/${m.pp}`);
     b.querySelector('.pp-bar i').style.transform = `scaleX(${m.pp ? pp / m.pp : 0})`;
     b.querySelector('.move-pp').dataset.low = String(pp <= Math.ceil(m.pp / 4));
     b.querySelector('.move-pp').dataset.mid = String(pp > Math.ceil(m.pp / 4) && pp <= Math.ceil(m.pp / 2));
-    const re = b.querySelector('.move-ring');
+    // (the chip is printed twice: on the name's row, and on the numbers' row, where it stands from 720 to 1365 so a
+    // long name keeps its whole row; CSS shows one)
     const rt = nums.power > 0 && tone(ring) !== 'even' ? `${ico(ring > 1 ? 'strong' : 'weak')}<b>${times(ring)}</b>` : nums.power > 0 ? `<b>×1</b>` : `${ico('support')}<b>${esc(txt('tip.support'))}</b>`;
-    if (re.dataset.k !== rt) { re.dataset.k = rt; re.innerHTML = rt; }
+    for (const re of b.querySelectorAll('.move-ring')) if (re.dataset.k !== rt) { re.dataset.k = rt; re.innerHTML = rt; }
     b.dataset.ring = nums.power > 0 ? tone(ring) : 'support';
+    ringRow(b);
     const rng = foe && nums.power > 0 ? rangeOf(me, foe, i, m.axis ? 600 : undefined) : null;
     const dm = b.querySelector('.move-dmg');
     const dh = rng ? `<b>${esc(txt('pct', { n: dash(rng.pctLo, rng.pctHi) }))}</b>${rng.ko ? `<em>${esc(txt(rng.ko === 'sure' ? 'aim.ko' : 'aim.ko.maybe'))}</em>` : ''}` : '';
     if (dm.dataset.k !== dh) { dm.dataset.k = dh; dm.innerHTML = dh; }
     dm.dataset.ko = rng?.ko ?? '';
+    // a range ("36-42%") takes the numbers' second row (hud.css, fix1 C4)
+    b.dataset.range = String(Boolean(rng && (rng.pctLo !== rng.pctHi || rng.ko)));
     b.dataset.tip = `move:${i}`;
     const th = b.querySelector('.move-thumb');
-    if (th && th.dataset.for !== me.id) { th.dataset.for = me.id; th.src = `${PREVIEWS}${me.id}.${m.id}.webp`; }
+    // (keyed on the card, its form and level and the move, so a build or an upgrade re-keys the thumbnail)
+    const thk = `${me.uid}:${me.form ?? ''}:${me.level ?? ''}:${m.id}`;
+    if (th && th.dataset.for !== thk) {
+      th.dataset.for = thk;
+      const fo = hasPreview(me.id, m.id) ? null : formOf(me);
+      th.src = fo ? stillUrl(fo.key, { card: me.id }) : `${PREVIEWS}${me.id}.${m.id}.webp`;
+    }
     return { nums, ring, rng };
   }
   /** A bench row for the Switch or Send In panel: name, disciplines, HP bar, condition and its best multiplier. */
   function benchInner(f, side) {
-    const d = def(f.id), other = activeOf(side === 'player' ? 'rival' : 'player');
+    const d = defOf(f), other = activeOf(side === 'player' ? 'rival' : 'player');
     const best = other ? Math.max(...d.moves.map((mv) => ringOf(f.id, other.id, mv))) : 1;
+    const fo = formOf(f);
     // how hard the card across hits this one: its strongest ring into it (lower is better for you)
     const takes = other ? Math.max(1e-9, ...def(other.id).moves.filter((mv) => mv.power > 0).map((mv) => ringOf(other.id, f.id, mv))) : 1;
     const r = f.maxHp ? f.hp / f.maxHp : 0;
     const art = K.subjectOf?.(f.id)?.src || posterOf(f.id);
-    return `<span class="bn-art" style="--c:${K.accent(f.id)}"><img alt="" loading="lazy" decoding="async" src="${art}"></span><span class="bn-head"><b>${esc(title(f.id))}</b>${d.disciplines.map((x) => `<span class="bn-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}</span>`).join('')}${f.status ? `<span class="bn-st" style="--s:${STATUS_INFO[f.status].color}">${ico(f.status)}${esc(STATUS_INFO[f.status].short)}</span>` : ''}</span>
+    return `<span class="bn-art" style="--c:${K.accent(f.id)}"><img alt="" loading="lazy" decoding="async" src="${art}"></span><span class="bn-head"><b>${esc(title(f.id))}</b>${d.disciplines.map((x) => `<span class="bn-d" style="--d:${K.DISCIPLINE_COLOR[x]}">${disc(x)}</span>`).join('')}${f.status ? `<span class="bn-st" style="--s:${STATUS_INFO[f.status].color}">${ico(f.status)}${esc(STATUS_INFO[f.status].short)}</span>` : ''}</span>${fo ? `<span class="bn-form">${formLine(fo, { h: 18, card: f.id })}<i>${esc(txt('form.aria', { name: fo.name, level: levelWord(fo.level) }))}</i></span>` : ''}
       <span class="bn-hp" data-band="${hpBand(f.hp, f.maxHp)}"><i style="transform:scaleX(${r})"></i></span>
       <span class="bn-foot"><span>${esc(txt('hp.short', { hp: f.hp, max: f.maxHp }))}</span>${other ? `<span class="bn-mx"><span class="hx" data-tone="${tone(best)}">${ico(tone(best) === 'up' ? 'strong' : tone(best) === 'down' ? 'weak' : 'even')}<b>${times(best)}</b><i>${esc(txt('bench.deals'))}</i></span><span class="hx" data-tone="${tone(1 / takes)}">${ico(tone(takes) === 'up' ? 'strong' : tone(takes) === 'down' ? 'weak' : 'even')}<b>${times(takes)}</b><i>${esc(txt('bench.takes'))}</i></span></span>` : ''}</span>`;
   }
@@ -706,6 +1049,59 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   /** A card's poster, from the gallery folder the page names (meta gallery), so the site's own paths hold. */
   const GALLERY = new URL(document.querySelector('meta[name="gallery"]')?.content ?? '../../../r3/cards/', document.baseURI).href;
   const posterOf = (id) => new URL(`posters/${id}.webp`, GALLERY).href;
+
+  // ======================================================== towers: the log line and the tooltips
+  const towerGlyph = '<svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M6 21V9l-2-2V3h3v2h2.5V3h5v2H17V3h3v4l-2 2v12zM10 21v-4a2 2 0 0 1 4 0v4"/></svg>';
+  /** "Your Princeton TD builds Palmer Mortar", "Rival's Princeton TD upgrades E-Quad Lab to Level 3", "... upgrades
+   *  Palmer Mortar to Missile Battery, Level 4A". */
+  function transformLine(e) {
+    const who = esc(owned(e.fighter));
+    const to = e.to ?? {}, name = esc(e.name ?? formInfo(e.card, to.form).name);
+    if (e.change === 'build') return `${txt('log.build', { who: `<b>${who}</b>`, tower: `<b class="lg-mv" style="--d:${e.accent ?? 'currentColor'}">${name}</b>` }, undefined, true)}${to.level && levelParts(to.level).n > 1 ? ` <small>(${esc(levelWord(to.level))})</small>` : ''}`;
+    const tower = esc(formInfo(e.card, to.form).name ?? e.name);
+    if (levelParts(to.level).branch) {
+      const mv = formMoveName(e.card, to.form, to.level);
+      return txt('log.upgrade.branch', { who: `<b>${who}</b>`, tower, move: `<b class="lg-mv" style="--d:${e.accent ?? 'currentColor'}">${esc(mv)}</b>`, level: esc(levelWord(to.level)) }, undefined, true);
+    }
+    return txt('log.upgrade', { who: `<b>${who}</b>`, tower, level: `<b>${esc(levelWord(to.level))}</b>` }, undefined, true);
+  }
+  /** A form's key move at a level, from the registry. */
+  const formMoveName = (card, form, level) => { const f = (hud.R ?? R)?.forms?.[card]?.forms?.[form] ?? formInfo(card, form); const m = f?.moves?.[String(level).toLowerCase()]?.[0]; return m?.name ?? f?.name ?? form; };
+  /** `tower:<form>[:side]`: a tower's name, role, its moves at its stored level, and the rule; `upgrade:<branch>`: the
+   *  upgrade's before and after. */
+  /** A tower tip's headline (fix1 C6): its key-1 attack's own share of the foe's HP, the number its tile prints, then
+   *  the best of its four moves on a second line. */
+  function k1Row(pv, foe) {
+    if (!pv || !foe) return '';
+    const slot = (hud.R ?? R)?.forms?.[activeOf('player')?.id]?.slots?.[0] ?? 0;
+    const n = pv.numbers?.find?.((x) => x.index === slot) ?? pv.numbers?.[slot];
+    if (!n || !Number.isFinite(n.pct)) return '';
+    const best = Math.round(pv.bestPct ?? n.pct);
+    return `<p class="tp-row tw-tip-k1"><span>${txt('tower.k1Hit', { move: `<b>${esc(n.name)}</b>`, pct: `<b>${esc(txt('pct', { n: Math.round(n.pct) }))}</b>`, card: esc(title(foe.id)) }, undefined, true)}</span></p>${best !== Math.round(n.pct) ? `<p class="tp-row tw-tip-best">${esc(txt('tower.bestAll', { pct: txt('pct', { n: best }) }))}</p>` : ''}`;
+  }
+  function towerTip(kind, a, b) {
+    const side = b === 'rival' ? 'rival' : 'player';
+    const f = activeOf(side), fo = formOf(f);
+    if (!f || !fo) return '';
+    const rules = hud.R ?? R, st = hud.match?.state;
+    const foe = activeOf(side === 'player' ? 'rival' : 'player');
+    const line = (m) => (m ? `<p class="tp-row tw-tip-move">${disc(m.discipline)}<b>${esc(m.name)}</b>${m.power > 0 ? `<span>${esc(txt('tower.power', { n: `${m.power}${m.hits ? ` × ${m.hits.max}` : ''}` }))}</span>` : `<span>${esc(txt('tip.support'))}</span>`}${m.accuracy < 1 ? `<span>${Math.round(m.accuracy * 100)}%</span>` : ''}${foe && m.power > 0 ? multChip(ringOf(f.id, foe.id, m), '', side) : ''}</p>` : '');
+    if (kind === 'tower') {
+      const t = formInfo(f.id, a, rules?.forms);
+      const standing = a === fo.form;
+      let pv = null;
+      try { pv = standing || side !== 'player' ? null : rules?.towerPreview?.(st, side, { form: a }); } catch { pv = null; }
+      const moves = standing ? defOf(f).moves : pv?.moves ?? [];
+      const lv = standing ? fo.level : f.levels?.[a];
+      return `<div class="tp-small tw-tip" style="--ta:${t.accent}"><header>${stillHtml(formKey(a, lv ?? 1), { h: 28, card: f.id, accent: t.accent })}<b>${esc(t.name)}</b><span class="tp-cat">${esc(t.role ?? '')}</span></header><p class="tp-row">${disc(t.discipline ?? 'Infra')}${esc(standing ? txt('tower.standingAt', { level: levelWord(lv) }) : lv ? txt('tower.builtAt', { level: levelWord(lv) }) : txt('tower.newAt', { level: levelWord(1) }))} ${pipsHtml(lv ?? 1, { accent: t.accent })}</p>${k1Row(pv, foe)}${moves.map(line).join('')}<p class="tp-note">${ico('priority')}${esc(ruleOf(rules, f.id, pv ?? { moves: defOf(f).moves }, 'build'))}</p></div>`;
+    }
+    const br = a || null;
+    let pv = null;
+    try { pv = rules?.towerPreview?.(st, side, { branch: br }); } catch { pv = null; }
+    const nowM = defOf(f).moves[0], next = pv?.moves?.[0];
+    const nextLv = br ? `4${br}` : levelParts(fo.level).n + 1;
+    return `<div class="tp-small tw-tip" style="--ta:${fo.accent}"><header>${stillHtml(formKey(fo.form, nextLv), { h: 28, card: f.id, accent: fo.accent })}<b>${esc(fo.name)}</b><span class="tp-cat">${esc(levelWord(nextLv))}</span></header>${k1Row(pv, foe)}${nowM ? `<p class="tp-row tw-tip-move"><span>${esc(txt('tower.now'))}</span><b>${esc(nowM.name)}</b><span>${nowM.power}${nowM.hits ? ` × ${nowM.hits.max}` : ''}</span></p>` : ''}${next ? `<p class="tp-row tw-tip-move"><span>${esc(txt('tower.next'))}</span><b>${esc(next.name)}</b><span>${next.power}${next.hits ? ` × ${next.hits.max}` : ''}</span></p>` : ''}<p class="tp-row">${ico('barrier')}${esc(txt('tower.barrierUp', { n: 15 }))}</p><p class="tp-note">${ico('priority')}${esc(ruleOf(rules, f.id, pv, 'upgrade'))} ${esc(txt('tower.upgradesLeft', { n: fo.upgradesLeft ?? 0 }, fo.upgradesLeft ?? 0))}</p></div>`;
+  }
 
   // ======================================================== the page's calls
   hud.bind = (match) => {
@@ -733,7 +1129,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (logQ.length) logTimer = setTimeout(pump, Math.max(0, logQ[0].due - now));
   };
   hud.event = (e, v) => {
-    if (e.kind === 'move' && e.side === 'rival') seenMoves.add(`${e.actor}:${e.move.index}`);
+    if (e.kind === 'move' && e.side === 'rival') seenMoves.add(`${e.actor}:${e.move.id}`);
     if (e.kind === 'item') beat(e);
     const x = entryOf(e, v ?? hud.view);
     if (!x) return;
@@ -744,10 +1140,10 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (!logTimer) logTimer = setTimeout(pump, Math.max(0, due - now));
   };
   hud.flushLog = () => { clearTimeout(logTimer); logTimer = 0; for (const q of logQ) addEntry(q.x); logQ = []; };
-  hud.history = (events) => { for (const e of events) { if (e.kind === 'move' && e.side === 'rival') seenMoves.add(`${e.actor}:${e.move.index}`); const x = entryOf(e, e.state); if (x) addEntry(x); } };
+  hud.history = (events) => { for (const e of events) { if (e.kind === 'move' && e.side === 'rival') seenMoves.add(`${e.actor}:${e.move.id}`); const x = entryOf(e, e.state); if (x) addEntry(x); } };
   hud.writeLog = writeLog;
   hud.receiptWords = receiptWords;
-  hud.turn = (st, busy) => { if (beatTurn === -1 && st && !busy) beatTurn = st.turn; drawTurn(st, busy); };
+  hud.turn = (st, busy) => { if (beatTurn === -1 && st && !busy) beatTurn = st.turn; hud.tipBusy(busy && st?.phase !== 'over'); drawTurn(st, busy); };
   hud.callMultiplier = callMultiplier;
   hud.moveInner = moveInner;
   hud.moveFill = moveFill;
@@ -756,6 +1152,9 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   hud.itemChip = itemChip;
   hud.hideTip = hideTip;
   hud.ringOf = ringOf;
+  hud.ico = ico;
+  hud.formOf = formOf;
+  hud.setRules = (r) => { hud.R = r; };
   hud.root = root;
   return hud;
 }

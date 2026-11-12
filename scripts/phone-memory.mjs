@@ -51,30 +51,9 @@ export const PHONE = {
   'public/battle/vendor/broadcast/kit.js': (t) => patch('kit.js', t, [
     ['i.addEventListener("loadeddata",s,{once:!0}),i.addEventListener("error",s,{once:!0})', `i.addEventListener("loadeddata",()=>{i.removeAttribute("src"),i.load(),s()},{once:!0}),i.addEventListener("error",s,{once:!0})/* ${MARK} */`],
   ]),
-  // The battle's stage (r4/play shared/runtime.js) keeps every card's cutscene world once linked: a full-stage WebGL2
-  // canvas each, hidden while another shows and never let go, so a visit climbed toward one context per card (12 of
-  // the 18 cards have one). A touch screen or a small-memory device keeps the world going out and the one coming in
-  // and gives the rest back (the kit's own dispose(): the context is lost and the canvas removed); the next use of a
-  // dropped world links its program again, about 350 ms. On every device the media warm-up (fetchOnce) lets each
-  // response's Blob go once it has arrived: the bytes are wanted in the HTTP cache, not on the page.
-  'public/battle/shared/runtime.js': (t) => patch('runtime.js', t, [
-    ['export class Stage extends runtime.Stage {', `// ${MARK}: a touch screen or a small-memory device keeps one card's world besides the one on screen; the others give
-// their WebGL context back (scripts/phone-memory.mjs)
-const LEAN_GROUNDS = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
-export class Stage extends runtime.Stage {`],
-    ['      if (this.shader) { this.shader.canvas.hidden = true; this.grounds.set(this.shaderSource, this.shader); }', `      if (this.shader) { this.shader.canvas.hidden = true; this.grounds.set(this.shaderSource, this.shader); }
-      if (LEAN_GROUNDS) for (const [src, sh] of [...this.grounds]) if (src !== this.shaderSource && !(shader && src === ground.source)) { sh.dispose(); this.grounds.delete(src); }`],
-    ["    if (!p) { p = fetch(src, { priority: 'low' }).then((r) => r.blob()).catch(() => null); this.fetched.set(src, p); }", "    if (!p) { p = fetch(src, { priority: 'low' }).then((r) => r.blob()).then(() => true).catch(() => null); this.fetched.set(src, p); }"],
-  ]),
-  // The cards' live prints (r4/ex ground.js, started by r4/play shared/battle.js once the board waits) kept drawing
-  // behind the result panel and under the Log. They pause there and take up again with the next hand or when the Log
-  // closes. Only a ground that has started is touched: the kit's groundPaused() would start one.
-  'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
-    ["  M.phase = 'result';\n  app.dataset.phase = 'result';\n", `  M.phase = 'result';\n  app.dataset.phase = 'result';\n  if (groundG) groundG.paused = true; // ${MARK}: the cards' live prints stop behind the result and the Log (scripts/phone-memory.mjs)\n`],
-    ["  stage.hold(true); layout.hold(true);\n  list.lastElementChild?.scrollIntoView({ block: 'end' });", "  stage.hold(true); layout.hold(true);\n  if (groundG) groundG.paused = true;\n  list.lastElementChild?.scrollIntoView({ block: 'end' });"],
-    ["$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); });", "$('#log').addEventListener('close', () => { stage.hold(false); layout.hold(false); if (groundG && match?.state.phase !== 'over') groundG.paused = false; });"],
-    ["  director.stop();\n  clearTimeout(rushT); pace?.unrush();\n  match = next;\n", "  director.stop();\n  clearTimeout(rushT); pace?.unrush();\n  match = next;\n  if (groundG) groundG.paused = false;\n"],
-  ]),
+  // The battle's lean grounds (shared/runtime.js) and the paused live prints at the result and under the Log
+  // (shared/battle.js) are round 6's own code from battle pin 3bc364c1, so none here (applying them again would
+  // declare LEAN_GROUNDS twice).
 };
 
 // ---------- applying to the synced files without the rounds ----------

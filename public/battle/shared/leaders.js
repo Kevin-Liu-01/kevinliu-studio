@@ -68,6 +68,18 @@ export function finalePoses(leaders, winner, verb, ms) {
   setTimeout(() => leaders[loser].say('defeat', false, 0), ms);
 }
 
+/** A knockout scene's card on screen (viewport px), null when none shows. */
+function koRect() {
+  if (typeof document === 'undefined') return null;
+  const c = document.querySelector('#stage .bc-kocard');
+  if (!c) return null;
+  let a = 1;
+  for (let x = c; x && x !== document.documentElement && a > 0.05; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.display === 'none' || cs.visibility === 'hidden') return null; a *= +cs.opacity; }
+  if (a <= 0.05) return null;
+  const q = c.getBoundingClientRect();
+  return q.width && q.height ? q : null;
+}
+
 export class Leader {
   /** o: { reduced(), frozen(), said (the battle's quotes said, kept across a mode switch), onQuote(q), quoteLayer,
    *  quoteAt(leader) } */
@@ -191,6 +203,7 @@ export class Leader {
     clearTimeout(this.qt);
     if (!this.o.reduced?.()) this.quote.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 0' }], { duration: 180, easing: 'cubic-bezier(.2,.9,.1,1)' });
     if (ms) this.qt = setTimeout(() => { this.quote.hidden = true; }, ms);
+    this.watchQuote();
     // the front rows talk while the quote shows (talk-closed and talk-open at 140 ms)
     if (this.side === 'rival' && this.rest === POSE.idle && !this.o.reduced?.()) this.seq(Array.from({ length: 8 }, (_, i) => [i % 2 ? POSE.talkOpen : POSE.talkClosed, 140]));
     return true;
@@ -203,7 +216,52 @@ export class Leader {
     this.quote.style.setProperty('--line', `${Math.max(0, Math.round(q.line))}px`);
     this.quote.style.setProperty('--line-x', `${Math.round(q.lineX)}px`);
     this.quote.style.maxWidth = `${Math.round(q.w)}px`;
+    // never over the top bar (fix1 C5): a quote that would reach it stands 8 px under the bar's foot instead, its
+    // leader line shortened by as much (the layer may be scaled by the camera, so the step is in the layer's px)
+    const rail = typeof document !== 'undefined' ? document.querySelector('#app .rail') : null;
+    const rb = rail?.getBoundingClientRect(), qb = this.quote.getBoundingClientRect();
+    let dy = 0;
+    if (rb?.height && qb.height && qb.top < rb.bottom + 8) {
+      const k = qb.height / (this.quote.offsetHeight || qb.height), d = (rb.bottom + 8 - qb.top) / (k || 1);
+      dy = d;
+      this.quote.style.transform = `translate3d(${Math.round(q.x)}px,${Math.round(q.y + d)}px,0)`;
+      this.quote.style.setProperty('--line', `${Math.max(0, Math.round(q.line - d))}px`);
+    }
+    // never under a knockout's card (fixes-2 R11): the card is read over the board, so a quote it would cover steps to
+    // the nearer side of it that the window holds, its leader line kept on the head; where neither side does, it waits
+    // unseen until the card has gone (watchQuote places it again then)
+    const ko = koRect();
+    this.koSide = 0;
+    if (this.quote.style.visibility) this.quote.style.visibility = '';
+    if (ko && !this.quote.hidden) {
+      const b = this.quote.getBoundingClientRect();
+      if (b.width && b.right > ko.left && b.left < ko.right && b.bottom > ko.top && b.top < ko.bottom) {
+        const k = b.width / (this.quote.offsetWidth || b.width) || 1, W = innerWidth;
+        const toR = ko.right + 8 - b.left, toL = ko.left - 8 - b.right;
+        const dx = b.right + toR <= W - 8 && (b.left + toL < 8 || Math.abs(toR) <= Math.abs(toL)) ? toR : b.left + toL >= 8 ? toL : null;
+        if (dx === null) { this.quote.style.visibility = 'hidden'; this.koSide = 2; return; }
+        this.quote.style.transform = `translate3d(${Math.round(q.x + dx / k)}px,${Math.round(q.y + dy)}px,0)`;
+        this.quote.style.setProperty('--line-x', `${Math.round(q.lineX - dx / k)}px`);
+        this.koSide = 1;
+      }
+    }
   }
-  hush() { clearTimeout(this.qt); this.quote.hidden = true; }
-  destroy() { this.clear(); clearTimeout(this.qt); this.el.remove(); this.quote.remove(); }
+  /** While the quote shows, each frame checks it against the top bar: the quote rides the board's camera, so a pan or
+   *  zoom after it was placed could carry it up onto the bar; it is placed again (and clamped) when it would (fix1 C5). */
+  watchQuote() {
+    if (typeof requestAnimationFrame !== 'function') return;
+    cancelAnimationFrame(this.qraf);
+    const rail = document.querySelector('#app .rail');
+    const tick = () => {
+      if (this.quote.hidden || !this.quote.isConnected) { this.qraf = 0; return; }
+      const rb = rail?.getBoundingClientRect(), qb = this.quote.getBoundingClientRect();
+      // (and against a knockout's card: placed again when one comes over the quote or goes)
+      const ko = koRect(), over = ko && qb.width && qb.right > ko.left && qb.left < ko.right && qb.bottom > ko.top && qb.top < ko.bottom;
+      if ((rb?.height && qb.height && qb.top < rb.bottom + 7) || over || (!ko && this.koSide)) this.placeQuote();
+      this.qraf = requestAnimationFrame(tick);
+    };
+    this.qraf = requestAnimationFrame(tick);
+  }
+  hush() { clearTimeout(this.qt); if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this.qraf); this.quote.hidden = true; }
+  destroy() { this.clear(); clearTimeout(this.qt); if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(this.qraf); this.el.remove(); this.quote.remove(); }
 }

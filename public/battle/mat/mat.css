@@ -296,3 +296,130 @@ dialog#log code { display: block; font: 500 12px/1.4 var(--sans); color: var(--i
 /* round 5: a KO pile's well shows once a card is out */
 .well-ko[data-none="true"] { opacity: 0; }
 /* (the turn disc is retired; the turn tab carries the turn) */
+
+/* ============================================================ round 6: forms, the actor tag and the reticle on the cards
+   A form card's tower chip sits in the art well under the card's printed head (its name and HP stay whole); the actor
+   tag stands on the acting card's top edge, above its head; the reticle's four brackets sit on the struck card in the attacker's side colour. No stage element
+   lies over a card at the contact: all three are the card's own (test 25). */
+.form-chip { position: absolute; left: 7%; top: calc(var(--ah) * .112 + 3px); z-index: 2; display: inline-flex; align-items: center; gap: 4px; max-width: 86%; height: 32px; padding: 2px 7px 2px 2px; border-radius: 7px; background: oklch(19% 0.012 75 / .86); color: #fbf9f4; box-shadow: inset 0 -2px 0 var(--ta, transparent); font: 800 12px/1 var(--sans); white-space: nowrap; pointer-events: none; }
+.form-chip[hidden] { display: none; }
+.form-chip b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.form-chip .tw-star[data-on="false"] { stroke: oklch(80% 0.01 75); }
+.slot[data-form] .chips { top: calc(var(--ah) * .112 + 41px); }
+.slot:is([data-face="down"], [data-zone="ko"]) .form-chip { opacity: 0; }
+.slot:is([data-zone="bench"]) .form-chip b { display: none; }
+.slot-tag { position: absolute; left: 50%; top: 0; z-index: 5; translate: calc(-50% + var(--tx, 0px)) calc(-100% + 3px); display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px 0 3px; border-radius: 8px; background: var(--room-clay); color: var(--ink); box-shadow: 0 3px 10px oklch(0% 0 0 / .22); font: 800 12.5px/1 var(--sans); white-space: nowrap; opacity: 0; pointer-events: none; }
+/* (fix pass 2, M2: every spot keeps top 0 and moves by translation only, `--sh` the card's height from keep(), so a
+   step between spots shifts no layout: CLS 0) */
+.slot-tag[data-at="bottom"] { translate: calc(-50% + var(--tx, 0px)) calc(var(--sh, 0px) - 3px); }
+.slot-tag[data-at="in"] { translate: calc(-50% + var(--tx, 0px)) 3px; }
+.slot-tag[data-at="low"] { translate: calc(-50% + var(--tx, 0px)) calc(var(--sh, 0px) - 100% - 3px); }
+/* (standing on the card itself, the tag lets a little of the card through, so it moves no block of the frame by 0.1) */
+.slot-tag[data-blocked="true"] { visibility: hidden; }
+.slot-tag:is([data-at="low"], [data-at="in"]) { background: color-mix(in oklch, var(--room-clay) 80%, transparent); }
+.slot-tag .atag-side { padding: 3.5px 5px; border-radius: 5px; font: 800 9.5px/1 var(--sans); font-style: normal; color: #fff; background: var(--you); }
+.slot-tag[data-side="rival"] .atag-side { background: var(--rival); }
+.slot-tag .atag-d { display: inline-grid; color: var(--d); }
+.slot-tag .atag-d .i { width: 14px; height: 14px; }
+/* (fixes-2 after the critic: a size step smaller on a desktop, 24 px, so where it stands over another card's dark foot
+   it moves no sixth-of-the-frame block's light by 0.1, S3's light read; a phone's is its own, below) */
+.slot-rtc { inset: -11px; opacity: 0; z-index: 4; --w: 2.5px; }
+@media (max-width: 719px) {
+  .form-chip { height: 26px; font-size: 11px; }
+  .slot[data-form] .chips { top: calc(var(--ah) * .112 + 32px); }
+  .slot-tag { height: 20px; gap: 3px; padding: 0 6px 0 2px; font-size: 11px; background: color-mix(in oklch, var(--room-clay) 78%, transparent); }
+  .slot-tag .atag-side { padding: 3px 4px; font-size: 9px; }
+  .slot-tag .atag-d .i { width: 13px; height: 13px; }
+}
+
+/* ============================================================ round 6, first fix pass, lane C (fixes-1.md C7)
+   A form card's damage disc sits beside its tower chip, under it at the art's right, so neither covers the other. */
+.slot[data-form] .tokens { top: calc(var(--ah) * .112 + 41px); }
+@media (max-width: 719px) {
+  .slot[data-form] .tokens { top: calc(var(--ah) * .112 + 32px); }
+}
+
+/* ============================================================ round 6, second fix pass, lane M (fixes-2.md M1)
+   A form card's art window shows the standing tower: the form's front still (the one the Arena crops) over the card's
+   own set, standing right of the chip on its accent glow, a size step taller each level. The card's own cast and its
+   pop-out leave the window while a form stands; `lab-1` is the card's own art and keeps them. */
+.form-art { position: absolute; left: 0; right: 0; top: 3.6%; height: 43.5%; z-index: 1; overflow: hidden; container-type: size; border-radius: 3px; pointer-events: none; }
+/* (fixes-3 M1: the tower's box in the window's own units, from board.js seatArt: --fh its height, --ff its foot,
+   --fx its left, --ar its opaque box's width over its height; the still is laid in that box by percentages) */
+.form-art .fa-fig { position: absolute; transform-origin: 50% 100%; left: calc(var(--fx, 40) * 1cqw); top: calc((var(--ff, 97) - var(--fh, 75)) * 1cqh); height: calc(var(--fh, 75) * 1cqh); width: calc(var(--fh, 75) * var(--ar, .6) * 1cqh); }
+.form-art .fa-in { position: absolute; inset: 0; translate: calc(var(--fdx, 0) * 1cqw) 0; }
+.form-art .fa-fig img { position: absolute; max-width: none; filter: drop-shadow(0 .8cqh 1.4cqh oklch(0% 0 0 / .55)); }
+.form-art .fa-glow { position: absolute; left: -35%; right: -35%; bottom: -7cqh; height: 18cqh; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in oklch, var(--ta) 60%, transparent), transparent); }
+.form-art .fa-rim { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 2px var(--ta); opacity: 0; }
+/* each tower stands on its own lit stage: a pool of its accent under it on the darkened set, rising through the window
+   at each level (fixes-2 M1 after the critic: a dark tower on the darkened set read like the one before it). The pool
+   and the shade leave the window's top strip, under the card's name, as the card prints it. */
+.form-art::before { content: ""; position: absolute; inset: 0; background: oklch(13% 0.02 60 / .84); }
+.form-art .fa-set { position: absolute; inset: 0; --sc: var(--st, var(--ta));
+  background: linear-gradient(to top, color-mix(in oklch, var(--sc) var(--wa), transparent), color-mix(in oklch, var(--sc) calc(var(--wa) - 6%), transparent)); }
+.form-art::before, .form-art .fa-set { -webkit-mask-image: linear-gradient(transparent 5%, #000 19%); mask-image: linear-gradient(transparent 5%, #000 19%); }
+/* (the stage's light: more of its colour each level, so an upgrade relights the whole window; a Level 4 burns bright) */
+.form-art[data-n="1"] { --wa: 38%; }
+.form-art[data-n="2"] { --wa: 62%; }
+.form-art[data-n="3"] { --wa: 84%; }
+.form-art[data-n="4"] { --wa: 100%; }
+.form-art[data-n="4"] .fa-set { --sc: color-mix(in oklch, var(--st, var(--ta)) 78%, #fff); }
+/* (a stage colour of its own where two towers' accents sit close in light: the Cannon's deeper red against the
+   Mortar's orange, the Eating Club's darker bronze against both, the Blair Arch's deeper blue against the Library's cyan
+   and the Dinky Station's lighter violet) */
+.form-art[data-form="cannon"] { --st: #c8302c; }
+.form-art[data-form="club"] { --st: #8f5a12; }
+.form-art[data-form="arch"] { --st: #2f5fd0; }
+.form-art[data-form="station"] { --st: #b9a2ff; }
+.slot[data-art="form"] .face :is(.cast, .pop.art, .fx.dzfx), .bc-card[data-art="form"] .face :is(.cast, .pop.art, .fx.dzfx) { visibility: hidden; }
+/* a form card's damage disc stands at the window's left, under the chip, so a tower at its right stays whole (on every
+   form card, its own art too: a build then moves no disc, CLS 0) */
+#app .slot[data-form] .token:is([data-i="0"], [data-fold]) { right: auto; left: 2%; translate: 0 var(--chy, 0px); transition: translate .2s cubic-bezier(.2, 0, 0, 1); }
+/* (and under its chip row, --chy the row's height from board.js, so a buff or a condition reads whole beside it; a
+   folded disc keeps the single disc's size so it stays on the window's left) */
+#app .slot[data-form] .token[data-fold] { width: calc(var(--aw) * .27); font-size: calc(var(--aw) * .088); }
+/* the chip takes its content's width and never cuts the name: past 86% of the card it drops its stars for its level's
+   figure, then its still (at every width: from 720 to 1365 a card is narrow too, fixes-2 M1 after the critic) */
+.form-chip { max-width: none; min-width: max-content; }
+.form-chip b { overflow: visible; text-overflow: clip; }
+.form-chip[data-fit~="stars"] .tw-pips, .form-chip[data-fit~="still"] .tw-still { display: none; }
+.form-chip[data-fit~="still"] { padding-left: 7px; }
+.form-chip[data-fit~="stars"] .tw-lv { display: inline-grid; }
+.form-chip[data-fit~="name"] b { display: none; }
+.form-chip .tw-lv { display: none; place-items: center; min-width: 16px; height: 16px; padding: 0 3px; border-radius: 4px; background: var(--ta); color: oklch(19% 0.012 75); font: 800 10px/1 var(--sans); font-variant-numeric: tabular-nums; }
+/* the transform's title stands where board.js titleSpot found it clear of every card, HP tab, plate, leader and tag
+   (--mt-x, --mt-w, --mt-b its line's foot, --mt-fs), over clear felt; without a spot, where the scene puts it */
+.stage[data-band] .sd-callout[data-style="transform"] .sd-callout-text { left: var(--mt-x, 0px); right: auto; width: var(--mt-w, 100%); bottom: calc(var(--mt-b, calc(var(--ap, 14cqh) + 1.2cqh)) + var(--tl) * 1.25 + 4px - .12em); font-size: var(--mt-fs, min(7cqh, 8cqw, 76px, 88cqw / (var(--clen, 10) * .56))); }
+.stage[data-band] .sd-callout[data-style="transform"] .sd-tline { left: var(--mt-x, 0px); right: auto; width: var(--mt-w, 100%); bottom: var(--mt-b, calc(var(--ap, 14cqh) + 1.2cqh)); }
+
+/* ============================================================ round 6, third fix pass, lane M (fixes-3.md M1, M2)
+   A form card's window is its tower's: the tower stands centred at three quarters of the window's height or more, the
+   damage disc keeps the window's left third, and the chip is the tower's nameplate under the window (wholly under it
+   where the card prints nothing there, a phone's card or a bench card; straddling its lower edge, right of the disc,
+   where the card's moves are printed). The buffs go under the plate, or stack over the disc. board.js seatArt measures
+   each place; every one is a translation from the element's own CSS spot, so nothing shifts layout (CLS 0). */
+.slot[data-form] .form-chip { height: 26px; padding-left: 7px; translate: var(--fcx, 0px) var(--fcy, 0px); }
+/* (the window shows the tower itself: the plate needs no small still of it) */
+.slot[data-form] .form-chip .tw-still { display: none; }
+.slot[data-form] .form-chip[data-fit~="wrap"] { display: block; height: auto; min-height: 26px; min-width: 0; max-width: var(--cmax, 100%); padding-block: 4px; white-space: normal; line-height: 1.12; overflow-wrap: normal; }
+.slot[data-form] .form-chip[data-fit~="wrap"] b { line-height: 1.12; }
+.slot[data-form] .form-chip[data-fit~="wrap"] .tw-lv { margin-left: 4px; vertical-align: -3px; height: 14px; min-width: 14px; }
+.slot[data-form] .form-chip[data-fit~="small"] { font-size: 10px; }
+.slot[data-form] .chips { translate: var(--scx, 0px) var(--scy, 0px); }
+.slot[data-form][data-fm="side"] .chips { flex-direction: column; align-items: flex-start; }
+#app .slot[data-form] .token:is([data-i="0"], [data-fold]) { left: 0; right: auto; top: 0; translate: var(--dkx, 0px) calc(var(--dky, 0px) + var(--chy, 0px) * var(--dch, 1)); }
+/* M2: a full build raises its scaffold in the window, 2 px strokes in the new tower's accent over a dark keyline:
+   three poles, the floors and one run of braces, as wide as the tower and a little over */
+.form-art .fa-scaf { position: absolute; opacity: 0; transform-origin: 50% 100%; pointer-events: none;
+  left: calc(var(--fx, 40) * 1cqw - var(--fh, 75) * var(--ar, .6) * .12cqh); width: calc(var(--fh, 75) * var(--ar, .6) * 1.24cqh);
+  top: calc((var(--ff, 97) - var(--fh, 75) * 1.04) * 1cqh); height: calc(var(--fh, 75) * 1.04cqh);
+  border-inline: 2px solid var(--ta); filter: drop-shadow(0 0 1px oklch(14% 0.01 75)) drop-shadow(0 0 1px oklch(14% 0.01 75)) drop-shadow(0 0 .5px oklch(14% 0.01 75));
+  background:
+    linear-gradient(to right, transparent calc(50% - 1px), var(--ta) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
+    repeating-linear-gradient(to top, var(--ta) 0 2px, transparent 2px 14%),
+    repeating-linear-gradient(56deg, transparent 0 calc(16% - 1px), color-mix(in oklch, var(--ta) 70%, transparent) calc(16% - 1px) calc(16% + 1px), transparent calc(16% + 1px) 32%); }
+/* (while it is built the new window's shade rises with its stage light, under it, over the old window) */
+.form-art[data-build]::before { opacity: 0; }
+.form-art[data-build] .fa-set { background:
+  linear-gradient(to top, color-mix(in oklch, var(--sc) var(--wa), transparent), color-mix(in oklch, var(--sc) calc(var(--wa) - 6%), transparent)),
+  linear-gradient(oklch(13% 0.02 60 / .84), oklch(13% 0.02 60 / .84)); }

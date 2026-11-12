@@ -1,6 +1,6 @@
 // Every interface string the battle writes at run time, keyed, with {placeholder} templates: the turn tab, plates,
-// console, panels, tooltips, damage previews, the log, the live region, the result, the boards' stamps and labels,
-// and the kit's own scene words (Miss, KO, Guard, a condition, the result). Card titles, move names and
+// console, panels, tooltips, damage previews, the log, the live region, the result, the Tower panel, the boards' stamps
+// and labels, and the kit's own scene words (Miss, KO, Guard, a condition, the result). Card titles, move names and
 // features, trait names and rules, item names, tower names and trainer names are not here: the engine knows moves by
 // name, and those come from the cards.
 //
@@ -24,11 +24,14 @@ export const EN = {
   'stat.def': 'Proof',
   'stat.spd': 'Pace',
   'stat.stage': '{stat} {n}',
+  'level': 'Level {n}',
   'range': '{lo} to {hi}',
-  'range.short': '{lo}–{hi}',
+  'range.short': '{lo}-{hi}',
+  'power.none': '0',
   'pct': '{n}%',
   'hp.aria': '{hp} of {max} HP',
   'hp.short': '{hp}/{max} HP',
+  'form.aria': '{name}, {level}',
   'ring.up': 'Strong',
   'ring.down': 'Resisted',
   'ring.even': 'Even',
@@ -102,7 +105,11 @@ export const EN = {
   'turn.first.you.short': 'You first',
   'turn.first.rival.short': 'Rival first',
   'turn.first.tie.short': 'Tie',
+  'turn.first.you.pace': 'You first on Pace',
+  'turn.first.rival.pace': 'Rival first on Pace',
+  'turn.first.tie.pace': 'Tie on Pace',
   'turn.pace': 'Pace: {pair}',
+  'turn.priority': 'Priority {n}',
   'turn.pace.youFirst': 'you {you}, rival {rival}',
   'turn.pace.rivalFirst': 'rival {rival}, you {you}',
 
@@ -113,8 +120,8 @@ export const EN = {
   'plate.seen': 'Seen',
   'plate.seen.none': 'no moves yet',
   'kit.word': 'Kit',
-  'kit.aria.you': 'Kit: {n} of 2 uses left',
-  'kit.aria.rival': 'Rival\'s Kit: {n} of 2 uses left',
+  'kit.aria.you': 'Kit: {n} of {all} items left',
+  'kit.aria.rival': 'Rival\'s Kit: {n} of {all} items left',
 
   // the console: move keys (their label), panels, the Kit
   'move.aria': '{name}, {discipline}, {stats}{ring}{share}. {about}',
@@ -124,6 +131,7 @@ export const EN = {
   'move.aria.ring': ', times {m} against {foe}',
   'move.aria.share': ', {n} percent of its HP',
   'flag.prio': 'Prio {n}',
+  'chip.prio': '» {n}',
   'flag.crit': 'Crit {n}%',
   'flag.pierce': 'Pierce',
   'short.stat': '{stat} +{n}',
@@ -177,9 +185,11 @@ export const EN = {
   'self.chance': ' {n}%',
   'self.stat': '{stat} +{n}{chance}',
   'self.critical': 'Critical +{n}%{chance}',
+  'self.crit': 'Crit +{n}%{chance}',
   'self.barrier': 'Barrier {n}%{chance}',
   'self.heals': 'Heals {n} HP{chance}',
   'self.drains': 'Drains {n}% of damage{chance}',
+  'self.drainsShort': 'Drains {n}%{chance}',
   'self.recoil': 'Recoil {n}% of damage',
   'tip.disc.attacks': 'Its attacks: {up} {down}',
   'tip.disc.hits': 'Hits on it: {up} {down}',
@@ -198,9 +208,9 @@ export const EN = {
   'tip.barrier': 'The next hit on this card loses {n}% of its damage, then the barrier is gone.',
   'tip.crit.head': 'Critical +{n}%',
   'tip.crit': 'Its next move is {n} points likelier to be critical (×1.5), up to 80%. Most moves start at 8%.',
-  'tip.item.note': 'Acts before any move, and uses the turn. Two items a battle.',
-  'tip.kit.one': '{n} of 2 item uses left this battle. Each of the nine items can be used once.',
-  'tip.kit.other': '{n} of 2 item uses left this battle. Each of the nine items can be used once.',
+  'tip.item.note': 'Acts before any move, and uses the turn. Each item can be used once.',
+  'tip.kit.one': '{n} of {all} items left this battle. Each item can be used once, and using one takes the turn.',
+  'tip.kit.other': '{n} of {all} items left this battle. Each item can be used once, and using one takes the turn.',
   'tip.bench.best': 'Best move into {card}: {chip}',
   'tip.order.head': 'Turn order',
   'tip.order.pace': 'Pace now: {you} {youN}, {rival} {rivalN}',
@@ -218,14 +228,25 @@ export const EN = {
   'chip.hits.n.one': '{n} hits',
   'chip.hits.n.other': '{n} hits',
   'chip.barrier': 'Barrier',
+  'chip.barrierPct': 'Barrier {n}%',
+  'chip.critPct': 'Crit +{n}%',
   'chip.guard': 'Guard',
   'chip.blocked': 'blocked',
   'chip.guardTurn': 'damage this turn',
   'chip.out': 'Out',
+  'chip.hpUp': '+{n} HP',
+  'chip.hpDown': '−{n} HP',
+  'chip.stage': '{stat} {n} {m}',
+  'chip.more.one': '+{n} more',
+  'chip.more.other': '+{n} more',
   'chip.status.burn': 'Burn',
   'chip.status.poison': 'Poison',
   'chip.status.sleep': 'Sleep',
   'chip.status.stun': 'Stunned',
+  'chip.cond.burn': 'Burn',
+  'chip.cond.poison': 'Poison',
+  'chip.cond.sleep': 'Asleep',
+  'chip.cond.stun': 'Stunned',
   'stamp.burn': 'burn',
   'stamp.poison': 'poison',
   'stamp.sleep': 'sleep',
@@ -272,6 +293,9 @@ export const EN = {
   'log.trait.upset': 'hits up a class ({d})',
   'log.trait.variable': 'sets its weight ({d})',
   'log.trait.immune': 'shrugs the condition off',
+  'log.build': '{who} builds {tower}',
+  'log.upgrade': '{who} upgrades {tower} to {level}',
+  'log.upgrade.branch': '{who} upgrades {tower} to {move}, {level}',
   'receipt.scale': 'scale',
   'receipt.home': 'home',
   'receipt.ring': 'ring',
@@ -293,6 +317,11 @@ export const EN = {
   'live.switch.rival': '{card} in for the rival.',
   'live.out': '{card} is out.',
 
+  // a battle that cannot start (the address or a boot file), kept on screen
+  'boot.failed': 'The battle could not start ({reason}). Reload the page, or Leave.',
+  'boot.retryHand': 'Playing this hand from its start.',
+  'boot.retryDefault': 'Playing the default hand.',
+
   // the result
   'result.victory': 'Victory',
   'result.defeat': 'Defeat',
@@ -304,6 +333,13 @@ export const EN = {
   'result.watchReplay': 'Watch Replay',
   'result.leave': 'Leave',
 
+  // the order strip's verbs (a priority action in place of its card) and the actor tag's
+  'verb.switch': 'Switch',
+  'verb.kit': 'Kit',
+  'verb.build': 'Build',
+  'verb.upgrade': 'Upgrade',
+  'verb.guard': 'Guard',
+
   // the boards
   'mat.aria': 'Card mat',
   'mat.switchTo': 'Switch to {card}',
@@ -314,8 +350,79 @@ export const EN = {
   'arena.card.out': '{card}, {hp} of {max} HP, out',
   'arena.card.active': '{card}, {hp} of {max} HP, in play',
 
+  // towers (a form card's Tower key, panel, tooltips and chips); the tower names stay the game's
+  'tower.key': 'Tower',
+  'tower.key.aria.one': 'Tower: {name}, {level}. {n} of {all} upgrades left. Opens Build and Upgrade.{why}',
+  'tower.key.aria.other': 'Tower: {name}, {level}. {n} of {all} upgrades left. Opens Build and Upgrade.{why}',
+  'tower.key.why': ' {why}.',
+  'tower.panel': 'Towers',
+  'tower.left.one': '{n} of {all} upgrades left',
+  'tower.left.other': '{n} of {all} upgrades left',
+  'tower.buildGroup': 'Build a tower',
+  'tower.new': 'New',
+  'tower.newAt': 'New, {level}',
+  'tower.standingAt': 'Standing, {level}',
+  'tower.builtAt': 'Built before, {level}',
+  'tower.upgradeTo': 'Upgrade to {level}',
+  'tower.power': '{n} Power',
+  'tower.finisher': 'Finisher under {n}%',
+  'tower.pierces': 'Pierces {n}%',
+  'tower.now': 'Now',
+  'tower.next': 'Next',
+  'tower.barrierUp': 'Barrier {n}% as it goes up',
+  'tower.upgradesLeft.one': '{n} upgrades left.',
+  'tower.upgradesLeft.other': '{n} upgrades left.',
+  'tower.bestHit': 'Best hit on {card}: {pct} of its HP',
+  'tower.k1Hit': '{move}: {pct} of {card}\'s HP',
+  'tower.bestAll': 'Best of all four: {pct}',
+  'tower.gain.hits.one': '{move} {n} hits',
+  'tower.gain.hits.other': '{move} {n} hits',
+  'tower.gain.power': '{move} {n} Power',
+  'tower.tile.aria': '{name}, {level}{mult}{hit}{why}',
+  'tower.tile.mult': ', times {m}',
+  'tower.tile.hit': ', {move} {n}% of the foe\'s HP',
+  'tower.tile.why': '. {why}',
+  'tower.itsAttack': 'its attack',
+  'tower.rule': 'Building or upgrading goes first and takes your turn.',
+  'tower.rule.first': 'Goes first and takes your turn.',
+  'tower.rule.fires': 'A tower fires as it goes up. Building or upgrading takes your turn.',
+  'tower.rule.firesFirst': 'Goes up and fires {move} first. Takes your turn.',
+  'tower.rule.firesInOrder': 'Goes up and fires {move} in speed order. Takes your turn.',
+  'tower.rule.firesAt': 'Goes up and fires {move} at Priority {n}. Takes your turn.',
+  'tower.role.cannon': 'Heavy Artillery',
+  'tower.role.station': 'Troop Spawner',
+  'tower.role.library': 'Crowd Control',
+  'tower.role.mortar': 'Siege AoE',
+  'tower.role.lab': 'Lightning Damage',
+  'tower.role.arch': 'Multi-Target',
+  'tower.role.club': 'Economy',
+
+  // why a tower command is refused (the rules give these in English; reason() maps them here)
+  'reason.notNow': 'Not now',
+  'reason.asleep': 'Asleep',
+  'reason.stunned': 'Stunned',
+  'reason.builtLastTurn': 'Built last turn',
+  'reason.unknownTower': 'Unknown tower',
+  'reason.standing': 'Standing',
+  'reason.noPp': 'No PP left',
+  'reason.noUpgrades': 'No upgrades left',
+  'reason.highest': 'Highest level',
+  'reason.unknownBranch': 'Unknown branch',
+  'reason.chooseBranch': 'Choose 4A or 4B',
+  'reason.branchesAt3': 'Branches open at Level 3',
+  'reason.over': 'The battle is over',
+  'reason.replaceFirst': 'Choose a replacement first',
+  'reason.noTowers': 'No towers in this battle',
 };
 
+/** The rules' English refusals (without a full stop) and their keys. */
+const REASONS = {
+  'Not now': 'reason.notNow', Asleep: 'reason.asleep', Stunned: 'reason.stunned', 'Built last turn': 'reason.builtLastTurn',
+  'Unknown tower': 'reason.unknownTower', Standing: 'reason.standing', 'No PP left': 'reason.noPp', 'No upgrades left': 'reason.noUpgrades',
+  'Highest level': 'reason.highest', 'Unknown branch': 'reason.unknownBranch', 'Choose 4A or 4B': 'reason.chooseBranch',
+  'Branches open at Level 3': 'reason.branchesAt3', 'The battle is over': 'reason.over', 'Choose a replacement first': 'reason.replaceFirst',
+  'No towers in this battle': 'reason.noTowers',
+};
 
 // ============================================================ lookup
 const page = () => globalThis.BATTLE_STRINGS;
@@ -364,6 +471,17 @@ export function list(items) {
   const f = typeof Intl.ListFormat === 'function' ? intl('ListFormat', lang(), { type: 'unit', style: 'short' }) : null;
   return f ? f.format(a) : a.join(', ');
 }
+/** A refusal the rules wrote in English, in the page's words (an unknown one stays as it is). */
+export const reason = (english) => (Object.hasOwn(REASONS, english) ? t(REASONS[english]) : english);
+/** A tower's role ("Heavy Artillery") in the page's words, else the registry's own (EN lists them for a translator). */
+export const role = (form, english) => override(`tower.role.${form}`) ?? english;
+/** The rules' transform label ('New', 'Level 4A') in the page's words. */
+export const ruleLabel = (label) => {
+  const s = String(label ?? '');
+  if (s === 'New') return t('tower.new');
+  const m = /^Level\s*(\S+)$/i.exec(s);
+  return m ? t('level', { n: m[1].toUpperCase() }) : s;
+};
 /** The engine's short words (an item's chip, an item's or a trait's detail, a support label) in the page's words.
  *  Anything it does not know (a multiplier, a weight) stays as the engine wrote it. Read after plan.js words(), so a
  *  stat already reads Reach, Proof or Pace (or the page's own words for them). */
@@ -383,9 +501,10 @@ export function engineWords(text) {
   return s;
 }
 /** The kit's scene words on a shot's scene, in place (battle.js calls it at 'plan', after the plan and the verbs have
- *  read them): Miss and KO, a support's label, Guard, a condition's name and tick, the result's title. */
+ *  read them): Miss and KO, a support's label, Guard, a condition's name and tick, the result's title. A transform's
+ *  label stays the rules' English (beats.js reads it; runtime.js shows it through ruleLabel). */
 export function sceneWords(s) {
-  if (!s) return s;
+  if (!s || s.kind === 'transform') return s;
   const label = typeof s.label === 'string' ? s.label : null;
   if (label && !/^\d+$/.test(label)) s.label = label === 'Miss' ? t('scene.miss') : label === 'KO' ? t('scene.ko') : engineWords(label);
   if (s.kind === 'guard' && s.title === 'Guard') s.title = t('scene.guard');
@@ -393,11 +512,6 @@ export function sceneWords(s) {
   else if (s.kind === 'result') s.title = { Victory: t('result.victory'), Defeat: t('result.defeat'), Draw: t('result.draw') }[s.title] ?? s.title;
   return s;
 }
-/** A card's own words that the HUD prints off the card face, in the page's words: a move's feature
- *  (`card.<id>.move.<move name>.feature`) or the trait's rule (`card.<id>.trait.rule`), else the card's English. These
- *  keys are not in EN or the export: a site supplies them from its own translated card text. The card faces themselves
- *  (excard, MARKUP) stay the cards'. */
-export const cardText = (id, key, english) => override(`card.${id}.${key}`) ?? english;
 /** A trainer's title and quotes in the page's words (`leader.<id>.title`, `leader.<id>.quote.<key>`). */
 export function leaderWords(tr) {
   const o = page();

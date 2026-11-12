@@ -43,8 +43,7 @@
 .num-tags { position: absolute; left: 50%; top: 100%; translate: -50% 3px; display: flex; gap: 4px; font-size: max(13px, .4em); }
 .num-tag { padding: .18em .42em .2em; background: oklch(12% 0.01 75); color: #fbf7ee; font: 800 1em/1 var(--sans); font-style: normal; white-space: nowrap; text-shadow: none;
   clip-path: polygon(.3em 0, 100% 0, calc(100% - .3em) 100%, 0 100%); }
-.num-tag[data-kind="crit"] { background: var(--rival, oklch(56% 0.2 30)); color: #fff; }
-.num-tag[data-kind="ring"], .num-tag[data-kind="out"] { background: #fbf7ee; color: oklch(14% 0.01 75); }
+.num-tag[data-kind="out"] { background: #fbf7ee; color: oklch(14% 0.01 75); }
 .num-tag[data-kind="hits"] { background: none; padding-inline: 0; clip-path: none; text-shadow: 0 1px 0 oklch(8% 0.01 70), 0 0 6px oklch(0% 0 0 / .6); }
 
 /* the Ground's world canvas, used only to warm the cards' programs before the battle draws them */
@@ -67,3 +66,127 @@ html[data-boot] #app { visibility: hidden; }
    sheet may not apply yet while it prepares */
 .arena-print { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; contain: strict; }
 .arena-print .bc-card { left: 0; top: 0; width: 100%; height: 100%; }
+
+/* ============================================================ round 6: the four reads (shared/beats.js, shared/fx.js)
+   Who acts (the actor tag), what it hit (the reticle), what changed (the numeral's ticks, the post chips). Each is a
+   small pill or a 2 px stroke in the room's own tones, so none moves a sixth of the frame by 0.1 in luminance. The
+   beats layer sits over the plates and under the Stage: a scene covers it, the board ending shows it again. */
+.beats { position: absolute; inset: 0; z-index: 23; pointer-events: none; overflow: hidden; contain: strict; }
+.atag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px 0 4px; border-radius: 10px; background: color-mix(in oklch, var(--room-clay) 92%, transparent); color: var(--ink); box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--sc) 60%, transparent), 0 4px 12px oklch(0% 0 0 / .18); font: 800 16px/1 var(--sans); white-space: nowrap; opacity: 0; }
+.atag[data-on="true"] { opacity: 1; }
+.atag[data-blocked="true"] { visibility: hidden; }
+.atag-side { padding: 5px 7px; border-radius: 7px; font: 800 12px/1 var(--sans); font-style: normal; color: #fff; background: var(--sc); }
+.atag-d { display: inline-grid; color: var(--d); }
+.atag-d .i { width: 18px; height: 18px; }
+.atag .tw-still { --h: 24px; }
+/* a phone: 24 px with 13 px words (the tag reads while the camera moves) */
+@media (max-width: 719px) { .atag { height: 24px; font-size: 13px; gap: 4px; padding: 0 8px 0 3px; border-radius: 8px; background: color-mix(in oklch, var(--room-clay) 80%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--sc) 50%, transparent); } .atag-side { font-size: 10.5px; padding: 3px 5px; } .atag-d .i { width: 15px; height: 15px; } .atag .tw-still { --h: 18px; } }
+
+/* the reticle: four corner brackets, no fill, in the attacker's side colour (your aim periwinkle, incoming red), round
+   the defender's drawn box (shared/beats.js rtcRect), 3 px from 1280 up, each leg keylined 1 px in ink so it reads on
+   any floor (an outline, no glow) */
+.rtc-box { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; --leg: 14px; }
+.rtc-box[data-on="true"] { opacity: 1; }
+.rtc { position: absolute; inset: 0; pointer-events: none; transform-origin: 50% 50%; --w: 2px; --key: oklch(12% 0.01 75); }
+@media (min-width: 1280px) { .rtc { --w: 3px; } }
+.rtc i { position: absolute; width: var(--leg, 14px); height: var(--leg, 14px); border: 0 solid var(--sc); }
+/* on the board the stroke is the side colour lifted a step toward paper (3:1 or more on the mid floors) and its ink
+   keyline holds it on the light ones */
+.rtc-box .rtc i { border-color: color-mix(in oklch, var(--sc) 78%, #fff); }
+.rtc-box .rtc[data-skin="capture"] i::after { background: color-mix(in oklch, var(--sc) 78%, #fff); }
+.rtc i[data-c="tl"] { left: 0; top: 0; border-left-width: var(--w); border-top-width: var(--w); }
+.rtc i[data-c="tr"] { right: 0; top: 0; border-right-width: var(--w); border-top-width: var(--w); }
+.rtc i[data-c="bl"] { left: 0; bottom: 0; border-left-width: var(--w); border-bottom-width: var(--w); }
+.rtc i[data-c="br"] { right: 0; bottom: 0; border-right-width: var(--w); border-bottom-width: var(--w); }
+/* Jarhead's capture corners: the brackets stand off the box, each closed by a square at its corner */
+.rtc[data-skin="capture"] { inset: -6px; }
+/* the board's reticle follows its target every frame: its far corners stand from the top left by transform (the box's
+   size, --bw and --bh, set with it), so a camera push that resizes the box never shifts layout (CLS 0, M6) */
+.rtc-box .rtc { --ow: var(--bw, 0px); --oh: var(--bh, 0px); }
+.rtc-box .rtc[data-skin="capture"] { --ow: calc(var(--bw, 0px) + 12px); --oh: calc(var(--bh, 0px) + 12px); }
+.rtc-box .rtc i[data-c="tr"] { right: auto; left: 0; translate: calc(var(--ow) - var(--leg, 14px)) 0; }
+.rtc-box .rtc i[data-c="bl"] { bottom: auto; top: 0; translate: 0 calc(var(--oh) - var(--leg, 14px)); }
+.rtc-box .rtc i[data-c="br"] { right: auto; bottom: auto; left: 0; top: 0; translate: calc(var(--ow) - var(--leg, 14px)) calc(var(--oh) - var(--leg, 14px)); }
+.rtc[data-skin="capture"] i::after { content: ""; position: absolute; width: 5px; height: 5px; background: var(--sc); }
+.rtc[data-skin="capture"] i[data-c="tl"]::after { left: -3.5px; top: -3.5px; }
+.rtc[data-skin="capture"] i[data-c="tr"]::after { right: -3.5px; top: -3.5px; }
+.rtc[data-skin="capture"] i[data-c="bl"]::after { left: -3.5px; bottom: -3.5px; }
+.rtc[data-skin="capture"] i[data-c="br"]::after { right: -3.5px; bottom: -3.5px; }
+/* on a full scene's dealt contact card (the contact effect's wrapper) */
+.rtc.rtc-scene { inset: -3%; z-index: 3; --leg: 14cqmin; --w: max(2px, .3cqmin); }
+.rtc.rtc-scene i { width: min(14%, 64px); height: min(10%, 64px); }
+@media (max-width: 719px) { .rtc { --w: 2px; } }
+
+/* a multi-hit's ticks: one per hit under the number, filled one every 90 ms from the contact */
+.num-ticks { position: absolute; left: 50%; top: 100%; translate: -50% 4px; display: flex; gap: 3px; }
+.num-ticks i { display: block; width: 9px; height: 4px; border-radius: 1px; background: #fbf7ee; box-shadow: 0 0 0 1px oklch(8% 0.01 70); opacity: .28; }
+.num-ticks[data-full="true"] i { opacity: 1; }
+.num[data-ticks] .num-tags { translate: -50% 14px; }
+
+/* what changed: the post chips (fx.js postTags), 22 px (20 on a phone), under the struck card's number or over the
+   acting card's head; green or red for you, with a sign and a number, never colour alone */
+.ptags { position: absolute; left: 0; top: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
+.ptag { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px 0 5px; border-radius: 7px; background: color-mix(in oklch, var(--room-clay, #efeae2) 94%, transparent); color: var(--ink, #222); box-shadow: 0 2px 8px oklch(0% 0 0 / .2); font: 800 12.5px/1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; opacity: 0; }
+.ptag .bi { width: 14px; height: 14px; }
+.ptag[data-tone="up"] { color: var(--up-ink); box-shadow: inset 0 0 0 1.5px var(--up), 0 2px 8px oklch(0% 0 0 / .2); }
+.ptag[data-tone="down"] { color: var(--down-ink); box-shadow: inset 0 0 0 1.5px var(--down), 0 2px 8px oklch(0% 0 0 / .2); }
+.ptag[data-kind="status"] .bi { color: var(--s, currentColor); }
+.ptag[data-kind="more"] { color: var(--ink-2); font-weight: 700; }
+.ptag .tw-still { --h: 20px; }
+.ptag[data-still] { opacity: 1; }
+@media (max-width: 719px) { .ptag { height: 20px; font-size: 11.5px; padding: 0 6px 0 4px; } }
+
+/* the matte arrow: attacker to defender between the two names of a full scene, in the attacker's side colour */
+#app .bc-mhud-arrow { grid-row: 1; grid-column: 2; justify-self: center; font: 800 min(16px, 2.2cqh)/1 var(--sans); letter-spacing: -.12em; }
+#app .bc-mhud[data-arrow] .bc-mhud-turn { visibility: hidden; }
+#app .bc-mhud:not([data-arrow]) .bc-mhud-arrow { display: none; }
+#app .bc-mhud-tag[data-role="defender"] .bc-mhud-name { opacity: .7; }
+#app .bc-mhud-tag[data-role="attacker"] .bc-mhud-name { opacity: 1; font-weight: 800; }
+
+/* the transform scene's call-out: the tower (or its key move) over its line, centred on the bars' open middle */
+.sd-callout[data-style="transform"] { --tl: min(2.6cqh, 3.4cqw, 22px); }
+.sd-callout[data-style="transform"] .sd-callout-text { right: 0; left: 0; width: auto; text-align: center; bottom: calc(var(--ap, 14cqh) + 1.2cqh + var(--tl) * 1.25 + 4px - .12em); font: 800 min(7cqh, 8cqw, 76px, 88cqw / (var(--clen, 10) * .56))/1 "Katagami Sans", var(--sans); -webkit-text-stroke: .03em #000; paint-order: stroke fill; }
+.sd-tline { position: absolute; left: 0; right: 0; bottom: calc(var(--ap, 14cqh) + 1.2cqh); text-align: center; font: 700 var(--tl, 18px)/1.2 var(--sans); color: rgba(255, 255, 255, .9); text-shadow: 0 1px 3px rgba(0, 0, 0, .7); }
+.rtc i { filter: drop-shadow(1px 0 0 var(--key)) drop-shadow(-1px 0 0 var(--key)) drop-shadow(0 1px 0 var(--key)) drop-shadow(0 -1px 0 var(--key)); }
+
+/* a tower's still at tag and chip size: the 2x still on a light plate ringed in the tower's accent, so a 20 to 24 px
+   tower reads as its shape, not a dark smudge on the dark clay */
+.tw-still.tw-plate { --h: 24px; background: oklch(95% 0.012 85); box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--ta, var(--ink-3)) 80%, transparent); border-radius: 5px; padding: 1px; }
+.ptag .tw-still.tw-plate { --h: 20px; }
+@media (max-width: 719px) { .atag .tw-still.tw-plate { --h: 18px; } }
+/* a form move has no preview clip: its tooltip shows the tower's still in the clip's box */
+.tp-vid.tp-still { display: grid; place-items: center; background: radial-gradient(closest-side, oklch(30% 0.02 75), oklch(14% 0.01 75)); }
+.tp-vid.tp-still .tw-still { --h: 96px !important; background: none; }
+
+/* the reduced read rule (REQUESTS :10): from a still's first frame to its contact no earlier number stands, on the
+   Stage either (shared/beats.js sets data-rd-wait at the still's start and clears it at the contact) */
+#app[data-rd-wait] #stage :is(.sd-number, .sd-damage) { visibility: hidden !important; }
+
+/* Jarhead's lock: its capture reticle is the one set of corners on the defender; the attack's own flown corners
+   (arena/specials.js) stand down while it shows, so "what it hit" is drawn once, in the attacker's side colour */
+#app[data-rtc-skin="capture"] .sp-p { visibility: hidden; }
+.rtc[data-skin="capture"] { --w: 2.5px; }
+@media (min-width: 1280px) { .rtc[data-skin="capture"] { --w: 3px; } }
+
+/* fixes-2 R6: a board miss is its own beat, "Miss" set as the numeral is (its size and weight, from the board's own
+   numeral, over the defender's head) in the attacker's side tone; the Arena's small plate on the body gives way to it */
+.num[data-kind="miss"] { --miss-you: oklch(80% 0.11 255); --miss-rival: oklch(76% 0.15 32); color: var(--nc, #fff); }
+#app:has(.num[data-kind="miss"]) .stamp[data-kind="miss"] { visibility: hidden; }
+/* fixes-2 R11: a number stands in front of the figures (a near figure's foot can lift it over the effects' layer), the
+   pieces they wear and an attacker diving on the defender; under the leaders' lines */
+.arena-fx:has(> .num) { z-index: 1999; }
+/* fixes-2 R8: a tower move's preview is the tower at the preview's size, its drawn box 88% of the 16:9 box's height and
+   centred (tower.js stillFillHtml), not a 96 px still in an empty box */
+.tp-vid.tp-still { position: relative; overflow: hidden; }
+.tp-vid.tp-still .tw-fill { position: absolute; inset: 0; }
+.tp-vid.tp-still .tw-fill img { position: absolute; max-width: none; object-fit: fill; }
+/* fixes-3 R5: every numeral carries a 3 px ink keyline drawn under its fill (paint-order) and a dark drop, so it reads
+   on a target the hit has flashed white ("120" and "82" stood white on white). A critical or a knockout's number holds
+   its landing size 300 ms (shared/fx.js BIG_HOLD) in the striker's side tone, inside the crit ring */
+.num { -webkit-text-stroke: 6px oklch(10% 0.01 70); paint-order: stroke fill; text-shadow: 0 2px 0 oklch(8% 0.01 70), 0 4px 10px oklch(0% 0 0 / .7); }
+.num[data-big] { --tone-you: oklch(84% 0.1 255); --tone-rival: oklch(82% 0.12 40); color: var(--tone-rival); }
+.num[data-big][data-by="player"] { color: var(--tone-you); }
+.num[data-big]::before { content: ""; position: absolute; left: 50%; top: 50%; width: 1.5em; height: 1.5em; translate: -50% -50%; border-radius: 50%;
+  border: .07em solid var(--crit, oklch(76% 0.16 80)); box-shadow: 0 0 0 .03em oklch(10% 0.01 70), inset 0 0 0 .03em oklch(10% 0.01 70); z-index: -1; pointer-events: none; }
+.num[data-big]:not([data-kind="crit"])::before { display: none; }
+.num-tags, .num-ticks { -webkit-text-stroke: 0; }

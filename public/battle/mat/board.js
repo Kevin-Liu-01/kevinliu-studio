@@ -4,11 +4,15 @@
 // (MODES.md section 2): prepare, mount, set, land, flush, cue, anchor, skip, hold, unmount, layout.
 // Every motion writes transform and opacity only, so the page never shifts (CLS 0).
 import { Leader, loadLeaders, tallOf, finalePoses } from '../shared/leaders.js';
-import { Layout, el, wait, clamp, lerp, R, SIDES, EASE, perHit, chipsHtml, setChips, countTo, numeral, hitTags, NUMBER_HOLD, frameOn, inkOn } from '../shared/fx.js';
+import { Layout, el, wait, clamp, lerp, R, SIDES, EASE, perHit, chipsHtml, setChips, countTo, numeral, hitTags, NUMBER_HOLD, frameOn, inkOn, postTags, TICK_MS } from '../shared/fx.js';
+import { ico } from '../shared/icons.js';
+import { formInfo, formKey, stillHtml, pipsHtml, levelWord, levelParts } from '../shared/tower.js';
 import { specials } from './specials.js';
 import { t as txt } from '../shared/strings.js';
+import { FORMS } from '../shared/forms.js';
 
 const K = window.bcKit;
+const STATUS_COLOR = { burn: '#e8603c', poison: '#a64ac9', sleep: '#7c8aa6', stun: '#d9b21f' };
 const E = window.showdown.engine;
 const { SLAM, OUT, IN_OUT } = EASE;
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -18,6 +22,24 @@ const MASK = Array.from({ length: 16 }, (_, L) => {
   for (let i = 0; i < 16; i++) if (BAYER[i] < L) r += `<rect x='${(i % 4) * 3}' y='${Math.floor(i / 4) * 3}' width='3' height='3'/>`;
   return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'>${r}</svg>`)}")`;
 });
+
+// round 6 fix pass 2 (M1): a form card's art window shows the standing tower, the same front still the Arena crops
+// (media/figures/manifest.json, `formView(m, 'front', key)`); the card's own art stands for its starting form
+// (fix pass 2 after the critic: the one-line view reader, not the 57 KB Arena ground module, and the manifest fetched
+// only once a tower other than the starting one stands or a transform's pre-roll begins, never at a boot)
+const formView = (m, view, key = null) => (key && m.forms?.[key]?.[view]) || m[view];
+const FIGURES = new URL('../media/figures/', import.meta.url).href;
+let figsP = null, figs = null, figsDone = false, figsTries = 0;
+// (fixes-3 M1: a failed or half-written manifest is fetched again, up to three more times; one lost fetch once left a
+// phone's card on its own art after every transform. Each window waiting on it is drawn when it comes.)
+const figsWait = new Set();
+const loadFigs = () => (figsP ??= fetch(new URL('manifest.json', FIGURES)).then((r) => (r.ok ? r.json() : null)).then((m) => (figs = m?.figures ?? m ?? null)).catch(() => null).finally(() => {
+  figsDone = true;
+  if (figs) { for (const f of [...figsWait]) f(); figsWait.clear(); }
+  else if (++figsTries < 4) setTimeout(() => { figsP = null; figsDone = false; loadFigs(); }, 700 * figsTries);
+}));
+/** 17 steps of the 4x4 Bayer from whole to gone (`out`) or from gone to whole. */
+const bayerFrames = (out) => Array.from({ length: 17 }, (_, i) => { const n = out ? 16 - i : i, m = n >= 16 ? 'none' : K.MASKS?.[n] ?? 'none'; return { offset: i / 16, maskImage: m, WebkitMaskImage: m }; });
 
 // ============================================================ geometry: the zones (MODES.md section 3), in viewport px
 const box = (cx, top, w, h) => ({ x: cx - w / 2, y: top, w, h });
@@ -210,6 +232,11 @@ export class MatBoard extends Layout {
     this.turnShown = 0;
     this.away = null;
     this.falling = new Set();
+    // round 6's shared beats, opted in per layout (ROUND6.md section 6): the post chips on the cards and a multi-hit's
+    // ticks. They ship off on the Mat until a whole M2 run passes with them on (section 6, "shipped on only if M2
+    // passes with it, else off"); `?matfx=1` turns both on for that run.
+    const on = typeof location !== 'undefined' && /[?&]matfx=1\b/.test(location.search);
+    this.fx = { chips: on, ticks: on };
   }
   /** The two leaders' atlases; before a deal, the six cards printed ahead of the mount, one a frame, so the boot's
    *  mount only places what is already printed (a mode switch prints at its mount, within its one frame). */
@@ -283,6 +310,10 @@ export class MatBoard extends Layout {
     for (const s of SIDES) ctx.view.sides[s].team.forEach((f, i) => this.makeSlot(s, i, f));
     this.view = ctx.view;
     this.layout();
+    this.dealtArt();
+    this.onCall = () => { const k = this.tagKeep; if (this.alive && k && k.sl.tagShot === k.shot) k.keep(true); };
+    document.addEventListener('mcall:placed', this.onCall);
+    document.fonts?.ready?.then(() => { if (this.alive) for (const sl of this.slots.values()) this.fitChip(sl); });
   }
 
   makeSlot(side, i, f) {
@@ -306,9 +337,20 @@ export class MatBoard extends Layout {
     el('span', 'tab-max', sl.tab, `/${f.maxHp}`);
     sl.chips = el('div', 'chips', sl.shake);
     sl.tokensEl = el('div', 'tokens', sl.shake);
+    // (fix pass 2 after the critic: a form card's damage disc stands under its chip row, which grows with its buffs and
+    // conditions; the row's height reaches the disc as --chy, a translation, so a chip that comes or goes shifts no layout)
+    if (typeof ResizeObserver !== 'undefined') {
+      sl.chipsRO = new ResizeObserver(() => { const h = sl.chips.childElementCount ? sl.chips.offsetHeight + 4 : 0, v = `${h}px`; if (sl.tokensEl.style.getPropertyValue('--chy') !== v) sl.tokensEl.style.setProperty('--chy', v); if (sl.art && sl.el.dataset.fm === 'side') this.seatArt(sl); });
+      sl.chipsRO.observe(sl.chips);
+    }
     sl.flash = el('i', 'slot-flash', sl.shake);
     sl.shield = el('i', 'slot-shield', sl.shake);
     sl.stamp = el('b', 'slot-stamp', sl.shake);
+    // round 6: a form card's tower chip under its HP tab, the actor tag on its top edge, the reticle on its rect
+    sl.form = el('span', 'form-chip', sl.shake);
+    sl.form.hidden = true;
+    sl.tag = el('b', 'slot-tag', sl.shake);
+    this.drawForm(sl, f, false);
     this.slots.set(f.uid, sl);
     return sl;
   }
@@ -357,6 +399,7 @@ export class MatBoard extends Layout {
     if (mk) { const zr = g.zones.rival.bench[1], x = (M.x + zr.x) / 2; this.markEl.style.width = this.markEl.style.height = `${mk}px`; this.markEl.style.transform = `translate3d(${(x - M.x - mk / 2).toFixed(1)}px,${(g.cy - M.y - mk / 2).toFixed(1)}px,0)`; }
     this.cardLayer.style.setProperty('--aw', `${g.sW}px`);
     for (const sl of this.slots.values()) { sl.el.style.width = `${g.sW}px`; sl.el.style.height = `${g.sH}px`; }
+    for (const sl of this.slots.values()) this.fitChip(sl);
     if (!moving || g.mat.h !== was.mat.h) this.paintScreen();
     if (this.view && this.matEl.dataset.finale === undefined) this.place(this.view, false);
     else if (this.finaled) this.finaleRow(false);
@@ -455,14 +498,28 @@ export class MatBoard extends Layout {
     const k = zs.ko, o = Math.min(z.n ?? 0, 4) * 3;
     return { x: k.x + o, y: k.y - o, w: k.w, h: k.h };
   }
+  /** The card's well in the rest layout (a phone's turn layout only scales the wells: the same card, transformed). */
+  restRectOf(sl, z) {
+    const g = this.g;
+    if (!g.phone || !g.turn) return this.rectOf(sl, z);
+    const key = `${g.W}x${g.H}`;
+    if (this.restG?.key !== key) this.restG = { key, g: geometry(g.W, g.H, false) };
+    const zs = this.restG.g.zones[sl.side];
+    return z.zone === 'active' ? zs.active : z.zone === 'bench' ? zs.bench[z.n] ?? zs.bench[0] : zs.ko;
+  }
   /** A benched or fallen card is laid out at the width it is drawn at: mat.css sets its `--card` to `--lay-w` (over
    *  the kit's fit, whose small tier never goes under 164 px), so the card's own container rules choose its small
    *  layout as the home page's do at that size; the box is scaled up to the slot by `--lay-up`, and the slot's
    *  transform scales it back down. */
   layFor(sl, z) {
-    const lay = Math.max(1, Math.round(this.g.sW * this.rectOf(sl, z).h / this.g.sH));
+    // (fix pass 2, M3: a phone lays a card out at its rest well's size in either layout, so a turn's change of size
+    // (the deal's turn layout handing over to the rest layout at ready) is the slot's transform alone, never a new
+    // laid width under the card's rows: CLS 0 at ready)
+    const lay = Math.max(1, Math.round(this.g.sW * this.restRectOf(sl, z).h / this.g.sH));
+    if (sl.el.style.getPropertyValue('--lay-w') === `${lay}px` && sl.el.style.getPropertyValue('--lay-up') === (this.g.sW / lay).toFixed(4)) return;
     sl.el.style.setProperty('--lay-w', `${lay}px`);
     sl.el.style.setProperty('--lay-up', (this.g.sW / lay).toFixed(4));
+    this.seatArt(sl);
   }
   transformFor(sl, z) {
     const b = this.local(this.rectOf(sl, z)), g = this.g;
@@ -506,6 +563,12 @@ export class MatBoard extends Layout {
       sl.tokensEl.dataset.key = '';
       this.drawTokens(sl, false);
       setChips(sl.chips, chipsHtml(f, K.icon));
+      // (a snapshot draws what stands: no transform is pending and no old art is mid-dissolve)
+      sl.formNext = null;
+      for (const a of sl.artOuting ?? []) a.cancel();
+      sl.artOuting = null;
+      this.builtIn(sl, true);
+      this.drawForm(sl, f, false);
       this.face(sl, this.dealing || f.hp <= 0, false);
       sl.fallen = f.hp <= 0;
       this.ink(sl, f.hp <= 0 ? 0.75 : 0, false);
@@ -583,6 +646,7 @@ export class MatBoard extends Layout {
     if (old.ink) p.ink.style.opacity = old.ink.style.opacity;
     sl.parts = p; sl.live = live;
     old.root.remove();
+    this.seatArt(sl, false);
   }
 
   // ---------- the HUD on the cards
@@ -640,6 +704,8 @@ export class MatBoard extends Layout {
       const before = sl.hp;
       sl.hp = f.hp; sl.maxHp = f.maxHp;
       setChips(sl.chips, chipsHtml(f, K.icon));
+      // a tower built or upgraded: the chip swaps at the transform's impact cue (a Bayer swap), never before
+      if (e.kind === 'transform' && e.fighter === f.uid) sl.formNext = f; else if (!sl.formNext) this.drawForm(sl, f, false);
       if (f.hp !== before) this.reactions.push({ uid: f.uid, from: before, to: f.hp, e });
       if (f.hp <= 0 && before > 0) this.falling.add(f.uid);
     });
@@ -667,9 +733,9 @@ export class MatBoard extends Layout {
           // while the card is away in a scene, the damage that landed from its first frame, its tags right under it
           const g = this.g, out = r.to <= 0 && !shot?.told?.(sl.uid);
           this.numbered(sl.uid);
-          numeral(this.motion, sl.el, { x: g.sW / 2, y: g.sH * 0.22, value: hit.damage, hits, tags: hitTags(hit, out), kind: hit.crit ? 'crit' : 'hit', color: hit.crit ? K.accent(this.ctx.cardOf(hit.actor ?? '')) : null, every, size: g.sW * (hit.crit ? 0.42 : 0.36), side: sl.side, uid: sl.uid });
+          numeral(this.motion, sl.el, { x: g.sW / 2, y: g.sH * 0.22, value: hit.damage, hits, tags: hitTags(hit, out), kind: hit.crit ? 'crit' : 'hit', color: hit.crit ? K.accent(this.ctx.cardOf(hit.actor ?? '')) : null, every, ticks: this.fx.ticks, size: g.sW * (hit.crit ? 0.42 : 0.36), side: sl.side, uid: sl.uid });
           // its tokens land as it rises out
-          t0 = 126 + (hits - 1) * every + NUMBER_HOLD;
+          t0 = (this.fx.ticks && hits > 1 ? Math.max(126, hits * TICK_MS) : 126 + (hits - 1) * every) + NUMBER_HOLD;
         }
         // the contact itself: the card shakes and flashes at the impact; the tokens land one per hit after it
         if (!rd) this.shakeCard(sl, 6, 260);
@@ -697,7 +763,26 @@ export class MatBoard extends Layout {
       if (sum !== want && lost <= 0) { sl.tokens = want ? [want] : []; this.drawTokens(sl, 0); }
       jobs.push(wait(Math.min(ms, o.budget ?? ms)));
     }
+    this.chips(shot);
     return Promise.all(jobs);
+  }
+  /** What else the shot changed, as chips on the cards (fx.js postTags), once per shot: under the struck card's number
+   *  from + 450 after a damaging contact, on the acting card's top at once for a support move or a tower. */
+  chips(shot) {
+    if (!this.fx.chips || !shot?.post?.length || this.chipped === shot) return;
+    this.chipped = shot;
+    const g = this.g, imp = this.impactAt?.shot === shot ? this.impactAt.t : performance.now();
+    postTags(shot.post, {
+      motion: this.motion, auto: Boolean(this.ctx.auto?.()), at: imp, icon: (n) => ico(n),
+      chip: (c) => (c.kind === 'transform' ? `${stillHtml(formKey(c.form.form, c.form.level ?? 1), { h: 20, hi: true, accent: c.form.accent, cls: 'tw-still tw-plate' })}<b>${c.text}</b>${pipsHtml(c.form.level ?? 1, { accent: c.form.accent })}` : c.kind === 'status' ? `<span style="--s:${STATUS_COLOR[c.status] ?? 'currentColor'}">${ico(c.icon)}</span><b>${c.text}</b>` : ''),
+      anchorOf: (uid, { self }) => {
+        const sl = this.slots.get(uid);
+        if (!sl || !g) return null;
+        // the struck card: under its number and the number's tags; the acting card: on its art, clear of its tab, its
+        // tower chip and the actor tag
+        return self ? { layer: sl.el, x: g.sW / 2, y: g.sH * 0.3, above: false } : { layer: sl.el, x: g.sW / 2, y: g.sH * 0.22 + g.sW * 0.36 + 34 };
+      },
+    });
   }
 
   // ---------- small board effects
@@ -773,7 +858,7 @@ export class MatBoard extends Layout {
     const s = shot?.scene, g = this.g;
     if (!s || !g || this.reduced()) return null;
     const lead = s.kind === 'switch' && shot.post[0]?.reason === 'lead';
-    const on = (s.kind === 'attack' && s.variant === 'full') || (s.kind === 'switch' && !lead) || (s.kind === 'ko' && !shot.finish) || ['item', 'trait', 'status', 'guard'].includes(s.kind);
+    const on = (s.kind === 'attack' && s.variant === 'full') || (s.kind === 'switch' && !lead) || (s.kind === 'ko' && !shot.finish) || ['item', 'trait', 'status', 'guard', 'transform'].includes(s.kind);
     if (!on) return null;
     // the band runs between the rows' outer cards (benches and KO stacks), reaching a little into them
     const Z = g.zones, outer = (z) => [...z.bench, z.ko];
@@ -866,10 +951,12 @@ export class MatBoard extends Layout {
             // a repeat on the board alone: the card lifts with its move's name stamped on it, the camera finds the
             // defender, and the contact lands (190 ms), never before the defender's last number has been read; under
             // reduced motion only the name is stamped
-            if (rd) { if (them) await this.untilRead(them.uid); if (me) this.stampText(me, s.move?.name ?? s.title, 'move', 520); return undefined; }
+            // (the actor tag, when the page sends one, is the cut's stamp: side, discipline and move on the card's top)
+            const stamp = () => { if (!me) return; if (this.tagNext?.shot === shot) this.tagOn(me, this.tagNext, 500); else this.stampText(me, s.move?.name ?? s.title, 'move', 520); };
+            if (rd) { if (them) await this.untilRead(them.uid); stamp(); return undefined; }
             if (them) await this.untilRead(them.uid, 190);
             this.lift(me, true, 90);
-            if (me) this.stampText(me, s.move?.name ?? s.title, 'move', 520);
+            stamp();
             await wait(90);
             // set down as the camera finds the defender, so the contact lands clear of its name and HP tab
             this.lift(me, false, 100);
@@ -901,11 +988,26 @@ export class MatBoard extends Layout {
         }
         case 'item': { const e = shot.post[0]; await this.untilRead(e?.target, rd ? 0 : auto ? 200 : 300); await this.itemFly(side, this.slots.get(e?.target), e?.name ?? '', rd ? 0 : auto ? 200 : 300); return undefined; }
         case 'ko': return undefined;
+        case 'transform': {
+          L.act('command');
+          if (s?.variant !== 'off') this.lift(me, true, Math.min(160, budget));
+          // (fix pass 2, M1: the title stands clear of every card, tag and plate; the old tower dissolves through the
+          // 4x4 Bayer over the pre-roll, so the card's window is an empty lot until the new one lands at the impact)
+          this.titleSpot(shot);
+          const e = shot.post.find((x) => x.kind === 'transform'), sl = this.slots.get(e?.fighter) ?? me;
+          loadFigs();
+          if (sl && !rd && !auto && s?.variant !== 'off') this.artOut(sl, full ? 420 : 260);
+          return s?.variant === 'off' ? wait(rd ? 0 : 110) : wait(budget);
+        }
         default: return s?.variant === 'off' ? undefined : wait(Math.min(budget, 120));
       }
     }
     if (at === 'start') {
       if (shot.box) this.dimOn(shot.box, true);
+      if (verb === 'transform') {
+        this.titleSpot(shot);
+        if (full && !rd && !auto) { const e = shot.post.find((x) => x.kind === 'transform'); this.buildIn(this.slots.get(e?.fighter) ?? me, shot, e?.to); }
+      }
       // the dealt card has left its well: one of each card on screen
       const sl = this.slotOf(side, s.card);
       if (sl && (full || s.variant === 'short') && (s.kind === 'attack' || s.kind === 'switch')) { this.back(); sl.el.dataset.away = 'true'; this.away = sl; }
@@ -923,6 +1025,14 @@ export class MatBoard extends Layout {
       return this.pushOn(them, 1.3, 220);
     }
     if (at === 'impact') {
+      this.impactAt = { shot, t: performance.now() };
+      // the actor tag leaves after the contact (+ 400, Auto + 300), the reticle at + 300
+      // (under reduced motion a build or upgrade keeps its tag's own 1200 ms hold: its still's impact comes at once and
+      // carries no call-out, and who builds must read; an attack's still names its own actor)
+      if (!shot.cut && me && !(rd && verb === 'transform')) wait(rd ? 0 : auto ? 300 : 400).then(() => { if (me.tagShot === shot) this.tagOff(me, auto ? 120 : 160); });
+      // (a cut's reticle keeps its own hold from the contact, 450 ms or 900 reduced, beats.js cutHold: this timer took it
+      // a task after the contact under reduced motion, so a sample a frame late found no reticle, S3 Mat reduced)
+      if (shot.board && !shot.cut && them) wait(rd ? 0 : 300).then(() => { if (them.rtcShot === shot) this.reticleOff(them, 120); });
       if (shot.cut && verb !== 'support') this.special(shot, me, them, verb);
       switch (verb) {
         case 'hit': case 'crit': {
@@ -939,6 +1049,14 @@ export class MatBoard extends Layout {
         case 'guard': { const sl = this.slots.get(shot.post[0]?.fighter); if (sl) this.press(sl); this.flush(shot); return undefined; }
         case 'trait': { const sl = this.slots.get(shot.post[0]?.fighter) ?? me; this.flush(shot); if (sl && s.variant === 'off') this.stampText(sl, s.title, 'trait', 600); return undefined; }
         case 'item': { this.flush(shot); const sl = this.slots.get(shot.post[0]?.target); if (sl) this.ring(sl, 'heal'); return undefined; }
+        case 'transform': {
+          // the tower chip swaps through the 4x4 Bayer (240 ms, Auto 200) and the card lifts 1.03 for 120 ms; the art
+          // window takes the new tower (0.92 -> 1.04 -> 1 with the accent rim; Auto and the board's own the rim only)
+          const e = shot.post.find((x) => x.kind === 'transform'), sl = this.slots.get(e?.fighter) ?? me;
+          if (sl) { this.swapForm(sl, rd ? 0 : auto ? 200 : 240, { rimOnly: auto || s?.variant === 'off' }); if (!rd) this.anim(sl.lift, [{ scale: 1 }, { scale: 1.03 }, { scale: 1 }], { duration: 240, easing: OUT }); }
+          this.flush(shot);
+          return undefined;
+        }
         default: this.flush(shot); this.fallNow(); return undefined;
       }
     }
@@ -966,6 +1084,16 @@ export class MatBoard extends Layout {
       case 'entrance': { const sl = this.slots.get(shot.post[0]?.to); this.flush(shot); return this.lift(sl, false, budget); }
       case 'switch': this.flush(shot); return this.lift(this.activeSlot(side), false, budget);
       case 'ko': return this.knockOut(shot.post[0], rd ? 0 : auto ? 340 : 420);
+      case 'transform': {
+        // (a cue cut short before its impact still lands the new tower, and never leaves the window empty)
+        const e = shot.post.find((x) => x.kind === 'transform'), sl = this.slots.get(e?.fighter) ?? me;
+        if (sl?.formNext || sl?.artOuting || sl?.artNext) this.swapForm(sl, 0);
+        this.flush(shot); const back = this.lift(me, false, budget);
+        // (reduced: a later build is the board's still alone and holds 360, as the Arena's, so its tag reads before the
+        // tower's attack takes the card; it ended in the frame it began, S3 Mat reduced #25)
+        if (rd && s?.variant === 'off') return wait(360);
+        return auto ? undefined : back;
+      }
       case 'victory': case 'defeat': case 'draw': { const f = this.finaling ?? this.finale(s?.side ?? 'player', verb); this.finaling = null; return f; }
       default: this.flush(shot); if (this.reviving) return this.reviving; return s?.variant === 'off' ? undefined : wait(Math.min(budget, 120));
     }
@@ -1048,7 +1176,437 @@ export class MatBoard extends Layout {
     this.anim(sl.lift, [{ transform: 'none' }, { transform: 'translate3d(0,3px,-12px) scale(.97)', offset: 0.5 }, { transform: 'none' }], { duration: 480, easing: OUT });
     this.anim(sl.shield, [{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'scale(1.04)', offset: 0.4 }, { opacity: 0, transform: 'scale(1.1)' }], { duration: 640, easing: OUT });
   }
-  supportChip(sl, scene) { if (sl && scene?.label) this.stampText(sl, scene.label, 'support', 900); }
+  supportChip(sl, scene) { if (sl && scene?.label && !this.fx.chips) this.stampText(sl, scene.label, 'support', 900); }
+
+  // ---------- round 6: the form chip, the actor tag and the reticle on the cards
+  /** A form card's tower in its art well under the card's printed head: its still (28 px, 22 on a phone), its name,
+   *  its stars and branch. */
+  drawForm(sl, f, motion = true) {
+    if (!sl?.form) return;
+    const has = f && f.form !== undefined && f.form !== null;
+    sl.el.toggleAttribute('data-form', Boolean(has));
+    if (!has) { sl.form.hidden = true; sl.form.dataset.k = ''; this.drawArt(sl, null); return; }
+    const info = formInfo(sl.id, f.form), k = `${f.form}:${f.level}`;
+    if (sl.form.dataset.k !== k) {
+      sl.form.dataset.k = k;
+      sl.form.hidden = false;
+      sl.form.style.setProperty('--ta', info.accent ?? 'currentColor');
+      sl.form.setAttribute('role', 'img');
+      sl.form.setAttribute('aria-label', txt('form.aria', { name: info.name, level: levelWord(f.level) }));
+      // (a phone's chip that drops its stars keeps its level as one figure, "2" or "4A", fixes-2 M1 after the critic)
+      const { n, branch } = levelParts(f.level);
+      sl.form.innerHTML = `${stillHtml(formKey(f.form, f.level), { h: this.g?.phone ? 22 : 28, card: sl.id, accent: info.accent })}<b>${info.name}</b>${pipsHtml(f.level, { accent: info.accent })}<span class="tw-lv" aria-hidden="true">${n}${branch ? branch.toUpperCase() : ''}</span>`;
+    }
+    // (the window after the chip: its tower is seated against the chip it stands beside)
+    this.drawArt(sl, f);
+  }
+  /** The chip never cuts its name; where it is seated is seatArt's (fixes-3 M1). */
+  fitChip(sl) {
+    const c = sl?.form;
+    if (!c || c.hidden) return;
+    this.seatArt(sl);
+  }
+  /** The card's art window: the standing form's front still on its own lit stage, or the card's own art for its
+   *  starting form (decision 10: `lab-1` is the card's art). It stays through knockouts, switches and reprints. */
+  drawArt(sl, f) {
+    sl.artWant = f ?? null;
+    const st = FORMS[sl.id]?.start, own = st ? formKey(st.form, st.level ?? 1) : null;
+    const key = f ? formKey(f.form, f.level ?? 1) : null;
+    // (the manifest comes the first time a tower other than the starting one stands; until then the window holds, and
+    // a lost fetch is tried again: fixes-3 M1, never the card's own art for a tower that is not the starting one)
+    if (key && key !== own && !figs && (!figsDone || figsTries < 4)) {
+      sl.figsWait ??= () => { if (this.alive) this.drawArt(sl, sl.artWant); };
+      figsWait.add(sl.figsWait);
+      loadFigs();
+      if (sl.art) this.seatArt(sl);
+      return;
+    }
+    const m = figs?.[sl.id], v = key && key !== own && m?.forms?.[key] ? formView(m, 'front', key) : null;
+    const want = v?.box ? key : '';
+    if ((sl.art?.dataset.k ?? '') === want) { this.seatArt(sl); return; }
+    const old = sl.art;
+    sl.art = null;
+    old?.remove();
+    if (!want) { delete sl.el.dataset.art; this.seatArt(sl); return; }
+    sl.art = this.artEl(sl, f, want, v);
+    sl.el.dataset.art = 'form';
+    this.seatArt(sl);
+  }
+  /** One tower's window: its front still on its own lit stage in its accent, a pool that rises through the window at
+   *  each level (fixes-2 M1 after the critic). The still is laid in its opaque box by percentages, and the box is sized
+   *  in the window's own units by seatArt (`--fh` its height, `--ff` its foot, `--fx` its left), so the tower is the
+   *  window's subject at every width (fixes-3 M1). `.fa-scaf` is the build's scaffold (M2). */
+  artEl(sl, f, key, v) {
+    const info = formInfo(sl.id, f.form), [x0, y0, x1, y1] = v.box, ow = x1 - x0, oh = y1 - y0, p = (x) => `${x.toFixed(3)}%`;
+    const a = el('span', 'form-art');
+    a.dataset.k = key;
+    a.dataset.n = String(levelParts(f.level).n);
+    a.dataset.form = f.form;
+    a.style.setProperty('--ta', info.accent ?? '#fff');
+    a.style.setProperty('--ar', (ow / oh).toFixed(4));
+    a.style.setProperty('--ft', String(this.artH(f.level)));
+    a.innerHTML = `<i class="fa-set"></i><i class="fa-scaf"></i><span class="fa-fig"><span class="fa-in"><i class="fa-glow"></i><img alt="" decoding="async" src="${new URL(v.lo ?? v.src, FIGURES).href}" style="left:${p((-x0 / ow) * 100)};top:${p((-y0 / oh) * 100)};width:${p((v.w / ow) * 100)};height:${p((v.h / oh) * 100)}"></span></span><i class="fa-rim"></i>`;
+    return a;
+  }
+  /** A tower's height in its window (percent of the window's height) at a level: at least three quarters of the
+   *  window, a step taller each level where the window has the room (fixes-3 M1, owner-3: "the tower is the window's
+   *  subject and not a corner icon"). */
+  artH(level) {
+    return [75, 79, 83, 87][clamp(levelParts(level).n, 1, 4) - 1];
+  }
+  /** fixes-3 M1. A form card's window is its tower's: the tower stands centred in the window at three quarters of its
+   *  height or more, foot on the window's lower edge; the damage disc keeps the window's left third; the chip is the
+   *  tower's nameplate under the window. Where the card prints nothing under its window (a phone's card, a bench
+   *  card), the plate stands wholly under it and the buffs under the plate; where the card's moves are printed there,
+   *  the plate straddles the window's lower edge, right of the disc, and the buffs stack over the disc. Every place
+   *  is a translation from the element's own CSS spot (CLS 0), measured in the card's laid pixels. */
+  seatArt(sl, measure = true) {
+    const face = sl.parts?.face;
+    if (!face) return;
+    const en = face.querySelector('.en');
+    if (sl.art && sl.art.parentElement !== face) { if (en) en.after(sl.art); else face.prepend(sl.art); }
+    if (sl.artNext && sl.artNext.previousElementSibling !== (sl.art ?? en)) { if (sl.art) sl.art.after(sl.artNext); else if (en) en.after(sl.artNext); else face.prepend(sl.artNext); }
+    // (a reprint only moves the window into the new face: its box is the card's laid width's, measured when that changed)
+    if (!measure) return;
+    const c = sl.form, S = sl.shake, SW = S.offsetWidth, SH = S.offsetHeight, pn = face.querySelector('.pane');
+    if (!c || c.hidden || !SW || !SH || !pn) return;
+    const fw = face.offsetWidth, fh = face.offsetHeight;
+    if (!fw || !fh) return;
+    // (the face fills the slot, scaled to it: each part's place is read from the layout, never through the mat's tilt,
+    // a shake's turn or a flip, so a seat at any moment of a shot gives the same numbers and shifts nothing)
+    const kx = SW / fw, ky = SH / fh;
+    const off = (e) => { let x = 0, y = 0; for (let n = e; n; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; } return [x, y]; };
+    const [fx0, fy0] = off(face);
+    const loc = (e) => { const [x, y] = off(e); return { l: (x - fx0) * kx, t: (y - fy0) * ky, r: (x - fx0 + e.offsetWidth) * kx, b: (y - fy0 + e.offsetHeight) * ky }; };
+    const P = loc(pn);
+    P.w = P.r - P.l; P.h = P.b - P.t;
+    if (P.w < 4 || P.h < 4) return;
+    const hd = face.querySelector('.top'), top = Math.max(P.t, hd?.offsetHeight ? loc(hd).b + 2 : P.t + P.h * 0.15);
+    // the first thing the card prints under its window (a move, a trait, the weakness row), or its foot
+    let text = SH - 3;
+    for (const e of face.querySelectorAll('.band > *, .foot, .no')) { if (!e.offsetHeight) continue; const q = loc(e); if (q.t >= P.b - 2 && q.t < text) text = q.t; }
+    // the disc's column: its folded size (the larger), at the window's left
+    const dW = SW * 0.27, dL = P.l + 3, dR = dL + dW;
+    // the plate: wholly under the window where nothing is printed there, else straddling its lower edge
+    const ch = c.offsetHeight || 26, below = text - P.b >= ch + 5;
+    const room = below ? SW * 0.94 : P.r - dR - 8;
+    // (past its room it shows its level as one figure, then, under the window, takes a second line, and only on a card
+    // too small for that shows the level alone, as a benched card does: never a cut name)
+    // (wrapped, the plate flows as text, its level figure after the name's last word; a word wider than its line steps
+    // the type down once before the name drops: the name itself is measured, as max-width clamps the plate to its room,
+    // critic after fixes-3 M1: 'Firestone' was cut at 375)
+    // (a seat whose plate, room and place are unchanged keeps its fit: trying the fits again re-lays the plate out in
+    // the frame its --fcy moves, which Chrome counts as a layout shift; Mat 360 frozen read 0.042 on it in mid-shot seats)
+    const fitKey = `${c.textContent}|${Math.floor(room)}|${below}`;
+    if (c.dataset.fitKey !== fitKey) {
+      delete c.dataset.fit;
+      this.setVars(c, { '--cmax': `${Math.floor(room)}px` });
+      const over = () => c.offsetWidth > room + 0.5 || c.scrollWidth > c.clientWidth + 0.5;
+      if (c.offsetWidth > room) {
+        c.dataset.fit = 'stars';
+        if (below && over()) c.dataset.fit = 'stars wrap';
+        if (below && over()) c.dataset.fit = 'stars wrap small';
+        if (over()) c.dataset.fit = 'stars name';
+      }
+      c.dataset.fitKey = fitKey;
+    }
+    const ch2 = c.offsetHeight || ch, cw = c.offsetWidth, cy = below ? P.b + 3 : Math.max(P.t + P.h * 0.5, text - 2 - ch);
+    const foot = below ? P.t + P.h * 0.97 : Math.min(P.t + P.h * 0.97, cy - 5);
+    // the tower(s): centred, right of the disc's column, at the level's height where the window has the room
+    let cx = P.l + P.w / 2;
+    const bR = !below && sl.chips.childElementCount ? dL + sl.chips.offsetWidth : 0;
+    for (const a of [sl.art, sl.artNext]) {
+      if (!a) continue;
+      const ar = Number(a.style.getPropertyValue('--ar')) || 0.6, tgt = Number(a.style.getPropertyValue('--ft')) || 75;
+      const th = Math.max(0, Math.min((tgt / 100) * P.h, foot - top)), tw = th * ar;
+      const left = Math.max(dR + 3, Math.min(P.r - P.w * 0.02 - tw, P.l + P.w / 2 - tw / 2));
+      // (a buff wider than the disc's column steps the tower right while it stands, as a translation: --fdx)
+      const dx = Math.max(0, Math.min(P.r - P.w * 0.02 - tw - left, bR + 3 - left));
+      if (a === sl.art) cx = left + dx + tw / 2;
+      const v = { top: `${((P.t / SH) * 100).toFixed(3)}%`, height: `${((P.h / SH) * 100).toFixed(3)}%` };
+      for (const [k, x] of Object.entries(v)) if (a.style[k] !== x) a.style[k] = x;
+      this.setVars(a, { '--fh': ((th / P.h) * 100).toFixed(2), '--ff': (((foot - P.t) / P.h) * 100).toFixed(2), '--fx': ((left / SW) * 100).toFixed(2), '--fdx': ((dx / SW) * 100).toFixed(2) });
+    }
+    const lo = below ? SW * 0.03 : dR + 4, hi = (below ? SW * 0.97 : P.r - 3) - cw;
+    const x = Math.max(lo, Math.min(hi, cx - cw / 2));
+    this.setVars(c, { '--fcx': `${(x - c.offsetLeft).toFixed(1)}px`, '--fcy': `${(cy - c.offsetTop).toFixed(1)}px` });
+    // the buffs: under the plate, or stacked in the disc's column under the card's head (the disc under them)
+    const fm = below ? 'below' : 'side';
+    if (sl.el.dataset.fm !== fm) sl.el.dataset.fm = fm;
+    const k = sl.chips;
+    this.setVars(k, below ? { '--scx': `${(SW * 0.07 - k.offsetLeft).toFixed(1)}px`, '--scy': `${(cy + ch2 + 3 - k.offsetTop).toFixed(1)}px` } : { '--scx': `${(dL - k.offsetLeft).toFixed(1)}px`, '--scy': `${(top + 1 - k.offsetTop).toFixed(1)}px` });
+    // the disc: the window's left third, low over the stage pool, or under the buffs
+    const t = sl.tokensEl;
+    this.setVars(t, { '--dkx': `${(dL - t.offsetLeft).toFixed(1)}px`, '--dky': `${((below ? foot - dW : top + 2) - t.offsetTop).toFixed(1)}px`, '--dch': below ? '0' : '1' });
+  }
+  setVars(e, o) { for (const [k, v] of Object.entries(o)) if (e.style.getPropertyValue(k) !== v) e.style.setProperty(k, v); }
+  /** A full scene deals the card's own print (shared/runtime.js and the Broadcast's deal): a form card's print takes
+   *  the standing tower's window too, so the scene pictures the card as its slot does (test 38). */
+  dealtArt() {
+    const stage = document.querySelector('#stage');
+    if (!stage || typeof MutationObserver === 'undefined') return;
+    const dress = (card) => {
+      const face = card.querySelector('.face'), id = card.dataset.card;
+      if (!face || !id || card.closest('.slot')) return;
+      const sl = [...this.slots.values()].find((x) => x.id === id && x.art) ?? null, was = face.querySelector(':scope > .form-art');
+      if ((was?.dataset.k ?? '') === (sl?.art.dataset.k ?? '')) return;
+      was?.remove();
+      if (!sl) { delete card.dataset.art; return; }
+      const a = sl.art.cloneNode(true);
+      a.querySelector('.fa-scaf')?.remove();
+      a.style.removeProperty('--fdx');
+      const en = face.querySelector('.en');
+      if (en) en.after(a); else face.prepend(a);
+      const pn = face.querySelector('.pane'), H = face.offsetHeight;
+      if (pn && H) { a.style.top = `${((pn.offsetTop / H) * 100).toFixed(2)}%`; a.style.height = `${((pn.offsetHeight / H) * 100).toFixed(2)}%`; }
+      card.dataset.art = 'form';
+    };
+    this.dealtMO = new MutationObserver((recs) => {
+      for (const r of recs) for (const n of r.addedNodes) {
+        if (n.nodeType !== 1) continue;
+        if (n.matches('.bc-card[data-card]')) dress(n);
+        for (const c of n.querySelectorAll('.bc-card[data-card]')) dress(c);
+      }
+    });
+    this.dealtMO.observe(stage, { childList: true, subtree: true });
+  }
+  /** The old tower leaves the window through the 4x4 Bayer (the transform's pre-roll). */
+  artOut(sl, ms) {
+    const face = sl.parts?.face;
+    if (!face || !ms) return;
+    const els = sl.art ? [sl.art.querySelector('.fa-fig')] : [face.querySelector('.cast'), face.querySelector('.pop.art')];
+    for (const a of sl.artOuting ?? []) a.cancel();
+    sl.artOuting = els.filter(Boolean).map((e) => this.anim(e, bayerFrames(true), { duration: ms, easing: 'linear', fill: 'forwards' }));
+  }
+  /** The transform's impact: the chip shows the new tower through the 4x4 Bayer, its star drops onto it from 0.4 card
+   *  heights, and the card's window takes the new tower at 0.92 -> 1.04 -> 1 with the accent rim. */
+  swapForm(sl, ms, o = {}) {
+    const f = sl.formNext;
+    sl.formNext = null;
+    for (const a of sl.artOuting ?? []) a.cancel();
+    sl.artOuting = null;
+    // (a full build raised its tower in the window already: that window becomes the card's, its scaffold stands down)
+    // (a window built for another tower than the one that stands, which no rule makes, is dropped)
+    const built = this.builtIn(sl, Boolean(f && sl.artNext && sl.artNext.dataset.k !== formKey(f.form, f.level ?? 1)));
+    if (!f) return;
+    const was = sl.art;
+    this.drawForm(sl, f);
+    if (!ms || !K.MASKS?.length || this.reduced()) return;
+    this.anim(sl.form, bayerFrames(false), { duration: ms, easing: 'linear' });
+    // (on a phone whose chip dropped its stars, the level's figure takes the drop)
+    const pips = sl.form.querySelector(/stars/.test(sl.form.dataset.fit ?? '') ? '.tw-lv' : '.tw-pips');
+    if (pips) this.anim(pips, [{ translate: `0 ${(-0.4 * (this.g?.sH ?? 300)).toFixed(1)}px`, opacity: 0 }, { translate: `0 ${(-0.4 * (this.g?.sH ?? 300)).toFixed(1)}px`, opacity: 0, offset: 0.4 }, { translate: '0 0', opacity: 1, offset: 0.8 }, { translate: '0 0', opacity: 1 }], { duration: ms + 320, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+    const a = sl.art;
+    if (a) {
+      this.anim(a.querySelector('.fa-rim'), [{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }], { duration: 480, easing: OUT });
+      if (!o.rimOnly) {
+        const fig = a.querySelector('.fa-fig');
+        this.anim(fig, [{ scale: '0.92' }, { scale: '1.04', offset: 0.55 }, { scale: '1' }], { duration: 300, easing: OUT });
+        if (!built) this.anim(fig.querySelector('img'), bayerFrames(false), { duration: 200, easing: 'linear' });
+      }
+    } else if (was && !o.rimOnly) {
+      // back to the card's own art (a build of its starting tower): it returns through the Bayer
+      for (const e of [sl.parts.face.querySelector('.cast'), sl.parts.face.querySelector('.pop.art')]) if (e) this.anim(e, bayerFrames(false), { duration: 240, easing: 'linear' });
+    }
+  }
+  /** fixes-3 M2: a full build or upgrade shows its construction in the card's window, as the Arena's beats do: the new
+   *  tower's stage light rises through the window over the old one (300-760 ms of the scene), its scaffold rises
+   *  from the base in 2 px strokes of its accent (300-680), the new still rises from the stage pool through the 4x4 Bayer (560-960) as the scaffold steps back,
+   *  and the impact's 0.92 -> 1.04 -> 1 lands it (swapForm). Timed to the scene's impact where that comes sooner. A
+   *  short or Auto transform keeps the swap, and reduced motion the still. Transform, opacity and the Bayer only. */
+  buildIn(sl, shot, to) {
+    // (the event lands at the impact: the tower to build is the shot's own `to`)
+    const f = to?.form ? { form: to.form, level: to.level ?? 1 } : null;
+    if (!sl || !f || sl.artNext || !sl.parts?.face || !figs) return;
+    const st = FORMS[sl.id]?.start, own = st ? formKey(st.form, st.level ?? 1) : null, key = formKey(f.form, f.level ?? 1);
+    const m = figs[sl.id], v = key !== own && m?.forms?.[key] ? formView(m, 'front', key) : null;
+    if (!v?.box || sl.art?.dataset.k === key) return;
+    const a = this.artEl(sl, f, key, v);
+    a.dataset.build = '';
+    sl.artNext = a;
+    this.seatArt(sl);
+    const imp = shot?.compiled?.impact ?? 960, k = clamp(imp / 960, 0.45, 1), T = (ms) => Math.round(ms * k);
+    const fig = a.querySelector('.fa-fig'), img = fig.querySelector('img'), scaf = a.querySelector('.fa-scaf');
+    // (the new stage's light rises through the window over the old one, its own shade under it, so each pixel of the
+    // window changes once as the edge passes and never darkens and brightens again: no flash)
+    sl.building = [
+      this.anim(a.querySelector('.fa-set'), [{ translate: '0 100%' }, { translate: '0 0' }], { duration: T(460), delay: T(290), easing: 'cubic-bezier(.1,.5,.4,1)', fill: 'both' }),
+      this.anim(scaf, [{ opacity: 0.5, transform: 'scaleY(0)' }, { opacity: 1, transform: 'scaleY(1)' }], { duration: T(400), delay: T(280), easing: 'cubic-bezier(.15,.55,.35,1)', fill: 'both' }),
+      this.anim(scaf, [{ opacity: 1 }, { opacity: 0.35 }], { duration: T(280), delay: T(760), easing: 'linear', fill: 'forwards' }),
+      this.anim(fig, [{ translate: '0 34%' }, { translate: '0 0' }], { duration: T(400), delay: T(560), easing: 'cubic-bezier(.2,.5,.6,1)', fill: 'both' }),
+      this.anim(img, bayerFrames(false), { duration: T(400), delay: T(560), easing: 'linear', fill: 'both' }),
+      // (the plate's old name leaves through the Bayer as the new tower shows, so the plate is bare, never wrong, until
+      // the impact prints the new one)
+      ...[...sl.form.querySelectorAll(':scope > :is(b, .tw-pips, .tw-lv)')].map((e) => this.anim(e, bayerFrames(true), { duration: T(240), delay: T(560), easing: 'linear', fill: 'forwards' })),
+    ];
+  }
+  /** The built window becomes the card's (its impact, a cut short cue, a snapshot); true when there was one. */
+  builtIn(sl, drop = false) {
+    const n = sl?.artNext;
+    if (!n) return false;
+    sl.artNext = null;
+    for (const b of sl.building ?? []) b.cancel();
+    sl.building = null;
+    delete n.dataset.build;
+    const scaf = n.querySelector('.fa-scaf');
+    if (drop) { n.remove(); return false; }
+    sl.art?.remove();
+    sl.art = n;
+    sl.el.dataset.art = 'form';
+    if (scaf && !this.reduced()) this.anim(scaf, [{ opacity: 0.35 }, { opacity: 0 }], { duration: 220, easing: 'linear' });
+    return true;
+  }
+  /** The transform's title (the page's call-out in the band) stands where it covers no card, HP tab, plate, leader or
+   *  tag: the clear spot nearest the building card inside the scene's box, at the title's own size where it fits, else
+   *  a step smaller. Its place is handed to mat.css as --mt-x, --mt-w, --mt-b (its line's foot) and --mt-fs. */
+  titleSpot(shot) {
+    const st = document.documentElement.style, box = shot?.box, s = shot?.scene;
+    const clear = () => { for (const k of ['--mt-x', '--mt-w', '--mt-b', '--mt-fs']) st.removeProperty(k); };
+    if (!box || !s || this.reduced()) { clear(); return; }
+    const C = { x: 0, y: box.top, w: innerWidth, h: box.height }, qh = C.h / 100, qw = C.w / 100;
+    const text = String(s.title ?? '');
+    const clen = Math.max(1, text.length || 10);
+    const fs0 = Math.min(7 * qh, 8 * qw, 76, (88 * qw) / (clen * 0.56)), tl = Math.min(2.6 * qh, 3.4 * qw, 22);
+    const ctx = (this.measure ??= document.createElement('canvas').getContext('2d'));
+    const vis = (e) => { let a = 1; for (let x = e; x && x !== document.body && a > 0.05; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.visibility === 'hidden' || cs.display === 'none') return 0; a *= +cs.opacity; } return a; };
+    const hard = [];
+    const add = (r, pad = 4) => { if (r && r.width && r.height) hard.push([r.left - pad, r.top - pad, r.right + pad, r.bottom + pad]); };
+    for (const sl of this.slots.values()) { if (sl.el.dataset.away === 'true') continue; add(sl.parts.root.getBoundingClientRect(), 12); if (vis(sl.tab) > 0.05) add(sl.tab.getBoundingClientRect()); if (sl.tag.style.opacity === '1') add(sl.tag.getBoundingClientRect()); }
+    for (const o of document.querySelectorAll('.hud .plate, .hud .blog, .hud .ttab, .leader, .leader-quote, .cutin, .ko-count, .num, .ptag')) if (vis(o) > 0.05) add(o.getBoundingClientRect());
+    const me = this.slots.get(shot.post?.find((x) => x.kind === 'transform')?.fighter) ?? this.activeSlot(s.side ?? 'player');
+    const mr = me?.parts.root.getBoundingClientRect();
+    const tx = mr ? mr.left + mr.width / 2 : innerWidth / 2, ty = mr ? mr.top + mr.height / 2 : C.y + C.h / 2;
+    const y0 = Math.max(C.y, 0) + 4, y1 = Math.min(C.y + C.h, innerHeight) - 4;
+    let best = null;
+    for (const z of [1, 0.85, 0.72, 0.6]) {
+      const fs = fs0 * z;
+      ctx.font = `800 ${fs.toFixed(1)}px "Katagami Sans", system-ui, sans-serif`;
+      const bw = Math.ceil(Math.max(ctx.measureText(text).width + fs * 0.12, 24 * tl * 0.52)) + 16, bh = Math.ceil(fs * 1.12 + tl * 1.25 + 4) + 8;
+      for (let y = y0; y + bh <= y1; y += 6) for (let x = 8; x + bw <= innerWidth - 8; x += 8) {
+        let k = 0;
+        for (const r of hard) k += Math.max(0, Math.min(x + bw, r[2]) - Math.max(x, r[0])) * Math.max(0, Math.min(y + bh, r[3]) - Math.max(y, r[1]));
+        const cost = k * 1000 + Math.hypot(x + bw / 2 - tx, y + bh / 2 - ty);
+        if (!best || cost < best.cost) best = { cost, k, x, y, bw, bh, fs };
+      }
+      if (best && best.k === 0) break;
+    }
+    if (!best) { clear(); return; }
+    st.setProperty('--mt-x', `${Math.round(best.x - C.x)}px`);
+    st.setProperty('--mt-w', `${best.bw}px`);
+    st.setProperty('--mt-fs', `${best.fs.toFixed(1)}px`);
+    st.setProperty('--mt-b', `${Math.round(C.y + C.h - (best.y + best.bh - 4))}px`);
+    this.titleAt = best;
+  }
+  /** The page's actor tag (shared/beats.js), drawn on the acting card's top edge: side, discipline, move. A cut keeps it
+   *  for its stamp; a full scene in the band has its cut-in and call-out, so it takes none. */
+  tag(side, t) {
+    const sl = this.activeSlot(side), shot = t?.shot;
+    // one tag and one reticle on the mat: a new shot's tag takes them from the last
+    for (const x of this.slots.values()) { if (x !== sl) this.tagOff(x, 0); this.reticleOff(x, 0); }
+    if (!sl || !shot) return;
+    this.tagNext = { ...t, shot };
+    if (shot.cut) return;
+    // a full scene's tag stands through its pre-roll only when the page asks (`until: 'start'`, a full transform that
+    // has no cut-in), and leaves at the scene's start (tagOut); other full scenes have their cut-in and call-out
+    if (shot.scene?.variant === 'full' && !this.reduced() && t.until !== 'start') return;
+    this.tagOn(sl, this.tagNext, this.reduced() ? 1200 : 0);
+  }
+  tagOut(side, shot, ms = 0) {
+    for (const x of this.slots.values()) if (x.tagShot === shot) this.tagOff(x, ms);
+  }
+  tagOn(sl, t, ms = 0) {
+    const e = sl.tag;
+    sl.tagShot = t.shot;
+    e.innerHTML = t.html;
+    e.dataset.side = t.shot?.scene?.side ?? sl.side;
+    e.getAnimations().forEach((a) => a.cancel());
+    e.style.opacity = '1';
+    if (!this.reduced()) this.anim(e, [{ opacity: 0, transform: 'translate3d(0,6px,0)' }, { opacity: 1, transform: 'none' }], { duration: 120, easing: SLAM });
+    if (ms) wait(ms).then(() => { if (sl.tagShot === t.shot) this.tagOff(sl, 50); });
+    // the tag stays in the window and off the reads (fixes-1 R1 on the Mat): it stands on the card's top edge, or, when
+    // the camera's push lifts that edge out of the window or a reticle corner, call-out, number, the console or the log
+    // stands there, on its bottom edge, or just inside its top or its bottom; one box read a frame while it stands
+    let first = true;
+    // (`now`: the page's call-out was placed or moved this frame, hud.js's `mcall:placed`: the tag steps off it in the
+    // same frame, as the Arena's does, rather than at the next frame's look; fixes-2 after the critic)
+    const keep = (now = false) => {
+      // (fix pass 2, M2: a tag that is leaving fades where it stands; the next tagOn places it again at once)
+      if (sl.tagShot !== t.shot || e.style.opacity !== '1') return;
+      const c = sl.shake.getBoundingClientRect(), q = e.getBoundingClientRect(), w = q.width, h = q.height, x = c.left + c.width / 2 - w / 2;
+      const reads = [];
+      // (fix pass 2, M2: and off the plates and the leaders' lines, as the Arena's placeTag)
+      for (const o of document.querySelectorAll('.slot-rtc i, .rtc-box[data-on="true"] .rtc i, .mcall .mcx, .num, .num-tags, .ptag, #console, .hud .plate, .leader-quote, .cutin')) {
+        if (sl.shake.contains(o) && !o.closest('.slot-rtc')) continue;
+        const r = o.getBoundingClientRect();
+        if (!r.width) continue;
+        // (the console is a read at any opacity, as S3 counts it while it fades; everything else past 0.05)
+        const min = o.id === 'console' ? 0 : 0.05;
+        let a = 1;
+        for (let n = o; n && n !== document.body && a > min; n = n.parentElement) a *= +getComputedStyle(n).opacity;
+        if (a > min) reads.push(r);
+      }
+      let lb = null; try { lb = innerWidth >= 1280 ? this.logBox?.() : null; } catch { lb = null; }
+      if (lb?.w) reads.push({ left: lb.x, top: lb.y, right: lb.x + lb.w, bottom: lb.y + lb.h });
+      const cost = (x, y) => {
+        let k = (y < 4 || y + h > innerHeight - 4 || x < 4 || x + w > innerWidth - 4) ? 1e6 : 0;
+        for (const r of reads) k += Math.max(0, Math.min(x + w, r.right) - Math.max(x, r.left)) * Math.max(0, Math.min(y + h, r.bottom) - Math.max(y, r.top));
+        return k;
+      };
+      // (centred on the card first; beside it, level with its top or its bottom row, only when every centred spot is
+      // taken, as a phone's call-out can take them all)
+      const L = c.left - w - 4, R = c.right + 4;
+      const spots = [['top', x, c.top - h + 3], ['bottom', x, c.bottom - 3], ['in', x, c.top + 3], ['low', x, c.bottom - h - 3],
+        ['in', L, c.top + 3], ['in', R, c.top + 3], ['low', L, c.bottom - h - 3], ['low', R, c.bottom - h - 3]];
+      let best = spots[0], bk = cost(best[1], best[2]);
+      for (const sp of spots.slice(1)) { const k = cost(sp[1], sp[2]); if (k < bk) { best = sp; bk = k; } }
+      const at = best[0] === 'top' ? '' : best[0], tx = `${Math.round((best[1] - x) * (sl.shake.offsetWidth / (c.width || 1)))}px`;
+      const sh = `${sl.shake.offsetHeight}px`;
+      if (e.style.getPropertyValue('--sh') !== sh) e.style.setProperty('--sh', sh);
+      if ((e.dataset.at ?? '') !== at) { if (at) e.dataset.at = at; else delete e.dataset.at; }
+      if (e.style.getPropertyValue('--tx') !== tx) e.style.setProperty('--tx', tx);
+      // (as on the Arena: once read, a tag with nowhere clear to stand steps aside until there is)
+      const hide = !first && bk > 0 ? 'true' : 'false';
+      if (e.dataset.blocked !== hide) e.dataset.blocked = hide;
+      first = false;
+      if (!now) requestAnimationFrame(() => keep());
+    };
+    this.tagKeep = { sl, shot: t.shot, keep };
+    keep();
+  }
+  tagOff(sl, ms) {
+    const e = sl?.tag;
+    if (sl) sl.tagShot = null;
+    if (!e || e.style.opacity !== '1') return;
+    e.style.opacity = '0';
+    if (ms && !this.reduced()) this.anim(e, [{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: 'ease-in' });
+  }
+  /** The reticle on the struck card (short and cut only; a full scene's is on its dealt card): four brackets in the
+   *  attacker's side colour, inside the card's own box so the camera's push carries it. */
+  reticle(side, o = {}) {
+    const sl = this.activeSlot(side);
+    if (!sl) return;
+    if (!sl.rtc) {
+      sl.rtc = el('div', 'rtc slot-rtc', sl.shake);
+      for (const c of ['tl', 'tr', 'bl', 'br']) el('i', '', sl.rtc).dataset.c = c;
+    }
+    const r = sl.rtc;
+    sl.rtcShot = o.shot ?? null;
+    r.dataset.skin = o.skin ?? '';
+    r.style.setProperty('--sc', o.side === 'player' ? 'var(--you)' : 'var(--rival)');
+    r.style.setProperty('--leg', `${Math.max(10, Math.round(0.14 * Math.min(this.g?.sW ?? 100, this.g?.sH ?? 140)))}px`);
+    r.getAnimations().forEach((a) => a.cancel());
+    if (o.variant === 'miss') { if (r.style.opacity === '1' && !this.reduced()) { r.style.opacity = '0'; this.anim(r, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(1.4)' }], { duration: 200, easing: OUT }); } else r.style.opacity = '0'; return; }
+    r.style.opacity = '1';
+    if (o.variant === 'cut') { const shot = o.shot; wait(this.reduced() ? 900 : 450).then(() => { if (sl.rtcShot === shot) this.reticleOff(sl, 50); }); return; }
+    if (o.variant === 'short' && !this.reduced()) this.anim(r, [{ opacity: 0, transform: 'scale(1.25)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 140, easing: SLAM });
+  }
+  reticleOff(sl, ms) {
+    const r = sl?.rtc;
+    if (sl) sl.rtcShot = null;
+    if (!r || r.style.opacity !== '1') return;
+    r.style.opacity = '0';
+    if (ms && !this.reduced()) this.anim(r, [{ opacity: 1 }, { opacity: 0 }], { duration: ms, easing: 'ease-in' });
+  }
   async itemFly(side, target, name, ms) {
     if (!target) return;
     // the item comes from its leader (the Kit is the plate's row now, shared/hud.js)
@@ -1084,18 +1642,21 @@ export class MatBoard extends Layout {
     if (!k.includes(sl.uid)) k.push(sl.uid);
     const z = { zone: 'ko', n: k.indexOf(sl.uid) };
     const tf = this.transformFor(sl, z);
-    sl.zone = 'ko'; sl.n = z.n; sl.el.dataset.zone = 'ko'; sl.el.dataset.down = 'true';
-    this.layFor(sl, z);
+    sl.zone = 'ko'; sl.n = z.n; sl.el.dataset.down = 'true';
     delete sl.num.dataset.hpShown;
     if (sl.live) this.reprint(sl, false);
-    if (rd) { this.tween(sl.el, tf, 0); this.face(sl, true, false); this.drawSides(this.view); return; }
+    if (rd) { sl.el.dataset.zone = 'ko'; this.layFor(sl, z); this.tween(sl.el, tf, 0); this.face(sl, true, false); this.drawSides(this.view); return; }
     const from = sl.el.style.transform;
     sl.el.style.zIndex = '4';
     // the arc: up off the mat, over, down onto the stack (420 ms, 340 under Auto), turning face down on the way
     const a = this.anim(sl.el, [{ transform: from }, { transform: this.midTransform(from, tf), offset: 0.45 }, { transform: tf }], { duration: ms, easing: 'cubic-bezier(.4,0,.2,1)' });
     sl.el.style.transform = tf;
-    setTimeout(() => this.face(sl, true, true, Math.round(ms * 0.57)), Math.round(ms * 0.21));
+    // (fix pass 2, M2: the card takes its stack's zone and laid width once it lies face down, so its face's rows never
+    // move under the arc: the knockout shifts no layout)
+    const down = new Promise((r) => setTimeout(() => this.face(sl, true, true, Math.round(ms * 0.57)).then(r), Math.round(ms * 0.21)));
     await a.finished.catch(() => {});
+    await down;
+    if (sl.zone === 'ko' && sl.n === z.n) { sl.el.dataset.zone = 'ko'; this.layFor(sl, z); }
     sl.el.style.zIndex = '';
     if (!rd) this.anim(this.koCount[sl.side], [{ scale: '1.4' }, { scale: '1' }], { duration: 260, easing: SLAM });
     this.drawSides(this.view);
@@ -1178,6 +1739,9 @@ export class MatBoard extends Layout {
   unmount() {
     this.motion.skip();
     this.alive = false;
+    this.dealtMO?.disconnect(); this.dealtMO = null;
+    document.removeEventListener('mcall:placed', this.onCall);
+    for (const sl of this.slots.values()) sl.chipsRO?.disconnect();
     for (const s of SIDES) this.leaders[s]?.destroy();
     this.host.textContent = '';
   }
