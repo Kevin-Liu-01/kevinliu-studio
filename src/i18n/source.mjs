@@ -33,7 +33,12 @@ export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCR
 // The battle's own interface words: the rounds' table (r4/play shared/strings.js, synced to public/battle/shared) plus
 // each trainer's title and quotes from its roster, as the rounds' tools/strings-export.mjs writes them. The tab titles
 // stay out: BattlePage.astro keeps "Battle | Kevin Liu" in the page's language.
-export async function battleSource(root) {
+// The battle's own card text joins it where the battle prints it outside the card face (r4/play hud.js cardMoveText and
+// the trait tooltip read `card.<id>.move.<move name>.feature` and `card.<id>.trait.rule` before their English): every
+// trait's rule as the battle words it (the engine's, not the card's), every move the cards do not have by name (the
+// battle prints the card's own feature for a move it shares), and the moves of each form (Princeton TD's towers). A move
+// line ends with a full stop, as the battle's English does. `fighters` are the cards (src/lib/cards.ts).
+export async function battleSource(root, fighters = []) {
   const fs = await import('node:fs');
   const path = await import('node:path');
   const { pathToFileURL } = await import('node:url');
@@ -45,6 +50,23 @@ export async function battleSource(root) {
   for (const t of roster.trainers) {
     table[`leader.${t.id}.title`] = t.title;
     for (const [k, v] of Object.entries(t.quotes ?? {})) table[`leader.${t.id}.quote.${k}`] = v;
+  }
+  const stop = (t) => { t = String(t ?? '').trim(); return t && !/[.!?…]$/.test(t) ? `${t}.` : t; };
+  const cards = Object.fromEntries(fighters.map((f) => [f.id, f]));
+  const engineFile = path.join(root, 'vendor/battle/vendor/engine.js');
+  if (fs.existsSync(engineFile)) {
+    const { FIGHTERS } = await import(/* @vite-ignore */ pathToFileURL(engineFile).href);
+    for (const f of FIGHTERS) {
+      if (f.trait?.rule) table[`card.${f.id}.trait.rule`] = f.trait.rule;
+      for (const m of f.moves) if (m.feature && !cards[f.id]?.moves.some((x) => x.name === m.name)) table[`card.${f.id}.move.${m.name}.feature`] = stop(m.feature);
+    }
+  }
+  const formsFile = path.join(root, 'public/battle/shared/forms.js');
+  if (fs.existsSync(formsFile)) {
+    const { FORMS } = await import(/* @vite-ignore */ pathToFileURL(formsFile).href);
+    for (const [id, card] of Object.entries(FORMS)) for (const form of Object.values(card.forms ?? {})) for (const level of Object.values(form.moves ?? {})) for (const m of level) {
+      if (m.feature) table[`card.${id}.move.${m.name}.feature`] = stop(m.feature);
+    }
   }
   return table;
 }

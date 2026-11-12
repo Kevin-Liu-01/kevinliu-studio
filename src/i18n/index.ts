@@ -25,7 +25,7 @@ const FILES = import.meta.glob('./*/*.json', { eager: true, import: 'default' })
 const fileOf = (gt: string, name: string) => FILES[`./${gt}/${name}.json`];
 const fresh = source({ ...cardLib, ...site }) as Tree;
 // the battle's table as the synced battle prints it now (public/battle/shared/strings.js)
-const freshBattle = (await battleSource(process.cwd())) as Record<string, string>;
+const freshBattle = (await battleSource(process.cwd(), cardLib.fighters)) as Record<string, string>;
 
 // gt-lock.json records the hash of each English file General Translation translated (versionId). An English file that
 // no longer matches it (edited by hand, or re-extracted without translating) would ship the old translations of strings
@@ -69,14 +69,14 @@ export function make(code: string) {
   const c = (en ? fresh : merge(fresh, enContent, fileOf(loc.gt, 'content'), code, 'content')) as Content;
   // the battle's words: only what this language changes, so the battle falls back to its own English for the rest
   const battle = en ? {} : Object.fromEntries(Object.entries(merge(freshBattle, enBattle, fileOf(loc.gt, 'battle'), code, 'battle') as Record<string, string>).filter(([k, v]) => v !== freshBattle[k]));
-  // and each card's own words where the battle prints them outside the card face (r4/play shared/strings.js cardText):
-  // a move's feature in the move panel and tooltips, and the trait's rule, ending as the battle's English lines do
+  // and the features of the moves the battle shares with the cards by name (it prints the card's own feature for those),
+  // from the translated card text, ending as the battle's English lines do; the battle's own card text (its trait rules,
+  // its other moves, its forms') is in battle.json (source.mjs battleSource)
   if (!en) {
     const stop = (t: string) => (/[.!?…。！？]$/.test(t) ? t : `${t}${/^(ja|zh)$/.test(code) ? '。' : '.'}`);
     for (const f of cardLib.fighters) {
       const tc = c.cards[f.id as keyof Content['cards']] as { features?: string[]; rule?: string } | undefined;
       f.moves.forEach((mv, i) => { const tr = tc?.features?.[i]; if (tr && tr !== mv.feature) battle[`card.${f.id}.move.${mv.name}.feature`] = stop(tr); });
-      if (f.trait && tc?.rule && tc.rule !== f.trait.rule) battle[`card.${f.id}.trait.rule`] = tc.rule;
     }
   }
   const get = (key: string) => key.split('.').reduce((o: any, k) => o?.[k], ui) as string | undefined;

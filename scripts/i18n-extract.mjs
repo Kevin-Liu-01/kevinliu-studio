@@ -19,7 +19,7 @@ const { source, battleSource } = await import('../src/i18n/source.mjs');
 // content.json from the cards and site.ts; battle.json from the battle's synced string table and trainer roster
 const files = [
   ['src/i18n/en/content.json', source({ ...cards, ...site }), 'the cards and site.ts'],
-  ['src/i18n/en/battle.json', await battleSource(ROOT), 'the battle\'s synced string table'],
+  ['src/i18n/en/battle.json', await battleSource(ROOT, cards.fighters), 'the battle\'s synced string table'],
 ];
 let stale = false;
 for (const [rel, data, from] of files) {
