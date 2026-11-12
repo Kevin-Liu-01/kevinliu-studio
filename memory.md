@@ -743,3 +743,24 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   passing on Vercel; smoke.mjs passes on www; nine live pages and files byte-identical to the checked build
   (dist-release-6f7fac9); /ja/battle-strings.js?v= serves a year, immutable; /es/no-such-page 404. Rollback:
   `kevinliu-studio-qus6l73l6` (8888233), docs/deploy.md. This record is committed on release/next and not pushed.
+
+## 2026-11-12 — i18n on round 6 (feat/i18n on release/next 6ca803d)
+
+- **Type**: translation + layout fixes for translated battle pages.
+- **Rebase**: the two held i18n commits now sit on 6ca803d (the release's own pin move to f28393ef); sync files and
+  public/battle are release/next's, byte-identical to the earlier pin move.
+- **Changed**: `src/i18n/source.mjs` and `scripts/i18n-extract.mjs` (battle.json takes engine trait rules, moves
+  the cards lack by name, and forms.js tower moves: 488 keys); `src/i18n/*/battle.json`, `gt-lock.json`, fonts;
+  `src/components/BattlePage.astro` (plate fixes below); `docs/i18n.md`.
+- **Fixes found by probing against an English baseline** (same probe and team at /battle):
+  - The trait name lost a sub-pixel to the flex shrink and ellipsized ("Waves Are D…") on 20 of 64 desktop plates:
+    its shrink weight is now 0.001.
+  - The phone turn tab ran off-screen (fr every phone width, de/es/pt 320, ko rival 320): the `.pace` labels and
+    fr/es/ko "your move" were shortened by hand and saved to GT with save-local.
+  - The rival's strip at 320 cut its last Seen chip (translated plates keep 64 px for the HP; English instead shrinks
+    the HP bar to 14 px): only whole chips show now, the rest wrap to a hidden line.
+- **Round 6's own (same in English, left to the rounds)**: at 320 the Switch panel is 150 px tall, so its second bench
+  row sits under the move console; the tower's `×0.67` chip spills its move key by 10 px at 1440; clamped tower
+  move descriptions on the keys (full text in the tooltip).
+- **Checks**: extract --check, sync --check, build + guard pass; probes (tower, desk, moves a/b) in Chromium and WebKit
+  on all seven languages: 0 English card descriptions in 672 tooltips per engine, desk clean, tooltips clean.
