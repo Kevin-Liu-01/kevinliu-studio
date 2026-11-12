@@ -8,7 +8,7 @@ import { ico, ensureIcons, STATUS_INFO } from './icons.js';
 import { words } from './plan.js';
 import { formLine, formInfo, levelWord, levelParts, stillHtml, stillFillHtml, stillUrl, formKey, pipsHtml, ruleOf } from './tower.js';
 import { drawnBox } from './fx.js';
-import { t as txt, word, engineWords } from './strings.js';
+import { t as txt, word, engineWords, cardText } from './strings.js';
 
 const SIDES = ['player', 'rival'];
 const STAT = { get atk() { return txt('stat.atk'); }, get def() { return txt('stat.def'); }, get spd() { return txt('stat.spd'); } };
@@ -611,7 +611,7 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
     if (kind === 'stat') return `<div class="tp-small"><header>${K.icon(a)}<b>${esc(txt('stat.stage', { stat: STAT[a], n: b }))}</b></header><p class="tp-desc">${esc(txt('tip.stat', { what: txt(`tip.stat.${a}`) }))}</p></div>`;
     if (kind === 'barrier') return `<div class="tp-small"><header>${ico('barrier')}<b>${esc(txt('tip.barrier.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.barrier', { n: Math.round(Number(a) * 100) }))}</p></div>`;
     if (kind === 'crit') return `<div class="tp-small"><header>${ico('crit')}<b>${esc(txt('tip.crit.head', { n: Math.round(Number(a) * 100) }))}</b></header><p class="tp-desc">${esc(txt('tip.crit', { n: Math.round(Number(a) * 100) }))}</p></div>`;
-    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">${esc(txt('plate.trait'))}</span></header><p class="tp-desc">${esc(words(d.trait.rule))}</p></div>`; }
+    if (kind === 'trait') { const d = def(a); return `<div class="tp-small"><header>${ico('trait')}<b>${esc(d.trait.name)}</b><span class="tp-cat">${esc(txt('plate.trait'))}</span></header><p class="tp-desc">${esc(cardText(a, 'trait.rule', words(d.trait.rule)))}</p></div>`; }
     if (kind === 'item') {
       const it = engine.itemById(a);
       return `<div class="tp-small"><header>${ico(a)}<b>${esc(it.name)}</b><span class="tp-cat">${esc(engineWords(words(it.short)))}</span></header><p class="tp-desc">${esc(txt(`item.${a}`))}</p><p class="tp-note">${ico('priority')}${esc(txt('tip.item.note'))}</p></div>`;
@@ -928,8 +928,12 @@ export function createHud({ app, engine, K, title, reduced, narrow, realTimeout 
   // ======================================================== the console's rows (battle.js prints them)
   /** One move button's inside: discipline, name, the multiplier into the card across (green or red, with the number),
    *  power, accuracy, PP pips and the move's effect icons. */
-  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own. */
+  /** A move's description: the words the home page's card prints for it (its feature), else the battle's own (a tower
+   *  or form move's, shared/forms.js); a page's translation of them first (shared/strings.js cardText,
+   *  `card.<id>.move.<move name>.feature`), as it gives it. */
   function cardMoveText(id, m) {
+    const own = cardText(id, `move.${m.name}.feature`);
+    if (own !== undefined) return own;
     const ex = globalThis.EX_CARD?.fighter(id), mv = ex?.moves.find((x) => x.name === m.name);
     // (the battle's own lines are fragments: each ends with a period, as the card's sentences do)
     const t = words((mv ?? m).feature ?? '').trim();

@@ -1,12 +1,12 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "c2b17715 + 30e69931 + 3bc364c1",
+ "head": "c2b17715 + 30e69931 + f28393ef",
  "pins": {
   "cards": "c2b17715",
   "sound": "30e69931",
-  "battle": "3bc364c1"
+  "battle": "f28393ef"
  },
- "synced": "2026-11-12T16:48:07.719Z",
+ "synced": "2026-11-12T20:54:31.147Z",
  "stages": {
   "cards": {
    "files": 1091,
@@ -10967,7 +10967,7 @@
   },
   "battle": {
    "files": 997,
-   "bytes": 152707690,
+   "bytes": 152708673,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -11066,13 +11066,13 @@
     },
     "public/battle/shared/hud.css": {
      "src": "r4/play/shared/hud.css",
-     "sha256": "f688b2492a6c4787fb21c699be8ce910cb8b722861ea9809f0b8547f0b54ef4e",
-     "bytes": 70104
+     "sha256": "476b21ef53aceeaee5328ab4eae3fe8e3698017becffb99e987eadd7263f3709",
+     "bytes": 70282
     },
     "public/battle/shared/hud.js": {
      "src": "r4/play/shared/hud.js",
-     "sha256": "a9faafc162fb89f6da981f0a72b06d89ce394e8c7a3a602671955b84a3115d1b",
-     "bytes": 101169
+     "sha256": "218ce04ad261582cf3ff0b19e3629d61484a11f3e5e59d5bc8cf11a237a75d1a",
+     "bytes": 101474
     },
     "public/battle/shared/icons.js": {
      "src": "r4/play/shared/icons.js",
@@ -11111,8 +11111,8 @@
     },
     "public/battle/shared/strings.js": {
      "src": "r4/play/shared/strings.js",
-     "sha256": "4cf47311447bbea05ae2c20d4f60106fccafe477189a316e6de840f0c8f50ba3",
-     "bytes": 24456
+     "sha256": "5c3ba9ee92e19039ccb74e9cfea673bee1168fdd327c5cfe8beaab18b5091b95",
+     "bytes": 24956
     },
     "public/battle/shared/tower.js": {
      "src": "r4/play/shared/tower.js",

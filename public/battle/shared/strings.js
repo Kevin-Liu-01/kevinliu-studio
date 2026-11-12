@@ -512,6 +512,11 @@ export function sceneWords(s) {
   else if (s.kind === 'result') s.title = { Victory: t('result.victory'), Defeat: t('result.defeat'), Draw: t('result.draw') }[s.title] ?? s.title;
   return s;
 }
+/** A card's own words that the HUD prints off the card face, in the page's words: a move's feature
+ *  (`card.<id>.move.<move name>.feature`, a tower or form move included) or the trait's rule (`card.<id>.trait.rule`),
+ *  else the card's English. These keys are not in EN or the export: a site supplies them from its own translated card
+ *  text. The card faces themselves (excard, MARKUP) stay the cards'. */
+export const cardText = (id, key, english) => override(`card.${id}.${key}`) ?? english;
 /** A trainer's title and quotes in the page's words (`leader.<id>.title`, `leader.<id>.quote.<key>`). */
 export function leaderWords(tr) {
   const o = page();
