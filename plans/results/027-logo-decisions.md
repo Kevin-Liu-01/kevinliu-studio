@@ -30,10 +30,10 @@ Already settled, so not asked: Prototemplate prints its own hub mark (`art/pop/p
 
 | # | Question | Answer | His words | Date |
 | --- | --- | --- | --- | --- |
-| 1 | Kevin Wiki logo | | | |
-| 2 | 050525 logo | | | |
-| 3 | Podium trophy origin | | | |
-| 4 | Claude of Tanks shield | | | |
-| 5 | Atlas monogram | | | |
-| 6 | Sevenfold address | | | |
-| 7 | Logo contrast fix | | | |
+| 1 | Kevin Wiki logo | No logo (keep the graph emblem) | "No logo" | 2026-11-11 |
+| 2 | 050525 logo | Block cursor, as printed | "Block cursor" | 2026-11-11 |
+| 3 | Podium trophy origin | Kevin drew it | "I drew it" | 2026-11-11 |
+| 4 | Claude of Tanks shield | Keep the v3 shield | "Keep the v3 shield" | 2026-11-11 |
+| 5 | Atlas monogram | Yes, on this card only | "Yes, on this card only" | 2026-11-11 |
+| 6 | Sevenfold address | Keep sevenfold-demo.vercel.app | "Keep the demo address" | 2026-11-11 |
+| 7 | Logo contrast fix | A darker keyline on every tile | "Darker keyline" | 2026-11-11 |

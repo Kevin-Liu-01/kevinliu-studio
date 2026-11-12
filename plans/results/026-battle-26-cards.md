@@ -298,3 +298,13 @@ Smallest first step: kit (a) already plays the eight on the Mat in a browser (re
 - The closer's check (`tools/check.mjs`) and the page flash scan on the committed or working-tree scenes, and on the kits built here.
 - The site's pin move and `docs/battle.md`'s rewrite.
 - The executor started no browser or server; its statements about a missing media entry, a missing scene or a missing figure come from reading the shipped code. The reviewer's run (section above) covers Mat and Arena play of kit (a) only.
+
+## Kevin's answers (2026-11-11, main session)
+
+1. Battle-r4b's uncommitted scene work: park (it stays on disk).
+2. The eight play default scenes for a while: yes.
+3. A day or more of machine time for the 18-card re-check: yes.
+4. The card's move names win on all 12: yes.
+5. The four trait hooks: write now.
+6. Who and when: a new session runs the rounds build after the arena round (r4/play round 6) passes its judges; the site moves `PIN.battle` in the release after that.
+7. Saved battle links: version first (the address carries an engine version so old links replay exactly).
