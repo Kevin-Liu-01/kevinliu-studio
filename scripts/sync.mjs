@@ -29,7 +29,7 @@ const ROUNDS = process.env.ROUNDS ?? ROUNDS_GIT;
 // the rounds commit each stage ships, the one its release's ship checks passed: the cards and sound of 11-07 (Breakout
 // final), the battle's round 5 with its sound (r4/play REQUESTS.md, judges at 2d8d89d1), and on it the battle's string table
 // and the HUD's card-text overrides (0a919baa, branch play/strings-on-42ff51c7: round 5 with shared/strings.js, no round 6)
-const PIN = { cards: '30e69931', sound: '30e69931', battle: '0a919baa' };
+const PIN = { cards: '8c77bd35', sound: '30e69931', battle: '0a919baa' };
 const CHECK = process.argv.includes('--check');
 // a file the stage's pin does not have ships only with the bytes the last lock recorded, unless admitted on purpose
 const ADMIT = process.argv.includes('--admit-unpinned');
@@ -296,9 +296,7 @@ const TRANSFORMS = {
     ['<div class="side rival" aria-label="Rival">', '<div class="side rival" role="group" aria-label="Rival">'],
     nolink(t),
   ]),
-  // on a phone the floating tray is as wide as what it holds; a card with three art printings ran its row past the
-  // screen's edge (Agent Machines, release 11-07 ship checks), so the tray stops 8 in from each edge and its rows wrap
-  'public/ex/ui.css': (t) => patch('ui.css', t, [['  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }\n', after('  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }\n  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }\n')]]),
+  // (the phone tray's wrap, 8ea1bfb, is in the rounds' own ui.css from cards pin 8c77bd35: no patch here)
   // family K's rule under each power's name is set 4.9cqw down its row, and WebKit sets the row's first text line higher
   // than Chromium does, so in Safari the rule struck through that line (release 11-07 ship checks); the rule is left out.
   // A trait's and a move's head row was `grid-template-rows: 4.9cqw auto`, and WebKit resolves cqw in a grid track

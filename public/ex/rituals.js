@@ -98,7 +98,7 @@
         fx: $$('.fx', el), pop: !!$('.pop.art', el),
         // the rim's specular streak, moved by transform on its own layer (a custom property written per frame repaints
         // the whole card)
-        spec: $$('.rim > .spec, .gl > .tw', el),
+        spec: $$('.rim .spec, .gl > .tw', el),
         rx: { x: 0, v: 0 }, ry: { x: 0, v: 0 }, rise: { x: 0, v: 0 }, flip: { x: 0, v: 0 }, push: { x: 0, v: 0 }, lz: { x: 0, v: 0 },
         lu: { x: 0.5, v: 0 }, lv: { x: 0.4, v: 0 },
         to: { rx: 0, ry: 0, rise: 0, flip: 0, lz: 0, lu: 0.5, lv: 0.4 }, gu: 0.5, gv: 0.4, sweep: -1, drag: null, extra: '',
@@ -881,7 +881,7 @@
         c.landed = true;
         c.el.remove();
         if (c.s) Ground.remove('stage-hit');
-        G.add(c.id, { silent: true });
+        G.add(c.id, { silent: true, rivalNext: true }); // the rival a frame later (gallery.js dealNext)
       }
       let begun = false; // the timeline's first render, in the frame that builds the stage, starts no live print
       const T = M.timeline(E, (t) => {
@@ -984,7 +984,7 @@
     // G.fill(id) prints the lifted card in the lens and G.sheet(id) its sheet; G.opened, G.stepped, G.leaving
     // and G.closed keep the address and the focus.
     const ins = $('#inspect'), insCard = $('.ins-card', ins), room = $('.room', ins), worldEl = $('#world');
-    const I = { id: null, print: null, p: { x: 0, v: 0 }, to: 0, from: null, at: null, pw: 0, fade: 1, key: '', n: 0, pushed: false, closing: false, jobs: [] };
+    const I = { id: null, print: null, p: { x: 0, v: 0 }, to: 0, from: null, at: null, pw: 0, fade: 1, key: '', n: 0, pushed: false, closing: false, settled: false, jobs: [] };
     function liftedRect(k) {
       const a = I.from, b = I.at;
       return { x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) };
@@ -1024,7 +1024,7 @@
         finish();
       }
       const now = instant || RM();
-      I.id = id; I.push = push; I.print = null;
+      I.id = id; I.push = push; I.print = null; I.settled = false;
       I.key = 'inspect-' + ++I.n;
       I.p = { x: now ? 1 : 0, v: 0 };
       I.pw = now ? 1 : 0;
@@ -1047,7 +1047,7 @@
       }
       if (!I.shown) return true;
       const more = RM() ? still(dt) : move(dt);
-      if (!more && !I.closing && I.id && !I.jobs.length) G.inert(true); // settled: the page behind turns inert, a piece at a time
+      if (!more && !I.closing && I.id && !I.jobs.length) { I.settled = true; G.inert(true); } // settled: the page behind turns inert, a piece at a time
       return more || I.jobs.length > 0;
     }
     function move(dt) {
@@ -1099,6 +1099,7 @@
       while (I.jobs.length) I.jobs.shift()(); snd('card.step');
       const { cards } = G;
       cards[I.id].el.style.visibility = '';
+      I.settled = false;
       I.from = G.cardRect(id);
       G.fill(id);
       G.sheet(id);
@@ -1114,7 +1115,7 @@
       if (!I.id || I.closing) return;
       if (!I.shown) { finish(); return; }
       I.jobs = []; snd('card.close');
-      I.closing = true; I.to = 0;
+      I.closing = true; I.to = 0; I.settled = false;
       I.from = G.cardRect(I.id);
       ins.classList.remove('open');
       G.leaving(fromPop);

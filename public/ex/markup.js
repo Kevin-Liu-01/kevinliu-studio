@@ -103,6 +103,21 @@
     for (const x of words) { const t = cur ? cur + ' ' + x : x; if (0.985 * adv5(t) <= col || !cur) cur = t; else cur = x; }
     return (0.985 * adv5(cur)) / col;
   }
+  // how many lines a block takes in its column on a greedy fill (the same estimate as lastLine): a description of three
+  // lines or more is set balanced (craft ex.5: text-wrap pretty set 15 of 49 three-line descriptions as one long line
+  // over two short ones, Katagami 0.93 / 0.55 / 0.48), a shorter one stays pretty so it fills its lines
+  // kept()'s last words wrap as one unit (span.kw is nowrap), so they count as one token here
+  function linesOf(text, col) {
+    const s = typeset(String(text ?? ''));
+    const k = kept(text, col).match(/<span class="kw">([^<]*)<\/span>$/);
+    const tail = k ? k[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'") : null;
+    const words = tail && s.endsWith(tail) ? [...s.slice(0, s.length - tail.length).trim().split(' ').filter(Boolean), tail] : s.split(' ');
+    // read a little wide (1.02 of the advances, where lastLine reads 0.985): a block the estimate sets on two full lines
+    // can take a third in the page, and balancing a block that stays on two costs nothing a reader sees
+    let cur = '', n = 1;
+    for (const x of words) { const t = cur ? cur + ' ' + x : x; if (1.02 * adv5(t) <= col || !cur) cur = t; else { cur = x; n++; } }
+    return n;
+  }
   function kept(text, col) {
     const s = typeset(String(text ?? ''));
     const words = s.split(' ');
@@ -401,7 +416,7 @@
     const [p1, p2] = f.disciplines;
     const moves = face.idx.map((i) => {
       const mv = f.moves[i];
-      return `<div class="move" data-disc="${mv.discipline}"><span class="mc${mv.adapts ? ' two' : ''}">${costIcons(mv, f, faceIcon)}</span><span class="mn">${t(mv.name)}</span><span class="mp">${power(mv)}</span><span class="md">${kept(mv.feature, COL.body)}</span></div>`;
+      return `<div class="move" data-disc="${mv.discipline}"><span class="mc${mv.adapts ? ' two' : ''}">${costIcons(mv, f, faceIcon)}</span><span class="mn">${t(mv.name)}</span><span class="mp">${power(mv)}</span><span class="md"${linesOf(mv.feature, COL.body) >= 3 ? ' data-bal' : ''}>${kept(mv.feature, COL.body)}</span></div>`;
     }).join('');
     const g = glass(f, p);
     // cost 4's glitter (EX.md 15, round ex.5): each field of flakes is a mask fixed to the card (.gl) over a colour of the
@@ -546,21 +561,23 @@ ${pin ? `<p class="pin">${pin}</p>` : ''}${[f.credit, ((media || {})[f.id] || {}
 <button type="button" class="press icon" id="pause" aria-pressed="false" aria-label="Pause Motion"><span class="swapi">${icon('pause', 'off')}${icon('play', 'on')}</span></button>
 </header>`;
   }
-  // The pack is printed with a fan of all 18 worlds: one wedge each from a point under its foot, each
-  // wedge an equal share of the packet's edge, so every world shows the same width at the rim.
+  // The pack is printed with all the worlds as level bands, one each, stacked by hue round the wheel from the top, so the
+  // closed packet reads as the set's one spectrum. Each band is a plain box showing its own poster at the packet's size
+  // (the poster drawn 1/n of the box tall and placed where the band sits), so its product's matter runs across it, the
+  // same files the fan drew (its half at 1x where one is baked) and nothing clipped or masked. (craft, variety and
+  // originality ex6: wedges from a point under the foot printed a 26-ray burst, burst share 0.28 on the variety judge's
+  // crop, and card-shaped tiles in columns still read 0.25 there, their upright sides running to the same point.)
   function fan(fighters, RATIO, env) {
-    const W = 1, H = RATIO, ax = 0.5, ay = H * 1.06, L = 2 * H + W, n = fighters.length;
-    const at = (s) => (s <= H ? [0, H - s] : s <= H + W ? [s - H, 0] : [W, s - H - W]);
-    const corners = [H, H + W];
-    const P = ([x, y]) => `${Math.round((x / W) * 10000) / 100}% ${Math.round((y / H) * 10000) / 100}%`;
+    const n = fighters.length;
+    const hueOf = (f) => { const h = (faceOf(f, env) || {}).hue; return h && typeof h.h === 'number' ? h.h : 0; };
+    const order = fighters.map((f, i) => ({ f, i, h: hueOf(f) })).sort((x, y) => x.h - y.h || x.i - y.i);
+    const P = (v) => Math.round(Math.min(1, Math.max(0, v)) * 10000) / 100;
     let out = '';
-    for (let i = 0; i < n; i++) {
-      const s0 = (L * i) / n, s1 = (L * (i + 1)) / n;
-      const pts = [[ax, ay], at(s0), ...corners.filter((c) => c > s0 && c < s1).map(at), at(s1)];
-      // the fan draws each poster on the packet's small box: its half at 1x where one is baked (energy ex.5)
-      const id = fighters[i].id, bg = halfOf(fighters[i], env, 'bytes') ? `image-set(url(posters/${id}@0.5x.avif) 1x, url(posters/${id}.webp) 2x)` : `url(posters/${id}.webp)`;
-      out += `<i style="background-image:${bg};clip-path:polygon(${pts.map(P).join(',')})"></i>`;
-    }
+    order.forEach(({ f }, k) => {
+      const t = k / n, h = 1 / n;
+      const id = f.id, bg = halfOf(f, env, 'bytes') ? `image-set(url(posters/${id}@0.5x.avif) 1x, url(posters/${id}.webp) 2x)` : `url(posters/${id}.webp)`;
+      out += `<i style="background-image:${bg};top:${P(t)}%;bottom:${P(1 - t - h)}%;background-size:100% ${n * 100}%;background-position:0 ${P(t / (1 - h))}%"></i>`;
+    });
     return `<span class="fan">${out}</span>`;
   }
   function pack(fighters, RATIO, env) {

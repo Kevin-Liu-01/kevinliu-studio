@@ -167,7 +167,38 @@
     const load = (u) => { const i = new Image(); i.src = u; return i.decode(); };
     Promise.all([load(src), ...(glw ? [load(g)] : [])]).then(() => { if (el.isConnected) set(); }).catch(() => {});
   }
-  Object.assign(G, { copyOf, cutFor, srcFor, toHi });
+  // The rim bake (design/card.js, tools/bake-rims.mjs): a card at rest prints its rim from the set's atlas, struck data-bake
+  // px wide. One drawn wider than that on this screen (the lens, a wide sheet) takes its frame's SVGs back, the frame it
+  // shows (data-bd), so no rim is drawn more than 1.15 times its file at up to 2x (a phone's 333 css px wall card at dpr 2
+  // keeps the bake: engineer ex8); its print's streaks are read again. DPR is capped at 2 here as for the art's cuts, so
+  // a 3x phone's wall card (1,000 device px) draws the 600 px strike up to 1.67 times its size: the trade keeps a phone's
+  // first load at the base copy's requests and a twelfth of its nodes (engineer ex9 measured it; recorded, not hidden).
+  // The lens's rim warmed before the lift (craft ex9: the lens printed the 600 px bake 1.87 times enlarged for 17 to 28
+  // frames, then sharpened at idle): a hand on a wall card, or focus on it, fetches and decodes its primary frame's SVG
+  // files; once they are in, the lens builds its copy with the SVG rim before the copy is in the page, so its first
+  // frame is sharp and no swap lands in a lift frame. A lens opened before they are in swaps at idle, as before.
+  const warm = {};
+  function warmRim(id) {
+    if (warm[id] || !globalThis.FRAMES || !prints[id]) return;
+    warm[id] = { done: false };
+    const t = prints[id].cloneNode(true);
+    if (!FRAMES.apply(t, id, t.dataset.bd || FRAMES.primary(id))) return;
+    // innerHTML serialises a style's url("…") as url(&quot;…&quot;) (collector ex10: the two trim cards asked for
+    // '&quot;borders/…' and got a 404), so the entities are decoded before the urls are read
+    const html = t.innerHTML.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+    const urls = [...new Set([...html.matchAll(/(?:src="|url\(["']?)([^"')]+\.svg[^"')]*)/g)].map((m) => m[1]))];
+    warm[id].p = Promise.all(urls.map((u) => { const i = new Image(); i.src = u; return i.decode().catch(() => {}); })).then(() => { warm[id].done = true; });
+  }
+  function unbake(el, w) {
+    const rim = el && $('.rim[data-bake]', el), fx = el && $('.fx.dzfx[data-fx]', el);
+    if ((!rim && !fx) || !(w * DPR > (rim ? +rim.dataset.bake : 600) * 1.15)) return;
+    if (fx) { fx.innerHTML = `<img src="${fx.dataset.fx}" alt="" draggable="false">`; delete fx.dataset.fx; }
+    const id = el.dataset.id;
+    if (!rim || !globalThis.FRAMES || !FRAMES.apply(el, id, el.dataset.bd || FRAMES.primary(id))) return;
+    const c = cards[id];
+    if (c && c.el === el) c.spec = $$('.rim .spec, .gl > .tw', el);
+  }
+  Object.assign(G, { copyOf, cutFor, srcFor, toHi, unbake, warmRim });
   $$('.wall .card').forEach((el, i) => {
     const id = el.dataset.id;
     prints[id] = el.cloneNode(true);
@@ -180,16 +211,31 @@
   // and a card drawn at any other width (a resize, or a sheet or probe that moves or clones cards onto <body>, as
   // tools/wall.mjs and tools/shots-ex.mjs do) gets its own, so no cut is ever drawn larger than its file. A copy a
   // ritual cuts from the wall drops its srcset (toHi); one that keeps it (a dock well) is drawn smaller than its file.
+  // The observer only reads: each new sizes is written on the next frame, outside its callback, so a write that moves a box
+  // it watches is seen on that frame's own delivery and never left undelivered (engineer ex6: 'ResizeObserver loop
+  // completed with undelivered notifications' fired in 5 of 13 contexts while the callback wrote sizes itself).
   if (typeof ResizeObserver === 'function') {
+    const want = new Map();
+    let raf = 0;
+    const flush = () => { raf = 0; for (const [img, v] of want) if (img.isConnected && img.getAttribute('sizes') !== v) img.setAttribute('sizes', v); want.clear(); };
+    const wide = new Map();
+    let wraf = 0;
+    const unbakeAll = () => { wraf = 0; for (const [el, w] of wide) if (el.isConnected) unbake(el, w); wide.clear(); };
     const ro = new ResizeObserver((es) => {
       for (const e of es) {
+        if (e.target.classList.contains('card')) { wide.set(e.target, e.contentRect.width); continue; }
         const img = e.target.firstElementChild, w = Math.ceil(e.contentRect.width);
-        if (img && img.hasAttribute('srcset') && w > 0 && img.getAttribute('sizes') !== w + 'px') img.setAttribute('sizes', w + 'px');
+        if (img && img.hasAttribute('srcset') && w > 0 && img.getAttribute('sizes') !== w + 'px') want.set(img, w + 'px');
       }
+      if (want.size && !raf) raf = requestAnimationFrame(flush);
+      if (wide.size && !wraf) wraf = requestAnimationFrame(unbakeAll);
     });
     // the posters and the front effects' posters take their rung the same way (the poster ladder, markup.js): each box's
-    // first child is its picture
-    const watch = (n) => { for (const img of n.querySelectorAll('.pop > img[srcset], .en > img.poster[srcset], .fx > img[srcset]')) ro.observe(img.parentElement); };
+    // first child is its picture; a card with a baked rim is watched for a draw wider than its bake
+    const watch = (n) => {
+      for (const img of n.querySelectorAll('.pop > img[srcset], .en > img.poster[srcset], .fx > img[srcset]')) ro.observe(img.parentElement);
+      for (const b of n.querySelectorAll('.card .rim[data-bake], .card .fx[data-fx]')) ro.observe(b.closest('.card'));
+    };
     watch(document);
     new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) watch(n); }).observe(document.body, { childList: true });
   }
@@ -245,7 +291,9 @@
     const el = c.el;
     // the pocket's box is held while the hand stays (shifted by any scroll since), so no pointermove forces
     // a layout
+    el.addEventListener('focus', () => warmRim(c.id));
     el.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse') warmRim(c.id);
       if (e.pointerType !== 'mouse' || !fine.matches || RM() || G.ritual) return; snd('ui.hover', { pan: pan(el), key: el.dataset.id }); SND()?.load('sig:' + el.dataset.id);
       c.sy = sy;
       c.box = measuredAt === innerWidth && c.home ? { x: c.home.x, y: c.home.y - c.sy, w: c.home.w, h: c.home.h } : rectOf(c.pocket);
@@ -304,6 +352,7 @@
   function bindPress(c) {
     let st = null;
     c.el.addEventListener('pointerdown', (e) => {
+      warmRim(c.id); // a press opens the lens: a touch, which never hovers, starts its rim's decode here (craft ex10)
       if (e.button !== 0 || G.ritual) return;
       snd('ui.press', { pan: pan(c.el) }); st = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), type: e.pointerType, moved: false, hold: 0 };
       if (e.pointerType !== 'mouse') st.hold = setTimeout(() => { if (st && !st.moved) startDrag(e); }, 300);
@@ -358,11 +407,14 @@
   const wallEl = $('.wall');
   function cols() { return (wallEl && Number(getComputedStyle(wallEl).getPropertyValue('--cols'))) || 1; }
   function walk(from, key) {
-    const i = tiles.indexOf(from);
+    // the arrows walk the wall as it prints: ui.css's wall-order block may swap cards inside a row (REQUESTS 587), so the
+    // tiles are read in their pockets' CSS order, not the DOM's
+    const seen = tiles.map((t, k) => [t, Number(getComputedStyle(t.closest('.pocket') || t).order) || 0, k]).sort((x, y) => x[1] - y[1] || x[2] - y[2]).map((x) => x[0]);
+    const i = seen.indexOf(from);
     if (i < 0) return;
     const n = cols();
     const j = key === 'ArrowRight' ? i + 1 : key === 'ArrowLeft' ? i - 1 : key === 'ArrowDown' ? i + n : i - n;
-    const to = tiles[clamp(j, 0, tiles.length - 1)];
+    const to = seen[clamp(j, 0, seen.length - 1)];
     if (to && to !== from) { to.focus({ preventScroll: true }); to.scrollIntoView({ block: 'nearest', behavior: RM() ? 'auto' : 'smooth' }); }
   }
   function onCardKey(e, c) {
@@ -377,7 +429,7 @@
 
   // ---------- your team ----------
   function toggle(id, o) { if (S.you.includes(id)) removeCard(id); else if (!add(id, o)) refuse(id); }
-  function add(id, { from = null, silent = false } = {}) {
+  function add(id, { from = null, silent = false, rivalNext = false } = {}) {
     if (S.you.includes(id) || !fits(id)) return false;
     if (S.rival.includes(id)) S.rival = [];
     const slot = S.you.length;
@@ -386,7 +438,7 @@
     if (!silent) snd(S.you.length === SIZE ? 'team.complete' : 'team.add', from && !RM() ? {} : { offsetMs: 0 });
     if (from && !RM()) R.fly(id, from, wellOf('you', slot));
     if (!silent) say(`${titleOf(id)} joined your team, ${spent()} of ${BUDGET} inks`);
-    if (S.you.length === SIZE) formRival();
+    if (S.you.length === SIZE) { if (rivalNext && !RM()) dealNext(); else formRival(); }
     return true;
   }
   function removeCard(id) {
@@ -441,6 +493,15 @@
   G.premini = premini;
   let prerendered = null;
   const was = {};
+  // A card whose only change is that it no longer fits (or fits again) has its cost squares written later, one card a
+  // frame from the next frame on: the squares are all that changes (its label does not carry them), and the add that
+  // fills the team hollows every other card's squares at once (engineer ex.5: the pack's last landing restyled, laid
+  // out and repainted 23 wall cards in one frame, 180 to 300 ms of render work with the CPU slowed 4x)
+  const hollow = new Map();
+  function writeHollow() {
+    for (const [id, nofit] of hollow) { hollow.delete(id); cards[id].el.classList.toggle('nofit', nofit); break; }
+    return hollow.size > 0;
+  }
   function teamChanged() {
     const full = S.you.length >= SIZE;
     // each card's state is one key; a card is written only when its key changes, so adding a card restyles
@@ -448,8 +509,11 @@
     for (const [id, c] of Object.entries(cards)) {
       const mine = S.you.includes(id), theirs = S.rival.includes(id), nofit = !mine && !fits(id);
       const key = (mine ? 'm' : '') + (theirs ? 't' : '') + (nofit ? 'n' : '');
-      if (was[id] === key) continue;
+      const prev = was[id];
+      if (prev === key) continue;
       was[id] = key;
+      if (prev != null && !RM() && prev.replace('n', '') === key.replace('n', '')) { hollow.set(id, nofit); M.add(writeHollow); continue; }
+      hollow.delete(id);
       c.el.classList.toggle('mine', mine);
       c.el.classList.toggle('theirs', theirs);
       c.el.classList.toggle('nofit', nofit);
@@ -532,6 +596,16 @@
   }));
 
   // ---------- the rival: dealt from the deck once your team is whole ----------
+  // A pack's last landing forms the rival on the next frame, so the landing and the rival's wells never print in one
+  // frame (engineer ex.5: with every other card's cost squares, that frame was 180 to 300 ms of render work with the CPU
+  // slowed 4x). The frame between holds the deal's place: Play waits for it, and a click or Gallery.finish() lands it.
+  function dealNext() {
+    const now = () => { if (G.ritual === hold) G.ritual = null; if (S.you.length === SIZE) formRival(); };
+    const tick = () => { now(); return false; };
+    const hold = { kind: 'deal', finish() { M.remove(tick); now(); if (G.ritual) G.ritual.finish(); } };
+    G.ritual = hold;
+    M.add(tick);
+  }
   function formRival() {
     if (S.rival.length === SIZE && !S.rival.some((id) => S.you.includes(id))) { teamChanged(); return; }
     S.rival = Engine.rivalHand(RULES, FIGHTERS.filter((f) => inBattle(f.id)), S.you, S.seed);
@@ -760,6 +834,18 @@
     return want;
   }
   frs.addEventListener('click', (e) => { const b = e.target.closest('button[data-frame]'); if (b && I.id) frame(I.id, b.dataset.frame); });
+  // The tray wraps to as many rows as a card's printings need; on the phone it floats over the sheet's foot, so the sheet
+  // ends its height clear of it (ui.css --trayh). Read from the observer's own box after layout, written on the next frame.
+  if (typeof ResizeObserver === 'function') {
+    let trayRaf = 0, trayH = 0;
+    new ResizeObserver((es) => {
+      const e = es[es.length - 1], b = e.borderBoxSize && e.borderBoxSize[0];
+      const h = Math.ceil(b ? b.blockSize : e.contentRect.height + 8);
+      if (h <= 0 || h === trayH) return;
+      trayH = h;
+      if (!trayRaf) trayRaf = requestAnimationFrame(() => { trayRaf = 0; ins.style.setProperty('--trayh', trayH + 'px'); });
+    }).observe($('.acts', ins));
+  }
   function fill(id, { hi = true, live = true } = {}) {
     const el = copyOf(id);
     el.id = 'lifted';
@@ -776,15 +862,33 @@
     const back = $('.back', el);
     if (back && MARKUP.infoBack) { const tb = document.createElement('template'); tb.innerHTML = MARKUP.infoBack(F[id], MEDIA); const nb = tb.content.firstElementChild; back.replaceWith(nb); lockBack(nb); }
     if (hi) toHi(el, id, lensRect().w, true);
+    // a warm rim (warmRim) goes in before the copy is in the page: its first frame is sharp
+    const warmed = hi && warm[id] && warm[id].done;
+    if (warmed) unbake(el, lensRect().w);
     insCard.replaceChildren(el);
     placeRoom(id);
     const p = printOf(el, 'lens');
+    // the lens draws wider than the bake: a cold one's rim and effect take their SVGs once the lift has landed, at idle, so
+    // the swap never lands in a lift frame (engineer ex8: SPEC 11's long frames at 4x); the print's streaks are read again
+    if (hi && !warmed) {
+      const swap = () => { if (!el.isConnected || !el.querySelector('.rim[data-bake]')) return; unbake(el, lensRect().w); p.spec = $$('.rim .spec, .gl > .tw', el); };
+      // a rim still decoding when the lens opened (a press, or a short hover: craft ex10 read 20 enlarged baked frames
+      // after a 1.5 s hover under load) swaps once its SVGs are decoded and the lift has settled (engineer ex11: swapped on
+      // decode alone it landed 175 to 686 ms into a lift that settles at 1.1 to 1.5 s); a cold one still waits for idle
+      const settled = () => { if (!el.isConnected) return; if (R.I && R.I.settled) swap(); else requestAnimationFrame(settled); };
+      // a cold lens (a deep link, assistive tech: craft ex11 read 17 to 23 enlarged frames) starts its decode as it opens
+      if (!warm[id]) warmRim(id);
+      if (warm[id] && warm[id].p) warm[id].p.then(() => requestAnimationFrame(settled));
+      // the idle swap waits for the lift too (engineer ex12: a cold open swapped 335 to 792 ms into a 0.9 to 1.1 s lift)
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(settled, { timeout: 1500 }); else setTimeout(settled, 700);
+    }
     const at = lensRect();
     R.size(p, at.w, at.h); // its size is the lens's, known: its first frame reads no layout
     p.keepActive = true;
     const cv = $('canvas.ground', el);
     cv.style.opacity = 0;
-    const print = () => { if (Ground.available && el.isConnected) { const s = Ground.surface('lens', cv, id, 'fit', optsOf(id)); if (s) s.active = true; } };
+    // the lens's width is known (lensRect), so its ground's first size reads no layout (engineer ex9)
+    const print = () => { if (Ground.available && el.isConnected) { const s = Ground.surface('lens', cv, id, 'fit', { ...optsOf(id), w: at.w }); if (s) s.active = true; } };
     lensLive = null;
     if (live) print(); else lensLive = print;
     // a click on the lens turns it over (the tap that lifted it never reaches it: one press, one click)
@@ -1094,7 +1198,13 @@
     // a card's frame printings (EX.md 25): the list, and the one to print, independent of the art
     frames(id) { return (FRS && FRS.of(id)) || null; },
     frame,
+    // a card's rim and effect from their own files in place of the bake (design/card.js), as a card drawn wider than the
+    // bake takes them; w is the drawn width in css px
+    unbake(el, w) { unbake(el, w); },
     // ms until the running pack's climax (every card turned and printed, before the first leaves), or null
     climaxIn() { const r = G.ritual; return r && r.climax != null ? Math.max(0, r.climax - r.t) : null; },
+    // true once the lens's card has landed and its world has poured (rituals.js lift: the frame the page behind starts
+    // turning inert), until it steps, closes or opens again; a probe that reads the lens waits for it (E6b, owner ex6)
+    get lensSettled() { return !!(R.I && R.I.id && R.I.settled); },
   };
 })();

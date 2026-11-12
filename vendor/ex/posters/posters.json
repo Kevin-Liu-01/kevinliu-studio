@@ -11,34 +11,34 @@
  "t": 0,
  "count": 26,
  "lossless": [],
- "total": 1896656,
+ "total": 1798354,
  "bytes": {
-  "turboslide": 66674,
-  "glyphfield": 126440,
-  "jarhead": 47826,
-  "katagami": 66658,
-  "claude-of-tanks": 83734,
-  "mailroom": 42618,
-  "local-search": 29546,
-  "agent-pets": 62380,
-  "loop": 42222,
-  "agent-machines": 64044,
-  "prototemplate": 63368,
-  "bday-land": 50738,
-  "powerlifting": 55248,
-  "elo": 61896,
-  "cotfly": 59728,
-  "relay": 39470,
-  "princeton-td": 32082,
-  "kevin-wiki": 59232,
-  "sandbox-arena": 123066,
-  "ariadne": 94088,
-  "sigil-ui": 46546,
-  "dedalus-terminal": 67694,
-  "sevenfold": 53122,
-  "podium": 62242,
-  "ommc": 65540,
-  "atlas": 63892
+  "turboslide": 66536,
+  "glyphfield": 123226,
+  "jarhead": 42918,
+  "katagami": 67952,
+  "claude-of-tanks": 67660,
+  "mailroom": 41452,
+  "local-search": 36832,
+  "agent-pets": 55942,
+  "loop": 33880,
+  "agent-machines": 64104,
+  "prototemplate": 59192,
+  "bday-land": 50678,
+  "powerlifting": 49146,
+  "elo": 59224,
+  "cotfly": 53434,
+  "relay": 34972,
+  "princeton-td": 27020,
+  "kevin-wiki": 57746,
+  "sandbox-arena": 114522,
+  "ariadne": 85850,
+  "sigil-ui": 43450,
+  "dedalus-terminal": 66900,
+  "sevenfold": 54234,
+  "podium": 54642,
+  "ommc": 64488,
+  "atlas": 55792
  },
  "fx": {
   "turboslide": 15428,
@@ -77,34 +77,34 @@
    288,
    156
   ],
-  "total": 697066,
+  "total": 682866,
   "bytes": {
-   "turboslide": 21134,
-   "glyphfield": 32819,
-   "jarhead": 21199,
-   "katagami": 23524,
-   "claude-of-tanks": 29446,
-   "mailroom": 17577,
-   "local-search": 10731,
-   "agent-pets": 23035,
-   "loop": 15227,
-   "agent-machines": 26217,
-   "prototemplate": 21527,
-   "bday-land": 21532,
-   "powerlifting": 23745,
-   "elo": 22420,
-   "cotfly": 21189,
-   "relay": 16014,
-   "princeton-td": 11481,
-   "kevin-wiki": 22472,
-   "sandbox-arena": 32921,
-   "ariadne": 26867,
-   "sigil-ui": 17536,
-   "dedalus-terminal": 21767,
-   "sevenfold": 18730,
-   "podium": 22220,
-   "ommc": 24644,
-   "atlas": 21066
+   "turboslide": 21125,
+   "glyphfield": 40983,
+   "jarhead": 19179,
+   "katagami": 24731,
+   "claude-of-tanks": 25019,
+   "mailroom": 16968,
+   "local-search": 14528,
+   "agent-pets": 22059,
+   "loop": 13616,
+   "agent-machines": 21283,
+   "prototemplate": 21222,
+   "bday-land": 21452,
+   "powerlifting": 20697,
+   "elo": 21956,
+   "cotfly": 19588,
+   "relay": 14659,
+   "princeton-td": 10387,
+   "kevin-wiki": 22982,
+   "sandbox-arena": 31910,
+   "ariadne": 25146,
+   "sigil-ui": 16460,
+   "dedalus-terminal": 21746,
+   "sevenfold": 21273,
+   "podium": 20379,
+   "ommc": 24383,
+   "atlas": 19109
   },
   "fx": {
    "turboslide": 8208,
@@ -136,32 +136,32 @@
   }
  },
  "source": {
-  "turboslide": "15f0549971914a13",
-  "glyphfield": "0f4243031b5ec1a4",
-  "jarhead": "bc18870873240f9c",
-  "katagami": "885c3d6ca28f0757",
-  "claude-of-tanks": "e98286fc4d90570f",
-  "mailroom": "d1e32f310ff07637",
-  "local-search": "e3df90c39625cc6c",
-  "agent-pets": "164a9471a9584c21",
-  "loop": "6145ccf9932d3674",
-  "agent-machines": "1bc020d3719daae7",
-  "prototemplate": "79737d0c4f53b155",
-  "bday-land": "f10bbb6e3ed289a8",
-  "powerlifting": "1b7f25c4726c5ca8",
-  "elo": "54c8784950378cc6",
-  "cotfly": "d004109d827166e3",
-  "relay": "109610f6a7a21c37",
-  "princeton-td": "c9bf4a68b74a4dda",
-  "kevin-wiki": "74845561382acbb2",
-  "sandbox-arena": "d96911762e7d7421",
-  "ariadne": "04edde454ad26bbb",
-  "sigil-ui": "a3195ad23ea7688f",
-  "dedalus-terminal": "2dbe575463f961a8",
-  "sevenfold": "65609a821672243c",
-  "podium": "c89e343c57b51147",
-  "ommc": "924913f8296ff1c8",
-  "atlas": "17d0a74446fc2224"
+  "turboslide": "1677aa50478193d3",
+  "glyphfield": "2eab001143a6889a",
+  "jarhead": "95cd31264447e6da",
+  "katagami": "75c11313e8850ad4",
+  "claude-of-tanks": "52bc31a753fc1fa1",
+  "mailroom": "34e3e9027ce4773c",
+  "local-search": "574c1a72ee76b462",
+  "agent-pets": "7d9b0dc048a8dea4",
+  "loop": "50944b4e3d9ad949",
+  "agent-machines": "5fbbc0f3b30e1ffb",
+  "prototemplate": "6e138f203b3f45b5",
+  "bday-land": "e00b95290180a42a",
+  "powerlifting": "1b34a5eda8d8ef60",
+  "elo": "130a5ada631fcb5b",
+  "cotfly": "bf81ddb75b321c83",
+  "relay": "846c8c5978e65066",
+  "princeton-td": "50bd72cda9cd82ee",
+  "kevin-wiki": "bab8d361f58d11c2",
+  "sandbox-arena": "36f9bbe3ecf84c6e",
+  "ariadne": "95fc2acff5d9243f",
+  "sigil-ui": "954f36184a9b422d",
+  "dedalus-terminal": "efbccaa23262983e",
+  "sevenfold": "44ad0e37e8ea2c0b",
+  "podium": "4cda26fd3df0c471",
+  "ommc": "9939284f4158f0e0",
+  "atlas": "6af194239188de6f"
  },
  "room": {
   "W": 560,
@@ -172,108 +172,108 @@
  },
  "rooms": {
   "turboslide": {
-   "source": "81235a6bc4a8d1d4",
-   "bytes": 313902
+   "source": "a1da6e65f852ae5c",
+   "bytes": 314116
   },
   "glyphfield": {
-   "source": "399139dd1d0b42a4",
-   "bytes": 1094322
+   "source": "8b5bf48f52bbf4cd",
+   "bytes": 1052854
   },
   "jarhead": {
-   "source": "f5c700f8444c0852",
-   "bytes": 169208
+   "source": "7e830c4ab89a6179",
+   "bytes": 151700
   },
   "katagami": {
-   "source": "4093cba304f762e7",
-   "bytes": 284118
+   "source": "501d8e0b371b4696",
+   "bytes": 264776
   },
   "claude-of-tanks": {
-   "source": "d3782c4be480c4ea",
-   "bytes": 557220
+   "source": "6a072212d10ee868",
+   "bytes": 304356
   },
   "mailroom": {
-   "source": "548a6b20e4cbb834",
-   "bytes": 187308
+   "source": "b792aa12a6c5fb93",
+   "bytes": 183110
   },
   "local-search": {
-   "source": "8e496db8f893f711",
-   "bytes": 120194
+   "source": "d8d4d55c1579cd2f",
+   "bytes": 159740
   },
   "agent-pets": {
-   "source": "6d63a2e0128bd7ff",
-   "bytes": 274294
+   "source": "b6e170f96c693528",
+   "bytes": 249826
   },
   "loop": {
-   "source": "23b2f43fb69b5059",
-   "bytes": 152146
+   "source": "f46e6f2167fd972a",
+   "bytes": 157406
   },
   "agent-machines": {
-   "source": "7f1f255ee1c13061",
-   "bytes": 257658
+   "source": "e79e2deb84b2ee8a",
+   "bytes": 272942
   },
   "prototemplate": {
-   "source": "47ba778b8ca43a11",
-   "bytes": 236480
+   "source": "668809bfc61de7a3",
+   "bytes": 216152
   },
   "bday-land": {
-   "source": "e75e3a4043f979a0",
-   "bytes": 213540
+   "source": "60abf0cfac7c4cfc",
+   "bytes": 213454
   },
   "powerlifting": {
-   "source": "642f9c9db79dee68",
-   "bytes": 258184
+   "source": "6e9c7b35ae4731cb",
+   "bytes": 227296
   },
   "elo": {
-   "source": "38749f665e85ee93",
-   "bytes": 271308
+   "source": "d55a87e1344426a2",
+   "bytes": 243148
   },
   "cotfly": {
-   "source": "a5f8d0913e192e29",
-   "bytes": 191738
+   "source": "07a5899ccec13a36",
+   "bytes": 172474
   },
   "relay": {
-   "source": "64c7f1887e697aa8",
-   "bytes": 164750
+   "source": "3e2d3e3a085a1913",
+   "bytes": 129596
   },
   "princeton-td": {
-   "source": "9a6b0d49dfa75da5",
-   "bytes": 149672
+   "source": "a03cb2ea72732647",
+   "bytes": 120804
   },
   "kevin-wiki": {
-   "source": "7f8bc6c76f5df68b",
-   "bytes": 254494
+   "source": "8e5df09c95d195e8",
+   "bytes": 268266
   },
   "sandbox-arena": {
-   "source": "d774289079b0e2f1",
-   "bytes": 829608
+   "source": "10c5cd79499aab74",
+   "bytes": 750628
   },
   "ariadne": {
-   "source": "e89910ce4e9d8f02",
-   "bytes": 703760
+   "source": "7ff533c0f7633f0e",
+   "bytes": 668310
   },
   "sigil-ui": {
-   "source": "b217c20efaaf1ead",
-   "bytes": 198186
+   "source": "26277a4758754aa0",
+   "bytes": 193928
   },
   "dedalus-terminal": {
-   "source": "b0a93f6022ccc7bd",
-   "bytes": 311598
+   "source": "ce925884f063f948",
+   "bytes": 309106
   },
   "sevenfold": {
-   "source": "6da9e43590ef6371",
-   "bytes": 272920
+   "source": "bac2bbccf64a49ed",
+   "bytes": 250386
   },
   "podium": {
-   "source": "090757e9be5e7855",
-   "bytes": 354732
+   "source": "41044235a6691f5c",
+   "bytes": 323560
   },
   "ommc": {
-   "source": "a9741422bbabdb02",
-   "bytes": 267950
+   "source": "21887b346a1355a7",
+   "bytes": 264340
   },
   "atlas": {
-   "source": "a5c8239cf5cdbde5",
-   "bytes": 292886
+   "source": "a130741b5deadb23",
+   "bytes": 247282
   }
  }
 }

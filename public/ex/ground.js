@@ -42,7 +42,9 @@
   const AR = 88 / 63;
   const RING = ['Infra', 'Agent', 'Data', 'Game', 'Shader', 'Type', 'Interface'];
   const WINDOW = [0.034, 0.146, 0.966, 0.646]; // EX.md 5, card widths (0.500W tall since round ex.2)
-  // kevinliu.studio phone memory: the shared canvas and the density on a touch screen or a small-memory device (scripts/phone-memory.mjs)
+  // A phone's memory (the release's touch fixes, kevinliu-studio docs/performance.md "Memory (phones)", ported 11-08):
+  // on a touch screen or a small-memory device the shared canvas stops at 2048 and the density at 1.5; a frame that
+  // does not fit copies out and reuses it. Canvas backing on a 390 x 844 phone at 3x was 150 MB at rest.
   const SMALL = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
   const ATLAS_MAX = SMALL ? 2048 : 4096;
 
@@ -60,6 +62,7 @@ layout(std140) uniform Card {
   vec4 e_em[6];
   vec4 e_em2[6];
   vec4 e_band;
+  vec4 e_look;
 };
 uniform sampler2D e_matter, e_glyphs, e_calm;
 #define e_deep c_deep.rgb
@@ -186,7 +189,7 @@ in vec2 aPos; void main() { gl_Position = vec4(aPos, 0., 1.); }`;
     const h = hueOf(card) || { deep: '#333333', energy: '#888888', glint: '#eeeeee', panel: '#cccccc', mhi: '#dddddd', mlo: '#555555' };
     const subj = subjectOf(card, subjOpt), [p, s] = discOf(card), E = energy().cards[card] || {};
     const { em, em2 } = emittersOf(card, subj);
-    const b = new Float32Array(96);
+    const b = new Float32Array(100);
     ['deep', 'energy', 'glint', 'panel', 'mhi', 'mlo'].forEach((k, i) => b.set([...rgbOf(h[k]), 1], i * 4));
     // the card families (EX.md 23.12, the variety port): the card's own ground effect rides in the colours' spare
     // components (grounds/programs.gen.js cards[id].vary, from design/assign.json): deep.w the matter's flow (0 burst,
@@ -205,6 +208,10 @@ in vec2 aPos; void main() { gl_Position = vec4(aPos, 0., 1.); }`;
     // the family's text band (x0, top, x1, foot; grounds/programs.gen.js cards[id].band): under it the matter reads its
     // calm form, the tile with no letters (energy.glsl e_tile)
     b.set(E.band || [WINDOW[0], 0.658, WINDOW[2], 1.214], 92);
+    // the text band's look (grounds/flows.json sweep, amp, rows and lift, carried as vary.sw, sa, tr, sl): the direction its
+    // light sweeps (radians, dark to light), the sweep's range in tone, the tile's rows per card width behind the type, and
+    // 1 where the sweep may only lift the band (a card whose type sits near 4.5:1, E10)
+    b.set([X.sw || 0, X.sa || 0, X.tr || 0, X.sl || 0], 96);
     return b;
   }
 
@@ -406,13 +413,15 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     L.bw = w; L.bh = h;
     if (L.el.style.display !== 'none') back(L);
   }
-  // kevinliu.studio phone memory: a held print's canvas is 0 x 0; back() sizes it again before it is drawn
+  // A held print's canvas is 0 x 0 (no backing store while it is off screen); back() sizes it again before it is drawn.
   function back(L) { if (L && L.bw && (L.el.width !== L.bw || L.el.height !== L.bh)) { L.el.width = L.bw; L.el.height = L.bh; } }
   function size(s) {
     if (!s.fit) { s.px = DENSITY * s.S; }
     else {
       // 'fit': the poster's picture while the card is near its size on this screen, above that its own device size
-      const cw = (s.box || s.el).clientWidth, k = dppx();
+      // a caller that knows the box's width hands it in once (opts.w: the lens, engineer ex9), so the first size reads no layout
+      const cw = s.cw0 || (s.box || s.el).clientWidth, k = dppx();
+      s.cw0 = 0;
       if (!cw || Math.round((cw * k) / GRID[0]) <= 1) { s.S = 1; s.px = DENSITY; }
       else { s.S = Math.round(cw * k) / GRID[0]; s.px = k; }
     }
@@ -460,7 +469,7 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
       paper: rgbOf((hueOf(card) || { deep: '#333333' }).deep), chip: rgbOf((hueOf(card) || { energy: '#888888' }).energy),
       band: bandOf(card).seed, pass: opts.pass || [0, 0, 0, 0], k: opts.k || 0, subject: opts.subject || null,
       light: REST.slice(), tilt: [0, 0], block: null, ubo: null,
-      seen: true, active: false, painted: false, dirty: true, due: (surfaces.size % 4) / 4 * IDLE,
+      seen: true, active: false, painted: false, dirty: true, due: (surfaces.size % 4) / 4 * IDLE, cw0: opts.w || 0,
     };
     size(s);
     surfaces.set(id, s);
@@ -626,9 +635,9 @@ void main() { o = texture(u_src, (gl_FragCoord.xy - u_dst.xy) / u_dst.zw); }`);
     }
   }
   function jobsOf(s, rest, moving) {
-    back(s); if (s.fx) back(s.fx);
     const out = [{ s, layer: s, kind: 'ground', rest, exact: rest || !moving || !s.painted, done: () => { painted(s, s, 'ground'); s.dirty = false; s.draws = (s.draws || 0) + 1; } }];
     if (s.fx && s.fx.el.isConnected) out.push({ s, layer: s.fx, kind: 'fx', rest, exact: rest || !moving || !s.fx.painted, done: () => painted(s, s.fx, 'fx') });
+    back(s); if (s.fx) back(s.fx);
     return out;
   }
   // draw one surface now (a script asking for its frame: the bake, a test)

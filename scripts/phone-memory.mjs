@@ -23,31 +23,8 @@ function patch(file, text, pairs) {
 const MARK = 'kevinliu.studio phone memory';
 
 export const PHONE = {
-  // The card energy (r4/ex ground.js). On a phone, measured in WebKit at iPhone 14 (consolidate/mobile-fix.md), the
-  // wall held 189 MB of canvas: the one shared WebGL canvas grew to 4096 x 4096 (128 MB with its two buffers) to print
-  // every card's first frame at once, and each of the 26 cards kept two 2D canvases (2.1 MB) while scrolled away.
-  'public/ex/ground.js': (t) => patch('ground.js', t, [
-    // a touch screen or a small-memory device: the shared canvas stops at 2048 (16 MB a buffer); a frame whose prints
-    // do not fit copies out the cells so far and reuses it (drawAll's flush), and the world canvas never outgrows it.
-    // Its drawing density stops at 1.5 there: a phone's prints are already the 504 px poster or smaller.
-    ['  const ATLAS_MAX = 4096;', `  // ${MARK}: the shared canvas and the density on a touch screen or a small-memory device (scripts/phone-memory.mjs)
-  const SMALL = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) || (typeof navigator !== 'undefined' && navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
-  const ATLAS_MAX = SMALL ? 2048 : 4096;`],
-    ['  const dppx = () => Math.min(root.devicePixelRatio || 1, 2);', '  const dppx = () => Math.min(root.devicePixelRatio || 1, SMALL ? 1.5 : 2);'],
-    ['Wd.k = [2, 1.5, 1].find((k) => k <= Math.max(1, dppx()) && cw * ch * k * k <= 6e6) || 1;', 'Wd.k = [2, 1.5, 1].find((k) => k <= Math.max(1, dppx()) && cw * ch * k * k <= 6e6 && Math.max(cw, ch) * k <= ATLAS_MAX) || 1;'],
-    // a held print (off screen, its poster showing) gives its canvas's backing store back; it takes it again in the
-    // frame that draws it, which is the frame a print that comes back on screen always gets (hold clears painted)
-    ['    if (L.el.width !== w || L.el.height !== h) { L.el.width = w; L.el.height = h; }\n  }', `    L.bw = w; L.bh = h;
-    if (L.el.style.display !== 'none') back(L);
-  }
-  // ${MARK}: a held print's canvas is 0 x 0; back() sizes it again before it is drawn
-  function back(L) { if (L && L.bw && (L.el.width !== L.bw || L.el.height !== L.bh)) { L.el.width = L.bw; L.el.height = L.bh; } }`],
-    ["    L.el.style.display = 'none';\n    L.painted = false;", "    L.el.style.display = 'none';\n    L.el.width = L.el.height = 0;\n    L.painted = false;"],
-    ['  function jobsOf(s, rest, moving) {\n', '  function jobsOf(s, rest, moving) {\n    back(s); if (s.fx) back(s.fx);\n'],
-    // and it is held as it leaves the screen, not at the next frame: a page whose loop has stopped (every print
-    // painted and at rest) would otherwise keep every print it ever drew
-    ['          s.seen = en.isIntersecting;\n', '          s.seen = en.isIntersecting;\n          if (!s.seen && !s.active && s.box !== s.el) { hold(s); hold(s.fx); }\n'],
-  ]),
+  // The card energy (r4/ex ground.js): the rounds carry these patches themselves from cards pin 8c77bd35 (ported
+  // 11-08: the 2048 shared canvas, the 1.5 density and the held prints' 0 x 0 canvases on a touch screen), so none here.
   // The wall (r4/ex gallery.js) asks the browser to prerender the whole battle the moment both teams exist
   // (speculationrules, eagerness immediate). On a touch screen or a small-memory device that boots a second heavy
   // page behind the wall before any press, so the rule is left out there; Play still navigates.

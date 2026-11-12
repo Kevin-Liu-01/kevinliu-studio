@@ -162,7 +162,7 @@
   background: linear-gradient(153deg, transparent 25.2%, rgb(255 255 255 / 0.78) 29.7%, transparent 34.2%);
 }
 /* the streak's own layer while the card is lifted, so the tilt moves it without painting the card again */
-.card.lift .rim > .spec { will-change: transform; }
+.card.lift .rim .spec { will-change: transform; }
 .rim::after {
   content: ''; position: absolute; inset: 2.95cqw; border-radius: 2.05cqw;
   border: 0.45cqw solid color-mix(in oklab, var(--m4) 75%, black); box-shadow: 0 0 0 0.18cqw rgb(255 255 255 / 0.7);
@@ -397,6 +397,9 @@
    column's width, and filled, its first line ran under the subjects that cross the window's foot (E6b, 24 cards in
    context with subject pixels on that line's keep-out, 0 balanced)) */
 .card .tr { text-wrap: balance; }
+/* a description of three lines or more is set balanced (markup.js linesOf marks it data-bal; craft ex.5: pretty set 15 of
+   49 three-line descriptions as one long line over two short ones); a shorter one keeps pretty's full lines */
+.card .md[data-bal] { text-wrap: balance; }
 .card .move { grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; align-items: center; }
 /* a block's last words, kept together (markup.js kept()) */
 .card .kw { white-space: nowrap; }
@@ -563,9 +566,10 @@
 /* a subject that fills the window's top band leaves the strip no room: it does not print (media.gen.js pop.prov) */
 .card .prov.none { display: none !important; }
 
-/* ---------- the backs. The set's back, one for all 26 and the same in both themes: a gunmetal plate with the set's 26
-   hues bursting from the seal, struck large at its centre, inside the silver rim. The info back (the lens's flip side):
-   the product, its trait, all four moves and the facts with their receipts. ---------- */
+/* ---------- the backs. The set's back, one for all 26 and the same in both themes: a gunmetal plate struck with Kevin's
+   own mark, the kl signature large and silver at its centre, the same signature engraved round it as a guilloche in the
+   set's 26 hues, inside the silver rim. The info back (the lens's flip side): the product, its trait, all four moves and
+   the facts with their receipts. ---------- */
 .back {
   transform: rotateY(180deg); overflow: hidden;
   background: radial-gradient(circle at 50% 46%, #4a505c 0%, #2a2e36 38%, #121419 78%);
@@ -576,22 +580,20 @@
 /* a card's back shows only while the card turns: at rest the face covers it, so it draws nothing and holds no layer */
 .card .back { visibility: hidden; transform: none; }
 .card.flipped .back, .card.turned .body > .back { visibility: visible; transform: rotateY(180deg); }
-/* the burst: the 26 hues round the wheel, cut into 52 rays and etched rings, starting clear of the kl signature so it
-   reads on the dark centre */
+/* the guilloche (originality ex.5: the 52 rays this replaced read as a starburst, burst signature 0.436 on a turned wall
+   card): the kl signature repeated 26 times round each of six concentric rings, each copy turned to its ring's tangent,
+   each ring 1.24 times the one inside it and turned half a step, an engraved hairline between rings; the 26 hues run
+   round the wheel under it, starting clear of the large kl (icons/tools/back-guilloche.py prints the mask) */
 .back .tint {
   position: absolute; inset: 0; pointer-events: none;
   background: conic-gradient(from 0deg at 50% 46%, oklch(0.78 0.16 0), oklch(0.8 0.16 45), oklch(0.86 0.16 90), oklch(0.82 0.16 135),
     oklch(0.8 0.14 180), oklch(0.74 0.15 225), oklch(0.7 0.17 270), oklch(0.74 0.18 315), oklch(0.78 0.16 360));
-  -webkit-mask: repeating-conic-gradient(from 0deg at 50% 46%, #000 0 2.4deg, transparent 2.4deg 6.923deg),
-    radial-gradient(circle at 50% 46%, transparent 26%, #000 31%, rgb(0 0 0 / 0.8) 55%, transparent 96%);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1000 1397%22%3E%3Cdefs%3E%3Cpath id=%22k%22 d=%22M22 206L38 176L58 135L67 115L72 103L76 91L80 80L82 70L82 66L83 62L82 58L82 55L80 52L78 49L75 47L72 46L68 45L65 46L61 47L59 49L56 52L54 55L50 61L48 65L46 73L42 87L40 96L38 107L35 127L33 147L43 152L53 145L77 129L84 124L88 121L92 120L96 119L97 119L97 119L97 120L96 120L95 120L94 119L94 120L92 123L88 127L82 131L78 134L73 137L67 139L59 142L51 144L44 145L42 157L46 159L50 163L55 168L64 181L69 187L73 191L77 195L82 198L84 199L87 199L90 200L93 200L92 200L97 199L101 197L105 194L109 191L113 187L117 182L121 177L129 166L137 152L141 145L148 130L155 115L158 107L164 92L168 78L169 72L171 66L171 60L171 55L171 50L170 46L168 42L168 42L166 39L163 36L158 34L154 34L150 36L146 39L143 42L140 46L135 55L129 67L125 79L120 93L116 107L113 122L111 136L110 150L109 157L110 163L110 169L111 175L112 180L114 185L116 189L118 193L121 196L125 199L128 201L132 202L136 203L140 203L144 203L148 203L156 202L161 200L169 197L183 191L201 179L220 166L219 164L204 172L189 179L166 188L158 190L154 191L147 192L144 192L139 191L137 190L133 187L131 184L130 182L128 176L127 172L126 163L126 157L126 151L127 138L128 132L130 118L132 111L136 97L140 84L144 73L146 67L151 58L155 52L159 47L159 45L160 45L162 46L163 48L164 51L164 55L164 60L164 65L163 70L159 83L157 90L152 105L149 112L142 127L134 142L130 148L122 161L118 167L110 177L107 181L103 184L100 187L97 188L95 189L94 188L93 188L92 188L89 186L86 184L82 180L68 161L63 155L59 151L56 149L51 146L46 144L44 156L53 156L59 155L65 153L75 150L81 148L87 145L95 140L102 134L106 130L107 128L109 125L110 123L110 119L110 116L109 113L106 110L103 108L100 108L98 108L95 108L89 111L79 116L72 121L48 138L39 144L49 148L51 129L53 114L55 100L58 86L62 74L64 68L68 61L71 57L72 57L74 57L75 58L76 59L76 62L76 65L74 73L73 78L70 88L65 100L57 119L32 173L20 205Z%22/%3E%3C/defs%3E%3Cg transform=%22translate(500 643)%22%3E%3Cg id=%22r%22%3E%3Cuse href=%22%23k%22 transform=%22rotate(0.00) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(13.85) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(27.69) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(41.54) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(55.38) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(69.23) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(83.08) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(96.92) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(110.77) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(124.62) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(138.46) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(152.31) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(166.15) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(180.00) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(193.85) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(207.69) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(221.54) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(235.38) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(249.23) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(263.08) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(276.92) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(290.77) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(304.62) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(318.46) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(332.31) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(346.15) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3C/g%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(1.2400)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(0.00) scale(1.5376)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(1.9066)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(0.00) scale(2.3642)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(2.9316)%22/%3E%3Ccircle r=%22334.1%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%223.20%22/%3E%3Ccircle r=%22414.2%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%223.97%22/%3E%3Ccircle r=%22513.7%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%224.92%22/%3E%3Ccircle r=%22636.9%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%226.10%22/%3E%3Ccircle r=%22789.8%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%227.57%22/%3E%3Ccircle r=%22979.4%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%229.38%22/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat,
+    radial-gradient(circle at 50% 46%, transparent 24%, rgb(0 0 0 / 0.82) 29%, rgb(0 0 0 / 0.66) 62%, transparent 100%);
   -webkit-mask-composite: source-in;
-  mask: repeating-conic-gradient(from 0deg at 50% 46%, #000 0 2.4deg, transparent 2.4deg 6.923deg),
-    radial-gradient(circle at 50% 46%, transparent 26%, #000 31%, rgb(0 0 0 / 0.8) 55%, transparent 96%);
+  mask: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1000 1397%22%3E%3Cdefs%3E%3Cpath id=%22k%22 d=%22M22 206L38 176L58 135L67 115L72 103L76 91L80 80L82 70L82 66L83 62L82 58L82 55L80 52L78 49L75 47L72 46L68 45L65 46L61 47L59 49L56 52L54 55L50 61L48 65L46 73L42 87L40 96L38 107L35 127L33 147L43 152L53 145L77 129L84 124L88 121L92 120L96 119L97 119L97 119L97 120L96 120L95 120L94 119L94 120L92 123L88 127L82 131L78 134L73 137L67 139L59 142L51 144L44 145L42 157L46 159L50 163L55 168L64 181L69 187L73 191L77 195L82 198L84 199L87 199L90 200L93 200L92 200L97 199L101 197L105 194L109 191L113 187L117 182L121 177L129 166L137 152L141 145L148 130L155 115L158 107L164 92L168 78L169 72L171 66L171 60L171 55L171 50L170 46L168 42L168 42L166 39L163 36L158 34L154 34L150 36L146 39L143 42L140 46L135 55L129 67L125 79L120 93L116 107L113 122L111 136L110 150L109 157L110 163L110 169L111 175L112 180L114 185L116 189L118 193L121 196L125 199L128 201L132 202L136 203L140 203L144 203L148 203L156 202L161 200L169 197L183 191L201 179L220 166L219 164L204 172L189 179L166 188L158 190L154 191L147 192L144 192L139 191L137 190L133 187L131 184L130 182L128 176L127 172L126 163L126 157L126 151L127 138L128 132L130 118L132 111L136 97L140 84L144 73L146 67L151 58L155 52L159 47L159 45L160 45L162 46L163 48L164 51L164 55L164 60L164 65L163 70L159 83L157 90L152 105L149 112L142 127L134 142L130 148L122 161L118 167L110 177L107 181L103 184L100 187L97 188L95 189L94 188L93 188L92 188L89 186L86 184L82 180L68 161L63 155L59 151L56 149L51 146L46 144L44 156L53 156L59 155L65 153L75 150L81 148L87 145L95 140L102 134L106 130L107 128L109 125L110 123L110 119L110 116L109 113L106 110L103 108L100 108L98 108L95 108L89 111L79 116L72 121L48 138L39 144L49 148L51 129L53 114L55 100L58 86L62 74L64 68L68 61L71 57L72 57L74 57L75 58L76 59L76 62L76 65L74 73L73 78L70 88L65 100L57 119L32 173L20 205Z%22/%3E%3C/defs%3E%3Cg transform=%22translate(500 643)%22%3E%3Cg id=%22r%22%3E%3Cuse href=%22%23k%22 transform=%22rotate(0.00) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(13.85) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(27.69) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(41.54) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(55.38) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(69.23) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(83.08) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(96.92) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(110.77) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(124.62) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(138.46) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(152.31) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(166.15) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(180.00) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(193.85) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(207.69) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(221.54) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(235.38) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(249.23) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(263.08) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(276.92) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(290.77) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(304.62) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(318.46) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(332.31) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3Cuse href=%22%23k%22 transform=%22rotate(346.15) translate(0 -300) scale(0.3250) translate(-120 -120)%22/%3E%3C/g%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(1.2400)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(0.00) scale(1.5376)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(1.9066)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(0.00) scale(2.3642)%22/%3E%3Cuse href=%22%23r%22 transform=%22rotate(6.92) scale(2.9316)%22/%3E%3Ccircle r=%22334.1%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%223.20%22/%3E%3Ccircle r=%22414.2%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%223.97%22/%3E%3Ccircle r=%22513.7%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%224.92%22/%3E%3Ccircle r=%22636.9%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%226.10%22/%3E%3Ccircle r=%22789.8%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%227.57%22/%3E%3Ccircle r=%22979.4%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%229.38%22/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat,
+    radial-gradient(circle at 50% 46%, transparent 24%, rgb(0 0 0 / 0.82) 29%, rgb(0 0 0 / 0.66) 62%, transparent 100%);
   mask-composite: intersect;
-}
-.back .tint::after {
-  content: ''; position: absolute; inset: 0;
-  background: repeating-radial-gradient(circle at 50% 46%, transparent 0 2.6cqw, rgb(255 255 255 / 0.22) 2.6cqw 2.9cqw);
 }
 /* the set's rim: the cost 1 silver, with its engraved keyline */
 .back::after {
@@ -737,7 +739,10 @@
    1 ink, the material flat as the product draws it;
    2 embossed, its own shapes raised and lit from the upper left on the room's 1:2 vector (the bevel on .bd), under a
      brushed sheen: one broad band of light across the rim;
-   3 etched, a harder bevel, the card's metal laid in and one engraved hatch struck every 2.2cqw (1.56cqw apart across the cut);
+   3 etched, a harder bevel and the drawing's own edges struck as engraved lines (design/lit, struck harder than the
+     embossed relief) under two bands of sheen; no tile and no laid-in metal (originality and craft ex6: one 45 degree
+     hatch every 2.2cqw and the card's metal laid over Loop, Agent Machines, Kevin Wiki and Prototemplate turned four
+     products' own colours into one engraved fence, and all four missed the blind read);
    4 foil, the hardest bevel with a prism edge, the material struck as chrome (design/lit: its own relief under the
      strongest specular, so every shape the product draws catches a point of light at its own edges) under a prism sheen
      laid soft, with the chrome name and number and the prism keyline on the aperture. No shared texture: a lattice
@@ -755,6 +760,43 @@
 .card.dz[data-finish="foil"] .rim > .bd {
   filter: drop-shadow(-0.16cqw -0.32cqw 0 rgb(255 255 255 / 0.95)) drop-shadow(-0.08cqw -0.16cqw 0 oklch(0.9 0.14 calc(var(--hue) + 120))) drop-shadow(0.16cqw 0.32cqw 0.06cqw rgb(0 0 0 / 0.55));
 }
+/* the finish struck on the strip's edge toward the card (face lane ex6: craft and collector, the rarity read at rest; EX.md
+   25.7): since the frames install the border shows in the strip above the top bar and the strip under the bottom line,
+   so each cost strikes its own lip there, on every frame kind (a lane drawing, the solid colour, the engraved border, the
+   metal rim): ink none, the material flat as drawn; embossed a raised lip, one lit line over its shadow at the top and two
+   at the foot; etched two engraved pairs at the top and three at the foot; foil a chrome lip, its lines brighter and
+   tinted by the prism. The lines stand on a keyline in the card's deep tone, so they read on a pale ground as on a dark one */
+.card.dz .rim::after { content: none; }
+.card.dz:is([data-finish="embossed"], [data-finish="etched"], [data-finish="foil"]) .rim::after {
+  content: ''; position: absolute; inset: 0; border: 0; border-radius: 0; box-shadow: none; pointer-events: none; display: block;
+  --lt: rgb(255 255 255 / 0.92); --bk: color-mix(in oklab, var(--d) 55%, black);
+  background: var(--lip); background-repeat: no-repeat; }
+/* the lip is a keyline in the card's deep tone, 4 device rows at the top and 9 at the foot of the 480 px card at dpr 2
+   (1 row = 1/9.6cqw, where the finish is read), and its lit lines sit on whole rows of it */
+.card.dz[data-finish="embossed"] .rim::after { --lip:
+  linear-gradient(var(--lt), var(--lt)) 0 3.1250cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 135.8333cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 136.0417cqw / 100% 0.1042cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 3.0208cqw / 100% 0.4367cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 135.7292cqw / 100% 0.9375cqw; }
+.card.dz[data-finish="etched"] .rim::after { --lip:
+  linear-gradient(var(--lt), var(--lt)) 0 3.0208cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 3.2292cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 135.8333cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 136.0417cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 136.2500cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 136.4583cqw / 100% 0.1042cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 3.0208cqw / 100% 0.4367cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 135.7292cqw / 100% 0.9375cqw; }
+.card.dz[data-finish="foil"] .rim::after { --lt: rgb(255 255 255 / 0.97); --lp: oklch(0.94 0.1 calc(var(--hue) + 120)); --lip:
+  linear-gradient(var(--lt), var(--lt)) 0 3.0208cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lp), var(--lp)) 0 3.2292cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 135.8333cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lp), var(--lp)) 0 136.0417cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lt), var(--lt)) 0 136.2500cqw / 100% 0.1042cqw,
+  linear-gradient(var(--lp), var(--lp)) 0 136.4583cqw / 100% 0.1042cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 3.0208cqw / 100% 0.4367cqw,
+  linear-gradient(var(--bk), var(--bk)) 0 135.7292cqw / 100% 0.9375cqw; }
 .card.dz :is(.rim, .rimo) > .fin { position: absolute; inset: 0; display: none; pointer-events: none; }
 .card.dz :is(.rim, .rimo) > .fin::before, .card.dz :is(.rim, .rimo) > .fin::after { content: none; position: absolute; inset: 0; pointer-events: none; }
 /* 2: the brushed sheen, one broad band of light (no brushing lines) */
@@ -762,15 +804,11 @@
   display: block; mix-blend-mode: soft-light;
   background: linear-gradient(153deg, transparent 30%, rgb(255 255 255 / 0.55) 46%, transparent 62%);
 }
-/* 3: the metal laid in over the relief, and one engraved hatch: a cut every 2.2cqw (1.56cqw apart across the cut), its
-   lit lip and its shadow, drawn antialiased in one SVG tile */
+/* 3: two bands of sheen over the etched relief (the relief and its engraved edges are design/lit's, each product's own
+   drawing struck harder than the embossed step); no shared tile on any finish's rim */
 .card.dz[data-finish="etched"] :is(.rim, .rimo) > .fin {
-  display: block; mix-blend-mode: hard-light;
-  background: linear-gradient(153deg, color-mix(in oklab, var(--mh) 35%, transparent), color-mix(in oklab, var(--ml) 22%, transparent) 55%, color-mix(in oklab, var(--mh) 30%, transparent));
-}
-.card.dz[data-finish="etched"] :is(.rim, .rimo) > .fin::after {
-  content: '';
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M-5.5 5.5l11-11M-5.5 27.5l33-33M16.5 27.5l11-11' stroke='%23000' stroke-opacity='.42' stroke-width='1.8' transform='translate(.9 .9)'/%3E%3Cpath d='M-5.5 5.5l11-11M-5.5 27.5l33-33M16.5 27.5l11-11' stroke='%23fff' stroke-opacity='.95' stroke-width='1.9'/%3E%3C/svg%3E") 0 0 / 2.2cqw 2.2cqw repeat;
+  display: block; mix-blend-mode: soft-light;
+  background: linear-gradient(153deg, transparent 22%, rgb(255 255 255 / 0.5) 34%, transparent 44%, transparent 56%, rgb(255 255 255 / 0.42) 66%, transparent 76%);
 }
 /* 4: the prism sheen laid soft over the chrome relief (design/lit), so the material keeps its colour and leads */
 .card.dz[data-finish="foil"] :is(.rim, .rimo) > .fin {
@@ -781,8 +819,14 @@
       oklch(0.8 0.19 calc(var(--hue) + 360) / 0.36), oklch(0.86 0.18 calc(var(--hue) + 60) / 0.36), oklch(0.84 0.18 calc(var(--hue) + 120) / 0.36)) 50% 50% / 200% 200% no-repeat;
 }
 /* cost 4's bar is struck in the same metal as its rim: its brushing cut deeper, so the chase card's head reads as metal at
-   rest (the chrome name and number stay the base's) */
+   rest (the chrome name and number stay the base's); Turboslide's brushing struck at 0.3 (variety and collector ex9:
+   cost 4's rim only 1.07 times cost 3's, Turboslide the lowest but one; on Jarhead the same lines moved its ring within
+   0.44 of Princeton TD's) */
 .card.dz[data-cost="4"]:not([data-fam="B"]) .top::before { background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.18cqw, rgb(0 0 0 / 0.12) 0.18cqw 0.32cqw, transparent 0.32cqw 0.6cqw),
+    linear-gradient(172deg, color-mix(in oklab, var(--ml) 82%, white) 0%, var(--ml) 26%, color-mix(in oklab, var(--d) 80%, black) 72%, var(--ml) 100%); }
+/* round ex.11 (craft and collector ex11: Turboslide, the set's 01, kept its rim at 0.336 under Prototemplate's cost 3, its
+   lip under the bar): its brushing struck at 0.46 */
+.card.dz[data-id="turboslide"] .top::before { background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.46) 0 0.18cqw, rgb(0 0 0 / 0.2) 0.18cqw 0.32cqw, transparent 0.32cqw 0.6cqw),
     linear-gradient(172deg, color-mix(in oklab, var(--ml) 82%, white) 0%, var(--ml) 26%, color-mix(in oklab, var(--d) 80%, black) 72%, var(--ml) 100%); }
 @container (width < 300px) {
   .card.dz[data-cost="4"]:not([data-fam="B"]) .top::before { background-image: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.2) 0 0.18cqw, rgb(0 0 0 / 0.12) 0.18cqw 0.32cqw, transparent 0.32cqw 0.6cqw),
@@ -850,11 +894,11 @@
 @container (width >= 225px) { .card.dz .band { padding: calc(0.3cqw + var(--dz-bt)) calc(1.4cqw + var(--dz-bx)) calc(2cqw + var(--dz-bb)); } }
 
 /* ---------- the top bar's plate, by family (its contents never move) ---------- */
-/* K, a ruled bar: a scale of ticks along its head and its foot, every tenth long */
+/* K, a ruled bar: a scale of ticks along its foot, every fifth long (variety ex6: the scale along its head printed a ruler
+   inside the ring band of all three Rail cards, and Turboslide and Loop read blind as a toolbar and a tread; the Rail's
+   ruled strip across the window's top stays, EX.md 25.2) */
 .card.dz[data-fam="K"] .top::before { border-radius: 0.8cqw 0.8cqw 0 0; }
 .card.dz[data-fam="K"] .top::after { top: 0; bottom: 0; height: auto; background:
-  repeating-linear-gradient(90deg, var(--m1) 0 0.25cqw, transparent 0.25cqw 1.55cqw) 0 0 / 100% 1.3cqw no-repeat,
-  repeating-linear-gradient(90deg, var(--white) 0 0.3cqw, transparent 0.3cqw 7.75cqw) 0 0 / 100% 2.2cqw no-repeat,
   repeating-linear-gradient(90deg, var(--m1) 0 0.25cqw, transparent 0.25cqw 1.55cqw) 0 100% / 100% 1.3cqw no-repeat,
   repeating-linear-gradient(90deg, var(--white) 0 0.3cqw, transparent 0.3cqw 7.75cqw) 0 100% / 100% 2.2cqw no-repeat,
   linear-gradient(var(--m3), var(--m3)) 0 100% / 100% 0.3cqw no-repeat; }
@@ -867,7 +911,9 @@
   box-shadow: inset 0 0 0 0.35cqw color-mix(in oklab, var(--g) 55%, transparent); }
 .card.dz[data-fam="S"] .top::after { left: 58.6cqw; right: auto; width: 0.35cqw; height: auto; top: 1.4cqw; bottom: 1.4cqw; background: color-mix(in oklab, var(--g) 55%, transparent); }
 /* T, a square lintel across both columns: an architrave line under its head, heavy below */
-.card.dz[data-fam="T"] .top::before { border-radius: 0; box-shadow: inset 0 1cqw 0 color-mix(in oklab, var(--d) 60%, black), inset 0 1.3cqw 0 color-mix(in oklab, var(--g) 45%, transparent), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.3); }
+/* its head carries a lit fillet over the dark band (face lane ex6: the lintel's dark head left the Tower's strip edge the only
+   one with no lit edge, so its three cards read a rung lower than their cost at rest) */
+.card.dz[data-fam="T"] .top::before { border-radius: 0; box-shadow: inset 0 0.21cqw 0 color-mix(in oklab, var(--g), white 45%), inset 0 1cqw 0 color-mix(in oklab, var(--d) 60%, black), inset 0 1.3cqw 0 color-mix(in oklab, var(--g) 45%, transparent), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.3); }
 .card.dz[data-fam="T"] .top::after { height: 1.2cqw; }
 /* P, a plate on the strip */
 .card.dz[data-fam="P"] .top::before { border-radius: 1.6cqw 1.6cqw 0.6cqw 0.6cqw; }
@@ -998,13 +1044,22 @@
   background-blend-mode: normal, soft-light, normal;
   box-shadow: 0.55cqw 0.55cqw 0 color-mix(in oklab, var(--d) 70%, transparent); }
 .card.dz[data-fam="Y"] :is(.trait, .move)::after { content: ''; inset: auto auto 100% 0; width: 14cqw; height: 0.75cqw; padding: 0; border-radius: 0.5cqw 0.5cqw 0 0; background: var(--d); -webkit-mask: none; mask: none; }
-/* D, key caps on the device's deck: one brushed deck under the panel in the device's deep tone (40 to 48% deep at 62 to
-   66%, the darkest panel of the set, so a device reads apart from a pale sheet of its hue: collector, studio-2), each
+/* Atlas's what slip is one tint (owner ex.5: the slip's frost over the issues lying end to end under it printed a navy block
+   and a pink one, the orange issue under the pink frost, behind its text): the slip is struck near opaque in the panel's
+   own tint, so the issues show round it and never through it */
+.card.dz[data-id="atlas"] .what::before {
+  background: var(--frost-tile) 0 0 / 180px 180px,
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), white 30%) 95%, transparent) 0%,
+      color-mix(in oklab, var(--p) 93%, transparent) 40%, color-mix(in oklab, var(--p) 94%, transparent) 100%);
+  background-blend-mode: soft-light, normal; }
+/* D, key caps on the device's deck: one brushed deck under the panel in the device's deep tone (33 to 41% deep at 62 to
+   66%, the darkest panel of the set, so a device reads apart from a pale sheet of its hue: collector, studio-2; 40 to 48%
+   until the face lane's ex.5 fix, where 050525's descriptions on the deck read 4.33 to 4.37:1 against E10's 4.5), each
    row's head a raised key cap with a lip, the descriptions printed on the deck between them */
 .card.dz[data-fam="D"] .band::before {
   content: ''; position: absolute; inset: 0 0 0.6cqw; z-index: 4; pointer-events: none; border-radius: 2.4cqw;
   background: repeating-linear-gradient(180deg, rgb(255 255 255 / 0.22) 0 0.15cqw, transparent 0.15cqw 0.6cqw),
-    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 40%) 62%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 48%) 66%, transparent));
+    linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 33%) 62%, transparent), color-mix(in oklab, color-mix(in oklab, var(--p), var(--d) 41%) 66%, transparent));
   box-shadow: inset 0 0.35cqw 0.6cqw color-mix(in oklab, var(--d) 50%, transparent), inset 0 -0.2cqw 0 rgb(255 255 255 / 0.6);
 }
 .card.dz[data-fam="D"] :is(.trait, .move)::before { bottom: auto; height: 4.9cqw; border-radius: 1.4cqw;
@@ -1104,4 +1159,60 @@
   background: linear-gradient(color-mix(in oklab, var(--d) 70%, black), color-mix(in oklab, var(--d) 70%, black)) 0 0 / 100% 0.4cqw no-repeat, linear-gradient(var(--g), var(--g)) 0 100% / 100% 0.35cqw no-repeat,
     linear-gradient(90deg, transparent 24.8%, color-mix(in oklab, var(--d) 60%, black) 24.8% 25.2%, transparent 25.2% 74.8%, color-mix(in oklab, var(--d) 60%, black) 74.8% 75.2%, transparent 75.2%),
     linear-gradient(180deg, var(--d), color-mix(in oklab, var(--e) 45%, var(--d))); }
+/* the rim bake (design/card.js, tools/bake-rims.mjs; engineer ex7, first load): a print at rest takes its primary's rim and
+   over layer, finish passes and lip from one atlas for the set, cut to the strips the rim prints; each strip is one box
+   that shows its slice of the atlas, and the tilt streak inside it is masked by that slice, so it lands on the material alone, as
+   the SVG rim's mask held it. The rim's own mask, lip and passes are in the atlas: none of them prints again here */
+.card.dz .rim[data-bake], .card.dz[data-cost] .rim[data-bake] { -webkit-mask: none; mask: none; }
+/* the atlas's rungs (craft ex8, ex9; tools/bake-rims.py RUNGS): the 600 px strike, and each Lanczos prefilter below it. A
+   card takes the smallest rung at least as wide as its drawn device px (its width times the screen's resolution, read at
+   the top of each resolution band), so no rung is ever enlarged and none is sampled more than 1.33 times down; a screen
+   past 3x and a card wider than 600 device px take the strike (gallery.js unbakes past 1.15 times it) */
+.card.dz .rim[data-bake] { --bk: var(--bkl); }
+@media (max-resolution: 1dppx) { @container (width <= 480px) { .card.dz .rim[data-bake] { --bk: var(--bk480, var(--bkl)); } } @container (width <= 420px) { .card.dz .rim[data-bake] { --bk: var(--bk420, var(--bkl)); } } @container (width <= 360px) { .card.dz .rim[data-bake] { --bk: var(--bk360, var(--bkl)); } } @container (width <= 300px) { .card.dz .rim[data-bake] { --bk: var(--bk300, var(--bkl)); } } @container (width <= 240px) { .card.dz .rim[data-bake] { --bk: var(--bk240, var(--bkl)); } } @container (width <= 180px) { .card.dz .rim[data-bake] { --bk: var(--bk180, var(--bkl)); } } @container (width <= 150px) { .card.dz .rim[data-bake] { --bk: var(--bk150, var(--bkl)); } } }
+@media (min-resolution: 1.001dppx) and (max-resolution: 1.25dppx) { @container (width <= 384px) { .card.dz .rim[data-bake] { --bk: var(--bk480, var(--bkl)); } } @container (width <= 336px) { .card.dz .rim[data-bake] { --bk: var(--bk420, var(--bkl)); } } @container (width <= 288px) { .card.dz .rim[data-bake] { --bk: var(--bk360, var(--bkl)); } } @container (width <= 240px) { .card.dz .rim[data-bake] { --bk: var(--bk300, var(--bkl)); } } @container (width <= 192px) { .card.dz .rim[data-bake] { --bk: var(--bk240, var(--bkl)); } } @container (width <= 144px) { .card.dz .rim[data-bake] { --bk: var(--bk180, var(--bkl)); } } @container (width <= 120px) { .card.dz .rim[data-bake] { --bk: var(--bk150, var(--bkl)); } } }
+@media (min-resolution: 1.251dppx) and (max-resolution: 1.5dppx) { @container (width <= 320px) { .card.dz .rim[data-bake] { --bk: var(--bk480, var(--bkl)); } } @container (width <= 280px) { .card.dz .rim[data-bake] { --bk: var(--bk420, var(--bkl)); } } @container (width <= 240px) { .card.dz .rim[data-bake] { --bk: var(--bk360, var(--bkl)); } } @container (width <= 200px) { .card.dz .rim[data-bake] { --bk: var(--bk300, var(--bkl)); } } @container (width <= 160px) { .card.dz .rim[data-bake] { --bk: var(--bk240, var(--bkl)); } } @container (width <= 120px) { .card.dz .rim[data-bake] { --bk: var(--bk180, var(--bkl)); } } @container (width <= 100px) { .card.dz .rim[data-bake] { --bk: var(--bk150, var(--bkl)); } } }
+@media (min-resolution: 1.501dppx) and (max-resolution: 2dppx) { @container (width <= 240px) { .card.dz .rim[data-bake] { --bk: var(--bk480, var(--bkl)); } } @container (width <= 210px) { .card.dz .rim[data-bake] { --bk: var(--bk420, var(--bkl)); } } @container (width <= 180px) { .card.dz .rim[data-bake] { --bk: var(--bk360, var(--bkl)); } } @container (width <= 150px) { .card.dz .rim[data-bake] { --bk: var(--bk300, var(--bkl)); } } @container (width <= 120px) { .card.dz .rim[data-bake] { --bk: var(--bk240, var(--bkl)); } } @container (width <= 90px) { .card.dz .rim[data-bake] { --bk: var(--bk180, var(--bkl)); } } @container (width <= 75px) { .card.dz .rim[data-bake] { --bk: var(--bk150, var(--bkl)); } } }
+@media (min-resolution: 2.001dppx) and (max-resolution: 3dppx) { @container (width <= 160px) { .card.dz .rim[data-bake] { --bk: var(--bk480, var(--bkl)); } } @container (width <= 140px) { .card.dz .rim[data-bake] { --bk: var(--bk420, var(--bkl)); } } @container (width <= 120px) { .card.dz .rim[data-bake] { --bk: var(--bk360, var(--bkl)); } } @container (width <= 100px) { .card.dz .rim[data-bake] { --bk: var(--bk300, var(--bkl)); } } @container (width <= 80px) { .card.dz .rim[data-bake] { --bk: var(--bk240, var(--bkl)); } } @container (width <= 60px) { .card.dz .rim[data-bake] { --bk: var(--bk180, var(--bkl)); } } @container (width <= 50px) { .card.dz .rim[data-bake] { --bk: var(--bk150, var(--bkl)); } } }
+.card.dz .rim[data-bake][data-k]::after { content: none; }
+.card.dz .rim[data-bake] > .bk { position: absolute; left: 0; width: 100%; display: block; overflow: hidden; pointer-events: none;
+  background: var(--bk) 0 var(--ay) / 100% auto no-repeat; }
+/* only the streak is masked by the atlas: the strip's own picture prints its alpha once (craft ex8: masking the strip by
+   its own picture squared every soft edge) */
+.card.dz .rim[data-bake] > .bk > .bks { position: absolute; inset: 0; display: block; overflow: hidden; pointer-events: none;
+  -webkit-mask: var(--bk) 0 var(--ay) / 100% auto no-repeat; mask: var(--bk) 0 var(--ay) / 100% auto no-repeat; }
+.card.dz .rim > .bnd { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.card.dz .fx.dzfx > .fxb { position: absolute; display: block; background-repeat: no-repeat; pointer-events: none; }
+.card.dz .rim[data-bake] > .bk > .bks > .spec { position: absolute; display: block; inset: auto; left: -50cqw; top: calc(-69.8413cqw - var(--y0)); width: 200cqw; height: 279.3651cqw;
+  pointer-events: none; background: linear-gradient(153deg, transparent 27%, rgb(255 255 255 / 0.3) 29.7%, transparent 32.4%); }
+/* the chase at rest (collector ex7: cost 4's foil was the same smooth gradient on every rung and read only under the hand;
+   the frame zones' bright share at rest by cost read 0.086, 0.091, 0.113 and 0.096): each cost 4 card strikes its foil
+   through a pattern of its own product on its footer plates (the foot and the collector number), on the plate's free ends and edges only, a frame round its type that never runs behind a glyph (E10
+   at rest and under the hand; owner, collector and craft ex8), light at rest and full under the hand (.is-hover, .lift): Turboslide's slide grid, Glyphfield's dot matrix, Jarhead's dither, Claude of Tanks' track shoes.
+   Not on the top bar: the name and health number sit on it, and the ring's masked read must see no type there. A
+   background on the plates' own pseudo elements: no canvas, no filter, no new layer on a touch screen */
+.card.dz[data-id="turboslide"] { --fp: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 70 45%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.6%27 stroke-opacity=%270.6%27%3E%3Crect x=%275%27 y=%275%27 width=%2756%27 height=%2731.5%27 rx=%272%27 fill=%27none%27 stroke-width=%273%27/%3E%3Crect x=%2711%27 y=%2711%27 width=%2726%27 height=%275%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fp-on: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 70 45%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.95%27 stroke-opacity=%270.95%27%3E%3Crect x=%275%27 y=%275%27 width=%2756%27 height=%2731.5%27 rx=%272%27 fill=%27none%27 stroke-width=%273%27/%3E%3Crect x=%2711%27 y=%2711%27 width=%2726%27 height=%275%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fe: 1.9cqw; }
+.card.dz[data-id="glyphfield"] { --fp: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 12%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.6%27 stroke-opacity=%270.6%27%3E%3Ccircle cx=%276%27 cy=%276%27 r=%272.6%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fp-on: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 12 12%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.95%27 stroke-opacity=%270.95%27%3E%3Ccircle cx=%276%27 cy=%276%27 r=%272.6%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fe: 0.95cqw; }
+.card.dz[data-id="jarhead"] { --fp: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 4 4%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.6%27 stroke-opacity=%270.6%27%3E%3Crect x=%270%27 y=%270%27 width=%272%27 height=%272%27 stroke=%27none%27/%3E%3Crect x=%272%27 y=%272%27 width=%272%27 height=%272%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fp-on: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 4 4%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.95%27 stroke-opacity=%270.95%27%3E%3Crect x=%270%27 y=%270%27 width=%272%27 height=%272%27 stroke=%27none%27/%3E%3Crect x=%272%27 y=%272%27 width=%272%27 height=%272%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fe: 0.95cqw; }
+.card.dz[data-id="claude-of-tanks"] { --fp: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 24%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.6%27 stroke-opacity=%270.6%27%3E%3Crect x=%272%27 y=%272%27 width=%2716%27 height=%2720%27 rx=%272%27 fill=%27none%27 stroke-width=%272.5%27/%3E%3Crect x=%278%27 y=%276%27 width=%274%27 height=%2712%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fp-on: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 24%27%3E%3Cg fill=%27white%27 stroke=%27white%27 fill-opacity=%270.95%27 stroke-opacity=%270.95%27%3E%3Crect x=%272%27 y=%272%27 width=%2716%27 height=%2720%27 rx=%272%27 fill=%27none%27 stroke-width=%272.5%27/%3E%3Crect x=%278%27 y=%276%27 width=%274%27 height=%2712%27 stroke=%27none%27/%3E%3C/g%3E%3C/svg%3E"); --fe: 1.9cqw; }
+.card.dz[data-cost="4"] :is(.foot, .no)::after { content: ''; position: absolute; inset: 0; z-index: 5; border-radius: 1.2cqw; pointer-events: none;
+  box-sizing: border-box; padding: 0 1.9cqw; background: var(--fp) left top / var(--fe) auto, var(--fp) right top / var(--fe) auto;
+  background-repeat: no-repeat space;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+/* the plate's free ends only (craft ex9: the 0.45cqw top and bottom bands met the cost pips' tops and, in the lens, the
+   collector seal and hash): its pattern runs the plate's full height at each end, so its inner edge is a straight cut
+   and its outer corners take the plate's own radius, the keyline's (::before), family by family */
+.card.dz[data-cost="4"] .no::after { padding: 0 1.1cqw 0 0; background-size: calc(var(--fe) * 0.58) auto; }
+/* each end a whole column of motifs (craft ex10: the 2.9 and 3.2cqw ends cut Turboslide's slide and Claude of Tanks' shoe
+   mid-shape, read as brackets, and came within 0.5 to 1.5 device px of the first move icon and the last cost pip): every
+   end is 1.9cqw wide, one or two whole motifs across anchored at the plate's own edge, spaced whole down its height, and
+   at least 1cqw clear of the type */
+.card.dz[data-cost="4"][data-fam="S"] :is(.foot, .no)::after, .card.dz[data-cost="4"][data-fam="P"] .foot::after { border-radius: 0; }
+.card.dz[data-cost="4"][data-fam="D"] :is(.foot, .no)::after { border-radius: 2.2cqw; }
+.card.dz[data-cost="4"][data-fam="B"] :is(.foot, .no)::after { border-radius: 2.8cqw; }
+/* and the foil's keyline round each plate, lit at rest, the prism's tint under the hand */
+.card.dz[data-cost="4"] :is(.foot, .no)::before { box-shadow: inset 0 0 0 0.3cqw rgb(255 255 255 / 0.62), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.3); }
+.card.dz[data-cost="4"]:is(.is-hover, .lift) :is(.foot, .no)::before { box-shadow: inset 0 0 0 0.3cqw oklch(0.95 0.08 calc(var(--hue) + 120)), inset 0.15cqw 0.3cqw 0 rgb(255 255 255 / 0.4); }
+.card.dz[data-cost="4"]:is(.is-hover, .lift) :is(.foot, .no)::after { background-image: var(--fp-on), var(--fp-on); }
 /* ===== end of the families ===== */

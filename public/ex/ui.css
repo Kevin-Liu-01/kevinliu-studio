@@ -194,8 +194,18 @@ header.top h1 { margin: 0 auto 0 0; font: 700 20px/24px var(--sans); white-space
 @media (min-width: 1699px) { :root { --cols: 6; } }
 @media (min-width: 1979px) { :root { --cols: 7; } }
 /* wall-rule:end */
+/* wall-order:auto (node build.mjs writes this block from tools/wall-order.mjs; edit the rule there) */
+/* Kevin's order, row by row, with the cards of each row trading places so no frame family sits beside or under itself
+   (REQUESTS 587). The pack tile after the last card stays last. */
+@container (min-width: 860px) and (max-width: 1139.98px) { .wall > .pocket.tile { order: 26; } .wall > .pocket:nth-child(1) { order: 1; } .wall > .pocket:nth-child(2) { order: 0; } .wall > .pocket:nth-child(3) { order: 2; } .wall > .pocket:nth-child(4) { order: 3; } .wall > .pocket:nth-child(5) { order: 4; } .wall > .pocket:nth-child(6) { order: 5; } .wall > .pocket:nth-child(7) { order: 6; } .wall > .pocket:nth-child(8) { order: 7; } .wall > .pocket:nth-child(9) { order: 8; } .wall > .pocket:nth-child(10) { order: 9; } .wall > .pocket:nth-child(11) { order: 11; } .wall > .pocket:nth-child(12) { order: 10; } .wall > .pocket:nth-child(13) { order: 12; } .wall > .pocket:nth-child(14) { order: 13; } .wall > .pocket:nth-child(15) { order: 14; } .wall > .pocket:nth-child(16) { order: 15; } .wall > .pocket:nth-child(17) { order: 17; } .wall > .pocket:nth-child(18) { order: 16; } .wall > .pocket:nth-child(19) { order: 18; } .wall > .pocket:nth-child(20) { order: 19; } .wall > .pocket:nth-child(21) { order: 20; } .wall > .pocket:nth-child(22) { order: 21; } .wall > .pocket:nth-child(23) { order: 23; } .wall > .pocket:nth-child(24) { order: 22; } .wall > .pocket:nth-child(25) { order: 24; } .wall > .pocket:nth-child(26) { order: 25; } }
+@container (min-width: 1140px) and (max-width: 1418.98px) { .wall > .pocket.tile { order: 26; } .wall > .pocket:nth-child(1) { order: 0; } .wall > .pocket:nth-child(2) { order: 1; } .wall > .pocket:nth-child(3) { order: 2; } .wall > .pocket:nth-child(4) { order: 3; } .wall > .pocket:nth-child(5) { order: 4; } .wall > .pocket:nth-child(6) { order: 6; } .wall > .pocket:nth-child(7) { order: 5; } .wall > .pocket:nth-child(8) { order: 7; } .wall > .pocket:nth-child(9) { order: 8; } .wall > .pocket:nth-child(10) { order: 9; } .wall > .pocket:nth-child(11) { order: 10; } .wall > .pocket:nth-child(12) { order: 11; } .wall > .pocket:nth-child(13) { order: 12; } .wall > .pocket:nth-child(14) { order: 13; } .wall > .pocket:nth-child(15) { order: 14; } .wall > .pocket:nth-child(16) { order: 15; } .wall > .pocket:nth-child(17) { order: 16; } .wall > .pocket:nth-child(18) { order: 17; } .wall > .pocket:nth-child(19) { order: 18; } .wall > .pocket:nth-child(20) { order: 19; } .wall > .pocket:nth-child(21) { order: 20; } .wall > .pocket:nth-child(22) { order: 21; } .wall > .pocket:nth-child(23) { order: 22; } .wall > .pocket:nth-child(24) { order: 23; } .wall > .pocket:nth-child(25) { order: 24; } .wall > .pocket:nth-child(26) { order: 25; } }
+@container (min-width: 1419px) and (max-width: 1698.98px) { .wall > .pocket.tile { order: 26; } .wall > .pocket:nth-child(1) { order: 0; } .wall > .pocket:nth-child(2) { order: 1; } .wall > .pocket:nth-child(3) { order: 2; } .wall > .pocket:nth-child(4) { order: 3; } .wall > .pocket:nth-child(5) { order: 4; } .wall > .pocket:nth-child(6) { order: 5; } .wall > .pocket:nth-child(7) { order: 6; } .wall > .pocket:nth-child(8) { order: 8; } .wall > .pocket:nth-child(9) { order: 7; } .wall > .pocket:nth-child(10) { order: 9; } .wall > .pocket:nth-child(11) { order: 10; } .wall > .pocket:nth-child(12) { order: 11; } .wall > .pocket:nth-child(13) { order: 12; } .wall > .pocket:nth-child(14) { order: 13; } .wall > .pocket:nth-child(15) { order: 14; } .wall > .pocket:nth-child(16) { order: 15; } .wall > .pocket:nth-child(17) { order: 16; } .wall > .pocket:nth-child(18) { order: 17; } .wall > .pocket:nth-child(19) { order: 18; } .wall > .pocket:nth-child(20) { order: 19; } .wall > .pocket:nth-child(21) { order: 20; } .wall > .pocket:nth-child(22) { order: 21; } .wall > .pocket:nth-child(23) { order: 22; } .wall > .pocket:nth-child(24) { order: 23; } .wall > .pocket:nth-child(25) { order: 24; } .wall > .pocket:nth-child(26) { order: 25; } }
+@container (min-width: 1699px) and (max-width: 1978.98px) { .wall > .pocket.tile { order: 26; } .wall > .pocket:nth-child(1) { order: 0; } .wall > .pocket:nth-child(2) { order: 1; } .wall > .pocket:nth-child(3) { order: 2; } .wall > .pocket:nth-child(4) { order: 3; } .wall > .pocket:nth-child(5) { order: 4; } .wall > .pocket:nth-child(6) { order: 5; } .wall > .pocket:nth-child(7) { order: 6; } .wall > .pocket:nth-child(8) { order: 7; } .wall > .pocket:nth-child(9) { order: 8; } .wall > .pocket:nth-child(10) { order: 9; } .wall > .pocket:nth-child(11) { order: 11; } .wall > .pocket:nth-child(12) { order: 10; } .wall > .pocket:nth-child(13) { order: 12; } .wall > .pocket:nth-child(14) { order: 13; } .wall > .pocket:nth-child(15) { order: 14; } .wall > .pocket:nth-child(16) { order: 15; } .wall > .pocket:nth-child(17) { order: 16; } .wall > .pocket:nth-child(18) { order: 17; } .wall > .pocket:nth-child(19) { order: 19; } .wall > .pocket:nth-child(20) { order: 18; } .wall > .pocket:nth-child(21) { order: 20; } .wall > .pocket:nth-child(22) { order: 21; } .wall > .pocket:nth-child(23) { order: 22; } .wall > .pocket:nth-child(24) { order: 23; } .wall > .pocket:nth-child(25) { order: 24; } .wall > .pocket:nth-child(26) { order: 25; } }
+/* wall-order:end */
 .pocket {
   --r: max(3px, calc(var(--card) * 0.048));
+  /* contain (engineer ex9): a lifted card's restyle lays out its own pocket, not the document's 5,583 boxes */
+  contain: layout style;
   position: relative; padding: 6px; border-radius: calc(var(--r) + 6px); background: var(--clay); box-shadow: var(--sink-m);
   /* Each pocket is its own stacking group, so the card's stacked parts (z 1 to 6) stay in it. Without one, a card is no
      stacking context (container-type no longer implies layout containment), so all 26 cards' 900 stacked parts shared
@@ -290,7 +300,11 @@ html.inspecting .dock { opacity: 0; z-index: 29; }
 }
 
 /* ---------- inspection: the card lifted over its world, the sheet beside it ---------- */
-.inspect { position: fixed; inset: 0; z-index: 30; overflow-y: auto; --iw: max(164px, min(560px, (100vh - 80px) / 1.397, 100vw - 56px)); /* 28 px a side: the pop-out reaches 0.066W past the trim */ overscroll-behavior: contain;
+/* contain: the lens lays out its own subtree only (engineer ex9: the lift's first long task was one Layout of the whole
+   document, 28 to 52 ms at 4x, partialLayout false). Layout containment alone is no relayout boundary in Chrome: size
+   containment is, and the lens's size is the viewport's (fixed, inset 0), never its content's; paint containment clips
+   nothing it shows, as it already scrolls its own overflow */
+.inspect { contain: strict; position: fixed; inset: 0; z-index: 30; overflow-y: auto; --iw: max(164px, min(560px, (100vh - 80px) / 1.397, 100vw - 56px)); /* 28 px a side: the pop-out reaches 0.066W past the trim */ overscroll-behavior: contain;
   --sg: max(32px, calc(var(--iw) * 0.07 + 8px)); /* the sheet stands clear of the lens card's pop-out (0.066W past its trim) */ }
 .inspect:focus { outline: none; }
 /* Closed, the lens stays laid out and unseen (no paint, hit, focus or accessibility node), so a lift only
@@ -356,24 +370,29 @@ code { display: block; margin-top: 2px; font: 500 12px/16px var(--sans); color: 
 .addbtn[data-state='remove'] .l-remove, .addbtn[data-state='full'] .l-full, .addbtn[data-state='over'] .l-over { opacity: 1; }
 .addbtn[data-state='remove'] .rot { transform: rotate(45deg); }
 .visit { flex: none; }
-/* art printings (EX.md 24): the lens's plain switch between a card's art, one press per printing, beside Add and Visit */
-.arts { display: flex; gap: 4px; flex: none; }
-/* the lens's Art and Frame controls (EX.md 24, 25): the row wraps rather than run past the sheet */
+/* art printings (EX.md 24) and frame printings (EX.md 25): the lens's plain switches between a card's art and between its
+   frames, one press per printing, beside Add and Visit. The tray wraps, and so does each group inside it: a group longer
+   than the tray takes its own rows within it, so no press runs past the sheet or the screen (owner, collector and craft
+   ex6: a group that could not wrap ran Kevin Wiki's seven frames 386 px past the sheet at 1440 and cut Add To Team at 390) */
 .acts { flex-wrap: wrap; }
+.arts { display: flex; flex-wrap: wrap; gap: 4px; flex: 0 1 auto; min-width: 0; }
 .arts[hidden] { display: none; }
 .arts .press { padding: 0 12px; }
 @media (max-width: 1055px) { .arts .press { padding: 0 10px; } }
 @media (max-width: 1055px) {
   .inspect { overflow-y: auto; }
   .ins-card { position: relative; left: auto; top: auto; margin: 16px auto 0; }
-  .sheet { position: relative; left: auto; top: auto; width: auto; height: auto; margin: 16px 16px 96px; }
+  /* the sheet ends clear of the tray however many rows it wraps to: its height (--trayh, gallery.js) plus its 8 px inset,
+     the plate's 32 px rise and 4 px */
+  .sheet { position: relative; left: auto; top: auto; width: auto; height: auto; margin: 16px 16px calc(var(--trayh, 52px) + 44px); }
   .sheet-body { overflow: visible; }
   /* The tray floats at the foot on a clay plate as wide as the screen, which rises out of the sheet through
      a 24 px fade and is solid from 8 px above the tray, so no line of prose ever runs behind or beside it.
      The plate and the tray's own body are the tray's two back layers, plate first. */
-  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none; }
-  .acts { width: max-content; max-width: calc(100vw - 16px); justify-content: center; }
-  .arts { flex: 0 1 auto; flex-wrap: wrap; justify-content: center; min-width: 0; }
+  /* as wide as what it holds, never wider than the sheet (16 px in from each side of the screen), its rows centred */
+  .acts { position: fixed; left: 50%; bottom: max(8px, env(safe-area-inset-bottom)); translate: -50% 0; margin: 0; z-index: 2; background: none; box-shadow: none;
+    box-sizing: border-box; width: max-content; max-width: calc(100% - 32px); justify-content: center; }
+  .acts .arts { justify-content: center; }
   .acts::before, .acts::after { content: ''; position: absolute; z-index: -1; pointer-events: none; }
   .acts::before { left: 50%; width: 100vw; translate: -50% 0; top: -32px; bottom: calc(-1 * max(8px, env(safe-area-inset-bottom))); background: linear-gradient(oklch(from var(--clay) l c h / 0), var(--clay) 24px); }
   .acts::after { inset: 0; border-radius: inherit; background: var(--clay); box-shadow: var(--cast-lift); }

@@ -38,9 +38,13 @@
 .fan { position: absolute; top: 0; bottom: 0; width: 200%; }
 .half.l .fan { left: 0; } .half.r .fan { left: -100%; }
 .fan i { position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; }
-/* the seal: the sheet's own clay, heat-pressed into ridges lit from the top left (one light). The top
-   crimp is the tear strip; under it waits the packet's dark mouth. The foot crimp never moves. */
-.pk { --crimp: repeating-linear-gradient(90deg, oklch(from var(--clay) calc(l + 0.06) c h) 0, var(--clay) 0.7cqw, oklch(from var(--clay) calc(l - 0.13) c h) 2cqw, oklch(from var(--clay) calc(l + 0.06) c h) 2.4cqw); }
+/* the seal: the sheet's own clay, heat-pressed into a diamond knurl lit from the top left (one light): two ridge sets
+   crossing at 45 degrees, the second half as deep. The top crimp is the tear strip; under it waits the packet's dark
+   mouth. The foot crimp never moves. (craft and variety ex6: upright ridges are lines to a point under the foot; over a
+   flat panel the seal alone read a burst share of 0.28 from there, and the closed pack of level bands 0.20 to 0.21 with
+   them against 0.19 with the knurl) */
+.pk { --crimp: repeating-linear-gradient(-45deg, oklch(from var(--clay) calc(l + 0.06) c h / 0.55) 0, transparent 0.5cqw, oklch(from var(--clay) calc(l - 0.13) c h / 0.55) 1.4cqw, transparent 1.7cqw),
+  repeating-linear-gradient(45deg, oklch(from var(--clay) calc(l + 0.06) c h) 0, var(--clay) 0.5cqw, oklch(from var(--clay) calc(l - 0.13) c h) 1.4cqw, oklch(from var(--clay) calc(l + 0.06) c h) 1.7cqw); }
 .half::before { content: ''; position: absolute; z-index: 1; left: 0; right: 0; top: 0; height: 9cqw; background: linear-gradient(oklch(16% 0.012 70), oklch(16% 0.012 70 / 0.55) 55%, oklch(16% 0.012 70 / 0)); }
 .half::after { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 6cqw; background: var(--crimp); box-shadow: inset 0 1px 0 oklch(42% 0.035 70 / 0.22); }
 .strip { position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 9cqw; display: flex; pointer-events: none; }
@@ -167,7 +171,7 @@
    compositor already, so it stays out of this list. The press's scale keeps its own ease (card.css). */
 .card .body { transition: scale 220ms var(--ease), transform 250ms step-start; }
 .card:active .body, .card.is-active .body { transition-duration: 90ms, 250ms; }
-:is(.card .art, .card .glw, .card .fx, .rim > .spec, .card .glare, .card .band, .well .card .sleeve, .well .hold > .card,
+:is(.card .art, .card .glw, .card .fx, .rim .spec, .card .glare, .card .band, .well .card .sleeve, .well .hold > .card,
   .ghost :is(.half, .strip, .strip i, .pk-foot), .duel) {
   transition: transform 250ms step-start, opacity 250ms step-start;
 }

@@ -29,6 +29,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const r4 = (v) => Math.round(v * 10000) / 100;
+  // FNV-1a, 32 bits, as 8 hex: the rim bake's key (tools/bake-rims.mjs reads it back from data-rk)
+  const hash = (s) => { let x = 0x811c9dc5; for (let i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 0x01000193); } return (x >>> 0).toString(16).padStart(8, '0'); };
 
   // one exact replacement: a string or a regex must match exactly once
   function once(h, a, b, what, id) {
@@ -97,8 +99,10 @@
     const bd = L.border ? `${at(L.border)}${q(L.bv)}` : null;
     const lit = (k, fl) => (f.lit && f.lit[k] ? `${own(f.lit[k])}${q(k === 'over' ? L.ov : L.bv)}` : fl);
     const k = f.kind || 'border';
-    if (k === 'solid' || k === 'metal') return { html: `<i class="rim" data-k="${k}" style="${maskOf([frame])}"><i class="fr"></i><i class="fin"></i><i class="spec"></i></i>`, trim: null };
-    if (k === 'engraved') return { html: `<i class="rim" data-k="engraved" style="${maskOf([frame])}"><i class="fr"></i><img class="bd" src="${lit('border', bd)}" alt="" draggable="false"><i class="fin"></i><i class="spec"></i></i>`, trim: null };
+    // a solid or engraved printing's naming band (borders/<id>/band.svg), in its own colours over the frame's ground
+    const band = (k === 'solid' || k === 'engraved') && L.band ? `<img class="bnd" src="${R}${f.dir}${L.band}${q(L.nv)}" alt="" draggable="false">` : '';
+    if (k === 'solid' || k === 'metal') return { html: `<i class="rim" data-k="${k}" style="${maskOf([frame])}"><i class="fr"></i>${band}<i class="fin"></i><i class="spec"></i></i>`, trim: null };
+    if (k === 'engraved') return { html: `<i class="rim" data-k="engraved" style="${maskOf([frame])}"><i class="fr"></i><img class="bd" src="${lit('border', bd)}" alt="" draggable="false">${band}<i class="fin"></i><i class="spec"></i></i>`, trim: null };
     const full = k === 'border';
     const trim = full && L.trim ? `${at(L.trim)}${q(L.tv)}` : null;
     const over = full && L.over ? `<i class="rimo" style="${maskOf([`${D}frames/${id}-over.svg${q(c.v)}`, `${at(L.over)}${q(L.ov)}`, ...(trim ? [trim] : [])])}"><img class="bdo" src="${lit('over', `${at(L.over)}${q(L.ov)}`)}" alt="" draggable="false"><i class="fin"></i></i>` : '';
@@ -132,7 +136,22 @@
       // the border: the card's primary frame (rimOf), masked to the family's frame, its own alpha and its trim
       const q = (v) => (v ? '?v=' + v : '');
       const F0 = c.frames && c.frame ? c.frames[c.frame] : { kind: 'border', dir: `borders/${id}/`, layers: c.layers, lit: c.lit };
-      const { html: rimHtml, trim } = rimOf(c, id, R, F0);
+      let { html: rimHtml, trim } = rimOf(c, id, R, F0);
+      // the rim bake (tools/bake-rims.mjs; engineer ex7, first load): the primary's rim and over layer struck at rest,
+      // its finish passes and lip with them, cut to the strips they print and packed into one atlas for the set
+      // (design/bake/rims.webp). A print at rest takes the atlas when the caller hands it the bake (env.bake: build.mjs
+      // for the gallery's pages) and the bake was struck from this exact rim (data-rk, the rim's markup and the card's
+      // own tones); a hi print and every other frame keep their SVGs (gallery.js swaps a card drawn wider than the bake
+      // back to them). The tilt streak stays live in each strip, masked by the atlas itself.
+      const rk = hash(rimHtml + '|' + ((h.match(/^<div class="card[^>]*?\sstyle="([^"]*)"/) || [])[1] || ''));
+      const B = env && env.bake, b = B && B.cards && B.cards[id];
+      const baked = !!(b && b.key === rk && !opts.hi);
+      if (baked) {
+        // 6 decimals (craft ex9): a strip's box and its picture land on the same device pixel at a rung's own width
+        const cq = (px) => Math.round((px / B.w) * 1e8) / 1e6;
+        rimHtml = `<i class="rim" data-k="${F0.kind || 'border'}" data-bake="${B.w}" data-rk="${rk}" style="--bkl:url(${R}${B.src})${(B.rungs || []).map((g) => `;--bk${g.w}:url(${R}${g.src})`).join('')}">${b.slices.map(([s0, s1, ay]) => `<i class="bk" style="top:${cq(s0)}cqw;height:${cq(s1 - s0)}cqw;--ay:${-cq(ay)}cqw;--y0:${cq(s0)}cqw"><i class="bks"><i class="spec"></i></i></i>`).join('')}</i>`;
+        if (trim && b.trim) trim = b.trim;
+      } else rimHtml = rimHtml.replace('<i class="rim" ', `<i class="rim" data-rk="${rk}" `);
       const [x0, y0, x1, y1] = c.pic;
       h = once(h, '<i class="rim"><i class="spec"></i></i><i class="pane"></i>',
         `${rimHtml}<i class="pane" style="left:${r4(x0 / 1000)}cqw;top:${r4(y0 / 1000)}cqw;width:${r4((x1 - x0) / 1000)}cqw;height:${r4((y1 - y0) / 1000)}cqw"></i>`, 'rim', id);
@@ -145,7 +164,7 @@
         h = once(h, '<i class="sleeve"></i>', `<i class="sleeve" style="--trim:url(${trim})"></i>`, 'trim sleeve', id);
       }
       // a shaped aperture (Jarhead's notch) carries its own keyline: the cost 4 prism runs on the aperture's path
-      if (c.key) h = once(h, '<i class="pane" style="', `<i class="pane" data-key style="--key:url(${D}frames/${id}-key.svg${q(c.v)});`, 'pane key', id);
+      if (c.key) h = once(h, '<i class="pane" style="', `<i class="pane" data-key style="--key:url(${baked && b.keyline ? b.keyline : `${D}frames/${id}-key.svg${q(c.v)}`});`, 'pane key', id);
       // the seal is markup.js's own: the kl signature in the collector chip, in every family
       // no glass and no glitter: the cracks, the shards and the cost 4 glitter fields go (EX.md 23.7)
       h = h.replace(/<svg class="crk"[\s\S]*?<\/svg>/, '').replace(/<svg class="shards"[\s\S]*?<\/svg>/, '').replace(/<i class="gl [a-z]+" aria-hidden="true"><i class="tw"><\/i><\/i>/g, '');
@@ -153,7 +172,18 @@
       if (c.poster) h = once(h, `src="posters/${id}.webp"`, `src="${D}posters/${id}.webp${q(c.poster)}"`, 'poster', id);
       // the front effect: the card's own (fx/<id>/fx.svg), or none
       // (a logo card's effect is masked off its logo as the card prints it: design/fxcut/<id>.svg, tools/fx-logo-cut.py)
-      const fx = c.fx.layer ? `<span class="fx dzfx" aria-hidden="true"><img src="${c.fx.src ? own(c.fx.src) : `${R}fx/${id}/${c.fx.layer}`}${q(c.fx.v)}" alt="" draggable="false"></span>` : '<span class="fx dzfx" aria-hidden="true"></span>';
+      // At rest a print takes it from the bake's effect atlas when the bake holds this exact file (tools/bake-rims.mjs),
+      // keeping the file's own path on the layer (data-fx) for gallery.js to print it again when the card draws wider
+      const fxRel = c.fx.layer ? `${c.fx.src || `fx/${id}/${c.fx.layer}`}${q(c.fx.v)}` : null;
+      const fb = fxRel && B && B.fx && B.fx.cards[id];
+      // an alternate printing prints its own cut of the effect (tools/fx-logo-cut.py; printings.js swaps it with the art):
+      // data-fxp lists them, label|path, space separated
+      const fxp = c.fx.alts ? ` data-fxp="${Object.entries(c.fx.alts).map(([l, r]) => `${l}|${own(r)}${q(c.fx.v)}`).join(' ')}"` : '';
+      let fx = c.fx.layer ? `<span class="fx dzfx" aria-hidden="true"${fxp}><img src="${own(fxRel)}" alt="" draggable="false"></span>` : '<span class="fx dzfx" aria-hidden="true"></span>';
+      if (fb && fb.src === fxRel && !opts.hi) {
+        const cq = (px) => r4(px / B.w), F = B.fx;
+        fx = `<span class="fx dzfx" aria-hidden="true"${fxp} data-fx="${own(fxRel)}">${fb.box ? `<i class="fxb" style="left:${r4((fb.box[0] - F.x0) / B.w)}cqw;top:${cq(fb.box[1])}cqw;width:${cq(fb.box[2] - fb.box[0])}cqw;height:${cq(fb.box[3] - fb.box[1])}cqw;background-image:url(${R}${F.src});background-size:${cq(F.size[0])}cqw auto;background-position:${-cq(fb.at[0])}cqw ${-cq(fb.at[1])}cqw"></i>` : ''}</span>`;
+      }
       h = once(h, /<span class="fx" aria-hidden="true">[\s\S]*?<\/span>(?=<span class="glarebox">)/, fx, 'front effect', id);
       // the subject in its family
       if (c.hero) h = hero(h, { ...c.hero, src: own(c.hero.src), hi: own(c.hero.hi) }, id, !!opts.hi, M.sizesOf, opts.sizes);
@@ -170,9 +200,9 @@
       // a poster's type lines each carry their own band (card.css .ln), so the picture shows between and beside them; a
       // description's kept last words (markup.js kept(), span.kw) stay inside its band
       if (c.fam === 'B') {
-        const n = (h.match(/<span class="(?:tr|md)">/g) || []).length;
+        const n = (h.match(/<span class="(?:tr|md)"(?: data-bal)?>/g) || []).length;
         if (n !== 3) throw new Error(`design card ${id}: poster lines matched ${n} times, expected 3`);
-        h = h.replace(/(<span class="(?:tr|md)">)((?:[^<]|<span class="kw">[^<]*<\/span>)*)(<\/span>)/g, '$1<span class="ln">$2</span>$3');
+        h = h.replace(/(<span class="(?:tr|md)"(?: data-bal)?>)((?:[^<]|<span class="kw">[^<]*<\/span>)*)(<\/span>)/g, '$1<span class="ln">$2</span>$3');
         if ((h.match(/<span class="ln">/g) || []).length !== 3) throw new Error(`design card ${id}: poster bands wrapped ${(h.match(/<span class="ln">/g) || []).length} lines, expected 3`);
       }
       return h;

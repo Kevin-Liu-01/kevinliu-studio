@@ -31,6 +31,8 @@
       cast: cast && cast.tagName === 'IMG' ? attrs(cast, ['style', ...IMG]) : null,
       // a storyboard's earlier panels (design/card.js storyboard(), .sb > .sbp > img) print the same subject cut
       sb: [...el.querySelectorAll('.sb > .sbp > img')].map((i) => attrs(i, ['src', 'style'])),
+      // the front effect as the page printed it (its primary's cut, baked or not)
+      fx: (el.querySelector('.fx.dzfx') || {}).innerHTML,
     };
   }
   // an alternate's subject as markup.js prints a subject: its rest cut, with its ladder, rest and lens cuts as srcset
@@ -82,6 +84,14 @@
       const du = num(ps, 'left') - num(ks, 'left'), dv = num(ps, 'top') - num(ks, 'top');
       set(i, { src: parts.pop.img.src, style: `left:${r4((num(o.style, 'left') + du) / 100)}cqw;top:${r4((num(o.style, 'top') + dv) / 100)}cqw;width:${r4(num(ps, 'width') / 100)}cqw` });
     });
+    // the front effect follows the art (face lane ex.7 fix): each alternate prints its own cut of the card's effect, off its
+    // own subject (tools/fx-logo-cut.py, design/card.js data-fxp); the primary takes the page's own back
+    const fx = el.querySelector('.fx.dzfx[data-fxp]');
+    if (fx) {
+      const alt = new Map(fx.dataset.fxp.split(' ').map((x) => x.split('|')));
+      if (want.primary) { if (K && K.fx != null) fx.innerHTML = K.fx; }
+      else if (alt.has(want.label)) fx.innerHTML = `<img src="${alt.get(want.label)}" alt="" draggable="false">`;
+    }
     el.dataset.art = want.label;
     return want.label;
   }

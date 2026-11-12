@@ -239,10 +239,12 @@ globalThis.MEDIA = {
      "h": 314
     },
     "set": {
-     "src": "media/glyphfield/set@2x.webp",
+     "src": "media/glyphfield/set.webp",
      "pos": "0 0",
      "size": "100% 100%",
-     "op": 0.8
+     "op": 0.8,
+     "hi": "media/glyphfield/set@2x.webp",
+     "w": 1008
     }
    },
    "logo": {
@@ -1121,20 +1123,16 @@ globalThis.MEDIA = {
       "h": 1033,
       "lw": 1100,
       "box": [
-       0.3069,
-       0.3866,
-       0.9098,
-       0.6697
+       0.086,
+       0.284,
+       0.9007,
+       0.6665
       ],
       "cross": {
        "foot": [
         [
-         0.4591,
-         0.4669
-        ],
-        [
-         0.7593,
-         0.9075
+         0.7086,
+         0.8763
         ]
        ],
        "left": [],
@@ -1156,13 +1154,13 @@ globalThis.MEDIA = {
       "cast": {
        "src": "media/local-search/alt/c6/cast.webp",
        "box": [
-        0.2958,
-        0.3829,
-        0.9359,
-        0.7029
+        0.0742,
+        0.2797,
+        0.9275,
+        0.7004
        ],
-       "w": 584,
-       "h": 292
+       "w": 576,
+       "h": 284
       }
      }
     }
@@ -2636,13 +2634,15 @@ globalThis.MEDIA = {
      "h": 321
     },
     "set": {
-     "src": "media/princeton-td/set@2x.webp",
+     "src": "media/princeton-td/set.webp",
      "pos": "50% 0%",
      "size": "100% auto",
      "fade": [
       28,
       0.22
-     ]
+     ],
+     "hi": "media/princeton-td/set@2x.webp",
+     "w": 1008
     }
    },
    "logo": {
@@ -2946,16 +2946,76 @@ globalThis.MEDIA = {
      "h": 308
     },
     "set": {
-     "src": "media/ariadne/set@2x.webp",
+     "src": "media/ariadne/set.webp",
      "pos": "0 0",
-     "size": "100% 100%"
+     "size": "100% 100%",
+     "hi": "media/ariadne/set@2x.webp",
+     "w": 1008
     }
    },
    "logo": {
     "src": "media/ariadne/logo.svg",
     "kind": "logo",
     "ground": "#0b0a0f"
-   }
+   },
+   "printings": [
+    {
+     "label": "studio",
+     "name": "Art",
+     "primary": true
+    },
+    {
+     "label": "ex5",
+     "name": "Alt art",
+     "pop": {
+      "src": "media/ariadne/alt/ex5/pop.webp",
+      "hi": "media/ariadne/alt/ex5/pop@2x.webp",
+      "w": 1846,
+      "h": 1257,
+      "lw": 923,
+      "box": [
+       0.134,
+       0.1495,
+       0.9093,
+       0.6774
+      ],
+      "cross": {
+       "foot": [
+        [
+         0.7437,
+         0.888
+        ]
+       ],
+       "left": [],
+       "right": []
+      },
+      "prov": 0.5,
+      "cuts": [
+       [
+        0.25,
+        "media/ariadne/alt/ex5/pop@0.25x.webp",
+        231
+       ],
+       [
+        0.5,
+        "media/ariadne/alt/ex5/pop@0.5x.webp",
+        462
+       ]
+      ],
+      "cast": {
+       "src": "media/ariadne/alt/ex5/cast.webp",
+       "box": [
+        0.123,
+        0.146,
+        0.9353,
+        0.7099
+       ],
+       "w": 484,
+       "h": 336
+      }
+     }
+    }
+   ]
   },
   "atlas": {
    "pop": {
@@ -3130,9 +3190,11 @@ globalThis.MEDIA = {
      "h": 274
     },
     "set": {
-     "src": "media/dedalus-terminal/set@2x.webp",
+     "src": "media/dedalus-terminal/set.webp",
      "pos": "6.20cqw 12.80cqw",
-     "size": "77.60cqw 43.40cqw"
+     "size": "77.60cqw 43.40cqw",
+     "hi": "media/dedalus-terminal/set@2x.webp",
+     "w": 870
     }
    },
    "logo": {
@@ -3487,20 +3549,33 @@ globalThis.MEDIA = {
       "h": 999,
       "lw": 848,
       "box": [
-       0.086,
+       0.132,
        0.148,
-       0.9574,
-       0.661
+       1.059,
+       0.6937
       ],
       "cross": {
        "foot": [
         [
-         0.7398,
-         0.81
+         0.7593,
+         0.966
         ]
        ],
        "left": [],
-       "right": []
+       "right": [
+        [
+         0.1648,
+         0.2255
+        ],
+        [
+         0.4431,
+         0.5728
+        ],
+        [
+         0.6293,
+         0.646
+        ]
+       ]
       },
       "prov": null,
       "cuts": [
@@ -3518,10 +3593,10 @@ globalThis.MEDIA = {
       "cast": {
        "src": "media/sandbox-arena/alt/11-02-pm/cast.webp",
        "box": [
-        0.075,
-        0.1445,
-        0.9834,
-        0.6953
+        0.1198,
+        0.1434,
+        1.0862,
+        0.7294
        ],
        "w": 442,
        "h": 268
@@ -3583,9 +3658,11 @@ globalThis.MEDIA = {
      "h": 186
     },
     "set": {
-     "src": "media/sevenfold/set@2x.webp",
+     "src": "media/sevenfold/set.webp",
      "pos": "50% 0%",
-     "size": "100% auto"
+     "size": "100% auto",
+     "hi": "media/sevenfold/set@2x.webp",
+     "w": 1008
     }
    },
    "logo": {
@@ -3653,9 +3730,11 @@ globalThis.MEDIA = {
        "h": 186
       },
       "set": {
-       "src": "media/sevenfold/set@2x.webp",
+       "src": "media/sevenfold/set.webp",
        "pos": "50% 0%",
-       "size": "100% auto"
+       "size": "100% auto",
+       "hi": "media/sevenfold/set@2x.webp",
+       "w": 1008
       }
      }
     }
