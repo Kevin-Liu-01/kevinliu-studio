@@ -277,12 +277,20 @@
   background-blend-mode: normal;
 }
 .card .top > * { position: absolute; z-index: 7; }
-/* the logo tile (EX.md 9): 0.092W of light metal with the product's own mark centred and contained */
+/* the logo tile (EX.md 9): 0.092W of light metal with the product's own mark centred and contained. Round every tile,
+   on all 26 cards and built the same way, one darker keyline (Kevin 11-11, improve plan 027 question 7: "Darker
+   keyline"): the card's deep at 55% toward black, 0.003W and never under 1 css px, an outer ring of the tile's own
+   box-shadow, so the tile's edge parts from a light bar as its metal parts from a dark one (E15 reads both) */
 .card .logo {
+  --kl: color-mix(in oklab, var(--d) 55%, black); --klw: max(0.3cqw, 1px);
   left: 1.4cqw; top: 1cqw; width: 9.2cqw; height: 9.2cqw; box-sizing: border-box; padding: 1.2cqw; border-radius: 1.6cqw; display: none;
   background: linear-gradient(153deg, var(--white) 0%, var(--m1) 38%, var(--m2) 100%);
-  box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), inset -0.175cqw -0.35cqw 0.5cqw rgb(0 0 0 / 0.22), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38);
+  box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), inset -0.175cqw -0.35cqw 0.5cqw rgb(0 0 0 / 0.22), 0 0 0 var(--klw) var(--kl), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38);
 }
+/* the keyline stays whole: the tile stands over the name (8 over the bar's 7), whose plate on five cards reached the
+   tile's right edge and painted over the ring at mid-height (Glyphfield, Claude of Tanks, Prototemplate, Ariadne,
+   Princeton TD; the engineer, round ex.13) */
+.card .top .logo { z-index: 8; }
 /* a mark drawn for a dark ground sits on its own ground inside the tile; a mark that is a full tile prints edge to edge */
 .card .logo.on { background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(153deg, var(--white), var(--m2)) border-box; border: 0.4cqw solid transparent; padding: 0.8cqw; }
 .card .logo.fill { padding: 0; overflow: hidden; }
@@ -294,13 +302,13 @@
    and its metal rim still parts a dark mark from a dark bar; a mark on its own ground keeps a 1 px metal border and
    prints edge to edge inside it. That thin rim keeps only the metal's light half and no inner shade, as the cost 4
    foil keeps its light stops under 300 px, and a ring of the light metal outside the tile (0.0025W, at least 0.5 px)
-   widens it without taking from the mark. The tile grows toward the bar's left edge (0.004W in), so it ends 0.014W
+   widens it without taking from the mark; the keyline rings that ring. The tile grows toward the bar's left edge (0.004W in), so it ends 0.014W
    before the name. At 0.092W with 0.012W padding a mark was 6 to 8 px there (round ex.4,
    Kevin 11-02: "make sure the awesome logos are still there and visible"). The name keeps its 0.156W start */
 @container (width < 188px) {
   .card .top .logo { left: 0.4cqw; top: 0.1cqw; width: 10.4cqw; height: 10.4cqw; padding: max(0.6cqw, 1px);
     background: linear-gradient(153deg, var(--white) 0%, var(--m1) 100%);
-    box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), 0 0 0 max(0.25cqw, 0.5px) var(--m1), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
+    box-shadow: inset 0.125cqw 0.25cqw 0 var(--white), 0 0 0 max(0.25cqw, 0.5px) var(--m1), 0 0 0 calc(max(0.25cqw, 0.5px) + var(--klw)) var(--kl), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
   .card .top .logo.on { border-width: max(0.3cqw, 1px); padding: 0; background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(153deg, var(--white), var(--m1)) border-box; }
   .card .top .logo.fill { padding: 0; }
 }
@@ -926,12 +934,13 @@
    top zone in energy, against 0.042 with a backing plate on all five and 0.075 with one on two. Where the picture behind
    the tile is light enough to need it (design/assign.json tile_plate: Claude of Tanks and Ariadne, the cards E15 read
    under 3:1 without one), the tile itself wears a smoked bezel, inside its edge and round it, in the card's deep: E15
-   reads the tile's rim against the bar behind it, and the bezel is that rim */
+   reads the tile's rim against the bar behind it, and the bezel is that rim. Its outer ring is the keyline every tile
+   wears (card.css .card .logo, Kevin 11-11), the same width as on the other 24 */
 .card.dz[data-fam="B"] .top::before { content: none; }
-.card.dz[data-fam="B"][data-plate] .top .logo { box-shadow: inset 0 0 0 max(0.6cqw, 1.5px) color-mix(in oklab, var(--d) 55%, black), 0 0 0 max(0.5cqw, 1px) color-mix(in oklab, var(--d) 55%, black), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
+.card.dz[data-fam="B"][data-plate] .top .logo { box-shadow: inset 0 0 0 max(0.6cqw, 1.5px) var(--kl), 0 0 0 var(--klw) var(--kl), 0.175cqw 0.35cqw 0.9cqw rgb(0 0 0 / 0.38); }
 /* a mark on its own dark ground (.on) keeps its ground; its thin metal border takes the bezel's smoke, so the rim is one
    dark band from the ring outside to the ground inside */
-.card.dz[data-fam="B"][data-plate] .top .logo.on { background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(color-mix(in oklab, var(--d) 55%, black), color-mix(in oklab, var(--d) 55%, black)) border-box; }
+.card.dz[data-fam="B"][data-plate] .top .logo.on { background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(var(--kl), var(--kl)) border-box; }
 .card.dz[data-fam="B"] :is(.nm, .hp)::before {
   content: ''; position: absolute; z-index: -1; top: 1.5cqw; bottom: 1.5cqw; left: -1.6cqw; right: -0.9cqw; border-radius: 4.2cqw; pointer-events: none;
   background: var(--frost-tile) 0 0 / 180px 180px, linear-gradient(180deg, color-mix(in oklab, var(--d) 88%, transparent), color-mix(in oklab, var(--d) 94%, transparent));
