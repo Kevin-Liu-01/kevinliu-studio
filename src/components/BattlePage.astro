@@ -2,7 +2,7 @@
 import Seo from './Seo.astro';
 import Analytics from './Analytics.astro';
 import Release from './Release.astro';
-import { battlePage } from '../lib/battle';
+import { battlePage, modulePreloads } from '../lib/battle';
 import { graph, page } from '../lib/schema';
 import { SITE, NAME, person } from '../lib/site';
 import { L } from '../i18n';
@@ -114,6 +114,7 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 <script is:inline>/* a boot that never finishes (a script that will not load, an error before the first frame) un-hides the page after 8 s with a reason in the alert, so the alert and Leave can be reached; a boot that finishes first is left alone */(function(d,wait){var asked=false;function check(){asked=false;if(d.dataset.boot===undefined)return;delete d.dataset.boot;var e=document.getElementById('error');if(e&&!e.textContent)e.textContent='The battle could not start. Reload the page, or Leave.'}function later(ev){if(asked||d.dataset.boot===undefined)return;if(ev.type==='error'&&!(ev instanceof ErrorEvent)&&!(ev.target&&ev.target.tagName==='SCRIPT'))return;asked=true;wait(check,8000)}addEventListener('error',later,true);addEventListener('unhandledrejection',later)})(document.documentElement,setTimeout.bind(window))</script>
 <Release />
 <style is:inline>/* the frosted slips' tile: card.css no longer carries it inline (scripts/sync.mjs), so this page names the file, as ui.css does for the wall. It is the same 1x tile the sheet's fallback printed */:root{--frost:url("/ex/icons/frost.webp")}</style>
+{modulePreloads(mode).map((href) => <link rel="modulepreload" href={href} />)}
 <Fragment set:html={battlePage.head} />
 <style is:inline>.kl-twin{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}</style>
 <noscript><style is:inline>.kl-twin{position:relative;width:auto;height:auto;max-height:100dvh;overflow:auto;clip-path:none;white-space:normal;padding:24px;font:16px/1.5 system-ui,sans-serif;color:CanvasText;background:Canvas}.kl-twin a{color:LinkText}</style></noscript>
