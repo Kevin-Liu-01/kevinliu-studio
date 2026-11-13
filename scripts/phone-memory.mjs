@@ -51,6 +51,13 @@ export const PHONE = {
   'public/battle/vendor/broadcast/kit.js': (t) => patch('kit.js', t, [
     ['i.addEventListener("loadeddata",s,{once:!0}),i.addEventListener("error",s,{once:!0})', `i.addEventListener("loadeddata",()=>{i.removeAttribute("src"),i.load(),s()},{once:!0}),i.addEventListener("error",s,{once:!0})/* ${MARK} */`],
   ]),
+  // Princeton TD's live sprite (round 6, r4/play arena/ptd-figure.js): its worker and 722 KB sprite add about 150 MB to
+  // a phone Arena's renderer (624 MB against production's 448 and the 500 MB phone budget, release ship check
+  // 2026-11-12). Safari reports no deviceMemory, so the round's own <= 4 GB gate never stops it on an iPhone; a touch
+  // screen shows the forms' stills instead, as a small-memory device already does.
+  'public/battle/arena/ptd-figure.js': (t) => patch('ptd-figure.js', t, [
+    ['  if ((navigator.deviceMemory ?? 8) <= 4) return false;', `  if ((navigator.deviceMemory ?? 8) <= 4 || coarse()) return false; // ${MARK}: a touch screen shows the stills (scripts/phone-memory.mjs)`],
+  ]),
   // The battle's lean grounds (shared/runtime.js) and the paused live prints at the result and under the Log
   // (shared/battle.js) are round 6's own code from battle pin 3bc364c1, so none here (applying them again would
   // declare LEAN_GROUNDS twice).

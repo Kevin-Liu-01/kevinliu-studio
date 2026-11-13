@@ -42,7 +42,7 @@ const AIMING = new Set(['cannon', 'mortar']);
  *  or less, with Save-Data, or with ?ptd=still. */
 export function liveAllowed() {
   if (q.get('ptd') === 'still' || reduced()) return false;
-  if ((navigator.deviceMemory ?? 8) <= 4) return false;
+  if ((navigator.deviceMemory ?? 8) <= 4 || coarse()) return false; // kevinliu.studio phone memory: a touch screen shows the stills (scripts/phone-memory.mjs)
   if (navigator.connection?.saveData) return false;
   return true;
 }

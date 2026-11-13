@@ -6,7 +6,7 @@
   "sound": "30e69931",
   "battle": "f28393ef"
  },
- "synced": "2026-11-12T20:54:31.147Z",
+ "synced": "2026-11-13T00:21:27.686Z",
  "stages": {
   "cards": {
    "files": 1091,
@@ -10967,7 +10967,7 @@
   },
   "battle": {
    "files": 997,
-   "bytes": 152708673,
+   "bytes": 152708777,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -11001,8 +11001,8 @@
     },
     "public/battle/arena/ptd-figure.js": {
      "src": "r4/play/arena/ptd-figure.js",
-     "sha256": "a2d7f2fa8286548ddde26a597cf9fd8269fddc4ab51a827c6bc888ce59e62329",
-     "bytes": 36843
+     "sha256": "1cac44fb9fb524e925728d7102dde86526cf864e07962a1b175f210417ff4b4d",
+     "bytes": 36947
     },
     "public/battle/arena/ptd-sprite.js": {
      "src": "r4/play/arena/ptd-sprite.js",
