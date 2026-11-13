@@ -10,7 +10,9 @@ const l = of(path);
 const { path: base } = split(path);
 const pageIn = (code: string) => (base === '/404' ? lp(code, '/') : lp(code, base));
 ---
+{/* the header key shows its two-letter code, so its accessible name starts with it: a voice-control user says what
+   they see (WCAG 2.5.3) */}
 <details class:list={['lang', `in-${where}`]}>
-  <summary class:list={[where === 'head' && 'press icon']} aria-label={`${l.t('frame.language')}: ${l.name}`}><span aria-hidden="true">{where === 'head' ? l.code.toUpperCase() : l.name}</span></summary>
+  <summary class:list={[where === 'head' && 'press icon']} aria-label={where === 'head' ? `${l.code.toUpperCase()}, ${l.t('frame.language')}: ${l.name}` : `${l.t('frame.language')}: ${l.name}`}><span aria-hidden="true">{where === 'head' ? l.code.toUpperCase() : l.name}</span></summary>
   <ul>{LOCALES.map((x) => <li><a href={pageIn(x.code)} hreflang={x.lang} lang={x.lang} aria-current={x.code === l.code ? 'true' : undefined}>{x.name}</a></li>)}</ul>
 </details>

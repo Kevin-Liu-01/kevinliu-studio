@@ -546,7 +546,7 @@ body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
 
 /* fix round 7: one cursor ring (while the pointer aims a move, the ring on another steps back); names over chips under
    1180 (the even x1 chip goes, the name may wrap); the far leader's title readable on the dither */
-#moves:has(.cmove:hover) .cmove:focus-visible:not(:hover) { outline-color: transparent; }
+#moves:has(.cmove:hover) .cmove:focus-visible:not(:hover):not([data-keyed]) { outline-color: transparent; }
 /* (names over chips: the move bar's container query below decides) */
 .ps-more { font: 800 11px/1 var(--sans); color: var(--ink-2); }
 
@@ -863,3 +863,13 @@ body:has(#app[data-scene]) .tip { visibility: hidden; opacity: 0; }
 /* fixes-3 R4: the plate's HP count keeps three figures' room, right-aligned, so "/ 328" never slides as the count runs
    down from three figures to two (the knockout path's last shifts) */
 .pl-hpnum b { display: inline-block; min-width: 3ch; text-align: end; }
+/* kevinliu.studio: round 6's sheets and tower chips on a phone (scripts/sync.mjs) */
+@media (max-width: 719px) and (max-height: 740px), (max-width: 359px) {
+  #app .panel:not([data-kind="tower"]) { position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px; max-height: min(78vh, calc(100vh - 80px), calc(100vh - var(--hud-rail-b, 36px) - 44px)); overflow-y: auto; overscroll-behavior: contain; }
+}
+#app .panel :is(.key.tw-tile, .key.tw-do) .hx { max-width: 100%; box-sizing: border-box; flex-wrap: wrap; white-space: normal; }
+@media (max-width: 389px) {
+  #app .panel .key.tw-tile { padding-left: 8px; }
+  #app .panel .key.tw-tile kbd { display: none; }
+}
+@media (max-width: 359px) { #app .panel .key.tw-tile .tw-still { --h: 44px !important; } }

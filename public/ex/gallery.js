@@ -57,7 +57,7 @@
   // one status line for the page and one inside the inspect dialog (aria-modal): a message goes where focus is
   const status = $('#status'), insStatus = $('#ins-status');
   let sayQ = [], sayT = 0;
-  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };
+  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); let n = 0; const flush = () => { if (G.ritual && G.ritual.rival && n++ < 20) { sayT = setTimeout(flush, 30); return; } s.textContent = sayQ.join('. '); sayQ = []; }; sayT = setTimeout(flush, 30); };
   const and = (xs) => (xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs.at(-1));
   const { clamp } = M;
   const optsOf = (id) => ({ pass: ART.passOf(F[id].cost), k: KS[id], subject: ART.subjectOf(id) });
@@ -602,7 +602,7 @@
   function dealNext() {
     const now = () => { if (G.ritual === hold) G.ritual = null; if (S.you.length === SIZE) formRival(); };
     const tick = () => { now(); return false; };
-    const hold = { kind: 'deal', finish() { M.remove(tick); now(); if (G.ritual) G.ritual.finish(); } };
+    const hold = { kind: 'deal', rival: true, finish() { M.remove(tick); now(); if (G.ritual) G.ritual.finish(); } };
     G.ritual = hold;
     M.add(tick);
   }

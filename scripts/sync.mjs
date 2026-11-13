@@ -209,6 +209,9 @@ const TRANSFORMS = {
   'vendor/ex/index.html': (t) => pageHead(t).map((f) => (/\.css$/.test(f) ? `<link rel="stylesheet" href="${f}"${/data-card-style-sheet/.test(t.slice(t.indexOf(`href="${f}"`), t.indexOf('>', t.indexOf(`href="${f}"`)))) ? ' data-card-style-sheet' : ''}>` : `<script defer src="${f}"></script>`)).join('\n') + '\n',
   // the battle page lives at /battle and /battle/arena here, and returns to the cards at /
   'public/battle/shared/battle.js': (t) => patch('battle.js', t, [
+    // where only the speed in force shows (a phone), a press steps to the next and hides the pressed key; focus moves to
+    // the key now shown, so a keyboard or a screen reader is not dropped to the page
+    ["pace.setSpeed(pace.SPEEDS[(i + 1) % pace.SPEEDS.length]); } else pace.setSpeed(s); };", "pace.setSpeed(pace.SPEEDS[(i + 1) % pace.SPEEDS.length]); if (document.activeElement === b) sp.querySelector('[aria-pressed=\"true\"]')?.focus({ preventScroll: true }); } else pace.setSpeed(s); };"],
     // the layout switch renames the tab; it keeps this site's page titles instead
     ["const TITLES = { mat: 'Card Mat', arena: 'Arena' };", "const TITLES = { mat: 'Battle | Kevin Liu', arena: 'Battle, Arena | Kevin Liu' };"],
     ["/\\/arena\\//.test(location.pathname)", "/\\/arena(\\/|$)/.test(location.pathname)"],
@@ -260,11 +263,28 @@ const TRANSFORMS = {
   #app .speed .key { min-width: 38px; padding: 0 6px; }
   #app .key.snd { min-width: 34px; padding: 0 6px; }
 }
+`)],
+    // round 6 on a short phone: the Switch, Send In and Kit sheets were capped under the rail (150 px at 320 x 568), so
+    // their lower rows sat under the move console behind an inner scroll; they take the console's room, as the Tower
+    // sheet already does. A tower tile's multiplier chip wraps inside its pill instead of running past the tile (14 to 29
+    // px at 320); under 390 the tiles drop their number hints (aria-keyshortcuts stays) and under 360 the tower still
+    // shrinks, so the chip fits whole. A keyboard-focused move keeps its ring while the mouse rests on another move
+    ['#moves:has(.cmove:hover) .cmove:focus-visible:not(:hover) { outline-color: transparent; }', '#moves:has(.cmove:hover) .cmove:focus-visible:not(:hover):not([data-keyed]) { outline-color: transparent; }'],
+    ['.pl-hpnum b { display: inline-block; min-width: 3ch; text-align: end; }\n', after(`/* kevinliu.studio: round 6's sheets and tower chips on a phone (scripts/sync.mjs) */
+@media (max-width: 719px) and (max-height: 740px), (max-width: 359px) {
+  #app .panel:not([data-kind="tower"]) { position: fixed; left: 8px; right: 8px; top: auto; bottom: 8px; max-height: min(78vh, calc(100vh - 80px), calc(100vh - var(--hud-rail-b, 36px) - 44px)); overflow-y: auto; overscroll-behavior: contain; }
+}
+#app .panel :is(.key.tw-tile, .key.tw-do) .hx { max-width: 100%; box-sizing: border-box; flex-wrap: wrap; white-space: normal; }
+@media (max-width: 389px) {
+  #app .panel .key.tw-tile { padding-left: 8px; }
+  #app .panel .key.tw-tile kbd { display: none; }
+}
+@media (max-width: 359px) { #app .panel .key.tw-tile .tw-still { --h: 44px !important; } }
 `)]]),
-  // the battle's wordmark is this page's h1 (src/lib/battle.ts); on phones it leaves the layout but stays in the
-  // accessibility tree
+  // the battle's wordmark (a paragraph; the page's h1 is the site's own rules section, BattlePage.astro) leaves the layout
+  // on phones but stays in the accessibility tree
   // a key's raise and colour change at once; only its press moves (transform), so no frame repaints a shadow
-  // the result's title is an h2 here (the page's h1 is its wordmark), so its two rules follow it. The Mat's
+  // the result's title is an h2 here (the page has its own h1), so its two rules follow it. The Mat's
   // reduced-motion rule arrived from the round-5 merge with an unclosed selector list and no declarations, so the
   // browser dropped it and the Mat's rail, console, keys and slots kept their transitions under reduced motion; it is
   // the rule from before that merge again, less the retired .kit-chip
@@ -371,7 +391,10 @@ const TRANSFORMS = {
     ["(e.key === 'p' || e.key === 'P') && !e.target.closest('input, textarea')", "(e.key === 'p' || e.key === 'P') && e.target.closest && e.target.closest('.dock')"],
     // a pack says "Rival: ..." and "Pack: ..." in the same instant, and each say() cleared the line the other had asked
     // for; the messages of one 30 ms window now go out as one line
-    ["  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };", "  let sayQ = [], sayT = 0;\n  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); sayT = setTimeout(() => { s.textContent = sayQ.join('. '); sayQ = []; }, 30); };"],
+    ["  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; setTimeout(() => (s.textContent = text), 30); };", "  let sayQ = [], sayT = 0;\n  const say = (text) => { const s = insStatus && root.classList.contains('inspecting') ? insStatus : status; status.textContent = ''; if (insStatus) insStatus.textContent = ''; sayQ.push(text); clearTimeout(sayT); let n = 0; const flush = () => { if (G.ritual && G.ritual.rival && n++ < 20) { sayT = setTimeout(flush, 30); return; } s.textContent = sayQ.join('. '); sayQ = []; }; sayT = setTimeout(flush, 30); };"],
+    // a pack's last landing deals the rival a frame later (dealNext); the say above holds the pack's line until that hold
+    // is over, so the pack and the rival are spoken as one line, not the rival's alone
+    ["    const hold = { kind: 'deal', finish() {", "    const hold = { kind: 'deal', rival: true, finish() {"],
     // the rival's wells hold copies hidden from assistive technology (copyOf), so each filled well names its card
     ["      w.classList.toggle('full', !!id);\n    });\n    const g = $('.gauge');", "      w.classList.toggle('full', !!id);\n      if (id) { w.setAttribute('role', 'img'); w.setAttribute('aria-label', titleOf(id)); } else { w.removeAttribute('role'); w.removeAttribute('aria-label'); }\n    });\n    const g = $('.gauge');"],
     // the lens's arrow keys step to cards the wall has not scrolled to; the card that takes focus back comes into view
