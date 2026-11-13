@@ -13,6 +13,12 @@
    box once painted (the cracks' glow covers the whole card), so 26 cards held about 190 MB on an iPhone. Nothing on
    screen changes: the card takes them back a screen before it shows (docs/performance.md, Memory) */
 .wall > .pocket[data-far] :is(.card, .card *) { filter: none !important; }
+/* the deck and the pack print every card's poster as a background (the pack's fan, twice over; the deck's previous-site
+   face), and a background is never lazy: on a phone those 1.5 MB came with the page, ahead of the first card. Both tiles
+   start far in the HTML, so their backgrounds wait until the same observer finds them a screen away, by which time the
+   wall's own posters (the same files) are usually in the cache. A page without scripts never clears data-far, so the
+   rule holds only where scripts run */
+@media (scripting: enabled) { .wall > .pocket[data-far] :is(.fan i, .prev) { background-image: none !important; } }
 
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
 .skip:focus-visible { top: 12px; }

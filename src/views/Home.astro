@@ -66,7 +66,7 @@ const shim = l.en ? null : `${l.p('/gallery.js')}?v=${shimHash(galleryShim(code,
     <script is:inline defer src={versioned('/ex/gallery.js')}></script>
   </Fragment>
   <main class="gallery" id="gallery">
-    <ul class="wall" aria-label={l.t('home.wall')} set:html={`${wall}\n<li class="pocket tile">${deck}</li>\n<li class="pocket tile">${pack}</li>`} />
+    <ul class="wall" aria-label={l.t('home.wall')} set:html={`${wall}\n<li class="pocket tile" data-far>${deck}</li>\n<li class="pocket tile" data-far>${pack}</li>`} />
     <script is:inline set:html={FRAMED} />
     <script is:inline set:html={EAGER} />
     <script is:inline>/* each card's plain link to its page stays a real link until the gallery's scripts have booted; once the card is the lens's button the link leaves the tab order and the accessibility tree, so no card is announced twice */addEventListener("DOMContentLoaded",function(){if(self.Gallery)document.querySelectorAll(".wall a.golink").forEach(function(a){a.tabIndex=-1;a.setAttribute("aria-hidden","true")})})</script>
