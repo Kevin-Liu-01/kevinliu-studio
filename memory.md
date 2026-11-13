@@ -764,3 +764,41 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   move descriptions on the keys (full text in the tooltip).
 - **Checks**: extract --check, sync --check, build + guard pass; probes (tower, desk, moves a/b) in Chromium and WebKit
   on all seven languages: 0 English card descriptions in 672 tooltips per engine, desk clean, tooltips clean.
+
+## 2026-11-13: ship check of the cards refit and round 6 battle, candidate 0757628 (release/next, Claude Code)
+
+- **Type**: release check
+- **Candidate**: shipped c08f0fe + its record 95ddae5, then:
+  - cards pin 30e69931 → c2b17715 (the ex refit through ex.12, Kevin's wall order, the canvas race and lens tray fixes, the darker logo keylines, og refilmed); design/bake/ no longer ships;
+  - battle pin 0a919baa → f28393ef (round 6 3bc364c1, the bench-key fix 67842bc9, the card-text hook port);
+  - the i18n session's round 6 translations (488 battle keys, translated-plate CSS);
+  - two phone-memory patches (ptd-figure.js liveAllowed and runtime.js drawForm: a touch screen takes Princeton TD's stills, so no worker or sprite).
+- **Dropped site patches**: the phone tray wrap and ground.js's phone memory (now in r4/ex); 13 battle pairs round 6 landed, plus plan 008's two companions (keptError and bootFailed are upstream); both board.js pairs.
+- **Added sync rules**: arena/ptd-ink.json, r4/ex grounds/matter.js.
+- **Gates**: sync in sync; `pnpm test` 20/20; `pnpm check` 0 errors; negotiation 16; phone-memory; i18n-extract; build `256 pages, 248 sitemap URLs, 3733 files`; check-release 7.
+- **Preview** `kevinliu-studio-n1hco9eyl`: Vercel guard passes; smoke and check-seo (249 pages, 490 links) pass; 14 files byte-identical to dist-release-0757628; battle-strings `?v=` a year; ptd files and the new CoT clips 200.
+- **Browser checks against production** (~/k7-rescue/release-next/checks/ex-*, r6-*):
+  - Cards:
+    - Phone canvas 0 of 32 loads over 64 MB (production 11 of 32).
+    - The lens tray stays pinned.
+    - Wall order matches; DOM, tab order and twins keep Kevin's order.
+    - Keylines on all 52 tiles, no name covered.
+    - og 54 files OK.
+  - Battle function 7/7:
+    - every battle reaches the result with 0 errors or 404s;
+    - the Princeton TD worker only when held;
+    - CoT One Spec and 14 v 14 clips play;
+    - the site's fixes hold (pcm 26.2/27.1/27.6 MB).
+  - Battle layout passes at ≥375 and in translations.
+  - Battle memory: a phone Arena with Princeton TD is 492 vs 455 MB renderer, after the two phone patches (it was 624).
+- **Open**:
+  - Round 6 at 320 px:
+    - Switch/Kit panels 110–150 px tall, with rows under the console;
+    - tower chips 14–29 px past their tiles;
+    - a tower chip spills 6 px at 1440.
+  - Desktop with Princeton TD is about +440 MB process total (the live sprite).
+  - Desktop 1x is about +40–50 MB from the fxcut masks.
+  - The pack's status is split (plan 016's 30 ms join no longer covers rituals.js's timing).
+  - ptd-figure.js (13 KB) is still imported on phones.
+  - Plan 029 waits for pnpm i18n:translate.
+  - Killcam and Sabot Round keep their old clips.
