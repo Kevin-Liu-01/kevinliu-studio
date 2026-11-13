@@ -280,6 +280,12 @@ const TRANSFORMS = {
     ['/* ============================================================ reduced motion: every step a still */', before(NARROW_ARENA)],
     [KEY_EASE, KEY_MOVE],
   ]),
+  // Local Search and Kevin Wiki moved to their own subdomains after the cards' pin (Kevin, 2026-11-13): the build, the
+  // lens and the battle's card faces read their live link from here. Drop this when the rounds carry the new addresses
+  'public/ex/fighters.js': (t) => patch('fighters.js', t, [
+    ["    url: 'https://lsearch.dev/',", "    url: 'https://localsearch.kevinliu.studio/',"],
+    ["    url: 'https://kevin-wiki.vercel.app',", "    url: 'https://wiki.kevinliu.studio/',"],
+  ]),
   // the lens's Visit link gets its address when a card opens; a placeholder "#" would resolve against <base> to /ex/
   'public/ex/markup.js': (t) => patch('markup.js', t, [
     ['<a class="press visit" target="_blank" rel="noopener" href="#">', '<a class="press visit" target="_blank" rel="noopener">'],

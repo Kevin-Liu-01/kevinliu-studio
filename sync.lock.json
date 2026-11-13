@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "f28393ef"
  },
- "synced": "2026-11-13T00:33:41.175Z",
+ "synced": "2026-11-13T19:52:48.727Z",
  "stages": {
   "cards": {
    "files": 1091,
-   "bytes": 107660372,
+   "bytes": 107660388,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -29,8 +29,8 @@
     },
     "public/ex/fighters.js": {
      "src": "r4/ex/fighters.js",
-     "sha256": "99afedd897b9992609aec45b7e6c21a5b629895699fccff651c785ad612b2914",
-     "bytes": 111089
+     "sha256": "490cedb5ec294ffdc90c842e46b1393a55131ffcf53bda491e335491b276a7ad",
+     "bytes": 111105
     },
     "public/ex/engine.js": {
      "src": "r4/ex/engine.js",
