@@ -118,6 +118,8 @@ the difference. Main-thread work before the home's first paint: 3.4 → 1.0 s (t
 - **The role.** The home title and description say "design engineer", as Kevin's request did; `jobTitle` in the
   JSON-LD, `BIO`, the facts and his own /about words say "infra-product engineer". They were left alone: Kevin decides
   which title is canonical, then one line in `src/lib/site.ts` per place.
+  Kevin decided on 2026-11-13: "Design engineer everywhere". The release changes `BIO`, the /about words, the fact
+  and `jobTitle` to match.
 - **No deployment.** `scripts/smoke.mjs` (the `/sitemap.xml` 308, headers) and field numbers need a preview or
   production; that is a push and a deploy, which wait for Kevin.
 - **The battle's reveal.** The Mat's first paint stays about 14 s on the throttled phone (10.7 s on production's
