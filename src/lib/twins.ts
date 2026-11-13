@@ -3,8 +3,9 @@
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
 import { fighters, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_LEAD, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
+import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
+import { homeParts } from '../i18n/source.mjs';
 
 const ring = rules.ring as string[];
 export const cardPath = (f: Fighter, code = DEFAULT) => lp(code, `/cards/${f.id}`);
@@ -30,9 +31,18 @@ export const ruleIn = (f: Fighter, code = DEFAULT) => (code === DEFAULT || !f.tr
 export const moveLineIn = (f: Fighter, i: number, code = DEFAULT) => (code === DEFAULT ? moveLine(f.moves[i]) : L(code).move(f.id, i, f.moves[i].name));
 const discs = (f: Fighter, code: string) => f.disciplines.map((d) => L(code).disc(d));
 export const bioIn = (code = DEFAULT) => (code === DEFAULT ? BIO : L(code).c.bio);
-// the first line of /index.md and llms.txt: in English, who Kevin is and where he works (Kevin, 2026-11-13); a translated
-// twin keeps its translated bio until `pnpm i18n:translate` carries the English line
-const openingIn = (code = DEFAULT) => (code === DEFAULT ? HOME_LEAD : bioIn(code));
+// The home's title, its lead (who Kevin is and where he works) and its description, Kevin's lines of 2026-11-13 in
+// src/lib/site.ts, translated as templates ({name}, {projects}: source.mjs homeParts). The lead is also the first line
+// of /index.md and llms.txt. A CJK lead ends on its own full stop, so the projects' sentence follows it with no space
+const HOME = homeParts({ NAME, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION });
+export const homeTitleIn = (code = DEFAULT) => (code === DEFAULT ? HOME_TITLE : L(code).fill(L(code).c.home.title, { name: NAME }));
+export const homeLeadIn = (code = DEFAULT) => (code === DEFAULT ? HOME_LEAD : L(code).fill(L(code).c.home.lead, { name: NAME }));
+export const homeDescriptionIn = (code = DEFAULT) => {
+  if (code === DEFAULT) return HOME_DESCRIPTION;
+  const lead = homeLeadIn(code);
+  return `${lead}${/[。！？]$/.test(lead) ? '' : ' '}${L(code).fill(L(code).c.home.openSource, { projects: HOME.projects })}`;
+};
+const openingIn = homeLeadIn;
 export const descriptionIn = (code = DEFAULT) => (code === DEFAULT ? DESCRIPTION : L(code).c.description);
 
 const table = (code: string) => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${whatIn(f, code)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[${L(code).t('twin.sourceLink')}](${repoOf(f)})` : ''} |`);

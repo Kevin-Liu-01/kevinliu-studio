@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liu 是一名常驻旧金山的基础设施与产品工程师，也是 Princeton University 的学生，致力于设计充满生命力的界面。",
+  "bio": "Kevin Liu 是一名常驻旧金山的设计工程师，也是 Princeton University 的学生，致力于设计充满生命力的界面。",
   "description": "Kevin Liu 的项目化身为 26 张收藏卡牌：字体、游戏、着色器、智能体和界面，每张卡牌都对应真实产品，将功能化为招式，让您在对战中施展。",
+  "home": {
+    "title": "{name} — General Translation 设计工程师",
+    "lead": "{name} 是 General Translation 驻旧金山的设计工程师，也是 Princeton 的计算机科学专业学生。",
+    "openSource": "开源项目：{projects}。"
+  },
   "about": [
-    "我是 [General Translation](https://generaltranslation.com) 的基础设施与产品工程师，常驻旧金山。",
-    "我今年 19 岁，从 12 岁起就开始编程和设计。目前就读于 [Princeton University](https://www.princeton.edu)。",
+    "我是 [General Translation](https://generaltranslation.com) 的设计工程师，常驻旧金山。",
+    "我今年 20 岁，从 12 岁起就开始编程和设计。目前就读于 [Princeton University](https://www.princeton.edu)。",
     "我从第一性原理出发，设计充满生命力、拥有独特个性的界面。我从使用中的不顺畅之处寻找尚未满足的需求，也将环境视为产品的一部分。我通过字体、技能和协议，将不寻常的观察化为实用的世界。"
   ],
   "facts": [
-    "Kevin Liu 自 2026 年 7 月起担任 General Translation 的基础设施与产品工程师，常驻旧金山。",
+    "Kevin Liu 自 2026 年 7 月起担任 General Translation 的设计工程师，常驻旧金山。",
     "他在 Princeton University 攻读计算机科学专业（工程学学士，2028 届）。",
     "他从 12 岁起就开始编程和设计。",
     "加入 General Translation 之前，他曾在 Dedalus Labs 担任创始工程师（2026 年 1 月至 7 月），负责构建智能体基础设施，也曾在 Sevenfold AI 担任创始工程师（2025 年 6 月至 11 月）。",

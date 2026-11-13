@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liuは、サンフランシスコを拠点とするインフラ・プロダクトエンジニアで、Princeton Universityに在学しています。まるで生きているようなインターフェースを設計しています。",
+  "bio": "Kevin Liuは、サンフランシスコを拠点とするデザインエンジニアで、Princeton Universityに在学しています。まるで生きているようなインターフェースを設計しています。",
   "description": "Kevin Liuのプロジェクトが26枚のコレクションカードになりました。書体、ゲーム、シェーダー、エージェント、インターフェース。それぞれ実際のプロダクトに対応し、その機能を技にしてカードバトルを楽しめます。",
+  "home": {
+    "title": "{name} — General Translationのデザインエンジニア",
+    "lead": "{name}は、サンフランシスコのGeneral Translationで働くデザインエンジニアで、Princeton Universityでコンピュータサイエンスを学んでいます。",
+    "openSource": "オープンソース：{projects}。"
+  },
   "about": [
-    "サンフランシスコを拠点に、[General Translation](https://generaltranslation.com)でインフラ・プロダクトエンジニアとして働いています。",
-    "現在19歳で、12歳からプログラミングとデザインを続けています。今は[Princeton University](https://www.princeton.edu)に通っています。",
+    "サンフランシスコを拠点に、[General Translation](https://generaltranslation.com)でデザインエンジニアとして働いています。",
+    "現在20歳で、12歳からプログラミングとデザインを続けています。今は[Princeton University](https://www.princeton.edu)に通っています。",
     "物事の本質から考え、独自の個性を宿した、まるで生きているようなインターフェースを設計しています。使う中で感じる引っかかりを手がかりに足りないものを探し、環境もプロダクトの一部として捉えます。書体、スキル、プロトコルを通じて、ちょっと変わった気づきを、役に立つ世界へと形にしています。"
   ],
   "facts": [
-    "Kevin Liuは2026年7月から、サンフランシスコのGeneral Translationでインフラ・プロダクトエンジニアとして働いています。",
+    "Kevin Liuは2026年7月から、サンフランシスコのGeneral Translationでデザインエンジニアとして働いています。",
     "Princeton Universityでコンピューターサイエンスを学んでいます（工学学士課程、2028年卒業予定）。",
     "12歳からプログラミングとデザインを続けています。",
     "General Translationに入社する前は、Dedalus Labs（2026年1月〜7月）で創業期のエンジニアとしてエージェント基盤を構築し、Sevenfold AI（2025年6月〜11月）でも創業期のエンジニアを務めました。",

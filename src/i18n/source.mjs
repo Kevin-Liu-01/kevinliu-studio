@@ -2,7 +2,18 @@
 // (the synced cards, src/lib/cards.ts). scripts/i18n-extract.mjs writes it for General Translation; the build computes
 // it again, so a card whose words changed since the last translation prints in English until it is translated again.
 // Product names, move names, trait names, receipts and code are never in it: a move line names its move as {move}.
-export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCRIPTION, ABOUT, FACTS, QA }) {
+// The English home's title, lead and description (src/lib/site.ts, Kevin 2026-11-13) as templates: his name is {name} and
+// the open-source projects are {projects}, so no translation can rename either. The description is the lead plus one
+// sentence naming the projects; a change of that shape stops the build here rather than ship a half-translated line.
+export function homeParts({ NAME, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION }) {
+  const named = (s, what) => { if (!s.includes(NAME)) throw new Error(`i18n: ${what} no longer names ${NAME}`); return s.replaceAll(NAME, '{name}'); };
+  if (!HOME_DESCRIPTION.startsWith(HOME_LEAD + ' ')) throw new Error('i18n: HOME_DESCRIPTION no longer opens with HOME_LEAD');
+  const m = /^([^:]+: )(.+)\.$/.exec(HOME_DESCRIPTION.slice(HOME_LEAD.length + 1));
+  if (!m) throw new Error('i18n: HOME_DESCRIPTION no longer ends "<label>: <projects>."');
+  return { title: named(HOME_TITLE, 'HOME_TITLE'), lead: named(HOME_LEAD, 'HOME_LEAD'), openSource: `${m[1]}{projects}.`, projects: m[2] };
+}
+
+export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCRIPTION, ABOUT, FACTS, QA, ...site }) {
   const run = (r) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
   const cards = {};
   for (const f of fighters) {
@@ -22,6 +33,7 @@ export function source({ fighters, rules, whatOf, answerOf, moveLine, BIO, DESCR
   return {
     bio: BIO,
     description: DESCRIPTION,
+    home: (({ title, lead, openSource }) => ({ title, lead, openSource }))(homeParts(site)),
     about: ABOUT.map((runs) => runs.map(run).join('')),
     facts: [...FACTS],
     qa: QA.map(([q, a]) => ({ q, a })),

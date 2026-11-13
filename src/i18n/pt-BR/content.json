@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liu é engenheiro de infraestrutura e produto em São Francisco, estuda na Princeton University e cria interfaces que parecem vivas.",
+  "bio": "Kevin Liu é engenheiro de design em São Francisco, estuda na Princeton University e cria interfaces que parecem vivas.",
   "description": "Os projetos de Kevin Liu em 26 cartas colecionáveis: tipografia, jogos, shaders, agentes e interfaces, cada um com seu produto real, seus recursos como golpes e uma batalha para você jogar.",
+  "home": {
+    "title": "{name} — Engenheiro de design na General Translation",
+    "lead": "{name} é engenheiro de design na General Translation, em São Francisco, e estuda ciência da computação em Princeton.",
+    "openSource": "Código aberto: {projects}."
+  },
   "about": [
-    "Sou engenheiro de infraestrutura e produto na [General Translation](https://generaltranslation.com), em São Francisco.",
-    "Tenho 19 anos e trabalho com programação e design desde os 12. Atualmente, estudo na [Princeton University](https://www.princeton.edu).",
+    "Sou engenheiro de design na [General Translation](https://generaltranslation.com), em São Francisco.",
+    "Tenho 20 anos e trabalho com programação e design desde os 12. Atualmente, estudo na [Princeton University](https://www.princeton.edu).",
     "Crio interfaces que parecem vivas, a partir de princípios fundamentais e com personalidade própria. Os pontos de atrito me ajudam a descobrir o que falta, e trato os ambientes como parte do produto. Transformo observações inusitadas em mundos úteis por meio de tipografia, skills e protocolos."
   ],
   "facts": [
-    "Kevin Liu é engenheiro de infraestrutura e produto na General Translation, em São Francisco, desde julho de 2026.",
+    "Kevin Liu é engenheiro de design na General Translation, em São Francisco, desde julho de 2026.",
     "Ele estuda ciência da computação na Princeton University (B.S.E., turma de 2028).",
     "Ele trabalha com programação e design desde os 12 anos.",
     "Antes da General Translation, ele foi engenheiro fundador na Dedalus Labs (janeiro a julho de 2026), onde desenvolveu infraestrutura para agentes, e na Sevenfold AI (junho a novembro de 2025).",

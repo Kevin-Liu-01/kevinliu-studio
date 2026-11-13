@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liu is an infra-product engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.",
+  "bio": "Kevin Liu is a design engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.",
   "description": "Kevin Liu's projects as 26 collectible cards: type, games, shaders, agents and interfaces, each with its real product, its features as moves, and a battle you can play.",
+  "home": {
+    "title": "{name} — Design engineer at General Translation",
+    "lead": "{name} is a design engineer at General Translation in San Francisco and a Princeton CS student.",
+    "openSource": "Open source: {projects}."
+  },
   "about": [
-    "I am an infra-product engineer at [General Translation](https://generaltranslation.com) based in San Francisco.",
-    "I am 19, and I've been coding and designing since I was 12. I am currently attending [Princeton University](https://www.princeton.edu).",
+    "I am a design engineer at [General Translation](https://generaltranslation.com) based in San Francisco.",
+    "I am 20, and I've been coding and designing since I was 12. I am currently attending [Princeton University](https://www.princeton.edu).",
     "I design interfaces that feel alive, from first principles, with a spirit of their own. I follow friction toward what is missing, and treat environments as part of the product. I build strange observations into useful worlds through type, skills, and protocols."
   ],
   "facts": [
-    "Kevin Liu is an infra-product engineer at General Translation in San Francisco, since July 2026.",
+    "Kevin Liu is a design engineer at General Translation in San Francisco, since July 2026.",
     "He studies computer science at Princeton University (B.S.E., class of 2028).",
     "He has been coding and designing since he was 12.",
     "Before General Translation he was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025).",

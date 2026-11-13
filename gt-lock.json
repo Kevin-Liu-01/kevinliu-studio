@@ -46,42 +46,42 @@
     },
     {
       "fileId": "e339d44bd1e7bd9fc4fa58a09b89a74d71a5162520b8f86aeae307d3aeb90344",
-      "versionId": "e26107b78c7f244731d0aff80ee4ab683f42ec5527a874410679e33834ecf0af",
+      "versionId": "e71369513ae0d201f70c69a3d25d9d95b769f7df1724a20523d328db36960afe",
       "translations": {
         "es": {
-          "updatedAt": "2026-11-10T18:20:50.743Z",
+          "updatedAt": "2026-11-13T22:36:43.537Z",
           "fileName": "src/i18n/es/content.json",
-          "postProcessHash": "cfe2e3a22c97922106a1e4c61576df4705ac16544d8d940f0f469e5c4f7533d6"
+          "postProcessHash": "a445ea60a841efdaa801712dd1013d0d89e132360648b6730c86fa30f77ff45e"
         },
         "pt-BR": {
-          "updatedAt": "2026-11-10T18:20:50.744Z",
+          "updatedAt": "2026-11-13T22:36:43.538Z",
           "fileName": "src/i18n/pt-BR/content.json",
-          "postProcessHash": "688ca34fce69b0805320a9c2edc138ccc3996c9271a0a970595e5654b32ee6d9"
-        },
-        "fr": {
-          "updatedAt": "2026-11-10T18:20:50.756Z",
-          "fileName": "src/i18n/fr/content.json",
-          "postProcessHash": "6d3289155ad90a3f5affcc38dc250d7812d577145ccc7b2c2944ef0f07f2520c"
-        },
-        "de": {
-          "updatedAt": "2026-11-10T18:20:50.758Z",
-          "fileName": "src/i18n/de/content.json",
-          "postProcessHash": "d40b968e306f2a391e83fdde9c55bc65fa602f7ffbd040c007092a0004d0d700"
-        },
-        "zh-CN": {
-          "updatedAt": "2026-11-10T18:20:50.759Z",
-          "fileName": "src/i18n/zh-CN/content.json",
-          "postProcessHash": "93b68ab5d029e3014914eb3cd7cb30b78b132cc5b92f1f9b5ba7a78c4da2f1ec"
+          "postProcessHash": "0a32bf0e46482d473ad4e31dc611985a6dc08545ac841b83a2f5741549accb40"
         },
         "ko": {
-          "updatedAt": "2026-11-10T18:20:50.761Z",
+          "updatedAt": "2026-11-13T22:36:43.540Z",
           "fileName": "src/i18n/ko/content.json",
-          "postProcessHash": "16df5fb25232ae87c7f8c7540d9d0f39d6aba23152c9cb102fc68b2368cafe29"
+          "postProcessHash": "a681bf32d16a855d8a2e741a85fca2547006950de515c8a73e9332df109e3952"
+        },
+        "fr": {
+          "updatedAt": "2026-11-13T22:36:43.542Z",
+          "fileName": "src/i18n/fr/content.json",
+          "postProcessHash": "b71972ad73f71e7044b327423fa65c4ed658349478018c16eb7ddd3d37762622"
         },
         "ja": {
-          "updatedAt": "2026-11-10T18:20:50.762Z",
+          "updatedAt": "2026-11-13T22:36:43.544Z",
           "fileName": "src/i18n/ja/content.json",
-          "postProcessHash": "d44068dc8309cbebaf42ab28f00d52a97c88927ea91b291fdb4c750bea413727"
+          "postProcessHash": "2101adea7e5d7e3ae7d27afa5f6f0056ca04e091df75f6a40765a1ed00707d7d"
+        },
+        "de": {
+          "updatedAt": "2026-11-13T22:36:43.545Z",
+          "fileName": "src/i18n/de/content.json",
+          "postProcessHash": "30a592971c6ae396107c0aa1e89f24496da71a305ff0da2d8724abd9a05ab801"
+        },
+        "zh-CN": {
+          "updatedAt": "2026-11-13T22:36:43.546Z",
+          "fileName": "src/i18n/zh-CN/content.json",
+          "postProcessHash": "7839a3d971fc40389bb9d48fe1d983f90b49682288843a6571e32b233bb57374"
         }
       },
       "fileName": "src/i18n/en/content.json"

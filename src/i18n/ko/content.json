@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liu는 샌프란시스코에서 활동하는 인프라·제품 엔지니어이자 Princeton University 학생으로, 살아 있는 듯한 인터페이스를 설계합니다.",
+  "bio": "Kevin Liu는 샌프란시스코에서 활동하는 디자인 엔지니어이자 Princeton University 학생으로, 살아 있는 듯한 인터페이스를 설계합니다.",
   "description": "Kevin Liu의 프로젝트를 담은 수집형 카드 26장: 서체, 게임, 셰이더, 에이전트, 인터페이스까지, 각 카드에는 실제 제품과 기술로 변신한 제품 기능이 담겨 있으며, 직접 전투를 즐길 수 있습니다.",
+  "home": {
+    "title": "{name} — General Translation의 디자인 엔지니어",
+    "lead": "{name}는 샌프란시스코의 General Translation에서 일하는 디자인 엔지니어이자 Princeton University에서 컴퓨터과학을 전공하는 학생입니다.",
+    "openSource": "오픈 소스: {projects}."
+  },
   "about": [
-    "저는 샌프란시스코에 있는 [General Translation](https://generaltranslation.com)에서 인프라·제품 엔지니어로 일하고 있습니다.",
-    "저는 19살이며, 12살 때부터 코딩과 디자인을 해 왔습니다. 현재 [Princeton University](https://www.princeton.edu)에 재학 중입니다.",
+    "저는 샌프란시스코에 있는 [General Translation](https://generaltranslation.com)에서 디자인 엔지니어로 일하고 있습니다.",
+    "저는 20살이며, 12살 때부터 코딩과 디자인을 해 왔습니다. 현재 [Princeton University](https://www.princeton.edu)에 재학 중입니다.",
     "저는 근본 원리에서 출발해 저마다 고유한 생명력이 느껴지는 인터페이스를 설계합니다. 불편함을 단서로 무엇이 빠져 있는지 찾고, 사용 환경도 제품의 일부로 여깁니다. 서체, 기술, 프로토콜을 통해 색다른 관찰을 쓸모 있는 세계로 만들어 갑니다."
   ],
   "facts": [
-    "Kevin Liu는 2026년 7월부터 샌프란시스코의 General Translation에서 인프라·제품 엔지니어로 일하고 있습니다.",
+    "Kevin Liu는 2026년 7월부터 샌프란시스코의 General Translation에서 디자인 엔지니어로 일하고 있습니다.",
     "Princeton University에서 컴퓨터 과학을 전공하고 있습니다(공학사, 2028년 졸업 예정).",
     "12살 때부터 코딩과 디자인을 해 왔습니다.",
     "General Translation에 합류하기 전에는 Dedalus Labs(2026년 1월~7월)에서 창립 엔지니어로 에이전트 인프라를 구축했으며, Sevenfold AI(2025년 6월~11월)에서도 창립 엔지니어로 일했습니다.",

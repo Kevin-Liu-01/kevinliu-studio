@@ -1,13 +1,18 @@
 {
-  "bio": "Kevin Liu es ingeniero de infraestructura y producto en San Francisco, estudia en Princeton University y diseña interfaces que parecen tener vida.",
+  "bio": "Kevin Liu es ingeniero de diseño en San Francisco, estudia en Princeton University y diseña interfaces que parecen tener vida.",
   "description": "Los proyectos de Kevin Liu en 26 cartas coleccionables: tipografía, juegos, sombreadores, agentes e interfaces. Cada carta incluye un producto real, sus funciones convertidas en movimientos y una batalla en la que puede participar.",
+  "home": {
+    "title": "{name} — Ingeniero de diseño en General Translation",
+    "lead": "{name} es ingeniero de diseño en General Translation, en San Francisco, y estudia informática en Princeton.",
+    "openSource": "Código abierto: {projects}."
+  },
   "about": [
-    "Soy ingeniero de infraestructura y producto en [General Translation](https://generaltranslation.com), en San Francisco.",
-    "Tengo 19 años y llevo programando y diseñando desde los 12. Actualmente estudio en [Princeton University](https://www.princeton.edu).",
+    "Soy ingeniero de diseño en [General Translation](https://generaltranslation.com), en San Francisco.",
+    "Tengo 20 años y llevo programando y diseñando desde los 12. Actualmente estudio en [Princeton University](https://www.princeton.edu).",
     "Diseño interfaces que parecen tener vida, con espíritu propio y partiendo de principios fundamentales. Me guío por los puntos de fricción para descubrir lo que falta y considero los entornos parte del producto. Transformo observaciones insólitas en mundos útiles mediante tipografía, skills y protocolos."
   ],
   "facts": [
-    "Kevin Liu es ingeniero de infraestructura y producto en General Translation, en San Francisco, desde julio de 2026.",
+    "Kevin Liu es ingeniero de diseño en General Translation, en San Francisco, desde julio de 2026.",
     "Estudia informática en Princeton University (B.S.E., promoción de 2028).",
     "Lleva programando y diseñando desde los 12 años.",
     "Antes de incorporarse a General Translation, fue ingeniero fundador en Dedalus Labs (de enero a julio de 2026), donde desarrolló infraestructura para agentes, y en Sevenfold AI (de junio a noviembre de 2025).",
