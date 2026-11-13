@@ -1114,7 +1114,7 @@ if (pace) {
     b.type = 'button'; b.dataset.speed = String(s);
     b.setAttribute('aria-label', txt('speed.aria', { n: s }));
     // where only the speed in force shows (a phone, a narrow Arena rail), a press steps to the next
-    b.onclick = () => { if ([...sp.querySelectorAll('button')].some((x) => !x.offsetParent)) { const i = pace.SPEEDS.indexOf(pace.speed); pace.setSpeed(pace.SPEEDS[(i + 1) % pace.SPEEDS.length]); } else pace.setSpeed(s); };
+    b.onclick = () => { if ([...sp.querySelectorAll('button')].some((x) => !x.offsetParent)) { const i = pace.SPEEDS.indexOf(pace.speed); pace.setSpeed(pace.SPEEDS[(i + 1) % pace.SPEEDS.length]); if (document.activeElement === b) sp.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true }); } else pace.setSpeed(s); };
   }
   const mark = () => sp.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.speed) === pace.speed)));
   pace.onSpeed(mark); mark();

@@ -39,10 +39,30 @@ const head = swap(SRC.slice(SRC.indexOf('<head>') + 6, SRC.indexOf('</head>')), 
 ]);
 const body = swap(SRC.slice(SRC.indexOf('<body>') + 6, SRC.indexOf('</body>')), [
   ['<a class="key" id="leave" href="../../../r3/cards/index.html">Leave</a>', '<a class="key" id="leave" href="/">Leave</a>'],
-  ['<p class="mark">Kevin Liu</p>', '<h1 class="mark">Kevin Liu</h1>'],
   ...['fighters.js', 'media.gen.js', 'face.gen.js', 'design/card.js', 'design/plan.gen.js', 'markup.js'].map((f) => ex('src', f)),
   ...['shared/excard.js', 'vendor/cards/art.js', 'vendor/cards/card-env.gen.js', 'vendor/cards/card-sprite.gen.js', 'vendor/broadcast/media.js', 'vendor/broadcast/kit.js', 'shared/battle.js'].map((f) => own('src', f)),
 ]);
 const htmlAttrs = SRC.match(/<html([^>]*)>/)?.[1] ?? '';
 
 export const battlePage = { head, body, htmlAttrs };
+
+// The battle's ES modules, walked from the files at build: battle.js's static imports, and the mode's board graph (which
+// battle.js imports dynamically once it starts). Without a hint the browser met them as a 3 to 4 level waterfall, and
+// only after the twelve classic scripts at the foot of the body had run; a modulepreload per module starts every one
+// with the page. Each href is the exact address its import resolves to (unversioned, as the modules name each other),
+// so the browser reuses the preload. Dynamic imports (the other mode, the sound player) are left to load when asked.
+const BATTLE = path.join(process.cwd(), 'public/battle');
+const IMPORT = /\bimport\s*(?:[\w*{}\s,$]*?\bfrom\s*)?['"](\.{1,2}\/[^'"]+\.js)['"]/g;
+function graphOf(entry: string, seen = new Set<string>()) {
+  if (seen.has(entry)) return seen;
+  seen.add(entry);
+  const src = fs.readFileSync(path.join(BATTLE, entry), 'utf8');
+  for (const m of src.matchAll(IMPORT)) {
+    const next = path.posix.normalize(path.posix.join(path.posix.dirname(entry), m[1]));
+    if (next.startsWith('..')) continue; // outside the battle (the sound player is imported dynamically anyway)
+    graphOf(next, seen);
+  }
+  return seen;
+}
+const shared = [...graphOf('shared/battle.js')].filter((f) => f !== 'shared/battle.js');
+export const modulePreloads = (mode: 'mat' | 'arena') => [...new Set([...shared, ...graphOf(`${mode}/board.js`)])].map((f) => `/battle/${f}`);

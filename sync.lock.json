@@ -6,11 +6,11 @@
   "sound": "30e69931",
   "battle": "f28393ef"
  },
- "synced": "2026-11-13T00:33:41.175Z",
+ "synced": "2026-11-13T20:04:59.373Z",
  "stages": {
   "cards": {
    "files": 1091,
-   "bytes": 107660372,
+   "bytes": 107660519,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -29,8 +29,8 @@
     },
     "public/ex/fighters.js": {
      "src": "r4/ex/fighters.js",
-     "sha256": "99afedd897b9992609aec45b7e6c21a5b629895699fccff651c785ad612b2914",
-     "bytes": 111089
+     "sha256": "490cedb5ec294ffdc90c842e46b1393a55131ffcf53bda491e335491b276a7ad",
+     "bytes": 111105
     },
     "public/ex/engine.js": {
      "src": "r4/ex/engine.js",
@@ -64,8 +64,8 @@
     },
     "public/ex/gallery.js": {
      "src": "r4/ex/gallery.js",
-     "sha256": "d0e6fa96a25f63ba22290469489b138613f6117ef1806feba324e9131573112e",
-     "bytes": 73749
+     "sha256": "48d4d2ebbd846996132445bed4874585fef6609fe5eb4d3846f6527691e96f7e",
+     "bytes": 73880
     },
     "public/ex/ground.js": {
      "src": "r4/ex/ground.js",
@@ -10967,7 +10967,7 @@
   },
   "battle": {
    "files": 997,
-   "bytes": 152708949,
+   "bytes": 152709830,
    "list": {
     "public/battle/arena/arena.css": {
      "src": "r4/play/arena/arena.css",
@@ -11041,8 +11041,8 @@
     },
     "public/battle/shared/battle.js": {
      "src": "r4/play/shared/battle.js",
-     "sha256": "7311af0667bec68fe3d7db808fb8738824c67850745b109f8714f14620eb8220",
-     "bytes": 85052
+     "sha256": "8612b021081d5e6b6078dcf0f982235c892c9f55880b13011b9a274161ef88c0",
+     "bytes": 85161
     },
     "public/battle/shared/beats.js": {
      "src": "r4/play/shared/beats.js",
@@ -11066,8 +11066,8 @@
     },
     "public/battle/shared/hud.css": {
      "src": "r4/play/shared/hud.css",
-     "sha256": "476b21ef53aceeaee5328ab4eae3fe8e3698017becffb99e987eadd7263f3709",
-     "bytes": 70282
+     "sha256": "86824ce585f4d25db5cc7af46ff7da3277380ec73be9cbb50677b2832456adf3",
+     "bytes": 71054
     },
     "public/battle/shared/hud.js": {
      "src": "r4/play/shared/hud.js",

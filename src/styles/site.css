@@ -9,10 +9,30 @@
    contentful paints meanwhile, so a visitor arriving from another page keeps seeing it until the whole wall is ready */
 [data-hold] .human { visibility: hidden; }
 
-/* a wall card more than a screen away paints no filters (index.astro): WebKit keeps a buffer the size of each filtered
+/* a wall card more than a screen away paints no filters (Home.astro): WebKit keeps a buffer the size of each filtered
    box once painted (the cracks' glow covers the whole card), so 26 cards held about 190 MB on an iPhone. Nothing on
-   screen changes: the card takes them back a screen before it shows (docs/performance.md, Memory) */
-.wall > .pocket[data-far] :is(.card, .card *) { filter: none !important; }
+   screen changes: the card takes them back a screen before it shows (docs/performance.md, Memory). Every pocket is
+   printed far and the hold lets the ones on screen near before the first frame, so these rules hold only where scripts
+   run */
+@media (scripting: enabled) {
+  .wall > .pocket[data-far] :is(.card, .card *) { filter: none !important; }
+  /* nor is it styled or laid out: on a throttled phone the first frame waited on 1.6 s of layout and 0.5 s of style for
+     all 26 cards, two of them on screen. A far card keeps its box (the card is var(--card) wide at 63 / 88; the size
+     is the pocket's content box, inside its 6 px padding), so nothing moves when it comes near; and it is never seen far, so its subject and effects, which
+     reach past the pocket, are never clipped by the containment content-visibility brings. A near card (on screen, a
+     screen away, dragged, lifted) has no containment at all. Only where the clip can be widened (Chromium, Firefox): a
+     card that jumps on screen (a keyboard focus far down) shows whole in the frame before the observer lets it near.
+     The Machine view prints records, not cards, so it keeps its own sizes */
+  @supports (overflow-clip-margin: 1px) {
+    [data-mode="human"] .wall > .pocket[data-far]:not(.tile) { content-visibility: auto; contain-intrinsic-size: auto var(--card) auto calc(var(--card) * 88 / 63); overflow-clip-margin: 160px; }
+  }
+}
+/* the deck and the pack print every card's poster as a background (the pack's fan, twice over; the deck's previous-site
+   face), and a background is never lazy: on a phone those 1.5 MB came with the page, ahead of the first card. Both tiles
+   start far in the HTML, so their backgrounds wait until the same observer finds them a screen away, by which time the
+   wall's own posters (the same files) are usually in the cache. A page without scripts never clears data-far, so the
+   rule holds only where scripts run */
+@media (scripting: enabled) { .wall > .pocket[data-far] :is(.fan i, .prev) { background-image: none !important; } }
 
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 10px 14px; border-radius: var(--r-ctl); background: var(--clay); color: var(--ink-1); box-shadow: var(--raise-s); font: 600 14px/20px var(--site); text-decoration: none; }
 .skip:focus-visible { top: 12px; }

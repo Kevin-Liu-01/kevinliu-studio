@@ -136,8 +136,12 @@ export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
   const e = ladder ? env : NO_LADDER;
   // the plain print's front-effects poster waits in data attributes (its src, and its srcset when the ladder prints
   // one: an <img> with a srcset and no src still fetches), so a desktop never fetches it; FRAMED gives both back
-  const plain = (M.baseCard(f, { sizes: GALLERY_SIZES, ...o }, e) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"(?: srcset="([^"]*)")?/, (_m: string, a: string, src: string, set?: string) => `${a}data-plainfx="${src}"${set ? ` data-plainfxset="${set}"` : ''}`);
-  const framed = framedCard(f, o, e);
+  // the card's print (its poster) names its card, for image search; the other pictures (subject, cast, logo beside the
+  // printed name, effects) stay decorative. A wall card is a button named by its aria-label and a card page's stand is
+  // hidden from assistive technology, so no screen reader reads the name twice
+  const named = (h: string) => h.replace(/(<img class="poster" [^>]*?) alt=""/, (_m: string, a: string) => `${a} alt="${f.title.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"`);
+  const plain = named(M.baseCard(f, { sizes: GALLERY_SIZES, ...o }, e) as string).replace(/(<span class="fx"[^>]*><img )src="(posters\/[\w-]+-fx\.webp)"(?: srcset="([^"]*)")?/, (_m: string, a: string, src: string, set?: string) => `${a}data-plainfx="${src}"${set ? ` data-plainfxset="${set}"` : ''}`);
+  const framed = named(framedCard(f, o, e));
   const d = delta(plain, framed);
   if (undelta(plain, d) !== framed) throw new Error(`card ${f.id}: the framed print's delta does not rebuild it`);
   return `${plain}<template class="framed">${d}</template>`;

@@ -69,7 +69,7 @@ for (const p of ['/no-such-page.md', '/.md', '/es/no-such-page.md']) {
   const { r: face } = await get('/fonts/katagami-sans-site.woff2');
   if (/accept(?!-encoding)/i.test(face.headers.get('vary') ?? '')) fails.push(`/fonts/katagami-sans-site.woff2: vary ${face.headers.get('vary')}, expected no Accept`);
 }
-for (const [p, to] of [['/about/', '/about'], ['/index', '/'], ['/about.html', '/about'], ['/en', '/'], ['/es/', '/es'], ['/ja/about/', '/ja/about'], ['/kevin_liu_resume_25.pdf', 'https://portfoliomon.kevinliu.studio/kevin_liu_resume_25.pdf']]) {
+for (const [p, to] of [['/about/', '/about'], ['/index', '/'], ['/about.html', '/about'], ['/en', '/'], ['/sitemap.xml', '/sitemap-index.xml'], ['/es/', '/es'], ['/ja/about/', '/ja/about'], ['/kevin_liu_resume_25.pdf', 'https://portfoliomon.kevinliu.studio/kevin_liu_resume_25.pdf']]) {
   const { r } = await get(p);
   const at = r.headers.get('location') ?? '';
   // the target itself, not any address that ends the same way: "/" must be this site's home

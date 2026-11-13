@@ -19,9 +19,14 @@ To change a card's words or numbers, change the rounds (r4/ex `copy/overrides.js
 `src/lib/site.ts` holds the name, the bio, the social links, the email and the previous site's address.
 
 Decided by Kevin on 2026-11-05:
-- `/about` prints Kevin's own bio (`ABOUT`), first person, word for word. It names General Translation, so the employer
-  appears on `/about`, its twin and the llms files, and the Person JSON-LD carries `worksFor` only on `/about`.
+- `/about` prints Kevin's own bio (`ABOUT`), first person, word for word.
 - `BIO` is one third-person line from the same facts with no employer. Metadata, JSON-LD and the other twins use it.
+
+Changed by Kevin on 2026-11-13 (the SEO and answer-engine audit he pasted): the English home page's title is
+`HOME_TITLE` ("Kevin Liu — Design engineer at General Translation") and its description `HOME_DESCRIPTION`;
+`HOME_LEAD` opens `/index.md` and `llms.txt`; the Person node on every page carries `worksFor` General Translation and
+his General Translation author page in `sameAs`. Translated homes and twins keep their translated lines until
+`pnpm i18n:translate` carries these.
 - The email is `hello@kevinliu.studio`. kevinliu.studio has no MX record yet, so the address receives nothing until
   Kevin sets up mail or forwarding for the domain.
 - Analytics stay Vercel Web Analytics and Speed Insights only. No PostHog.
@@ -35,8 +40,10 @@ the llms files and the questions on `/about`; `ALSO_KNOWN_AS`; Devpost among the
   The scan in `scripts/sync.mjs` and `scripts/verify-build.mjs` fails on the names.
 - No real people's names or photos. Agent Pets' figures carry no names in any text. The Turboslide hero capture with
   a photographer's credit stays out (docs/sync.md).
-- General Translation appears only on the Atlas card and its records, the wall and the cards index (which print Atlas's
-  line), and in Kevin's own bio and facts on `/about` and the llms files. Two round
+- General Translation appears on the Atlas card and its records, the wall and the cards index (which print Atlas's
+  line), in Kevin's own bio and facts on `/about` and the llms files, in the English home's title, description and
+  opening lines, and in every page's Person node (`scripts/rules.mjs` `gtAllowed`). Never in synced card or battle
+  code, or in another card's twin. Two round
   captures that showed it are dropped or painted out by the sync (docs/sync.md).
 - OMMC participants are minors: nothing here requests or links the OMMC portal's participant routes.
 - The Personal Website's `public/media/art/`, `public/media/curation/` (GPS-tagged) and

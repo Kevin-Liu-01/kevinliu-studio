@@ -2,14 +2,13 @@
 export const SITE = 'https://www.kevinliu.studio';
 export const NAME = 'Kevin Liu';
 export const HANDLE = '@kevskgs';
-// One line for metadata, JSON-LD and every twin. It names no employer, so it can sit on every page.
+// One line for metadata, JSON-LD and every twin.
 export const BIO = 'Kevin Liu is an infra-product engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.';
-// Kevin's own words for /about (2026-11-05). A string is text; a pair is a link. The employer appears here and on the
-// pages that print this, /about and its twin, and nowhere else.
+// Kevin's own words for /about (2026-11-05). A string is text; a pair is a link.
 export type Run = string | readonly [text: string, href: string];
 export const ABOUT: readonly (readonly Run[])[] = [
   ['I am an infra-product engineer at ', ['General Translation', 'https://generaltranslation.com'], ' based in San Francisco.'],
-  ['I am 19, and I\'ve been coding and designing since I was 12. I am currently attending ', ['Princeton University', 'https://www.princeton.edu'], '.'],
+  ['I am 20, and I\'ve been coding and designing since I was 12. I am currently attending ', ['Princeton University', 'https://www.princeton.edu'], '.'],
   ['I design interfaces that feel alive, from first principles, with a spirit of their own. I follow friction toward what is missing, and treat environments as part of the product. I build strange observations into useful worlds through type, skills, and protocols.'],
 ];
 // The answer to "who is Kevin Liu": the About section of llms.txt, llms-full.txt and /about.md. Each line is a public
@@ -47,6 +46,13 @@ export const QA: [string, string][] = [
 ];
 // Other names he goes by, as his previous site lists them (llms.txt), so an answer engine can tell him from other Kevin Lius
 export const ALSO_KNOWN_AS = ['Kevin B. Liu', 'Kevin Bowen Liu'];
+// The English home page's title and description, and the first line of /index.md and llms.txt (Kevin, 2026-11-13). The
+// description keeps his first sentence word for word and shortens the list of projects to the 170 characters the build
+// allows. A translated home keeps its own title and description until `pnpm i18n:translate` carries these.
+export const HOME_TITLE = `${NAME} — Design engineer at General Translation`;
+export const HOME_LEAD = `${NAME} is a design engineer at General Translation in San Francisco and a Princeton CS student.`;
+export const HOME_DESCRIPTION = `${HOME_LEAD} Open source: Claude of Tanks, Jarhead, Glyphfield, Katagami, Sigil UI.`;
+export const GT_AUTHOR = 'https://generaltranslation.com/en-US/blog/authors/kevin';
 export const DESCRIPTION = 'Kevin Liu\'s projects as 26 collectible cards: type, games, shaders, agents and interfaces, each with its real product, its features as moves, and a battle you can play.';
 export const SOCIAL = [
   { name: 'GitHub', url: 'https://github.com/Kevin-Liu-01' },
@@ -67,9 +73,10 @@ export const person = {
   url: SITE + '/',
   description: BIO,
   jobTitle: 'Infra-product engineer',
+  worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' },
   email: `mailto:${EMAIL}`,
   homeLocation: { '@type': 'Place', name: 'San Francisco, California' },
   affiliation: { '@type': 'CollegeOrUniversity', name: 'Princeton University', url: 'https://www.princeton.edu' },
   knowsAbout: ['Interface design', 'Type design', 'Browser games', 'Shaders', 'AI agents', 'Developer infrastructure'],
-  sameAs: [...SOCIAL.map((s) => s.url), PREVIOUS],
+  sameAs: [...SOCIAL.map((s) => s.url), GT_AUTHOR, PREVIOUS],
 };
