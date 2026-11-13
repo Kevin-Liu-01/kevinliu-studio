@@ -28,10 +28,13 @@ test('the allow-list reads repo paths and site paths alike', () => {
   assert.equal(sitePath('/ex/fighters.js'), '/ex/fighters.js');
   assert.equal(sitePath('vendor/ex/face.gen.js'), '/vendor/ex/face.gen.js');
   for (const p of ['public/ex/fighters.js', '/ex/fighters.js', 'vendor/ex/copy/overrides.json', '/about.html', '/cards/atlas.md', 'public/ex/media/atlas/pop.webp', 'public/og/atlas.jpg']) assert.equal(gtAllowed(p), true, p);
-  for (const p of ['public/ex/gallery.js', '/battle.html', '/cards/elo.html', 'public/battle/shared/battle.js']) assert.equal(gtAllowed(p), false, p);
+  for (const p of ['public/ex/gallery.js', '/cards/elo.md', '/battle.md', '/battle/mat/index.html', 'public/battle/shared/battle.js']) assert.equal(gtAllowed(p), false, p);
+  // every page carries Kevin's Person node, which names his employer (Kevin, 2026-11-13)
+  for (const p of ['/battle.html', '/battle/arena.html', '/cards/elo.html', '/404.html']) assert.equal(gtAllowed(p), true, p);
   // every language prints the same pages; its battle and other cards' pages stay closed
   for (const p of ['/es.html', '/ja/about.html', '/zh/llms-full.txt', '/fr/gallery.js', '/de/cards/atlas.md']) assert.equal(gtAllowed(p), true, p);
-  for (const p of ['/es/battle.html', '/ko/cards/elo.html', '/pt/battle/arena.md']) assert.equal(gtAllowed(p), false, p);
+  for (const p of ['/es/battle.html', '/ko/cards/elo.html', '/ja/battle/arena.html']) assert.equal(gtAllowed(p), true, p);
+  for (const p of ['/pt/battle/arena.md', '/es/cards/elo.md', '/es/x.html', '/esx.html']) assert.equal(gtAllowed(p), false, p);
 });
 test('a banned name in a file name is caught', () => {
   assert.deepEqual(hits(`public/ex/media/${P}e-${M}/pop.txt`, 'fine'), ['franchise name in the path']);

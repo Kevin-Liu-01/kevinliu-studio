@@ -29,10 +29,8 @@ const questions = tw.slice(at(H.questions) + 1, at(H.elsewhere));
 // the line that names X, GitHub, LinkedIn and the email holds the twin's lines for those four
 const mail = l.t('twin.linkEmail');
 const elsewhere = tw[at(H.elsewhere) + 1].split('\n').filter((x) => /^- (X|GitHub|LinkedIn):/.test(x) || x.startsWith(`- ${mail}:`)).join('\n');
-// Kevin's employer is named only here and in the files that print this page (docs/content.md)
-const kevin = { ...person, worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' } };
 const heading = l.t('about.heading', { name: NAME });
-const jsonld = [website, kevin, ...page({ path: l.p('/about'), type: 'ProfilePage', name: heading, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [[l.t('about.title'), l.p('/about')]], mainEntity: { '@id': person['@id'] }, code })];
+const jsonld = [website, person, ...page({ path: l.p('/about'), type: 'ProfilePage', name: heading, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [[l.t('about.title'), l.p('/about')]], mainEntity: { '@id': person['@id'] }, code })];
 ---
 <Base seo={{ title: l.t('about.title'), fullTitle: heading, description: BIO, path: l.p('/about'), type: 'profile', share: 'about', imageAlt: l.t('about.imageAlt', { name: NAME }), jsonld }}>
   <main class="prose" id="main">

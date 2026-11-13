@@ -3,7 +3,7 @@
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
 import { fighters, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
+import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_LEAD, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
 
 const ring = rules.ring as string[];
@@ -30,6 +30,9 @@ export const ruleIn = (f: Fighter, code = DEFAULT) => (code === DEFAULT || !f.tr
 export const moveLineIn = (f: Fighter, i: number, code = DEFAULT) => (code === DEFAULT ? moveLine(f.moves[i]) : L(code).move(f.id, i, f.moves[i].name));
 const discs = (f: Fighter, code: string) => f.disciplines.map((d) => L(code).disc(d));
 export const bioIn = (code = DEFAULT) => (code === DEFAULT ? BIO : L(code).c.bio);
+// the first line of /index.md and llms.txt: in English, who Kevin is and where he works (Kevin, 2026-11-13); a translated
+// twin keeps its translated bio until `pnpm i18n:translate` carries the English line
+const openingIn = (code = DEFAULT) => (code === DEFAULT ? HOME_LEAD : bioIn(code));
 export const descriptionIn = (code = DEFAULT) => (code === DEFAULT ? DESCRIPTION : L(code).c.description);
 
 const table = (code: string) => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${whatIn(f, code)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[${L(code).t('twin.sourceLink')}](${repoOf(f)})` : ''} |`);
@@ -53,7 +56,7 @@ export function homeMd(code = DEFAULT) {
   const rows = fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${discs(f, code).join(', ')} | ${f.cost} | ${f.stats.hp} | ${f.trait?.name ?? ''} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} |`);
   return `# ${NAME}
 
-${edition(code, '/index.md')}${bioIn(code)}
+${edition(code, '/index.md')}${openingIn(code)}
 
 ${descriptionIn(code)}
 
@@ -177,7 +180,7 @@ const intro = (code: string) => {
   const facts = code === DEFAULT ? FACTS : l.c.facts;
   return `# ${NAME}
 
-> ${bioIn(code)} ${descriptionIn(code)}
+> ${openingIn(code)} ${descriptionIn(code)}
 
 ${edition(code, '/llms.txt')}${t('twin.everyPageTwin', { home: twinPath(lp(code, '/')), accept: '`Accept: text/markdown`' })}
 

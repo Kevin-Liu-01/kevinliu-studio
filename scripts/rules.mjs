@@ -38,7 +38,10 @@ const GT_ALLOWED = new Set([
     `/${c}/index.md`, `/${c}/about.md`, `/${c}/llms.txt`, `/${c}/llms-full.txt`, `/${c}/gallery.js`]),
 ]);
 export const sitePath = (p) => '/' + p.replace(/^\/+/, '').replace(/^public\//, '');
-export const gtAllowed = (p) => GT_ALLOWED.has(sitePath(p)) || /\/atlas[./]/.test(sitePath(p));
+// every page names Kevin's employer in its Person node (worksFor, Kevin 2026-11-13); its Markdown twin, the battle's and
+// the cards' synced code and every other card's twin still may not
+const PAGE = new RegExp(`^/(?:(?:${OTHER.join('|')})(?:\\.html$|/))?(?:(?:index|cards|about|404|battle|battle/arena|cards/[\\w-]+)\\.html)?$`);
+export const gtAllowed = (p) => GT_ALLOWED.has(sitePath(p)) || /\/atlas[./]/.test(sitePath(p)) || (sitePath(p).endsWith('.html') && PAGE.test(sitePath(p)));
 
 // every reason a shipped file may not ship: [] when it may
 export function scanBuffer(p, buf) {

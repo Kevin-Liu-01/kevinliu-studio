@@ -8,7 +8,7 @@ import { cardRecord, cardLabel, recordHtml, deckRecord, packRecord, BX } from '.
 import { asciiArt } from '../lib/ascii';
 import { versioned } from '../lib/assets';
 import { graph, page, cardListIn } from '../lib/schema';
-import { SITE, NAME } from '../lib/site';
+import { SITE, NAME, HOME_TITLE, HOME_DESCRIPTION } from '../lib/site';
 
 interface Props { code: string }
 const { code } = Astro.props;
@@ -51,7 +51,7 @@ const jsonld = graph(page({ path: l.p('/'), type: 'CollectionPage', name: NAME, 
 const shim = l.en ? null : `${l.p('/gallery.js')}?v=${shimHash(galleryShim(code, fighters))}`;
 ---
 <Base
-  seo={{ title: NAME, description: DESCRIPTION, path: l.p('/'), og: 'home', imageAlt: l.t('home.imageAlt', { name: NAME, n: fighters.length }), jsonld }}
+  seo={{ title: NAME, fullTitle: l.en ? HOME_TITLE : undefined, description: l.en ? HOME_DESCRIPTION : DESCRIPTION, path: l.p('/'), og: 'home', imageAlt: l.t('home.imageAlt', { name: NAME, n: fighters.length }), jsonld }}
   room
   heavy
   main="gallery"
