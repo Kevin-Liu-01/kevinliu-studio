@@ -802,3 +802,12 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - ptd-figure.js (13 KB) is still imported on phones.
   - Plan 029 waits for pnpm i18n:translate.
   - Killcam and Sabot Round keep their old clips.
+
+## 2026-11-13: speed and usability audit, with the SEO audit's site items (perf/speed-usability, Claude Code)
+
+- **Asked**: Kevin, "do a speed and usability audit", with Speed Insights (mobile p75: FCP 6.73 s, LCP 15.63 s, TTFB 1.49 s, INP 48 ms, CLS 0) and an SEO and answer-engine audit (2026-11-12).
+- **Found**: TTFB is network and redirects, not the server (static CDN files, HIT 70 ms, MISS 190 to 290 ms, `Vary: Accept` does not split the cache). The home's first paint waited on 1.5 MB of pack and deck background posters and on 3.4 s of main-thread style and layout for all 26 cards (throttled phone, real GPU; Lighthouse's SwiftShader numbers set aside). The battle's reveal waits on its board's desktop-size pictures (r4/play).
+- **Changed**: `src/views/Home.astro`, `src/styles/site.css` (pockets start `data-far`; far cards take `content-visibility: auto` at their exact box; tile backgrounds wait); `src/views/Card.astro` (poster priority); `src/lib/battle.ts`, `src/components/BattlePage.astro` (modulepreloads; the h1 and rules section); `src/lib/site.ts`, `src/lib/twins.ts`, `src/views/About.astro`, `scripts/rules.mjs`, `scripts/rules.test.mjs` (home title and description, `worksFor` on every page, age 20); `src/lib/cards.ts` (poster alt); `vercel.json`, `scripts/smoke.mjs`, `src/pages/robots.txt.ts`; `scripts/sync.mjs` transforms on fighters.js (links), hud.css, battle.js, gallery.js, with `sync.lock.json` (synced from a pin export in `~/k7-rescue/speed-audit/rounds-export`); `src/components/Lang.astro`; docs.
+- **Measured** (throttled phone, base ab60dfb vs branch, median of 3): home FCP/LCP 3.78 → 2.99 s, /es 3.84 → 3.02 s, bytes 2.56 → 1.31 MB, load 14.9 → 7.9 s, CLS 0; Arena 12.8 → 11.7 s; Mat 14.9 → 14.2 s (noise).
+- **Gates**: build 256 pages pass; test 20/20; check 0 errors; negotiation, lock-check, phone-memory, check-release, sync --check pass; check-seo 249 pages, 498 links pass; Auto battles reach the result on Mat (1440, 320) and Arena (390).
+- **Open**: `pnpm i18n:translate` (Kevin's key) before release: CI's `i18n-extract --check` fails until then and translated About pages print the age paragraph in English. Kevin to pick the canonical role (title says design engineer; `jobTitle`, BIO and facts say infra-product engineer). r4/play requests listed in the report. Not deployed.
