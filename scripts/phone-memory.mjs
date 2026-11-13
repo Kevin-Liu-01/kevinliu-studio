@@ -58,6 +58,11 @@ export const PHONE = {
   'public/battle/arena/ptd-figure.js': (t) => patch('ptd-figure.js', t, [
     ['  if ((navigator.deviceMemory ?? 8) <= 4) return false;', `  if ((navigator.deviceMemory ?? 8) <= 4 || coarse()) return false; // ${MARK}: a touch screen shows the stills (scripts/phone-memory.mjs)`],
   ]),
+  // and the scenes' form stills (r4/play shared/runtime.js drawForm) are drawn in that same worker, which fetches the
+  // sprite: on a touch screen they take the boxed still, as a small-memory device already does, so no worker starts
+  'public/battle/shared/runtime.js': (t) => patch('runtime.js', t, [
+    ["    if (reduce || navigator.connection?.saveData || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || qs.get('ptd') === 'still' || qs.get('formdraw') === '0') return Promise.resolve(null);", `    if (reduce || navigator.connection?.saveData || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || qs.get('ptd') === 'still' || qs.get('formdraw') === '0' || (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches)) return Promise.resolve(null); // ${MARK}: a touch screen takes the still (scripts/phone-memory.mjs)`],
+  ]),
   // The battle's lean grounds (shared/runtime.js) and the paused live prints at the result and under the Log
   // (shared/battle.js) are round 6's own code from battle pin 3bc364c1, so none here (applying them again would
   // declare LEAN_GROUNDS twice).

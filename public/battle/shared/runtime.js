@@ -456,7 +456,7 @@ export class Stage extends runtime.Stage {
   drawForm(ref) {
     const qs = new URLSearchParams(location.search);
     const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || navigator.connection?.saveData || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || qs.get('ptd') === 'still' || qs.get('formdraw') === '0') return Promise.resolve(null);
+    if (reduce || navigator.connection?.saveData || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4) || qs.get('ptd') === 'still' || qs.get('formdraw') === '0' || (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches)) return Promise.resolve(null); // kevinliu.studio phone memory: a touch screen takes the still (scripts/phone-memory.mjs)
     return this.formView(ref).then((v) => {
       if (!v) return null;
       const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
