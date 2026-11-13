@@ -39,7 +39,6 @@ const head = swap(SRC.slice(SRC.indexOf('<head>') + 6, SRC.indexOf('</head>')), 
 ]);
 const body = swap(SRC.slice(SRC.indexOf('<body>') + 6, SRC.indexOf('</body>')), [
   ['<a class="key" id="leave" href="../../../r3/cards/index.html">Leave</a>', '<a class="key" id="leave" href="/">Leave</a>'],
-  ['<p class="mark">Kevin Liu</p>', '<h1 class="mark">Kevin Liu</h1>'],
   ...['fighters.js', 'media.gen.js', 'face.gen.js', 'design/card.js', 'design/plan.gen.js', 'markup.js'].map((f) => ex('src', f)),
   ...['shared/excard.js', 'vendor/cards/art.js', 'vendor/cards/card-env.gen.js', 'vendor/cards/card-sprite.gen.js', 'vendor/broadcast/media.js', 'vendor/broadcast/kit.js', 'shared/battle.js'].map((f) => own('src', f)),
 ]);

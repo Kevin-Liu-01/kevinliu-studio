@@ -9,6 +9,7 @@ import { L } from '../i18n';
 import { versioned } from '../lib/assets';
 import FACES from '../i18n/fonts.json';
 import { battleStringsSrc } from '../lib/i18n-battle';
+import { battleMd } from '../lib/twins';
 interface Props { mode: 'mat' | 'arena'; code?: string }
 const { mode, code = 'en' } = Astro.props;
 const l = L(code), t = l.t;
@@ -74,6 +75,24 @@ const railCss = l.en ? '' : '.pl-kit .pk-left.pk-left>i{display:none}.plate.plat
 // title and the key's name stay in the language
 const titles = { 'Battle | Kevin Liu': `${t('battle.title')} | ${NAME}`, 'Battle, Arena | Kevin Liu': `${t('battle.titleArena')} | ${NAME}` };
 const fixScript = l.en ? '' : String.raw`(function(P,T,S){var d=Object.getOwnPropertyDescriptor(Document.prototype,'title');if(d&&d.set)Object.defineProperty(document,'title',{configurable:true,get:function(){return d.get.call(this)},set:function(v){d.set.call(this,T[v]||v)}});function f(a){if(!a.getAttribute)return;var h=a.getAttribute('href');if(a.tagName==='A'&&h&&/^\/(?:[#?]|$)/.test(h))a.setAttribute('href',P+h.slice(1));if(a.getAttribute('aria-label')==='Sound')a.setAttribute('aria-label',S)}new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='attributes')f(m.target);else m.addedNodes.forEach(function(n){if(n.nodeType===1){f(n);n.querySelectorAll&&n.querySelectorAll('a[href]').forEach(f)}})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['href','aria-label']})})(${JSON.stringify(l.p('/'))},${JSON.stringify(titles)},${JSON.stringify(t('battle.sound'))})`;
+// The page's one h1 and its rules, printed by the server from the battle's Markdown twin (the same words in every
+// language), outside #app so the boot never hides them. They are for screen readers and crawlers; the battle shows the
+// same rules by playing. Without scripts the battle cannot start, so they show instead (noscript, below)
+const escHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const inline = (s: string) => escHtml(s)
+  .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2">$1</a>')
+  .replace(/`([^`]+)`/g, '<code>$1</code>')
+  .replace(/(^|[\s(])(https?:\/\/[^\s)<]*[^\s)<.,;:!?])/g, '$1<a href="$2">$2</a>');
+const rulesHtml = battleMd(code).trim().split(/\n\n+/)
+  .filter((b) => !b.startsWith('# ') && !b.includes('/battle.md>'))
+  .map((b) => (b.startsWith('- ') ? `<ul>${b.split('\n').filter(Boolean).map((x) => `<li>${inline(x.replace(/^- /, ''))}</li>`).join('')}</ul>` : `<p>${inline(b)}</p>`))
+  .join('');
+const twinSection = `<section class="kl-twin"><h1>${escHtml(title)}</h1>${rulesHtml}</section>`;
+const APP = '<main id="app" data-phase="boot">';
+const withTwin = (body: string) => {
+  if (body.split(APP).length !== 2) throw new Error(`battle page (${code}): expected one ${APP}`);
+  return body.replace(APP, `${twinSection}${APP}`);
+};
 const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url(${versioned(f.file)}) format("woff2");font-weight:100 900;font-display:block;unicode-range:${f.battleRange}}`).join('');
 ---
 <!doctype html>
@@ -96,7 +115,9 @@ const faceCss = faces.map((f) => `@font-face{font-family:"Katagami Sans";src:url
 <Release />
 <style is:inline>/* the frosted slips' tile: card.css no longer carries it inline (scripts/sync.mjs), so this page names the file, as ui.css does for the wall. It is the same 1x tile the sheet's fallback printed */:root{--frost:url("/ex/icons/frost.webp")}</style>
 <Fragment set:html={battlePage.head} />
+<style is:inline>.kl-twin{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}</style>
+<noscript><style is:inline>.kl-twin{position:relative;width:auto;height:auto;max-height:100dvh;overflow:auto;clip-path:none;white-space:normal;padding:24px;font:16px/1.5 system-ui,sans-serif;color:CanvasText;background:Canvas}.kl-twin a{color:LinkText}</style></noscript>
 <Analytics />
 </head>
-<body><Fragment set:html={localize(battlePage.body)} /></body>
+<body><Fragment set:html={withTwin(localize(battlePage.body))} /></body>
 </html>
