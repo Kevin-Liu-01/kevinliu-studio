@@ -115,9 +115,8 @@ the difference. Main-thread work before the home's first paint: 3.4 → 1.0 s (t
   Until it runs, the seven translated About pages print the age paragraph in English, translated homes keep their own
   title and description, and CI's `node scripts/i18n-extract.mjs --check` fails (`en/content.json is stale`). Run it
   before this ships, then `python3 scripts/i18n-fonts.py`, and commit both.
-- **The role.** The home title and description say "design engineer", as Kevin's request did; `jobTitle` in the
-  JSON-LD, `BIO`, the facts and his own /about words say "infra-product engineer". They were left alone: Kevin decides
-  which title is canonical, then one line in `src/lib/site.ts` per place.
+- **The role** is settled: Kevin chose "design engineer" as canonical (2026-11-13), and `BIO`, his /about sentence, the
+  first fact and the Person node's `jobTitle` say it too. Their translations follow at `pnpm i18n:translate`.
 - **No deployment.** `scripts/smoke.mjs` (the `/sitemap.xml` 308, headers) and field numbers need a preview or
   production; that is a push and a deploy, which wait for Kevin.
 - **The battle's reveal.** The Mat's first paint stays about 14 s on the throttled phone (10.7 s on production's

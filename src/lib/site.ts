@@ -3,11 +3,12 @@ export const SITE = 'https://www.kevinliu.studio';
 export const NAME = 'Kevin Liu';
 export const HANDLE = '@kevskgs';
 // One line for metadata, JSON-LD and every twin.
-export const BIO = 'Kevin Liu is an infra-product engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.';
-// Kevin's own words for /about (2026-11-05). A string is text; a pair is a link.
+export const BIO = 'Kevin Liu is a design engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.';
+// Kevin's own words for /about (2026-11-05; his role is "design engineer" since 2026-11-13). A string is text; a pair is
+// a link.
 export type Run = string | readonly [text: string, href: string];
 export const ABOUT: readonly (readonly Run[])[] = [
-  ['I am an infra-product engineer at ', ['General Translation', 'https://generaltranslation.com'], ' based in San Francisco.'],
+  ['I am a design engineer at ', ['General Translation', 'https://generaltranslation.com'], ' based in San Francisco.'],
   ['I am 20, and I\'ve been coding and designing since I was 12. I am currently attending ', ['Princeton University', 'https://www.princeton.edu'], '.'],
   ['I design interfaces that feel alive, from first principles, with a spirit of their own. I follow friction toward what is missing, and treat environments as part of the product. I build strange observations into useful worlds through type, skills, and protocols.'],
 ];
@@ -20,7 +21,7 @@ export const ABOUT: readonly (readonly Run[])[] = [
 // Striking a line removes it from its question and nothing else moves.
 export type Fact = { text: string; q?: 'before' | 'else' };
 export const FACT_LIST: readonly Fact[] = [
-  { text: 'Kevin Liu is an infra-product engineer at General Translation in San Francisco, since July 2026.' }, // /about; previous site experience.md
+  { text: 'Kevin Liu is a design engineer at General Translation in San Francisco, since July 2026.' }, // /about; previous site experience.md
   { text: 'He studies computer science at Princeton University (B.S.E., class of 2028).' }, // previous site experience.md; GitHub bio "cs @princeton"
   { text: 'He has been coding and designing since he was 12.' }, // /about
   { text: 'Before General Translation he was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025).', q: 'before' }, // previous site llms.txt
@@ -72,7 +73,7 @@ export const person = {
   alternateName: ALSO_KNOWN_AS,
   url: SITE + '/',
   description: BIO,
-  jobTitle: 'Infra-product engineer',
+  jobTitle: 'Design engineer',
   worksFor: { '@type': 'Organization', name: 'General Translation', url: 'https://generaltranslation.com' },
   email: `mailto:${EMAIL}`,
   homeLocation: { '@type': 'Place', name: 'San Francisco, California' },
