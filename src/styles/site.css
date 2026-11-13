@@ -16,15 +16,19 @@
    run */
 @media (scripting: enabled) {
   .wall > .pocket[data-far] :is(.card, .card *) { filter: none !important; }
-  /* nor is it styled or laid out: on a throttled phone the first frame waited on 1.6 s of layout and 0.5 s of style for
-     all 26 cards, two of them on screen. A far card keeps its box (the card is var(--card) wide at 63 / 88; the size
-     is the pocket's content box, inside its 6 px padding), so nothing moves when it comes near; and it is never seen far, so its subject and effects, which
-     reach past the pocket, are never clipped by the containment content-visibility brings. A near card (on screen, a
-     screen away, dragged, lifted) has no containment at all. Only where the clip can be widened (Chromium, Firefox): a
-     card that jumps on screen (a keyboard focus far down) shows whole in the frame before the observer lets it near.
+  /* a card skipped for the first frame (data-skip: every card but those on screen, then every card more than eight
+     screens away, Home.astro) is neither styled nor laid out: on a throttled phone the first frame waited on 1.6 s of
+     layout and 0.5 s of style for all 26 cards, two of them on screen. Eight screens is past the distance at which the
+     browser starts a lazy picture on a slow connection, because a skipped card's pictures never start: at one screen a
+     throttled phone scrolling the wall saw six subjects arrive 0.3 to 2 s after their card, at four screens two. A skipped card keeps
+     its box (the card is var(--card) wide at 63 / 88; the size is the pocket's content box, inside its 6 px padding),
+     so nothing moves when it is let in; and it is never seen skipped, so its subject and effects, which reach past the
+     pocket, are never clipped by the containment content-visibility brings. A card within eight screens (on screen,
+     dragged, lifted) has no containment at all. Only where the clip can be widened (Chromium, Firefox): a card that
+     jumps on screen (a keyboard focus far down) shows whole in the frame before the observer lets it in.
      The Machine view prints records, not cards, so it keeps its own sizes */
   @supports (overflow-clip-margin: 1px) {
-    [data-mode="human"] .wall > .pocket[data-far]:not(.tile) { content-visibility: auto; contain-intrinsic-size: auto var(--card) auto calc(var(--card) * 88 / 63); overflow-clip-margin: 160px; }
+    [data-mode="human"] .wall > .pocket[data-skip]:not(.tile) { content-visibility: auto; contain-intrinsic-size: auto var(--card) auto calc(var(--card) * 88 / 63); overflow-clip-margin: 160px; }
   }
 }
 /* the deck and the pack print every card's poster as a background (the pack's fan, twice over; the deck's previous-site

@@ -4,7 +4,8 @@ export const NAME = 'Kevin Liu';
 export const HANDLE = '@kevskgs';
 // One line for metadata, JSON-LD and every twin.
 export const BIO = 'Kevin Liu is a design engineer in San Francisco and a student at Princeton University who designs interfaces that feel alive.';
-// Kevin's own words for /about (2026-11-05). A string is text; a pair is a link.
+// Kevin's own words for /about (2026-11-05; his role is "design engineer" since 2026-11-13). A string is text; a pair is
+// a link.
 export type Run = string | readonly [text: string, href: string];
 export const ABOUT: readonly (readonly Run[])[] = [
   ['I am a design engineer at ', ['General Translation', 'https://generaltranslation.com'], ' based in San Francisco.'],

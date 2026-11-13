@@ -25,7 +25,8 @@ Decided by Kevin on 2026-11-05:
 Changed by Kevin on 2026-11-13 (the SEO and answer-engine audit he pasted): the English home page's title is
 `HOME_TITLE` ("Kevin Liu — Design engineer at General Translation") and its description `HOME_DESCRIPTION`;
 `HOME_LEAD` opens `/index.md` and `llms.txt`; the Person node on every page carries `worksFor` General Translation and
-his General Translation author page in `sameAs`. Translated homes and twins keep their translated lines until
+his General Translation author page in `sameAs`. The same day he named his role "design engineer" everywhere: `BIO`,
+his /about sentence, the first fact and `jobTitle`. Translated homes and twins keep their translated lines until
 `pnpm i18n:translate` carries these.
 - The email is `hello@kevinliu.studio`. kevinliu.studio has no MX record yet, so the address receives nothing until
   Kevin sets up mail or forwarding for the domain.

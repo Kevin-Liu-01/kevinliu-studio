@@ -115,11 +115,8 @@ the difference. Main-thread work before the home's first paint: 3.4 → 1.0 s (t
   Until it runs, the seven translated About pages print the age paragraph in English, translated homes keep their own
   title and description, and CI's `node scripts/i18n-extract.mjs --check` fails (`en/content.json is stale`). Run it
   before this ships, then `python3 scripts/i18n-fonts.py`, and commit both.
-- **The role.** The home title and description say "design engineer", as Kevin's request did; `jobTitle` in the
-  JSON-LD, `BIO`, the facts and his own /about words say "infra-product engineer". They were left alone: Kevin decides
-  which title is canonical, then one line in `src/lib/site.ts` per place.
-  Kevin decided on 2026-11-13: "Design engineer everywhere". The release changes `BIO`, the /about words, the fact
-  and `jobTitle` to match.
+- **The role** is settled: Kevin chose "design engineer" as canonical (2026-11-13), and `BIO`, his /about sentence, the
+  first fact and the Person node's `jobTitle` say it too. Their translations shipped with the release's GT run (6a2107c).
 - **No deployment.** `scripts/smoke.mjs` (the `/sitemap.xml` 308, headers) and field numbers need a preview or
   production; that is a push and a deploy, which wait for Kevin.
 - **The battle's reveal.** The Mat's first paint stays about 14 s on the throttled phone (10.7 s on production's
@@ -155,3 +152,27 @@ From the SEO audit, out of scope here: Sigil UI's author URLs, Jarhead and Relay
 website fields, and `kevin-liu.tech`'s 307 (a Vercel domain setting; it should be a 308 to www). The audit's
 unconfirmed claims (a General Translation Series A, a Designers & Machines talk, Ghostty docs) appear nowhere on the
 site and were not added.
+
+## Follow-up: subjects late on a scrolling phone (e611e03)
+
+The release ship check (release/next 402ec90, its `wall-scroll.mjs`: iPhone 14, 4x CPU, 1.6 Mbps, scrolling 0.8 of a
+screen a second from 3 s after load) found 4 to 6 of 26 cards fully on screen before their subject cut arrived
+(0.6 to 1.7 s; production's slowest 0.39 s). Two causes: a card skipped by `content-visibility` never starts its lazy
+pictures, and the skip was lifted only a screen ahead; and the pack's fan no longer fetched every poster before the
+first paint, so as the visitor scrolled each card's poster shared the line with its subject (at 1.6 Mbps a card's
+poster, subject, effects and glow, up to 380 KB, take longer than a quick scroll gives them).
+
+The render skip is now its own attribute (`data-skip`), lifted eight screens ahead once the page shows (four screens
+left two late cards, eight with nothing else left the same two). On a touch screen, after the load event and at idle,
+never under Save-Data, the wall's posters load into the page's image cache in wall order, two at a time, as detached
+pictures that are never drawn or decoded. Warming only the cards within eight screens still left two late subjects.
+
+Results on the harness: no card arrives before its pictures (fill at most 53 ms, and 51 ms with the scroll started at
+the base's moment), scroll CLS 0. Two earlier runs of the same code at the harness's start each had one late subject
+(Princeton TD, 216 KB, up to 1.7 s). The harness starts scrolling 3 s after the load event, which comes 7 s earlier on
+this branch, so it scrolls while more is still downloading; with both builds scrolling from 22.5 s, none is late. Home,
+base -> this: FCP 3.54 -> 2.85 s, LCP 2.96 s, load 14.9 -> 7.7 s. Bytes by the load event stay about half (1.3 MB);
+after it, a phone fetches the 26 posters production's fan fetched before its first paint.
+
+The harness servers here and in release-next send `max-age=0, must-revalidate` for media, where production sends a day
+(`vercel.json`); a `fetch()` warm-up is never reused under that header, which is why the warm-up uses detached images.
