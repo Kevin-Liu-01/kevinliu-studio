@@ -82,7 +82,8 @@ const escHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 const inline = (s: string) => escHtml(s)
   .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2">$1</a>')
   .replace(/`([^`]+)`/g, '<code>$1</code>')
-  .replace(/(^|[\s(])(https?:\/\/[^\s)<]*[^\s)<.,;:!?])/g, '$1<a href="$2">$2</a>');
+  // a bare address is ASCII up to its last letter, digit or slash: a CJK sentence runs on with no space after it
+  .replace(/(^|[^\w"/>])(https?:\/\/[\w\-.~:/?#@!$&'*+,;=%]*[\w/])/g, '$1<a href="$2">$2</a>');
 const rulesHtml = battleMd(code).trim().split(/\n\n+/)
   .filter((b) => !b.startsWith('# ') && !b.includes('/battle.md>'))
   .map((b) => (b.startsWith('- ') ? `<ul>${b.split('\n').filter(Boolean).map((x) => `<li>${inline(x.replace(/^- /, ''))}</li>`).join('')}</ul>` : `<p>${inline(b)}</p>`))
