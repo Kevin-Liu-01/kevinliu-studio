@@ -66,6 +66,12 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The cards refit and round 6 battle release (`release/next`, promoted 2026-11-13 as deployment
+`kevinliu-studio-19km5t6d2`, dpl_HvFKWDdDqUniAovzcmMNh8ve2fPs, main ab60dfb) replaced production deployment
+`kevinliu-studio-810jiizk6-kl01s-projects.vercel.app` (dpl_HNgtUJ3tg5yxPCKA4PpX1tznUhoe, main c08f0fe). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert `main`
+to c08f0fe with a revert commit.
+
 The translated battle release (`release/next`, promoted 2026-11-11 as deployment `kevinliu-studio-810jiizk6`,
 dpl_HNgtUJ3tg5yxPCKA4PpX1tznUhoe, main c08f0fe) replaced production deployment
 `kevinliu-studio-qus6l73l6-kl01s-projects.vercel.app` (dpl_4c6GLm19ffiyGVkmPJDUYezUHDLd, main 8888233). To undo it,

@@ -802,3 +802,8 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - ptd-figure.js (13 KB) is still imported on phones.
   - Plan 029 waits for pnpm i18n:translate.
   - Killcam and Sabot Round keep their old clips.
+- **Shipped** (2026-11-13): Kevin said "Yes, push main". main fast-forwarded c08f0fe to ab60dfb; production deployment
+  `kevinliu-studio-19km5t6d2` (dpl_HvFKWDdDqUniAovzcmMNh8ve2fPs) Ready on www.kevinliu.studio, .biz and kevin-liu.tech, guard
+  passing on Vercel; smoke.mjs passes on www; 14 live pages and files byte-identical to the checked build
+  (dist-release-0757628, same site as ab60dfb); battle-strings `?v=` a year; the new CoT clips 200; /es/no-such-page 404.
+  Rollback: `kevinliu-studio-810jiizk6` (c08f0fe), docs/deploy.md. This record is committed on release/next, not pushed.
