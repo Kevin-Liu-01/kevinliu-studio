@@ -8,6 +8,7 @@
     { "src": "^/index(?:\\.html)?$", "status": 308, "headers": { "Location": "/" } },
     { "src": "^/(.+)\\.html$", "status": 308, "headers": { "Location": "/$1" } },
     { "src": "^/en(?:/.*)?$", "status": 308, "headers": { "Location": "/" } },
+    { "src": "^/sitemap\\.xml$", "status": 308, "headers": { "Location": "/sitemap-index.xml" } },
     { "src": "^/(kevin_liu_resume_25\\.pdf|projects\\.md)$", "status": 308, "headers": { "Location": "https://portfoliomon.kevinliu.studio/$1" } },
 
     { "src": "^/.*$", "continue": true, "headers": {
