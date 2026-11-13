@@ -816,3 +816,16 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Measured** (throttled phone, base ab60dfb vs branch, median of 3): home FCP/LCP 3.78 → 2.99 s, /es 3.84 → 3.02 s, bytes 2.56 → 1.31 MB, load 14.9 → 7.9 s, CLS 0; Arena 12.8 → 11.7 s; Mat 14.9 → 14.2 s (noise).
 - **Gates**: build 256 pages pass; test 20/20; check 0 errors; negotiation, lock-check, phone-memory, check-release, sync --check pass; check-seo 249 pages, 498 links pass; Auto battles reach the result on Mat (1440, 320) and Arena (390).
 - **Open**: `pnpm i18n:translate` (Kevin's key) before release: CI's `i18n-extract --check` fails until then and translated About pages print the age paragraph in English. Kevin to pick the canonical role (title says design engineer; `jobTitle`, BIO and facts say infra-product engineer). r4/play requests listed in the report. Not deployed.
+
+## 2026-11-13 — i18n for the next release (feat/i18n on release/next 3224f65)
+
+- **Type**: translation (Kevin's "Yes, translate" for this release, relayed by the release session).
+- **Changed**: `src/i18n/source.mjs` (`homeParts`: the home title, lead and description from `src/lib/site.ts` as
+  `{name}`/`{projects}` templates), `src/lib/twins.ts` (`homeTitleIn`, `homeLeadIn`, `homeDescriptionIn`; the twins
+  open on the lead), `src/views/Home.astro`, every `content.json`, `gt-lock.json`, fonts, `docs/i18n.md`.
+- **Decisions**: translated descriptions keep Seo's 160-character sentence fit, so Latin languages and ko print the lead
+  alone; fr "ingénieur design" by hand (GT's "ingénieur en conception" names a mechanical engineer), saved to GT.
+- **Checks**: extract --check, gt-lock and the build pass with no [i18n] warning; homes, /about and /battle in 8
+  languages at 320, 390, 1280 and 1440, human and Machine views (twin opened), Chromium and WebKit: no overflow, header
+  in one row, twin wraps. The battle's flags at those widths all appear in English too (mark x rail keys by 1 px at
+  320/390, console tray overlap, clamped move text), except the translated strip's intended name truncation.
