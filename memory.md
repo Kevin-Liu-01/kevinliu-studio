@@ -829,3 +829,32 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   languages at 320, 390, 1280 and 1440, human and Machine views (twin opened), Chromium and WebKit: no overflow, header
   in one row, twin wraps. The battle's flags at those widths all appear in English too (mark x rail keys by 1 px at
   320/390, console tray overlap, clamped move text), except the translated strip's intended name truncation.
+
+## 2026-11-14: ship check of the speed and usability release, candidate e82fc5d (release/next, Claude Code)
+
+- **Type**: release check (Kevin: "Ship-check it")
+- **Candidate**: shipped ab60dfb + its record, then:
+  - perf/speed-usability a40e98d (merged at 402ec90);
+  - Kevin's "Design engineer everywhere" (3224f65; the same strings as the speed session's 72aedc3);
+  - the i18n session's GT run 6a2107c under Kevin's "Yes, translate" (the home title, lead and description as templates, design engineer, age 20, fr "ingénieur design");
+  - the speed session's late-subject fix e611e03 (merged at e82fc5d).
+- **Gates**: sync in sync; `pnpm test` 20/20; `pnpm check` 0 errors; negotiation 16; phone-memory; i18n-extract both; build `256 pages, 248 sitemap URLs, 3733 files`; check-release 7.
+- **Preview** `kevinliu-studio-9kzsrml24`:
+  - The Vercel guard passes; smoke passes and check-seo passes (249 pages, 498 links).
+  - 14 files are byte-identical to the local build.
+  - /sitemap.xml returns 308 to /sitemap-index.xml; robots.txt serves as text/plain.
+  - The en, es and ja home titles are the new ones.
+- **Browser checks against production** (~/k7-rescue/release-next/checks/su-*):
+  - Usability passes:
+    - at 320 the Switch and Kit sheets show every row and the chips sit inside their tiles;
+    - the speed key keeps focus; the move ring holds;
+    - the pack status is one line in 20 of 20 runs (production 7 of 20);
+    - the language key's name; poster alt text; layout at 4 widths; SEO.
+  - Speed passes items 2–5:
+    - phone FCP 3.32 → 2.88 s, load 19.3 → 13.3 s, bytes at load 3.29 → 2.24 MB;
+    - memory equal or lower; Save-Data skips the poster warm-up; the soak plateaus.
+- **Open**:
+  - On a throttled phone scrolled 3 s after load, Princeton TD's subject arrives 1.1–1.6 s after its card (production 0; none at a 20 s start). Judged non-blocking.
+  - The Tower sheet still scrolls at 320 (also on production).
+  - The 1440 Tesla Zapper chip spills 6 px (also on production).
+  - Arena tower tiles visible without scrolling at 320 drop 5 → 3.
