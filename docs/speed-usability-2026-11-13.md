@@ -150,8 +150,10 @@ r4/play (owned by the battle-026 session; listed here, not written there):
 
 From the SEO audit, out of scope here: Sigil UI's author URLs, Jarhead and Relay's `llms.txt`, the GitHub profile's
 website fields, and `kevin-liu.tech`'s 307 (a Vercel domain setting; it should be a 308 to www). The audit's
-unconfirmed claims (a General Translation Series A, a Designers & Machines talk, Ghostty docs) appear nowhere on the
-site and were not added.
+unconfirmed claims (a Designers & Machines talk, Ghostty docs) appear nowhere on the site and were not added. The
+General Translation Series A is public (Kevin, 2026-11-13): one fact in the llms files' list states it from GT's own
+post (2026-11-10, $27m across Seed and Series A, a16z and Upfront leading) and links it. What "we launched" refers to
+is not in that post, so it waits for Kevin.
 
 ## Follow-up: subjects late on a scrolling phone (e611e03)
 

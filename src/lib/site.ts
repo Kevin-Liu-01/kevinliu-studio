@@ -22,6 +22,7 @@ export const ABOUT: readonly (readonly Run[])[] = [
 export type Fact = { text: string; q?: 'before' | 'else' };
 export const FACT_LIST: readonly Fact[] = [
   { text: 'Kevin Liu is a design engineer at General Translation in San Francisco, since July 2026.' }, // /about; previous site experience.md
+  { text: 'In November 2026 General Translation announced $27m raised across its Seed and Series A rounds; Andreessen Horowitz led the Series A and Upfront Ventures the Seed ([announcement](https://generaltranslation.com/en-US/blog/a)).' }, // generaltranslation.com/en-US/blog/a, published 2026-11-10; Kevin, 2026-11-13: "series A was alredy announced"
   { text: 'He studies computer science at Princeton University (B.S.E., class of 2028).' }, // previous site experience.md; GitHub bio "cs @princeton"
   { text: 'He has been coding and designing since he was 12.' }, // /about
   { text: 'Before General Translation he was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025).', q: 'before' }, // previous site llms.txt
