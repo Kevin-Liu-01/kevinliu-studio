@@ -858,3 +858,8 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - The Tower sheet still scrolls at 320 (also on production).
   - The 1440 Tesla Zapper chip spills 6 px (also on production).
   - Arena tower tiles visible without scrolling at 320 drop 5 → 3.
+- **Shipped** (2026-11-16): Kevin said "Yes, push main". main fast-forwarded ab60dfb to 3ba6ce1; production deployment
+  `kevinliu-studio-nd8hh3j7l` (dpl_ByjjZZM6BpT8hVqxnomemBsnDwUN) Ready on www.kevinliu.studio, .biz and kevin-liu.tech, guard passing on Vercel;
+  smoke.mjs passes on www; 14 live files byte-identical to the checked build (dist-release-e82fc5d); /sitemap.xml 308 to
+  /sitemap-index.xml; the en, es and ja home titles are the new ones. Rollback: `kevinliu-studio-19km5t6d2` (ab60dfb),
+  docs/deploy.md. Queued: perf/speed-usability f5268b6 (the GT launch fact; needs a GT run). This record is on release/next, not pushed.
