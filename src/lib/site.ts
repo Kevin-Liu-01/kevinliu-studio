@@ -22,7 +22,7 @@ export const ABOUT: readonly (readonly Run[])[] = [
 export type Fact = { text: string; q?: 'before' | 'else' };
 export const FACT_LIST: readonly Fact[] = [
   { text: 'Kevin Liu is a design engineer at General Translation in San Francisco, since July 2026.' }, // /about; previous site experience.md
-  { text: 'In November 2026 General Translation announced $27m raised across its Seed and Series A rounds; Andreessen Horowitz led the Series A and Upfront Ventures the Seed ([announcement](https://generaltranslation.com/en-US/blog/a)).' }, // generaltranslation.com/en-US/blog/a, published 2026-11-10; Kevin, 2026-11-13: "series A was alredy announced"
+  { text: 'General Translation launched on 10 November 2026 with $27m raised across its Seed and Series A rounds; Andreessen Horowitz led the Series A and Upfront Ventures the Seed ([announcement](https://generaltranslation.com/en-US/blog/a), [launch post](https://x.com/archiemckenzie_/status/2120195855840059638)). It translates apps, sites, docs, slide decks and product videos for companies such as Ramp, Cursor and Sierra.' }, // GT's post generaltranslation.com/en-US/blog/a (2026-11-10) and Archie McKenzie's launch post on X (2026-11-10); Kevin, 2026-11-13: "series A was alredy announced and we launched", 2026-11-16: "this is our launch post"
   { text: 'He studies computer science at Princeton University (B.S.E., class of 2028).' }, // previous site experience.md; GitHub bio "cs @princeton"
   { text: 'He has been coding and designing since he was 12.' }, // /about
   { text: 'Before General Translation he was a founding engineer at Dedalus Labs (January to July 2026), where he built agent infrastructure, and at Sevenfold AI (June to November 2025).', q: 'before' }, // previous site llms.txt

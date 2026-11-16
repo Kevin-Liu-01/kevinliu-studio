@@ -152,8 +152,9 @@ From the SEO audit, out of scope here: Sigil UI's author URLs, Jarhead and Relay
 website fields, and `kevin-liu.tech`'s 307 (a Vercel domain setting; it should be a 308 to www). The audit's
 unconfirmed claims (a Designers & Machines talk, Ghostty docs) appear nowhere on the site and were not added. The
 General Translation Series A is public (Kevin, 2026-11-13): one fact in the llms files' list states it from GT's own
-post (2026-11-10, $27m across Seed and Series A, a16z and Upfront leading) and links it. What "we launched" refers to
-is not in that post, so it waits for Kevin.
+post (2026-11-10, $27m across Seed and Series A, a16z and Upfront leading) and links it. The same fact names the
+launch Kevin pointed to on 2026-11-16, Archie McKenzie's post on X of the same day, which also names Ramp, Cursor and
+Sierra as customers, and links it.
 
 ## Follow-up: subjects late on a scrolling phone (e611e03)
 
