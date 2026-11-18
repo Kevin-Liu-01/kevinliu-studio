@@ -159,12 +159,11 @@ export const factLines = (f: Fighter) => M.factOrder(f).map(([k]: [string]) => {
   return fact ? { key: FACT[k], value: String(M.num(fact.value)), unit: String(M.unitOf(fact.value, fact.unit) ?? ''), receipt: fact.receipt } : null;
 }).filter(Boolean) as { key: string; value: string; unit: string; receipt: string }[];
 
-// The logo a card prints in its top-left tile (media.gen.js), its address from the site root, with the card's deep for
-// the tile's keyline; null when the card has none
-export type Logo = { src: string; ground?: string; fill: boolean; deep: string };
+// The logo a card prints in its top-left tile (media.gen.js), its address from the site root; null when the card has none
+export type Logo = { src: string; ground?: string; fill: boolean };
 export const logoOf = (f: Fighter): Logo | null => {
   const l = MEDIA[f.id]?.logo;
-  return l?.src ? { src: `/ex/${l.src}`, ground: l.ground, fill: !!l.fill, deep: String(FACE?.[f.id]?.hue?.deep ?? '#333') } : null;
+  return l?.src ? { src: `/ex/${l.src}`, ground: l.ground, fill: !!l.fill } : null;
 };
 
 // The card's own colours, for the page around it (face.gen.js: energy, deep, panel, glint, ink)

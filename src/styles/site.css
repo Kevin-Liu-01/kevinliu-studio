@@ -178,8 +178,8 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose .lede { font-size: 20px; line-height: 1.45; }
 .prose dt { margin-top: 18px; font: 700 17px/24px var(--sans); }
 .prose dd { margin: 4px 0 0; }
-/* /about's projects: each name's logo as its card prints it, a light metal tile ringed by the card's deep at 55% toward
-   black (card.css .logo, Kevin 11-11 "Darker keyline"), the mark one cap height tall and centred on the caps. The tile
+/* /about's projects: each name's logo as its card prints it, on the card's light metal tile with no ring around it
+   (Kevin 11-18: "remove the borders around logos"), the mark one cap height tall and centred on the caps. The tile
    hangs in a fixed column inside the link, before the underlined name, so a name without a logo starts at the same x */
 .prose .projects { list-style: none; padding-left: 0; --cap: 0.7em; --cap: 1cap; --pad: 2px; --tile: calc(var(--cap) + 2 * var(--pad)); --slot: calc(var(--tile) + 0.5em); }
 .prose .projects li { padding-left: var(--slot); }
@@ -189,9 +189,8 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
   display: inline-block; box-sizing: border-box; width: var(--tile); height: var(--tile); padding: var(--pad);
   margin: 0 calc(var(--slot) - var(--tile)) 0 calc(-1 * var(--slot)); vertical-align: calc(-1 * var(--pad));
   border-radius: calc(var(--tile) * 0.17); background: linear-gradient(153deg, #fff 0%, #f2f3f5 38%, #cdd0d4 100%);
-  box-shadow: inset 0 0.5px 0 #fff, 0 0 0 1px color-mix(in oklab, var(--kd) 55%, black);
 }
-.plogo.on { padding: 0; border: 1px solid transparent; background: linear-gradient(var(--lg), var(--lg)) padding-box, linear-gradient(153deg, #fff, #cdd0d4) border-box; }
+.plogo.on { padding: 0; background: var(--lg); }
 .plogo.fill { padding: 0; overflow: hidden; }
 .plogo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .plogo.fill img { object-fit: cover; }

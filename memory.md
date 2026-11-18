@@ -873,6 +873,7 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   `kevinliu-studio-26q2uftwm` Ready; smoke.mjs passes on www; live /about and /es/about print the new order and 24 logos,
   /about.md lists the six first. Rollback: `kevinliu-studio-nd8hh3j7l` (3ba6ce1), docs/deploy.md. This record is
   committed on feat/about-logos, not pushed.
+- **Follow-up** (2026-11-18): Kevin, "remove the borders around logos". The tiles keep the card's light metal (a dark-ground mark its own ground) with no keyline ring, highlight or metal edge; `logoOf` no longer carries the card's deep. Build and guard pass; /about at 1440 and 390 in both themes: CLS 0, one title x. Committed on feat/about-logos, not pushed.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 
