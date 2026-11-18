@@ -66,6 +66,12 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The Claude of Tanks card's commander mark (`feat/about-logos`, pushed to `main` 2026-11-18 as deployment
+`kevinliu-studio-9hw3d7s2q` (dpl_GHGMg9LTfGGtgvWe1f9Af7VEq6rP), main fc3f955: the cards pin moved to rounds cfc4c9fc, the
+card's logo tile and the card and home share loops) replaced production deployment
+`kevinliu-studio-d91k0tbsq-kl01s-projects.vercel.app` (main 2502d1b). To undo it, promote that deployment again
+(Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert fc3f955 on `main`.
+
 The Claude of Tanks commander mark on /about (`feat/about-logos`, pushed to `main` 2026-11-18 as deployment
 `kevinliu-studio-d91k0tbsq`, main 2502d1b) replaced production deployment
 `kevinliu-studio-ksfvk7o7x-kl01s-projects.vercel.app` (main c6e5b71). To undo it, promote that deployment again
