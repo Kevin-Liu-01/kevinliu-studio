@@ -66,6 +66,11 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The Claude of Tanks commander mark on /about (`feat/about-logos`, pushed to `main` 2026-11-18 as deployment
+`kevinliu-studio-d91k0tbsq`, main 2502d1b) replaced production deployment
+`kevinliu-studio-ksfvk7o7x-kl01s-projects.vercel.app` (main c6e5b71). To undo it, promote that deployment again
+(Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert 2502d1b on `main`.
+
 The signature loop (`feat/signature-loop`, pushed to `main` 2026-11-18) replaced production deployment
 `kevinliu-studio-d9zprutnh-kl01s-projects.vercel.app` (dpl_3Ugda845AHGWg9QaGtMYpHTDUKuR, main 1ede34f). To undo it,
 promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert the
