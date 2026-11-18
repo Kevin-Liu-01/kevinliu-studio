@@ -890,6 +890,7 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - Marks on their own dark ground (Local Search, Ariadne, 050525) keep that ground.
   - `ink` is `.mjs` because `scripts/i18n-extract.mjs` runs `cards.ts` in Node.
   - Checks: build and guard pass; check 0 errors; test 20/20; i18n-extract --check; negotiation 16. /about and /es/about at 1440, 730, 390 and 320, light and dark: CLS 0, 28 marks, none split, none blank, no tile, one title x, no overflow.
+- **Shipped** (2026-11-18): Kevin, "also push all our logo updates". Rebased on main f3987f1 (the animated signature; memory.md and docs/deploy.md conflicts were appends, both kept); main fast-forwarded f3987f1 to 1ede34f; production deployment `kevinliu-studio-d9zprutnh` Ready; smoke.mjs passes on www. Live /about and /es/about: 28 marks, 5 ink, 𝕏, the globe, no tile; dark 1440 CLS 0. Rollback: `kevinliu-studio-1szylydqm` (f3987f1), docs/deploy.md. This record is committed on feat/about-logos, not pushed.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 
