@@ -27,6 +27,10 @@ export const inlineLogo = (file: string) => fs.readFileSync(path.join(process.cw
   .replace(/\b(fill|stroke)(=")?(:)?\s*(?:#000000|#000|black)\b/gi, (_m, a, eq, colon) => `${a}${eq ?? ''}${colon ?? ''}currentColor`)
   .trim();
 
+// A mark drawn twice, for the light and the dark theme, each inlined; site.css shows the one the theme asks for
+export const markPair = ([light, dark]: readonly [string, string]) =>
+  svg(light).replace('<svg ', '<svg class="on-light" ') + svg(dark).replace('<svg ', '<svg class="on-dark" ');
+
 export const brandOf = (href: string): string | null => {
   try { return BRANDS[new URL(href).host] ?? null; } catch { return null; }
 };

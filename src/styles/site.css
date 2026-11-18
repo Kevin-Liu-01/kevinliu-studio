@@ -191,10 +191,14 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose a.pl .pt { text-decoration: underline; text-underline-offset: 3px; }
 .prose a.pl .nw { white-space: nowrap; }
 .plogo {
-  display: inline-block; box-sizing: border-box; width: var(--tile); height: var(--tile); padding: calc(var(--pad) / 2);
+  --w: var(--tile); display: inline-block; box-sizing: border-box; width: var(--w); height: var(--tile); padding: calc(var(--pad) / 2);
   margin-right: 0.3em; vertical-align: calc(-1 * var(--pad)); color: var(--ink-1);
 }
-.projects .plogo { margin: 0 calc(var(--slot) - var(--tile)) 0 calc(-1 * var(--slot)); }
+.projects .plogo { margin: 0 calc(var(--slot) - var(--w)) 0 calc(-1 * var(--slot)); }
+/* a wide mark (Claude of Tanks' commander on its tank) takes the column's width less a small gap, so it reads at its height */
+.plogo.wide { --w: calc(var(--slot) - 0.3em); padding: 0; }
+.plogo .on-dark, [data-theme='dark'] .plogo .on-light { display: none; }
+[data-theme='dark'] .plogo .on-dark { display: block; }
 .plogo.on { padding: 0; border-radius: calc(var(--tile) * 0.2); background: var(--lg); }
 [data-theme='dark'] .plogo.ink img { filter: invert(1); }
 .plogo.fill { padding: 0; overflow: hidden; }

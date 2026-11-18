@@ -21,6 +21,12 @@ export const ABOUT_NO_LOGO: readonly string[] = ['kevin-wiki', 'atlas'];
 // Project logos whose black parts are figure, not ground (Sigil UI's squares, Sevenfold's circle): /about draws them
 // inline so that black takes the text's colour and still reads on the dark theme (Kevin 11-18: no tile behind logos)
 export const ABOUT_INK_FIGURE: readonly string[] = ['sigil-ui', 'sevenfold'];
+// Project logos /about draws from its own pair of files (src/assets/about/<name>.svg) instead of the card's: Claude of
+// Tanks' commander mark, the Claude soldier on a tank, ink on the light theme and paper on the dark (Kevin 11-18: "use
+// the correct new logo for claude of tanks"); the card itself still prints the v3 shield (11-11)
+export const ABOUT_LOGO_PAIR: Readonly<Record<string, readonly [string, string]>> = {
+  'claude-of-tanks': ['claude-of-tanks-light', 'claude-of-tanks-dark'],
+};
 // The answer to "who is Kevin Liu": the About section of llms.txt, llms-full.txt and /about.md. Each line is a public
 // fact with its source beside it, so any of them can be struck. Sources: this site's /about; his previous site
 // (portfoliomon.kevinliu.studio llms.txt, experience.md, awards.md, certifications.md); github.com/Kevin-Liu-01; the
