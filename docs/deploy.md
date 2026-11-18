@@ -66,6 +66,11 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The signature loop (`feat/signature-loop`, pushed to `main` 2026-11-18) replaced production deployment
+`kevinliu-studio-d9zprutnh-kl01s-projects.vercel.app` (dpl_3Ugda845AHGWg9QaGtMYpHTDUKuR, main 1ede34f). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert the
+loop commit on `main`.
+
 The animated signature (`feat/animated-favicon`, pushed to `main` 2026-11-18) replaced production deployment
 `kevinliu-studio-26q2uftwm-kl01s-projects.vercel.app` (dpl_3TrueVi9Q2qtT88egR3hAC7hqPrX, main 04d370f). To undo it,
 promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert the
