@@ -66,6 +66,11 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
 
 ## Rollback
 
+The animated signature (`feat/animated-favicon`, pushed to `main` 2026-11-18) replaced production deployment
+`kevinliu-studio-26q2uftwm-kl01s-projects.vercel.app` (dpl_3TrueVi9Q2qtT88egR3hAC7hqPrX, main 04d370f). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert the
+signature commit on `main`.
+
 The cards refit and round 6 battle release (`release/next`, promoted 2026-11-13 as deployment
 `kevinliu-studio-19km5t6d2`, dpl_HvFKWDdDqUniAovzcmMNh8ve2fPs, main ab60dfb) replaced production deployment
 `kevinliu-studio-810jiizk6-kl01s-projects.vercel.app` (dpl_HNgtUJ3tg5yxPCKA4PpX1tznUhoe, main c08f0fe). To undo it,
