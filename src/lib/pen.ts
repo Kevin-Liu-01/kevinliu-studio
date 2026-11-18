@@ -59,13 +59,17 @@ export function penLine(path: string): Pen {
   });
 }
 
-// the pen line from fraction a to b as mask strokes: one path per run of equal width, with its length
+// the pen line from fraction a to b as mask strokes: one path per run of equal width, with its length. A run shorter
+// than MIN units takes in the next step at the wider of the two widths: WebKit leaves a round-cap dot on a very short
+// dashed run, and fewer runs mean fewer mask paths.
+const MIN = 4;
 export function penRuns(line: Pen, a = 0, b = 1): Run[] {
   const i0 = Math.round(a * (line.length - 1)), i1 = Math.round(b * (line.length - 1)), runs: Run[] = [];
   let run: Run | null = null;
   for (let i = i0 + 1; i <= i1; i++) {
     const p = line[i - 1], q = line[i], w = Math.round((Math.max(p.w, q.w) + 0.8) * 2) / 2;
-    if (!run || run.w !== w) runs.push((run = { d: `M${p.x.toFixed(1)} ${p.y.toFixed(1)}`, w, len: 0 }));
+    if (run && run.w !== w && run.len < MIN) run.w = Math.max(run.w, w);
+    else if (!run || run.w !== w) runs.push((run = { d: `M${p.x.toFixed(1)} ${p.y.toFixed(1)}`, w, len: 0 }));
     run.d += `L${q.x.toFixed(1)} ${q.y.toFixed(1)}`;
     run.len += Math.hypot(q.x - p.x, q.y - p.y);
   }

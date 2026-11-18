@@ -914,3 +914,18 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - WebKit and Firefox (Playwright) load with no errors. The header draw works in Chromium and WebKit on `<base href="/ex/">` card pages.
 - **Shipped** (2026-11-18): Kevin said "just deploy it fully with the animated logo too". The commit was rebased onto `main` 04d370f (the About logos) and pushed as 313ddbd after the CI gates passed locally. Production deployment `kevinliu-studio-nvrnrfopd` (dpl_EFkFunyd4MNKAv6M2Dpj9Zzh37Ct) is Ready on www.kevinliu.studio. `node scripts/smoke.mjs https://www.kevinliu.studio` passes. On www, the icon link's frames change and the header hover draws with no console errors. The rollback target is in `docs/deploy.md`.
 
+## 2026-11-18: the signature loops without a blank start (feat/signature-loop, Claude Code)
+
+- **Type**: fix
+- **Asked**: Kevin: "when we hover over the icon it shouldnt disappear then come back. it should perfectly loop and start from a part of the loop where it undraws itself. same with favicon, undraw the redraw".
+- **Changed** (`src/components/Signature.astro`, `src/lib/pen.ts`):
+  - On hover or focus the header mark starts whole. It undraws in writing order for 0.7 s and redraws for 0.9 s, and repeats with no pause. On leave it finishes the pass it is in, so it always settles whole.
+  - Each mask run's dash moves one way, from offset 0 to -3 with dasharray `1 2` on pathLength 1, so every pass ends where the next begins.
+  - The tab icon starts whole, undraws for 1.2 s, redraws for 1.8 s and holds for 3 s. The 0.3 s blank rest is gone.
+  - Runs shorter than 4 units merge into the next run, which takes the wider width. On a 0.15-unit run at the k's loop tip, WebKit drew a round-cap dot, and the merge also cuts the mask from 57 paths to 37. Runs waiting to redraw sit at offset -1.02 to -1.98, clear of both dash ends.
+  - Cumulative run fractions are clamped to 1, because summed floats broke the keyframe order.
+- **Verified** (local preview):
+  - The hover loop was frame-checked at 15 fixed times in Chromium and WebKit with no dots. After leave it settled whole, with no animations left running.
+  - The tab icon order is whole, then undraw, then redraw, then hold, and the next undraw starts at 6.0 s.
+  - The CI gates pass. Each tick costs at most 0.3 ms, about 8 ms in 10 s. CLS is 0 with hover included.
+

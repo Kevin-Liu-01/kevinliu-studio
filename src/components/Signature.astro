@@ -1,9 +1,10 @@
 ---
 // The kl signature writes itself, stroke by stroke in the order it is written (src/lib/pen.ts), in two places.
-// - The header's mark draws on mouse hover and keyboard focus. Its mask is built from the mark's own path on the first
-//   one, so pages carry no extra markup, and the drawn mark is the same path as at rest.
-// - The tab icon writes, holds, lifts in the same order and writes again. Each frame is an SVG of the mark through a
-//   mask of the pen line so far, with favicon.svg's own light and dark style. Chrome ranks a sizeless PNG below the
+// - The header's mark undraws and redraws in a seamless loop while the mouse or keyboard focus is on it, and settles
+//   whole when it leaves. Its mask is built from the mark's own path on the first hover, so pages carry no extra
+//   markup, and the drawn mark is the same path as at rest.
+// - The tab icon starts whole, undraws in the same order, redraws, holds and loops. Each frame is an SVG of the mark
+//   through a mask of the pen line so far, with favicon.svg's own light and dark style. Chrome ranks a sizeless PNG below the
 //   static SVG and .ico and never shows it, so the one added link is an SVG too: it ties with favicon.svg and wins as
 //   the later link. A frame every 90 ms only while the ink moves, none under reduced motion or the site's Pause, and
 //   the whole mark in a hidden tab. The static links in Base.astro stay the icon before this runs and wherever a
@@ -18,23 +19,25 @@
   const pens = new Map<string, Pen>();
   const lineOf = (d: string) => pens.get(d) ?? pens.set(d, penLine(d)).get(d)!;
 
-  // the header: a 900 ms draw at a steady pen speed, each run starting where the last one ended
-  const DRAW = 900;
+  // the header: while the pointer or keyboard focus is on it, the mark undraws in writing order and redraws, again
+  // and again with no pause; on leave it finishes the pass it is in, so it always comes to rest whole. Each run's
+  // dash travels one way: offset 0 is drawn, -1 has left the run, -2 to -3 draws it again, and -3 is 0 once more
+  // (dasharray 1 2 on pathLength 1), so every pass ends where the next begins.
+  const UNDRAW = 700, REDRAW = 900, PASS = UNDRAW + REDRAW;
   const brand = document.querySelector<HTMLAnchorElement>('header.top .brand');
   const mark = brand?.querySelector<SVGSVGElement>('svg.kl');
   const ink = mark?.querySelector<SVGPathElement>('path');
-  let drawing = false;
+  let loop: Animation[] = [];
 
-  function drawMark() {
-    if (drawing || still.matches || !mark || !ink) return;
-    let mask = mark.querySelector('mask');
+  function runsOf(svg: SVGSVGElement, path: SVGPathElement) {
+    let mask = svg.querySelector('mask');
     if (!mask) {
       const NS = 'http://www.w3.org/2000/svg';
       mask = document.createElementNS(NS, 'mask');
       mask.id = 'kl-pen';
       const g = document.createElementNS(NS, 'g');
       for (const [k, v] of Object.entries({ fill: 'none', stroke: '#fff', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })) g.setAttribute(k, v);
-      for (const run of penRuns(lineOf(ink.getAttribute('d')!))) {
+      for (const run of penRuns(lineOf(path.getAttribute('d')!))) {
         const p = document.createElementNS(NS, 'path');
         p.setAttribute('d', run.d);
         p.setAttribute('stroke-width', String(run.w));
@@ -44,27 +47,47 @@
         g.append(p);
       }
       mask.append(g);
-      mark.prepend(mask);
-      ink.setAttribute('mask', 'url(#kl-pen)');
+      svg.prepend(mask);
+      path.setAttribute('mask', 'url(#kl-pen)');
     }
-    const runs = [...mask.querySelectorAll<SVGPathElement>('path')];
-    const total = runs.reduce((s, p) => s + Number(p.dataset.len), 0);
-    let at = 0, last: Animation | undefined;
-    for (const p of runs) {
-      const duration = (DRAW * Number(p.dataset.len)) / total;
-      // before its turn a run holds its first keyframe (hidden); after its turn it falls back to fully drawn
-      last = p.animate([{ strokeDashoffset: 1.01 }, { strokeDashoffset: 0 }], { duration, delay: at, fill: 'backwards', easing: 'linear' });
-      at += duration;
-    }
-    drawing = true;
-    last?.finished.finally(() => { drawing = false; });
+    return [...mask.querySelectorAll<SVGPathElement>('path')];
   }
 
-  brand?.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') drawMark(); });
-  brand?.addEventListener('focus', () => { if (brand.matches(':focus-visible')) drawMark(); });
+  function loopMark() {
+    if (still.matches || !mark || !ink) return;
+    if (loop.length) { // back before the last pass ended: keep going
+      loop.forEach((a) => a.effect?.updateTiming({ iterations: Infinity }));
+      return;
+    }
+    const runs = runsOf(mark, ink), total = runs.reduce((s, p) => s + Number(p.dataset.len), 0);
+    let at = 0;
+    loop = runs.map((p) => {
+      const end = Math.min(1, at + Number(p.dataset.len) / total); // summed floats can pass 1 and break the offsets
+      const u0 = (at * UNDRAW) / PASS, u1 = (end * UNDRAW) / PASS, r0 = (UNDRAW + at * REDRAW) / PASS, r1 = (UNDRAW + end * REDRAW) / PASS;
+      at = end;
+      // waiting runs sit at -1.02 to -1.98, clear of both dash ends: a zero-length dash there draws a round-cap dot
+      return p.animate([
+        { offset: 0, strokeDashoffset: 0 }, { offset: u0, strokeDashoffset: 0 }, { offset: u1, strokeDashoffset: -1.02 },
+        { offset: r0, strokeDashoffset: -1.98 }, { offset: r1, strokeDashoffset: -3 }, { offset: 1, strokeDashoffset: -3 },
+      ], { duration: PASS, iterations: Infinity, easing: 'linear' });
+    });
+    const mine = loop;
+    mine[0].finished.then(() => { if (loop === mine) { mine.forEach((a) => a.cancel()); loop = []; } }, () => {});
+  }
 
-  // the tab icon, in ms: write, hold, lift (the ink leaves in writing order), rest
-  const WRITE = 1800, HOLD = 3200, LIFT = 900, REST = 300, CYCLE = WRITE + HOLD + LIFT + REST, TICK = 90;
+  function settleMark() {
+    if (!loop.length) return;
+    const passes = Math.floor(Number(loop[0].currentTime) / PASS) + 1;
+    loop.forEach((a) => a.effect?.updateTiming({ iterations: passes }));
+  }
+
+  brand?.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') loopMark(); });
+  brand?.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') settleMark(); });
+  brand?.addEventListener('focus', () => { if (brand.matches(':focus-visible')) loopMark(); });
+  brand?.addEventListener('blur', settleMark);
+
+  // the tab icon, in ms, from the whole mark: undraw (the ink leaves in writing order), redraw, hold
+  const LIFT = 1200, WRITE = 1800, HOLD = 3000, CYCLE = LIFT + WRITE + HOLD, TICK = 90;
   // half sine ease, half linear: the pen leaves the line at once and settles into the tail
   const ease = (t: number) => (t + 0.5 - Math.cos(Math.PI * t) / 2) / 2;
 
@@ -92,10 +115,9 @@
 
     function frame() {
       const t = (performance.now() - t0) % CYCLE;
-      if (t < WRITE) draw(0, ease(t / WRITE));
-      else if (t < WRITE + HOLD) draw(0, 1);
-      else if (t < WRITE + HOLD + LIFT) draw(ease((t - WRITE - HOLD) / LIFT), 1);
-      else draw(1, 1);
+      if (t < LIFT) draw(ease(t / LIFT), 1);
+      else if (t < LIFT + WRITE) draw(0, ease((t - LIFT) / WRITE));
+      else draw(0, 1);
     }
 
     function sync() {
