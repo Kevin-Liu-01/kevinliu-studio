@@ -869,6 +869,10 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - Kevin Wiki and Atlas print no logo (11-11). The paragraph links (General Translation, Princeton University) and X, GitHub and LinkedIn get none: the repo has no checked-in mark for them, and General Translation may appear only on the Atlas card. The home page has no About section.
 - **Checks**: build and guard pass (256 pages); `pnpm test` 20/20; `pnpm check` 0 errors; i18n-extract --check; negotiation 16; check-seo 249 pages, 498 links. /about at 1440, 730 and 390, light and dark: CLS 0, all 24 logos load, one title x per width, no overflow. Screens in `~/k7-rescue/about-logos/`.
 - **Open**: `pnpm sync:check` fails on `public/battle/shared/{hud,strings}.js` against the battle pin f28393ef; the comparison reads the rounds checkout, and this branch changes no synced file. Not pushed or deployed.
+- **Shipped** (2026-11-18): Kevin said "Push and merge". main fast-forwarded 3ba6ce1 to 04d370f; production deployment
+  `kevinliu-studio-26q2uftwm` Ready; smoke.mjs passes on www; live /about and /es/about print the new order and 24 logos,
+  /about.md lists the six first. Rollback: `kevinliu-studio-nd8hh3j7l` (3ba6ce1), docs/deploy.md. This record is
+  committed on feat/about-logos, not pushed.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 

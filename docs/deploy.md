@@ -71,6 +71,11 @@ The animated signature (`feat/animated-favicon`, pushed to `main` 2026-11-18) re
 promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then revert the
 signature commit on `main`.
 
+The About order and logos (`feat/about-logos`, pushed to main 2026-11-18 as deployment `kevinliu-studio-26q2uftwm`,
+main 04d370f) replaced production deployment `kevinliu-studio-nd8hh3j7l-kl01s-projects.vercel.app` (main 3ba6ce1). To
+undo it, promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then
+revert `main` to 3ba6ce1 with a revert commit.
+
 The cards refit and round 6 battle release (`release/next`, promoted 2026-11-13 as deployment
 `kevinliu-studio-19km5t6d2`, dpl_HvFKWDdDqUniAovzcmMNh8ve2fPs, main ab60dfb) replaced production deployment
 `kevinliu-studio-810jiizk6-kl01s-projects.vercel.app` (dpl_HNgtUJ3tg5yxPCKA4PpX1tznUhoe, main c08f0fe). To undo it,
