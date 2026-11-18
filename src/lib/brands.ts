@@ -6,6 +6,7 @@ import path from 'node:path';
 
 const svg = (name: string) => fs.readFileSync(path.join(process.cwd(), 'src/assets/about', `${name}.svg`), 'utf8')
   .replace(/<!--[\s\S]*?-->\s*/g, '')
+  .replace(/\s(?:role|aria-label)="[^"]*"/g, '')
   .replace(/<svg\b/, '<svg aria-hidden="true" focusable="false"')
   .trim();
 const BRANDS: Record<string, string> = {

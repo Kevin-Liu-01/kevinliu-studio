@@ -42,8 +42,8 @@ the llms files and the questions on `/about`; `ALSO_KNOWN_AS`; Devpost among the
 - No real people's names or photos. Agent Pets' figures carry no names in any text. The Turboslide hero capture with
   a photographer's credit stays out (docs/sync.md).
 - General Translation appears on the Atlas card and its records, the wall and the cards index (which print Atlas's
-  line), in Kevin's own bio and facts on `/about` (with the GT monogram beside his role, inlined from
-  `src/assets/about/gt.svg`) and the llms files, in the English home's title, description and
+  line), in Kevin's own bio and facts on `/about` (with GT's logo, the refined globe, beside his role, inlined
+  from `src/assets/about/gt.svg`) and the llms files, in the English home's title, description and
   opening lines, and in every page's Person node (`scripts/rules.mjs` `gtAllowed`). Never in synced card or battle
   code, or in another card's twin. Two round
   captures that showed it are dropped or painted out by the sync (docs/sync.md).

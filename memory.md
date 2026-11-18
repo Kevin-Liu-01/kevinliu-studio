@@ -882,6 +882,7 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - A mark and its name's first word are one unbreakable run (`.nw`), so a mark never ends a line alone (Spanish at 390 did).
   - Project logos are unchanged: Jarhead, OMMC and Podium are still the cards' webp files.
   - Checks: build and guard pass; `pnpm check` 0 errors; test 20/20; i18n-extract --check; check-seo 249 pages, 498 links. /about, /es/about and /ja/about at 1440, 730, 390 and 320, light and dark: CLS 0, no mark parted from its word, one title x, no overflow. Not pushed.
+- **Follow-up** (2026-11-18): Kevin, "wait gt has a new logo now". `src/assets/about/gt.svg` is now the refined globe (`refined-1112`; its path's sha256 matches `public/brand/gt-globe-logo.json`), copied unedited from Prototemplate origin/main `public/marks/production/gt-mark.svg`, the one-color master; the doubled-line monogram is GT's previous logo (BRAND.md section 4). `brands.ts` drops each file's role and aria-label, since the mark is decorative. Build and guard pass; CLS 0 in both themes. Not pushed.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 
