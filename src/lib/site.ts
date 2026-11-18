@@ -12,6 +12,12 @@ export const ABOUT: readonly (readonly Run[])[] = [
   ['I am 20, and I\'ve been coding and designing since I was 12. I am currently attending ', ['Princeton University', 'https://www.princeton.edu'], '.'],
   ['I design interfaces that feel alive, from first principles, with a spirit of their own. I follow friction toward what is missing, and treat environments as part of the product. I build strange observations into useful worlds through type, skills, and protocols.'],
 ];
+// /about's project list opens on these six, in this order, then the rest in the roster's order (Kevin, 2026-11-18). Only
+// /about and its twin read it; the wall, /cards and the battle keep the roster's order.
+export const ABOUT_FIRST = ['claude-of-tanks', 'katagami', 'glyphfield', 'jarhead', 'turboslide', 'agent-machines'] as const;
+// Projects /about prints without a logo (Kevin, 2026-11-11, improve plan 027): Kevin Wiki has none, and Atlas's
+// monogram stays on its card.
+export const ABOUT_NO_LOGO: readonly string[] = ['kevin-wiki', 'atlas'];
 // The answer to "who is Kevin Liu": the About section of llms.txt, llms-full.txt and /about.md. Each line is a public
 // fact with its source beside it, so any of them can be struck. Sources: this site's /about; his previous site
 // (portfoliomon.kevinliu.studio llms.txt, experience.md, awards.md, certifications.md); github.com/Kevin-Liu-01; the

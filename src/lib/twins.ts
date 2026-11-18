@@ -2,8 +2,8 @@
 // view print from these functions, so what an agent reads is what a person sees, in the same order. Each twin opens
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
-import { fighters, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, type Run } from './site';
+import { fighters, byId, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
+import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, ABOUT_FIRST, type Run } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
 import { homeParts } from '../i18n/source.mjs';
 
@@ -159,6 +159,12 @@ ${t('twin.everyCard')}: ${at(code, '/cards')}
 const runMd = (r: Run) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
 export const aboutParas = (code = DEFAULT) => (code === DEFAULT ? ABOUT.map((runs) => runs.map(runMd).join('')) : L(code).c.about);
 
+// /about's projects: ABOUT_FIRST, then every other card in roster order. The page and its twin both read this list
+export const aboutProjects: Fighter[] = [
+  ...ABOUT_FIRST.map((id) => byId[id] ?? (() => { throw new Error(`site.ts ABOUT_FIRST: no card "${id}"`); })()),
+  ...fighters.filter((f) => !(ABOUT_FIRST as readonly string[]).includes(f.id)),
+];
+
 export function aboutMd(code = DEFAULT) {
   const t = L(code).t;
   return `# ${t('about.heading', { name: NAME })}
@@ -169,7 +175,7 @@ ${t('twin.aboutCards', { n: fighters.length })}
 
 ## ${t('about.projects')}
 
-${fighters.map((f) => `- ${link(f, code)}: ${whatIn(f, code)}`).join('\n')}
+${aboutProjects.map((f) => `- ${link(f, code)}: ${whatIn(f, code)}`).join('\n')}
 
 ## ${t('about.questions')}
 

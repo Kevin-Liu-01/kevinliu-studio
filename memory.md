@@ -858,3 +858,14 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - The Tower sheet still scrolls at 320 (also on production).
   - The 1440 Tesla Zapper chip spills 6 px (also on production).
   - Arena tower tiles visible without scrolling at 320 drop 5 → 3.
+
+## 2026-11-18: /about's project order and logos (feat/about-logos, Claude Code)
+
+- **Type**: feature. Kevin: "in my about section add logos to the left of underlined text and make the order: (from top) Claude of Tanks, Katagami, Glyphfield, Jarhead, Turboslide, Agent Machines, then everything else".
+- **Changed**: `src/lib/site.ts` (`ABOUT_FIRST`, `ABOUT_NO_LOGO`), `src/lib/twins.ts` (`aboutProjects`, read by `aboutMd`), `src/lib/cards.ts` (`logoOf`: the card's media.gen.js logo and its deep), `src/views/About.astro`, `src/styles/site.css` (`.projects`, `.plogo`).
+- **Decisions**:
+  - Only /about and its twins (all eight languages, llms-full.txt's About) take the new order; the wall, /cards, /cards.md, llms.txt and the battle keep the roster's order.
+  - The logo is the card's own file in a light metal tile ringed by the card's deep at 55% toward black (card.css `.logo`, Kevin 11-11), the mark one cap height tall, the tile centred on the caps and hung in a fixed column, so every name starts at the same x. The underline is on the name only.
+  - Kevin Wiki and Atlas print no logo (11-11). The paragraph links (General Translation, Princeton University) and X, GitHub and LinkedIn get none: the repo has no checked-in mark for them, and General Translation may appear only on the Atlas card. The home page has no About section.
+- **Checks**: build and guard pass (256 pages); `pnpm test` 20/20; `pnpm check` 0 errors; i18n-extract --check; negotiation 16; check-seo 249 pages, 498 links. /about at 1440, 730 and 390, light and dark: CLS 0, all 24 logos load, one title x per width, no overflow. Screens in `~/k7-rescue/about-logos/`.
+- **Open**: `pnpm sync:check` fails on `public/battle/shared/{hud,strings}.js` against the battle pin f28393ef; the comparison reads the rounds checkout, and this branch changes no synced file. Not pushed or deployed.
