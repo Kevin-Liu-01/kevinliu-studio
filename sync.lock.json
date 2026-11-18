@@ -1,16 +1,16 @@
 {
  "rounds": "/Users/kevinliu/Documents/ChatGPT/portfolio-design-rounds/2026-10-30",
- "head": "c2b17715 + 30e69931 + f28393ef",
+ "head": "cfc4c9fc + 30e69931 + f28393ef",
  "pins": {
-  "cards": "c2b17715",
+  "cards": "cfc4c9fc",
   "sound": "30e69931",
   "battle": "f28393ef"
  },
- "synced": "2026-11-13T20:04:59.373Z",
+ "synced": "2026-11-18T23:13:50.026Z",
  "stages": {
   "cards": {
    "files": 1091,
-   "bytes": 107660519,
+   "bytes": 107661017,
    "list": {
     "public/ex/ui.css": {
      "src": "r4/ex/ui.css",
@@ -904,8 +904,8 @@
     },
     "public/ex/media/claude-of-tanks/logo.svg": {
      "src": "r4/ex/media/claude-of-tanks/logo.svg",
-     "sha256": "bb63666a0cd09ea2148872f41a3a557d40bf720974d1ce65419ffb9cba90d100",
-     "bytes": 2344
+     "sha256": "81e6b4466d1cfbe68bcaf9fdb202ff8cbcb2afbc0784ad0cf2e68e17af86a074",
+     "bytes": 2411
     },
     "public/ex/media/claude-of-tanks/pop.webp": {
      "src": "r4/ex/media/claude-of-tanks/pop.webp",
@@ -2504,13 +2504,13 @@
     },
     "public/og/claude-of-tanks.jpg": {
      "src": "r4/ex/og/claude-of-tanks.jpg",
-     "sha256": "5b2e9649ecba761af375450a58bd0eff0580444d99b7637149c7b0acc4cff69e",
-     "bytes": 276347
+     "sha256": "0f97857be85025abea5fa0a45df417518ffe3b7b77b983beed76320fcef15237",
+     "bytes": 276766
     },
     "public/og/claude-of-tanks.mp4": {
      "src": "r4/ex/og/claude-of-tanks.mp4",
-     "sha256": "5d6df25cb40bbb0b840e16138cf5179fbce67cae28e199c17b06609c66603b35",
-     "bytes": 1184391
+     "sha256": "9a2dadd831c4765be5aaff16d53c5c8a9d30a7817fc0311cdedae7ab5f1bc0bb",
+     "bytes": 1187016
     },
     "public/og/cotfly.jpg": {
      "src": "r4/ex/og/cotfly.jpg",
@@ -2554,13 +2554,13 @@
     },
     "public/og/home.jpg": {
      "src": "r4/ex/og/home.jpg",
-     "sha256": "9207c8bed0783003bff48b496ecb9799e33eb29709671da3face32686add4215",
-     "bytes": 249602
+     "sha256": "89ac8573a401bac72ff1d31496ea9f2f2b2c11f386d17e93217cb3c12277b07e",
+     "bytes": 248413
     },
     "public/og/home.mp4": {
      "src": "r4/ex/og/home.mp4",
-     "sha256": "a75182e9e33157597921bb7a5eb78b6e1fb628fda96dd74151c20f8869efc0ba",
-     "bytes": 1177941
+     "sha256": "7302c34b63cb8c0e639e15986e54a419729de739a4aa1d5e2b2b5bc776f3c6c4",
+     "bytes": 1176517
     },
     "public/og/jarhead.jpg": {
      "src": "r4/ex/og/jarhead.jpg",

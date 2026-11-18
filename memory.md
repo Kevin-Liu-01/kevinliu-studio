@@ -933,3 +933,13 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - The CI gates pass. Each tick costs at most 0.3 ms, about 8 ms in 10 s. CLS is 0 with hover included.
 - **Shipped** (2026-11-18): Kevin said "Yes, deploy it". The commit was rebased onto `main` 1ede34f (the About logos) and pushed as ed26467 after the CI gates passed. Production deployment `kevinliu-studio-nvvjx8fz6` (dpl_4biVJGikZzFh9BSnDoYh3NP85KJn) is serving www. The smoke test passes. On www, the hover loop and tab icon order were frame-checked in Chromium and WebKit with no errors. The rollback target is in `docs/deploy.md`.
 
+
+## 2026-11-18: Claude of Tanks' card shows the commander mark (feat/about-logos, Claude Code)
+
+- **Type**: content
+- **Asked**: Kevin: "make sure our claude of tanks card also uses the right logo", after "use the correct new logo for claude of tanks, the claude soldier on a tank". This replaces his 11-11 "Keep the v3 shield" for the card.
+- **Changed**:
+  - Rounds commit cfc4c9fc (`r4/ex`): `media/claude-of-tanks/logo.svg` is claude-of-tanks@250ce46a92 `public/brand/favicon-mark.svg` byte for byte. The receipts in `art/pop/claude-of-tanks.json` and its two alt printings now name it. `og/claude-of-tanks` and `og/home` (the triptych it leads) were re-filmed with `tools/og.cjs`; both loops are seamless.
+  - Here: `PIN.cards` moved from c2b17715 to cfc4c9fc. Since c2b17715, `r4/ex` changed only in docs plus this commit. `ROUNDS=<export> pnpm sync` wrote five files: the logo and the four share files.
+- **Verified** (local preview): `pnpm build` and its guard pass. `/cards/claude-of-tanks` shows the commander tile in both themes at 1440, 730 and 390 px, the image loads, and CLS is 0.
+- **Open**: not pushed or deployed.
