@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { logoOf } from '../lib/cards';
+import Link from '../components/BrandLink.astro';
 import { cardPath, qaOf, aboutMd, aboutParas, aboutProjects, whatIn, bioIn } from '../lib/twins';
 import { L } from '../i18n';
 import { mdHtml } from '../lib/machine';
@@ -31,7 +32,10 @@ const mail = l.t('twin.linkEmail');
 const elsewhere = tw[at(H.elsewhere) + 1].split('\n').filter((x) => /^- (X|GitHub|LinkedIn):/.test(x) || x.startsWith(`- ${mail}:`)).join('\n');
 // each project's logo as its card prints it (the file and its tile, no ring), hung left of the underlined name;
 // a project without one keeps the empty column, so every name starts at the same x
+// the logo and the name's first word never part at a line end (BrandLink.astro does the same)
+const first = (t: string) => t.split(' ')[0], rest = (t: string) => t.slice(first(t).length);
 const logos = Object.fromEntries(aboutProjects.map((f) => [f.id, ABOUT_NO_LOGO.includes(f.id) ? null : logoOf(f)]));
+// X prints as 𝕏 in the system's symbol face (no Katagami face holds it), named "X" for screen readers
 const heading = l.t('about.heading', { name: NAME });
 const jsonld = [website, person, ...page({ path: l.p('/about'), type: 'ProfilePage', name: heading, description: BIO, image: `${SITE}/share/about.jpg`, crumbs: [[l.t('about.title'), l.p('/about')]], mainEntity: { '@id': person['@id'] }, code })];
 ---
@@ -39,14 +43,14 @@ const jsonld = [website, person, ...page({ path: l.p('/about'), type: 'ProfilePa
   <main class="prose" id="main">
     <div class="sw hw"><h1>{heading}</h1><p class="mx" aria-hidden="true" set:html={mdHtml(tw[0])} /></div>
     {ABOUT.map((_, i) => (
-      <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runsOf(i).map((r) => (typeof r === 'string' ? r : <a href={r[1]}>{r[0]}</a>))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
+      <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runsOf(i).map((r) => (typeof r === 'string' ? r : <Link href={r[1]} text={r[0]} />))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
     ))}
     {l.en
-      ? <p class="sw"><span class="hx">Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}<a href={social(n).url} rel="me">{n}</a></>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>
-      : <p class="sw"><span class="hx">{findMe.map((x) => x === '{email}' ? <a href={`mailto:${EMAIL}`}>{EMAIL}</a> : x === '{x}' ? <a href={social('X').url} rel="me">X</a> : x === '{github}' ? <a href={social('GitHub').url} rel="me">GitHub</a> : x === '{linkedin}' ? <a href={social('LinkedIn').url} rel="me">LinkedIn</a> : x)}</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>}
+      ? <p class="sw"><span class="hx">Find me on {['X', 'GitHub', 'LinkedIn'].map((n, i) => <>{i ? (i === 2 ? ', and ' : ', ') : ''}{n === 'X' ? <a href={social(n).url} rel="me" aria-label="X"><span class="sym">𝕏</span></a> : <Link href={social(n).url} text={n} me />}</>)}, or write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>
+      : <p class="sw"><span class="hx">{findMe.map((x) => x === '{email}' ? <a href={`mailto:${EMAIL}`}>{EMAIL}</a> : x === '{x}' ? <a href={social('X').url} rel="me" aria-label="X"><span class="sym">𝕏</span></a> : x === '{github}' ? <Link href={social('GitHub').url} text="GitHub" me /> : x === '{linkedin}' ? <Link href={social('LinkedIn').url} text="LinkedIn" me /> : x)}</span><span class="mx" set:html={mdHtml(elsewhere)} /></p>}
     <div class="sw hw"><h2>{l.t('about.projects')}</h2><p class="mx" aria-hidden="true" set:html={mdHtml(H.projects)} /></div>
     <ul class="projects">
-      {aboutProjects.map((f, i) => { const g = logos[f.id]; return <li class="sw"><span class="hx"><a class="pl" href={cardPath(f, code)}>{g && <span class:list={['plogo', g.ground && 'on', g.fill && 'fill']} style={g.ground ? `--lg:${g.ground}` : undefined}><img src={g.src} alt="" width="16" height="16" draggable="false" /></span>}<span class="pt">{f.title}</span></a>{sep}{whatIn(f, code)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>; })}
+      {aboutProjects.map((f, i) => { const g = logos[f.id]; return <li class="sw"><span class="hx"><a class="pl" href={cardPath(f, code)}>{g ? <><span class="nw"><span class:list={['plogo', g.ground && 'on', g.fill && 'fill']} style={g.ground ? `--lg:${g.ground}` : undefined}><img src={g.src} alt="" width="16" height="16" draggable="false" /></span><span class="pt">{first(f.title)}</span></span>{rest(f.title) && <span class="pt">{rest(f.title)}</span>}</> : <span class="pt">{f.title}</span>}</a>{sep}{whatIn(f, code)}</span><span class="mx" set:html={mdHtml(projects[i])} /></li>; })}
     </ul>
     <div class="sw hw"><h2>{l.t('about.questions')}</h2><p class="mx" aria-hidden="true" set:html={mdHtml(H.questions)} /></div>
     <dl>

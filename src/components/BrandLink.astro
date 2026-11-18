@@ -1,0 +1,13 @@
+---
+// /about's links whose host has a mark (lib/brands.ts): the mark on its tile, then the underlined text
+import { brandOf } from '../lib/brands';
+interface Props { href: string; text: string; me?: boolean }
+const { href, text, me } = Astro.props;
+const mark = brandOf(href);
+const rel = me ? 'me' : undefined;
+// the mark and the first word never part at a line end; the rest of the name wraps as text
+const [first, rest] = ((m) => [m[1], m[2]])(/^(\S+)(.*)$/s.exec(text)!);
+---
+{mark
+  ? <a class="pl" href={href} rel={rel}><span class="nw"><span class="plogo" set:html={mark} /><span class="pt">{first}</span></span>{rest && <span class="pt">{rest}</span>}</a>
+  : <a href={href} rel={rel}>{text}</a>}

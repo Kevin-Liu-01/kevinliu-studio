@@ -178,22 +178,29 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose .lede { font-size: 20px; line-height: 1.45; }
 .prose dt { margin-top: 18px; font: 700 17px/24px var(--sans); }
 .prose dd { margin: 4px 0 0; }
-/* /about's projects: each name's logo as its card prints it, on the card's light metal tile with no ring around it
-   (Kevin 11-18: "remove the borders around logos"), the mark one cap height tall and centred on the caps. The tile
-   hangs in a fixed column inside the link, before the underlined name, so a name without a logo starts at the same x */
-.prose .projects { list-style: none; padding-left: 0; --cap: 0.7em; --cap: 1cap; --pad: 2px; --tile: calc(var(--cap) + 2 * var(--pad)); --slot: calc(var(--tile) + 0.5em); }
+/* /about's marks: a project's logo as its card prints it (card.css .logo's light metal, no ring: Kevin 11-18), and the
+   brand marks of the paragraph and elsewhere links (lib/brands.ts), each on the same tile, one cap height tall and
+   centred on the caps, before its underlined text. In the project list the tile hangs in a fixed column, so a name
+   without a logo starts at the same x */
+.prose { --cap: 1cap; --pad: 2px; --tile: calc(var(--cap) + 2 * var(--pad)); --slot: calc(var(--tile) + 0.5em); }
+@supports not (width: 1cap) { .prose { --cap: 0.7em; } }
+.prose .projects { list-style: none; padding-left: 0; }
 .prose .projects li { padding-left: var(--slot); }
 .prose a.pl { text-decoration: none; }
 .prose a.pl .pt { text-decoration: underline; text-underline-offset: 3px; }
+.prose a.pl .nw { white-space: nowrap; }
 .plogo {
   display: inline-block; box-sizing: border-box; width: var(--tile); height: var(--tile); padding: var(--pad);
-  margin: 0 calc(var(--slot) - var(--tile)) 0 calc(-1 * var(--slot)); vertical-align: calc(-1 * var(--pad));
+  margin-right: 0.3em; vertical-align: calc(-1 * var(--pad)); color: #181717;
   border-radius: calc(var(--tile) * 0.17); background: linear-gradient(153deg, #fff 0%, #f2f3f5 38%, #cdd0d4 100%);
 }
+.projects .plogo { margin: 0 calc(var(--slot) - var(--tile)) 0 calc(-1 * var(--slot)); }
 .plogo.on { padding: 0; background: var(--lg); }
 .plogo.fill { padding: 0; overflow: hidden; }
-.plogo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.plogo :is(img, svg) { display: block; width: 100%; height: 100%; object-fit: contain; }
 .plogo.fill img { object-fit: cover; }
+/* 𝕏: no Katagami face holds it, so it is the system's own symbol, at the line's height */
+.sym { font-family: 'Apple Symbols', 'STIX Two Math', 'Cambria Math', 'Segoe UI Symbol', 'Noto Sans Math', math, sans-serif; line-height: 1; }
 .index { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
 .index li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 14px 0; border-top: 1px solid color-mix(in oklab, var(--ink-2) 22%, transparent); }
 .index .t { font: 700 17px/24px var(--sans); }

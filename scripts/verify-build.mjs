@@ -124,9 +124,9 @@ for (const f of htmls) {
     if (canon && alts[want] !== canon) fail(page, `hreflang ${want} is not the canonical`);
   }
   // every character a translated page shows is held by one of its faces (the language list names each language in
-  // the system face and is left out)
+  // the system face and is left out, as is /about's 𝕏, a span.sym in the system's symbol face)
   if (code !== 'en') {
-    const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang[ "][\s\S]*?<\/details>/g, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
+    const shown = html.replace(/<(script|style|template)\b[\s\S]*?<\/\1>/g, '').replace(/<details class="lang[ "][\s\S]*?<\/details>/g, '').replace(/<span class="sym">[^<]*<\/span>/g, '').replace(/<[^>]+>/g, ' ').replace(/&[#\w]+;/g, ' ');
     const have = held(code, /<base href="\/battle\//.test(html) ? 'battle' : 'site'), missing = new Set([...shown].filter((ch) => ch > '~' && !have.has(ch)));
     if (missing.size) fail(page, `prints ${[...missing].slice(0, 12).join('')} that no face holds (python3 scripts/i18n-fonts.py)`);
   }

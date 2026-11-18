@@ -874,6 +874,14 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   /about.md lists the six first. Rollback: `kevinliu-studio-nd8hh3j7l` (3ba6ce1), docs/deploy.md. This record is
   committed on feat/about-logos, not pushed.
 - **Follow-up** (2026-11-18): Kevin, "remove the borders around logos". The tiles keep the card's light metal (a dark-ground mark its own ground) with no keyline ring, highlight or metal edge; `logoOf` no longer carries the card's deep. Build and guard pass; /about at 1440 and 390 in both themes: CLS 0, one title x. Committed on feat/about-logos, not pushed.
+- **Follow-up** (2026-11-18): Kevin, "add logos by general translation, princeton, and replace x with x logo as text (𝕏), then logo by github and linkedin. use ONLY svgs for all and use thesvg.org for anything".
+  - Marks, each an SVG in `src/assets/about/` with its source and licence, inlined by `src/lib/brands.ts` through `src/components/BrandLink.astro` on the same light tile:
+    - Princeton, GitHub and LinkedIn are thesvg.org's `default` files (CC0, CC0, MIT).
+    - thesvg.org has no General Translation mark (none in its 7,941-icon registry), so it is the GT monogram from `~/repos/Prototemplate/motion/kit/brand/gt-mark.svg`. Inlined, it ships no file of its own and appears only on the /about pages `gtAllowed` already admits (docs/content.md).
+  - X prints as 𝕏 in a `span.sym` in the system's symbol face (Apple Symbols on this Mac; no Katagami face holds U+1D54F), named "X" for screen readers. `verify-build.mjs` leaves `span.sym` out of the translated pages' face check, as it does the language list. The twins keep "X".
+  - A mark and its name's first word are one unbreakable run (`.nw`), so a mark never ends a line alone (Spanish at 390 did).
+  - Project logos are unchanged: Jarhead, OMMC and Podium are still the cards' webp files.
+  - Checks: build and guard pass; `pnpm check` 0 errors; test 20/20; i18n-extract --check; check-seo 249 pages, 498 links. /about, /es/about and /ja/about at 1440, 730, 390 and 320, light and dark: CLS 0, no mark parted from its word, one title x, no overflow. Not pushed.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 
