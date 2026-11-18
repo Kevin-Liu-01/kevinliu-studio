@@ -891,5 +891,5 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - With a real tab switch (agent-browser, headed), `visibilitychange` stopped the frames and the loop restarted on return.
   - Reduced motion leaves only the static links; Pause holds the icon still and resumes it.
   - WebKit and Firefox (Playwright) load with no errors. The header draw works in Chromium and WebKit on `<base href="/ex/">` card pages.
-- **Open**: not pushed or deployed. That needs Kevin's yes.
+- **Shipped** (2026-11-18): Kevin said "just deploy it fully with the animated logo too". The commit was rebased onto `main` 04d370f (the About logos) and pushed as 313ddbd after the CI gates passed locally. Production deployment `kevinliu-studio-nvrnrfopd` (dpl_EFkFunyd4MNKAv6M2Dpj9Zzh37Ct) is Ready on www.kevinliu.studio. `node scripts/smoke.mjs https://www.kevinliu.studio` passes. On www, the icon link's frames change and the header hover draws with no console errors. The rollback target is in `docs/deploy.md`.
 
