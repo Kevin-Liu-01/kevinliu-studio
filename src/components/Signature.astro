@@ -1,0 +1,125 @@
+---
+// The kl signature writes itself, stroke by stroke in the order it is written (src/lib/pen.ts), in two places.
+// - The header's mark draws on mouse hover and keyboard focus. Its mask is built from the mark's own path on the first
+//   one, so pages carry no extra markup, and the drawn mark is the same path as at rest.
+// - The tab icon writes, holds, lifts in the same order and writes again. Each frame is an SVG of the mark through a
+//   mask of the pen line so far, with favicon.svg's own light and dark style. Chrome ranks a sizeless PNG below the
+//   static SVG and .ico and never shows it, so the one added link is an SVG too: it ties with favicon.svg and wins as
+//   the later link. A frame every 90 ms only while the ink moves, none under reduced motion or the site's Pause, and
+//   the whole mark in a hidden tab. The static links in Base.astro stay the icon before this runs and wherever a
+//   browser ignores a changed icon (Safari).
+// Nothing runs under reduced motion.
+---
+<script>
+  import { penLine, penRuns, type Pen } from '../lib/pen';
+
+  const root = document.documentElement;
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const pens = new Map<string, Pen>();
+  const lineOf = (d: string) => pens.get(d) ?? pens.set(d, penLine(d)).get(d)!;
+
+  // the header: a 900 ms draw at a steady pen speed, each run starting where the last one ended
+  const DRAW = 900;
+  const brand = document.querySelector<HTMLAnchorElement>('header.top .brand');
+  const mark = brand?.querySelector<SVGSVGElement>('svg.kl');
+  const ink = mark?.querySelector<SVGPathElement>('path');
+  let drawing = false;
+
+  function drawMark() {
+    if (drawing || still.matches || !mark || !ink) return;
+    let mask = mark.querySelector('mask');
+    if (!mask) {
+      const NS = 'http://www.w3.org/2000/svg';
+      mask = document.createElementNS(NS, 'mask');
+      mask.id = 'kl-pen';
+      const g = document.createElementNS(NS, 'g');
+      for (const [k, v] of Object.entries({ fill: 'none', stroke: '#fff', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })) g.setAttribute(k, v);
+      for (const run of penRuns(lineOf(ink.getAttribute('d')!))) {
+        const p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', run.d);
+        p.setAttribute('stroke-width', String(run.w));
+        p.setAttribute('pathLength', '1');
+        p.setAttribute('stroke-dasharray', '1 2');
+        p.dataset.len = String(run.len);
+        g.append(p);
+      }
+      mask.append(g);
+      mark.prepend(mask);
+      ink.setAttribute('mask', 'url(#kl-pen)');
+    }
+    const runs = [...mask.querySelectorAll<SVGPathElement>('path')];
+    const total = runs.reduce((s, p) => s + Number(p.dataset.len), 0);
+    let at = 0, last: Animation | undefined;
+    for (const p of runs) {
+      const duration = (DRAW * Number(p.dataset.len)) / total;
+      // before its turn a run holds its first keyframe (hidden); after its turn it falls back to fully drawn
+      last = p.animate([{ strokeDashoffset: 1.01 }, { strokeDashoffset: 0 }], { duration, delay: at, fill: 'backwards', easing: 'linear' });
+      at += duration;
+    }
+    drawing = true;
+    last?.finished.finally(() => { drawing = false; });
+  }
+
+  brand?.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') drawMark(); });
+  brand?.addEventListener('focus', () => { if (brand.matches(':focus-visible')) drawMark(); });
+
+  // the tab icon, in ms: write, hold, lift (the ink leaves in writing order), rest
+  const WRITE = 1800, HOLD = 3200, LIFT = 900, REST = 300, CYCLE = WRITE + HOLD + LIFT + REST, TICK = 90;
+  // half sine ease, half linear: the pen leaves the line at once and settles into the tail
+  const ease = (t: number) => (t + 0.5 - Math.cos(Math.PI * t) / 2) / 2;
+
+  async function animateIcon() {
+    const svg = await (await fetch('/favicon.svg')).text();
+    const d = svg.match(/ d="([^"]+)"/)?.[1], box = svg.match(/viewBox="([^"]+)"/)?.[1];
+    if (!d || !box) return;
+    const line = lineOf(d);
+    const head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}">${svg.match(/<style>.*?<\/style>/s)?.[0] ?? ''}`;
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/svg+xml';
+    let timer = 0, t0 = 0, shown = '';
+
+    // the ink from pen fraction a to b
+    function draw(a: number, b: number) {
+      const key = `${a.toFixed(3)} ${b.toFixed(3)}`;
+      if (key === shown) return;
+      shown = key;
+      const strokes = penRuns(line, a, b).map((r) => `<path stroke-width="${r.w}" d="${r.d}"/>`).join('');
+      const body = strokes ? `<mask id="p" maskUnits="userSpaceOnUse"><g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">${strokes}</g></mask><path fill="currentColor" mask="url(#p)" d="${d}"/>` : '';
+      link.href = 'data:image/svg+xml,' + encodeURIComponent(`${head}${body}</svg>`);
+      if (!link.isConnected) document.head.append(link);
+    }
+
+    function frame() {
+      const t = (performance.now() - t0) % CYCLE;
+      if (t < WRITE) draw(0, ease(t / WRITE));
+      else if (t < WRITE + HOLD) draw(0, 1);
+      else if (t < WRITE + HOLD + LIFT) draw(ease((t - WRITE - HOLD) / LIFT), 1);
+      else draw(1, 1);
+    }
+
+    function sync() {
+      const run = !document.hidden && !still.matches && !('paused' in root.dataset);
+      if (run && !timer) {
+        t0 = performance.now();
+        frame();
+        timer = window.setInterval(frame, TICK);
+      } else if (!run && timer) {
+        clearInterval(timer);
+        timer = 0;
+        draw(0, 1); // the whole mark wherever the loop stopped, inline so the tab needs no fetch
+      }
+    }
+
+    document.addEventListener('visibilitychange', sync);
+    still.addEventListener('change', sync);
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-paused'] });
+    sync();
+  }
+
+  // after load and at idle, never before first paint
+  if (!still.matches) {
+    const go = () => ('requestIdleCallback' in window ? requestIdleCallback(() => animateIcon().catch(() => {})) : setTimeout(() => animateIcon().catch(() => {}), 200));
+    document.readyState === 'complete' ? go() : addEventListener('load', go, { once: true });
+  }
+</script>

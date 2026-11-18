@@ -869,3 +869,27 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - Kevin Wiki and Atlas print no logo (11-11). The paragraph links (General Translation, Princeton University) and X, GitHub and LinkedIn get none: the repo has no checked-in mark for them, and General Translation may appear only on the Atlas card. The home page has no About section.
 - **Checks**: build and guard pass (256 pages); `pnpm test` 20/20; `pnpm check` 0 errors; i18n-extract --check; negotiation 16; check-seo 249 pages, 498 links. /about at 1440, 730 and 390, light and dark: CLS 0, all 24 logos load, one title x per width, no overflow. Screens in `~/k7-rescue/about-logos/`.
 - **Open**: `pnpm sync:check` fails on `public/battle/shared/{hud,strings}.js` against the battle pin f28393ef; the comparison reads the rounds checkout, and this branch changes no synced file. Not pushed or deployed.
+
+## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
+
+- **Type**: feature
+- **Asked**: Kevin wanted an animated favicon like www.arlan.me has, "a cool animation", of his own mark (no orbiting dot). Mid-task he added: "the lines drawing themselves in the actual draw order, and should be hoverable in the actual website".
+- **Changed**:
+  - `src/lib/pen.ts` derives the pen line from the mark's one outline. Its points run in writing order out to the end of the l's tail and back along the other edge. A ray cast across the stroke at each step gives its middle and width, with a median of seven so the k's junction reads true.
+  - `src/components/Signature.astro`, mounted in `Base.astro`:
+    - The tab icon writes for 1.8 s, holds for 3.2 s, lifts in writing order and writes again.
+    - The header's `svg.kl` draws itself in 900 ms on mouse hover or keyboard focus.
+    - The static `favicon.svg`, `.ico` and touch icon links are unchanged.
+- **Decisions**:
+  - SVG frames, not arlan's canvas PNG. In real Chrome a sizeless PNG link never beats `favicon.svg` or the `.ico` with `sizes="32x32"`; this was tested in a headed browser, where the PNG loop ran and the tab kept the static icon. An appended SVG link ties with `favicon.svg` and wins as the later one. The frames are vector, so they stay crisp at any DPR, and they reuse `favicon.svg`'s light and dark style.
+  - No faint ghost under the ink, per Kevin's draw-order note.
+  - A hidden tab gets the whole mark inline (no fetch), because a `/favicon.svg` href left the tab partly written for about 0.6 s.
+- **Verified** (local `astro preview`; this Mac's load average was 15 to 60):
+  - `pnpm build` passes the guard; `pnpm check` gives 0 errors; `pnpm test` passes 20 of 20.
+  - CLS is 0 on `/` at 1440, 730 and 390, and on `/about` and `/cards/turboslide`, hover included.
+  - The tick cost at most 0.3 ms, about 8 ms of script in 10 s. The pen line is computed once in about 2 ms at idle. The module is 2.2 KB gzip.
+  - With a real tab switch (agent-browser, headed), `visibilitychange` stopped the frames and the loop restarted on return.
+  - Reduced motion leaves only the static links; Pause holds the icon still and resumes it.
+  - WebKit and Firefox (Playwright) load with no errors. The header draw works in Chromium and WebKit on `<base href="/ex/">` card pages.
+- **Open**: not pushed or deployed. That needs Kevin's yes.
+

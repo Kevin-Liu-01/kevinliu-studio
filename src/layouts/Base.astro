@@ -5,6 +5,7 @@
 import Seo from '../components/Seo.astro';
 import Header from '../components/Header.astro';
 import Analytics from '../components/Analytics.astro';
+import Signature from '../components/Signature.astro';
 import Footer from '../components/Footer.astro';
 import Release from '../components/Release.astro';
 import { neuTokens, masks, sprite, roundSheets } from '../lib/cards';
@@ -76,6 +77,7 @@ const preloads = faces.filter((f) => f.locales.includes(l.code)).map((f) => vers
 {scripts.map((s) => <script is:inline defer src={versioned(`/ex/${s}`)}></script>)}
 <slot name="head" />
 <Analytics />
+<Signature />
 </head>
 <body>
 <a class="skip" href={`${seo.path}#${main}`} data-to={main}>{l.t('frame.skip')}</a>
