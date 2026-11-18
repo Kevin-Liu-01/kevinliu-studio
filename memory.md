@@ -883,6 +883,13 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - Project logos are unchanged: Jarhead, OMMC and Podium are still the cards' webp files.
   - Checks: build and guard pass; `pnpm check` 0 errors; test 20/20; i18n-extract --check; check-seo 249 pages, 498 links. /about, /es/about and /ja/about at 1440, 730, 390 and 320, light and dark: CLS 0, no mark parted from its word, one title x, no overflow. Not pushed.
 - **Follow-up** (2026-11-18): Kevin, "wait gt has a new logo now". `src/assets/about/gt.svg` is now the refined globe (`refined-1112`; its path's sha256 matches `public/brand/gt-globe-logo.json`), copied unedited from Prototemplate origin/main `public/marks/production/gt-mark.svg`, the one-color master; the doubled-line monogram is GT's previous logo (BRAND.md section 4). `brands.ts` drops each file's role and aria-label, since the mark is decorative. Build and guard pass; CLS 0 in both themes. Not pushed.
+- **Follow-up** (2026-11-18): Kevin, "push all our logo updates, but dont let them be on the weird white square".
+  - Every /about mark now sits straight on the page, with no tile.
+  - A mark drawn in dark ink alone (`src/lib/ink.mjs`) follows the text's colour on the dark theme, so it reads in both themes. That covers Elo, Glyphfield, Katagami, Mailroom, Turboslide, GitHub and GT: an inverted image for a card file, currentColor for an inlined brand mark.
+  - Sigil UI and Sevenfold (`ABOUT_INK_FIGURE`) draw inline with their pure black as currentColor, since their black is figure, not ground. Powerlifting's black is its ground, so it stays as printed.
+  - Marks on their own dark ground (Local Search, Ariadne, 050525) keep that ground.
+  - `ink` is `.mjs` because `scripts/i18n-extract.mjs` runs `cards.ts` in Node.
+  - Checks: build and guard pass; check 0 errors; test 20/20; i18n-extract --check; negotiation 16. /about and /es/about at 1440, 730, 390 and 320, light and dark: CLS 0, 28 marks, none split, none blank, no tile, one title x, no overflow.
 
 ## 2026-11-18: the kl signature writes itself (feat/animated-favicon, Claude Code)
 

@@ -178,10 +178,11 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose .lede { font-size: 20px; line-height: 1.45; }
 .prose dt { margin-top: 18px; font: 700 17px/24px var(--sans); }
 .prose dd { margin: 4px 0 0; }
-/* /about's marks: a project's logo as its card prints it (card.css .logo's light metal, no ring: Kevin 11-18), and the
-   brand marks of the paragraph and elsewhere links (lib/brands.ts), each on the same tile, one cap height tall and
-   centred on the caps, before its underlined text. In the project list the tile hangs in a fixed column, so a name
-   without a logo starts at the same x */
+/* /about's marks: a project's logo as its card prints it, and the brand marks of the paragraph and elsewhere links
+   (lib/brands.ts), straight on the page with no tile (Kevin 11-18), a little over one cap height and centred on the
+   caps, before its underlined text. A mark drawn in dark ink alone follows the text's colour (lib/ink.ts), so it reads
+   on both themes; a mark drawn for a dark ground keeps that ground. In the project list the mark hangs in a fixed
+   column, so a name without a logo starts at the same x */
 .prose { --cap: 1cap; --pad: 2px; --tile: calc(var(--cap) + 2 * var(--pad)); --slot: calc(var(--tile) + 0.5em); }
 @supports not (width: 1cap) { .prose { --cap: 0.7em; } }
 .prose .projects { list-style: none; padding-left: 0; }
@@ -190,12 +191,12 @@ html:not(:has(.dock)) .foot { padding-bottom: 40px; }
 .prose a.pl .pt { text-decoration: underline; text-underline-offset: 3px; }
 .prose a.pl .nw { white-space: nowrap; }
 .plogo {
-  display: inline-block; box-sizing: border-box; width: var(--tile); height: var(--tile); padding: var(--pad);
-  margin-right: 0.3em; vertical-align: calc(-1 * var(--pad)); color: #181717;
-  border-radius: calc(var(--tile) * 0.17); background: linear-gradient(153deg, #fff 0%, #f2f3f5 38%, #cdd0d4 100%);
+  display: inline-block; box-sizing: border-box; width: var(--tile); height: var(--tile); padding: calc(var(--pad) / 2);
+  margin-right: 0.3em; vertical-align: calc(-1 * var(--pad)); color: var(--ink-1);
 }
 .projects .plogo { margin: 0 calc(var(--slot) - var(--tile)) 0 calc(-1 * var(--slot)); }
-.plogo.on { padding: 0; background: var(--lg); }
+.plogo.on { padding: 0; border-radius: calc(var(--tile) * 0.2); background: var(--lg); }
+[data-theme='dark'] .plogo.ink img { filter: invert(1); }
 .plogo.fill { padding: 0; overflow: hidden; }
 .plogo :is(img, svg) { display: block; width: 100%; height: 100%; object-fit: contain; }
 .plogo.fill img { object-fit: cover; }

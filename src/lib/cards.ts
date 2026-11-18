@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { CLOSED as CLOSED_IDS } from './closed-repos.mjs';
+import { inkOnly } from './ink.mjs';
 
 const ROOT = process.cwd();
 const EX = path.join(ROOT, 'public/ex');
@@ -159,11 +160,14 @@ export const factLines = (f: Fighter) => M.factOrder(f).map(([k]: [string]) => {
   return fact ? { key: FACT[k], value: String(M.num(fact.value)), unit: String(M.unitOf(fact.value, fact.unit) ?? ''), receipt: fact.receipt } : null;
 }).filter(Boolean) as { key: string; value: string; unit: string; receipt: string }[];
 
-// The logo a card prints in its top-left tile (media.gen.js), its address from the site root; null when the card has none
-export type Logo = { src: string; ground?: string; fill: boolean };
+// The logo a card prints in its top-left tile (media.gen.js), its address from the site root, and whether it is drawn
+// in dark ink alone (lib/ink.ts); null when the card has none
+export type Logo = { src: string; ground?: string; fill: boolean; ink: boolean };
 export const logoOf = (f: Fighter): Logo | null => {
   const l = MEDIA[f.id]?.logo;
-  return l?.src ? { src: `/ex/${l.src}`, ground: l.ground, fill: !!l.fill } : null;
+  if (!l?.src) return null;
+  const ink = !l.ground && l.src.endsWith('.svg') && inkOnly(fs.readFileSync(path.join(EX, l.src), 'utf8'));
+  return { src: `/ex/${l.src}`, ground: l.ground, fill: !!l.fill, ink };
 };
 
 // The card's own colours, for the page around it (face.gen.js: energy, deep, panel, glint, ink)

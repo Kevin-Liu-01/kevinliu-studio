@@ -18,6 +18,9 @@ export const ABOUT_FIRST = ['claude-of-tanks', 'katagami', 'glyphfield', 'jarhea
 // Projects /about prints without a logo (Kevin, 2026-11-11, improve plan 027): Kevin Wiki has none, and Atlas's
 // monogram stays on its card.
 export const ABOUT_NO_LOGO: readonly string[] = ['kevin-wiki', 'atlas'];
+// Project logos whose black parts are figure, not ground (Sigil UI's squares, Sevenfold's circle): /about draws them
+// inline so that black takes the text's colour and still reads on the dark theme (Kevin 11-18: no tile behind logos)
+export const ABOUT_INK_FIGURE: readonly string[] = ['sigil-ui', 'sevenfold'];
 // The answer to "who is Kevin Liu": the About section of llms.txt, llms-full.txt and /about.md. Each line is a public
 // fact with its source beside it, so any of them can be struck. Sources: this site's /about; his previous site
 // (portfoliomon.kevinliu.studio llms.txt, experience.md, awards.md, certifications.md); github.com/Kevin-Liu-01; the
