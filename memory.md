@@ -928,4 +928,5 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - The hover loop was frame-checked at 15 fixed times in Chromium and WebKit with no dots. After leave it settled whole, with no animations left running.
   - The tab icon order is whole, then undraw, then redraw, then hold, and the next undraw starts at 6.0 s.
   - The CI gates pass. Each tick costs at most 0.3 ms, about 8 ms in 10 s. CLS is 0 with hover included.
+- **Shipped** (2026-11-18): Kevin said "Yes, deploy it". The commit was rebased onto `main` 1ede34f (the About logos) and pushed as ed26467 after the CI gates passed. Production deployment `kevinliu-studio-nvvjx8fz6` (dpl_4biVJGikZzFh9BSnDoYh3NP85KJn) is serving www. The smoke test passes. On www, the hover loop and tab icon order were frame-checked in Chromium and WebKit with no errors. The rollback target is in `docs/deploy.md`.
 
