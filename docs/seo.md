@@ -31,6 +31,21 @@ site, his GitHub profile and Kevin-Wiki pages `kb` does not mark private. Strike
 shorter and no other answer moves; a question left with no line stops the build and says so
 (`scripts/facts.test.mjs`, in `pnpm test`, checks both).
 
+## IndexNow
+
+Bing's index feeds ChatGPT search, Copilot and DuckDuckGo, and IndexNow tells it (and Yandex) which pages changed, so
+they recrawl within hours instead of waiting for their own visit. The key is public by design:
+`public/cb6a3653b4728bdc971aba0603513583.txt` serves it, and `scripts/smoke.mjs` checks that it answers.
+
+After a production deploy, list what changed, then send it (an outside action: with Kevin's go):
+
+    node scripts/indexnow.mjs --since <the previous release's date>
+    node scripts/indexnow.mjs --since <the previous release's date> --send
+
+It reads the live sitemap's `lastmod` dates, so it runs after the deploy it announces, and a send stops if the key file
+is not live. `--all` lists every page (once, after the first deploy with the key). Google does not take IndexNow; for
+Google, the sitemap in Search Console is the channel.
+
 ## Checking it
 
 1. `pnpm build` (the guard checks share image size and alt, the graph, the twin and the sitemap's `lastmod`).
