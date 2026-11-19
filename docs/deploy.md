@@ -64,6 +64,8 @@ Today `kevinliu.studio`, `www.kevinliu.studio` and `portfoliomon.kevinliu.studio
    still served the GPS-tagged curation photos. Deleting a deployment or project cannot be undone, so Kevin does it.
 6. In Google Search Console and Bing Webmaster Tools, submit `https://www.kevinliu.studio/sitemap-index.xml`.
 
+After every production release, with Kevin's go: `node scripts/indexnow.mjs --since <the previous release's date> --send` (docs/seo.md, IndexNow).
+
 ## Rollback
 
 The Claude of Tanks commander mark on /about (`feat/about-logos`, pushed to `main` 2026-11-18 as deployment

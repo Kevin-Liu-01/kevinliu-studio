@@ -17,7 +17,7 @@ for (const p of pages) {
   const md = await get(p, { Accept: 'text/markdown' });
   if (md.r.status !== 200 || !/^# /.test(md.text)) fails.push(`${p}: Accept text/markdown gave ${md.r.status}`);
 }
-for (const p of ['/llms.txt', '/llms-full.txt', '/robots.txt', '/sitemap-index.xml', '/index.md', '/battle/arena.md', '/cards/elo.md', '/og/home.jpg', '/og/home.mp4', '/share/about.jpg', '/cards.md', '/favicon.ico', '/sound/manifest.gallery.json',
+for (const p of ['/llms.txt', '/llms-full.txt', '/robots.txt', '/sitemap-index.xml', '/index.md', '/battle/arena.md', '/cards/elo.md', '/og/home.jpg', '/og/home.mp4', '/share/about.jpg', '/cards.md', '/favicon.ico', '/sound/manifest.gallery.json', '/cb6a3653b4728bdc971aba0603513583.txt',
   '/es/llms.txt', '/ja/llms-full.txt', '/es/index.md', '/zh/cards/elo.md', '/ko/battle/arena.md']) {
   const { r } = await get(p);
   if (r.status !== 200) fails.push(`${p}: ${r.status}`);
