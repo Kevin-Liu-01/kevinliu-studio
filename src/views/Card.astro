@@ -86,7 +86,7 @@ const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sh
     </article>
   </main>
   <nav class="pager" aria-label={l.t('card.pager')}>
-    <a href={cardPath(prev, code)} rel="prev" data-astro-prefetch="viewport" class="sw"><span class="hx"><Fragment set:html={M.icon('prev')} />{prev.title}</span><span class="mx">{cardPath(prev, code)}</span></a>
-    <a href={cardPath(next, code)} rel="next" data-astro-prefetch="viewport" class="sw"><span class="hx">{next.title}<Fragment set:html={M.icon('next')} /></span><span class="mx">{cardPath(next, code)}</span></a>
+    <a href={cardPath(prev, code)} rel="prev" data-prefetch-later class="sw"><span class="hx"><Fragment set:html={M.icon('prev')} />{prev.title}</span><span class="mx">{cardPath(prev, code)}</span></a>
+    <a href={cardPath(next, code)} rel="next" data-prefetch-later class="sw"><span class="hx">{next.title}<Fragment set:html={M.icon('next')} /></span><span class="mx">{cardPath(next, code)}</span></a>
   </nav>
 </Base>
