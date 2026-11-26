@@ -1,4 +1,4 @@
-# Runs on every pull request and every push to main: the tests, the type check, the checks that read only the
+# Runs on every pull request, every push to main and by hand (Actions > check > Run workflow): the tests, the type check, the checks that read only the
 # repository, and a full build with the release guard. It needs no secret and no rounds folder. Vercel builds and
 # deploys on its own; this only reports.
 name: check
@@ -7,6 +7,7 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
