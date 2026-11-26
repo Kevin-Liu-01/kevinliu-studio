@@ -944,6 +944,15 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Verified** (local preview): `pnpm build` and its guard pass. `/cards/claude-of-tanks` shows the commander tile in both themes at 1440, 730 and 390 px, the image loads, and CLS is 0.
 - **Open**: not pushed or deployed.
 
+## 2026-11-26: the check workflow can run (ci/actions-run, Claude Code)
+
+- **Type**: ci
+- **Asked**: Kevin: make `.github/workflows/check.yml` actually run and get one green run. Vercel deploys are unaffected.
+- **Cause**: every run from 2026-11-10 to 11-18 ended in `startup_failure` with the annotation "The job was not started because recent account payments have failed or your spending limit needs to be increased". The workflow file was not the problem. The account's Actions budget is $0 with "Usage blocked" (settings/billing/budgets). That blocks paid minutes, which only a private repository uses. The repo was private then and is public now, and public repositories on standard runners are free. Turboslide had the same annotation and started passing once it was public. main has had no push since 11-18, so no run has happened since the change.
+- **Changed**: `check.yml` gains `workflow_dispatch`, so a run can be started by hand. A `startup_failure` run cannot be re-run, and before this only a push could start one.
+- **Verified**: every step of the workflow, run in order on Node 24.22.1 and pnpm 11.15.1, passes in a clean clone of the branch: install, 20 tests, astro check, negotiation, lock check, phone patches, i18n extract, build and guard, release script. None of them reads the rounds folder or an env var.
+- **Open**: if the repo goes private again, the $0 Actions budget blocks every run again.
+
 ## 2026-11-26: the site gets faster without changing what it shows (perf/fast-site, Claude Code)
 
 - **Type**: performance
