@@ -241,6 +241,16 @@ const TRANSFORMS = {
     ["const EX = new URL('../../../r4/ex/', document.currentScript.src).href;", "const EX = new URL('/ex/', document.currentScript.src).href;\n  const PLAIN = matchMedia('(pointer: coarse)').matches || navigator.deviceMemory <= 4; // kevinliu.studio: frames on desktop only"],
     ['card: (f, opts, e) => resolve(M.card(', 'card: (f, opts, e) => resolve((PLAIN ? M.baseCard : M.card)('],
   ]),
+  // A board card (the kit's "mini" print, both modes) prints with the wall's subject ladder: markup.js takes the
+  // smallest cut at least as wide as the subject's device px, where the battle printed the full cut (941 to 1200 px)
+  // for a card 46 to 220 px wide. The sizes are the widest a board card is ever drawn, measured through Auto battles in
+  // both modes at 320 to 1440 wide (0.52 of the width standing, 0.36 of the height lying down; Auto's lunges and the
+  // phone Mat's enlarged turn included), so no card draws a cut smaller than its device px. Scene cards print as
+  // before. On the throttled phone the Mat shows 13.8 -> 11.0 s (docs/performance.md, 2026-11-26)
+  'public/battle/vendor/broadcast/kit.js': (t) => patch('kit.js', t, [
+    ['function O2(t){Ml();const a=tr(t),r=_2.card(a,{id:`bcc-${++Bl}`,focusable:!1},', 'function O2(t,z){Ml();const a=tr(t),r=_2.card(a,{id:`bcc-${++Bl}`,focusable:!1,...(z==="mini"?{sizes:[["(orientation: landscape)","37vh"],[null,"53vw"]]}:{})},'],
+    ['const s=O2(t);e.append(s)', 'const s=O2(t,r);e.append(s)'],
+  ]),
   // the battle's media manifest: the rounds' gate notes ship empty (the page never shows them), the two dropped
   // captures give way to clean ones from the same project, and the Prototemplate loop points at the clip that exists
   'public/battle/vendor/broadcast/media.js': (t) => {
