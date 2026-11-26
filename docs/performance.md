@@ -344,7 +344,8 @@ during the hold (Chrome lazy-loads near pictures inside a skipped subtree anyway
 load. Vercel serves HTTP/2 and can send a high-priority poster first; a preview under a real throttled network (or
 Speed Insights after shipping) is the test.
 
-Left for the rounds (`~/k7-rescue/speed-2026-11-26/UPSTREAM.md`, filed in r4/play and r4/ex REQUESTS.md): carry the
+Left for the rounds (`~/k7-rescue/speed-2026-11-26/UPSTREAM.md`; the r4/play ones went to the battle-026 session, which
+owns r4/play and is rebuilding `kit.js`, so the site's `kit.js` patch stops the sync there until the kit carries it): carry the
 board `sizes` in the kit; a reveal that awaits the board's pictures on purpose (the Arena reveals before Katagami's
 subject lands on a slow phone, and the Mat's wait on them is an accident of request order); the Arena's serial chain
 and its one map size; `kit.js` per card; content addresses for the battle's module graph; and splitting the
