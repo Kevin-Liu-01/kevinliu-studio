@@ -333,16 +333,32 @@ At 1440 x 900 (unthrottled, same server) every page moves by less than 0.1 s eit
 the same byte savings. Over HTTP/1.1 the Mat's reveal moved 13.7 -> 10.4 s, because six connections queue the full
 subject cuts behind each other.
 
-Not fixed, and why: **the wall's LCP on the throttled phone reads 0.4 s later** while its first paint comes 0.55 s
-sooner. The LCP element is the first card's poster (65 KB, `fetchpriority="high"`), which finishes only once most of
-what is requested beside it does: DevTools throttling shares the line evenly across requests and ignores priority.
-The page's own CSS now arrives 0.5 s sooner, so its low-priority requests (the frost tile, cards 3 and 4, which
-Chrome's lazy-load distance starts during the hold, and `sound.js`) start sooner too, and the poster's share of the
-line shrinks earlier. The bytes requested before the poster finishes went down (1,175 -> 1,133 KB). Three
-site-side tries did not move it: no page prefetches, `display: none` and `content-visibility: hidden` on far cards
-during the hold (Chrome lazy-loads near pictures inside a skipped subtree anyway), and the ground engine started after
-load. Vercel serves HTTP/2 and can send a high-priority poster first; a preview under a real throttled network (or
-Speed Insights after shipping) is the test.
+Under DevTools throttling the wall's LCP read 0.4 s later while its first paint came 0.55 s sooner. That is the
+throttling, not the page: DevTools shares the line evenly across requests and ignores priority, so the first card's
+poster (65 KB, `fetchpriority="high"`) finished only once the low-priority requests the sooner CSS starts (the frost
+tile, cards 3 and 4 inside Chrome's lazy-load distance, `sound.js`) had their share. The preview settled it (next
+section): on one shaped link, where Vercel's HTTP/2 priorities decide what arrives first, the wall paints whole
+0.1 s sooner.
+
+### The preview (perf/fast-site b4b86da)
+
+Production (main fc3f955's content) against the preview `kevinliu-studio-ghzgiomin`, throttled phone (4x CPU),
+interleaved, one warm-up each, median of 5 on `/` and 3 elsewhere. Two network models: DevTools throttling (even
+share per request), and `~/k7-rescue/speed-2026-11-26/tools/shape-proxy.mjs`, a CONNECT proxy that sends every tunnel
+through one 1.6 Mbps, 150 ms link in the order the server sends, with TCP backpressure, as a phone's radio does
+(`measure3.mjs --proxy=<port>`). The shaped link is the truer of the two for priority.
+
+| Page | LCP, DevTools | LCP, shaped link | Battle reveal, shaped link | Scripts | Render-blocking CSS | CLS |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/` | 4.34 -> 4.90 s | 2.98 -> 2.89 s | | 228 -> 150 KB | 69 -> 36 KB | 0 -> 0 |
+| `/cards/claude-of-tanks` | 2.42 -> 2.28 s | 3.17 -> 1.56 s | | 17 -> 6 KB | 54 -> 28 KB | 0 -> 0 |
+| `/battle` (Mat) | 10.36 -> 9.23 s | 16.06 -> 11.93 s | 15.78 -> 11.59 s | 594 -> 465 KB | 79 -> 45 KB | 0 -> 0 |
+| `/battle/arena` | 10.47 -> 9.19 s | 11.74 -> 10.76 s | 11.64 -> 10.62 s | 728 -> 540 KB | 77 -> 44 KB | 0 -> 0 |
+
+On the shaped link the wall's poster paints with its first paint on both, so its LCP is its FCP. The Mat gains most
+there because its full subject cuts queued behind each other on the one link. The smoke check and `check-seo.mjs`
+(249 pages) pass on the preview, and its versioned files are the local build's bytes with a year's cache. Raw runs:
+`~/k7-rescue/speed-2026-11-26/preview/`.
 
 Left for the rounds (`~/k7-rescue/speed-2026-11-26/UPSTREAM.md`; the r4/play ones went to the battle-026 session, which
 owns r4/play and is rebuilding `kit.js`, so the site's `kit.js` patch stops the sync there until the kit carries it): carry the
