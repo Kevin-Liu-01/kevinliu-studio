@@ -1,0 +1,9 @@
+{
+  "about": "KB on the wire per page (brotli 5), about 10% over the largest page of each kind on 2026-11-26. scripts/budgets.mjs reads it; the release guard enforces it. Raise a number only with the measurement that justifies it (docs/performance.md).",
+  "pages": [
+    { "kind": "battle", "match": "^/([a-z]{2}(-[A-Za-z]+)?/)?battle(/arena)?\\.html$", "html": 12, "css": 36, "js": 540 },
+    { "kind": "wall", "match": "^/(index|[a-z]{2}(-[A-Za-z]+)?)\\.html$", "html": 62, "css": 35, "js": 116 },
+    { "kind": "card", "match": "^/([a-z]{2}(-[A-Za-z]+)?/)?cards/[\\w-]+\\.html$", "html": 24, "css": 32, "js": 8 },
+    { "kind": "page", "match": "\\.html$", "html": 28, "css": 12, "js": 8 }
+  ]
+}

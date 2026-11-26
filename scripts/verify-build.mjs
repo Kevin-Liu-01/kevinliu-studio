@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
+import { check as budgets } from './budgets.mjs';
 import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
 import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 
@@ -217,6 +218,9 @@ if ((sitemap.match(/<xhtml:link rel="alternate" hreflang=/g) ?? []).length < lis
 // lastmod is left out where git history cannot date a page (astro.config.mjs), so only its shape is checked
 for (const m of sitemap.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)) if (Number.isNaN(Date.parse(m[1])) || Date.parse(m[1]) > Date.now() + 864e5) fail('sitemap', `lastmod ${m[1]}`);
 for (const u of listed) if (/\/404$|\/$(?<!studio\/)/.test(u)) fail('sitemap', `lists ${u}`);
+
+// each page's bytes on the wire stay inside its kind's budget (scripts/budgets.json, docs/performance.md)
+for (const [page, why] of budgets(DIST)) fail(page, why);
 
 if (errors.length) {
   console.error(`verify-build: ${errors.length} problem(s)`);
