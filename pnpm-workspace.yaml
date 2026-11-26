@@ -4,3 +4,5 @@ minimumReleaseAgeExclude:
   - '@vercel/speed-insights@2.1.0'
   - astro@7.4.7
 engineStrict: true
+allowBuilds:
+  esbuild: false
