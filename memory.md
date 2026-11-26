@@ -943,3 +943,17 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   - Here: `PIN.cards` moved from c2b17715 to cfc4c9fc. Since c2b17715, `r4/ex` changed only in docs plus this commit. `ROUNDS=<export> pnpm sync` wrote five files: the logo and the four share files.
 - **Verified** (local preview): `pnpm build` and its guard pass. `/cards/claude-of-tanks` shows the commander tile in both themes at 1440, 730 and 390 px, the image loads, and CLS is 0.
 - **Open**: not pushed or deployed.
+
+## 2026-11-26: the site gets faster without changing what it shows (perf/fast-site, Claude Code)
+
+- **Type**: performance
+- **Asked**: Kevin, "make our app much more performant and fix everything get all work done related to this", keeping the 26 cards, the battle in both modes, the sound and the Claude of Tanks hero exactly as they are.
+- **Measured** (docs/performance.md, 2026-11-26 round): production at 1440, 730, 390 and on the throttled phone. Speed Insights field data needs the paid Plus add-on to query, so it is all lab. The costs, largest first: the battle's phone reveal (9.9 s on the Mat, 11.2 s in the Arena; card pictures at full size and a serial Arena boot), the round code shipped with its comments (the wall's render-blocking CSS 57 KB on the wire), and the wall's first second after load on a desktop (r4/ex grounds, upstream).
+- **Changed**:
+  - `scripts/sync.mjs` patches `kit.js` so a board card prints with `sizes`; markup.js then takes the smallest subject cut at least as wide as the card's device pixels. Bounds measured through Auto battles at six viewports.
+  - `scripts/minify-dist.mjs` (in `pnpm build`, tested) minifies every round script and stylesheet in `dist/`, names kept. `esbuild` 0.28.2 is a pinned dev dependency with its install script off.
+  - `scripts/budgets.json` and `scripts/budgets.mjs`: the guard fails a page over its kind's byte budget. Main fails it on 272 page checks.
+  - The header's links and the card pager prefetch only after the page has loaded (`data-prefetch-later`, `Header.astro`).
+  - IndexNow (a71af75 from perf/speed-usability) is on the branch; the GT fact commits are not (they need a translation run).
+- **Verified**: build and guard pass; `pnpm test` 28 of 28; `pnpm check` 0 errors; every check in `.github/workflows/check.yml` run by hand passes. Every main route at 1440 and 390 loads with no error; four Auto battles reach their result; the wall's interactions behave the same; page and board screenshots match the previous build (board at most 0.008% of pixels by more than 16 levels).
+- **Open**: on the throttled phone the wall's LCP reads 4.35 -> 4.75 s while its FCP improves 2.78 -> 2.24 s. DevTools throttling splits bandwidth evenly across requests, and the page's low-priority requests now start sooner beside the high-priority first poster; a Vercel preview is the test. Not pushed or deployed.

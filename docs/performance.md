@@ -15,11 +15,13 @@ fallback, motion uses only `transform` and `opacity`, canvases and loops cost no
 | Poster sizes | `scripts/sync.mjs`, `src/lib/cards.ts` | The wall prints each poster and front-effects poster with its half beside it (`srcset`, the rounds' `posters/posters.json`), so a card drawn under 252 px wide at 1x fetches the half; a card page prints the whole poster (`ladder: false`). |
 | Key states | `src/components/Header.astro` | The Human and Machine switch, sound and pause keys take the state their scripts give them after load as the header parses, so no icon flips on screen. |
 | View Transitions | `src/layouts/Base.astro` | `rituals.css` (which declares `@view-transition`) loads only where `rituals.js` runs. On card pages it made every return to the wall a default root crossfade through a pale frame. |
-| Prefetch | `Header.astro`, `cards/[id].astro` | The header's links and the card pager prefetch their page when in view, so the next HTML is in hand when the visitor clicks. |
+| Prefetch | `Header.astro`, `views/Card.astro` | The header's links and the card pager (`data-prefetch-later`) prefetch their page when in view, so the next HTML is in hand when the visitor clicks, but only once this page has loaded, at idle: Astro's own viewport strategy started as its module ran, and on the throttled phone a card page's poster landed about 0.2 s later for it (2026-11-26). |
 | The first press | `src/pages/index.astro`, `docs/sound.md` | A silent `AudioContext` at idle starts the browser's audio service; the sound kit's first press no longer waits on it. |
 | Idle cost | `public/ex/ground.js`, `gallery.js` (rounds) | The living grounds draw only on screen (`IntersectionObserver`), stop in a hidden tab and under Pause or reduced motion. |
 | The signature | `src/components/Signature.astro`, `src/lib/pen.ts` | The tab icon starts whole, undraws the kl mark in its stroke order, redraws it and holds: one added SVG `<link>` whose `href` changes every 90 ms only while the ink moves (0.3 ms a frame at most, about 8 ms of script in 10 s, measured 2026-11-18), the whole mark in a hidden tab, nothing under Pause or reduced motion. It starts at idle after load, so first paint never waits on it. The header's mark undraws and redraws in one seamless loop while the mouse or keyboard focus is on it, and finishes its pass whole on leave, with Web Animations on the mask's dash offsets; its mask is built on the first hover, so pages carry no extra markup. Chrome never shows a sizeless PNG next to `favicon.svg` and the 32 px `.ico`, so the frames are SVG. Safari keeps the static icon. |
 | Battle keys | `scripts/sync.mjs` transforms | A key's raise and colour change at once; only its press moves. |
+| Minified round code | `scripts/minify-dist.mjs` (in `pnpm build`) | Every script and stylesheet under `dist/` except `_astro` is rewritten with whitespace and syntax minified and every name kept (`scripts/minify-dist.test.mjs`); `public/` keeps the rounds' bytes. On the wire: round scripts 953 to 755 KB, round stylesheets 103 to 57 KB, the wall's render-blocking CSS 57 to 26 KB (2026-11-26). |
+| The battle's board pictures | `scripts/sync.mjs` transform on `kit.js` | A board card prints with `sizes` (0.53 of the width standing, 0.37 of the height lying down, the widest a board card is drawn), so `markup.js` takes the smallest subject cut at least as wide as its device pixels. Scene cards print the full cut as before. |
 | A phone's memory | `scripts/phone-memory.mjs`, `index.astro`, `site.css`, `Release.astro` | On a touch screen the shared WebGL canvas stops at 2048 and the density at 1.5, an off-screen card gives its canvases back, the next pack is cut at the press, wall pictures stay lazy, a card more than a screen away paints no filters, and the wall and the battle give back their GPU memory and pictures when they leave. See Memory below. |
 
 ## Checking it
@@ -254,3 +256,96 @@ After (a new hand unloads the card kits it does not hold; the same three hands w
 ## 2026-11-13 round
 
 The speed and usability audit: `docs/speed-usability-2026-11-13.md` (measurements, fixes, what is left).
+
+## 2026-11-26 round
+
+Kevin asked for the site to be "much more performant" without losing the cards, the battle, the sound or the Claude
+of Tanks hero. Branch `perf/fast-site`, from main fc3f955. Field numbers were not readable: the Speed Insights query
+API (`vercel metrics vercel.speed_insights.*`) needs the paid Speed Insights Plus add-on. Everything below is lab.
+
+How it was measured: Playwright Chromium with a real GPU, the throttled phone of 11-13 (412 x 823 at 1.75x, touch, 4x
+CPU, 1.6 Mbps, 150 ms RTT) and 1440 x 900 at 1x; the gesture-required autoplay policy, and the battle's sound files
+blocked until a press (Playwright counts a navigation as a user activation, so the battle's `resumeAtLoad` would
+otherwise fetch about 200 sound files before the reveal, which a cold phone visit never does). Production first, then
+the base build and this branch served from `dist/` over HTTP/2 (a self-signed local server; HTTP/1.1 misstates how a
+low-priority prefetch competes with a high-priority poster), runs interleaved A, B, A, B, median of 3. This Mac's
+load average sat at 30 to 45 from other work, so times carry its noise; bytes do not. "Reveal" is when the battle
+lifts `data-boot`. Tools and raw runs: `~/k7-rescue/speed-2026-11-26/`.
+
+Production, median of 3 (the battle rows with sound blocked):
+
+| Page | Phone FCP | Phone LCP | 1440 FCP | 1440 LCP | 1440 TBT | CLS |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/` | 3.18 s | 4.34 s | 0.99 s | 1.94 s | 375 ms | 0 |
+| `/cards/claude-of-tanks` | 1.92 s | 2.45 s | 0.51 s | 0.64 s | 0 | 0 |
+| `/cards/turboslide` | 1.58 s | 1.98 s | 0.24 s | 0.31 s | 0 | 0 |
+| `/about` | 1.11 s | 1.11 s | 0.26 s | 0.26 s | 0 | 0 |
+| `/cards` | 0.72 s | 0.72 s | 0.16 s | 0.16 s | 0 | 0 |
+| `/battle` | 9.90 s | 10.62 s | 0.82 s | 0.84 s | 0 | 0 |
+| `/battle/arena` | 11.18 s | 11.18 s | 1.09 s | 2.13 s | 0 | 0 |
+
+The costs, largest first:
+
+1. **The battle on a phone.** Everything before the reveal is bandwidth: about 600 KB of scripts (`kit.js` 221 KB
+   alone, as Vercel compresses it), then the six board cards' pictures, each card's subject at its full cut (941 to
+   1200 px wide, 87 to 200 KB) for a card drawn 46 to 220 px wide. The Mat's reveal waits on the two leaders'
+   atlases, which queue behind those pictures. The Arena's is a serial chain: scripts, the 281 KB floor map, the
+   layout solve, the six figures, the card prints.
+2. **The round code ships with its comments.** `public/` holds the rounds' bytes as the lock records them and Astro
+   copied them out verbatim: the wall's render-blocking CSS was 57 KB on the wire (`card.css` 32 KB of it), the round
+   scripts 953 KB in all.
+3. **The wall's first second after load on a desktop** (r4/ex): `Ground.init()` 480 to 540 ms in one task, the first
+   frame that draws the grounds 400 to 620 ms, the rituals' prewarm 180 to 1,010 ms. Field INP is 48 ms, so this
+   went upstream.
+
+Fixed:
+
+- 5b1217b, the battle's board pictures (`kit.js` sync transform): a board card prints with `sizes`, so `markup.js`
+  takes the smallest subject cut at least as wide as its device pixels. The sizes are the widest a board card is
+  ever drawn, measured through Auto battles in both modes at 320, 390, 412, 730, 844 x 390 and 1440 wide: 0.52 of
+  the width standing and 0.36 of the height lying down, which includes the phone Mat's enlarged turn and Auto's
+  lunges. So a 3x phone keeps the full cuts and a 1x desktop or a 1.75x phone takes the half. At 1440 x 900 the
+  board's screenshot differs from the previous build in 0.008% of its pixels by more than 16 levels (max 41).
+- 8891de5, the next pages prefetch after this page has loaded (the Prefetch row above): a card page's poster had
+  landed 0.2 s later under Astro's viewport timing once the CSS shrank.
+- 15e9043, byte budgets in the build (`scripts/budgets.json`, `scripts/budgets.mjs`): the guard fails a page whose
+  HTML, render-blocking CSS or scripts outgrow its kind's budget, about 10% over today's largest; main fails it on
+  272 page checks.
+- 7c54797, 47fda96, the build minifies the round code (`scripts/minify-dist.mjs`, tested): whitespace and syntax
+  only, every name kept, nothing removed, nothing lowered, written only when smaller. Brotli at Vercel's level: round
+  scripts 953 to 755 KB, round stylesheets 103 to 57 KB, the wall's render-blocking CSS 57 to 26 KB, a card page's
+  47 to 24 KB. Every main route at 1440 and 390 loads with no error; four Auto battles (Mat and Arena, 1440 and 390)
+  reach their result with no error; the wall's press, sound unlock, pack, Escape and Machine view behave as before;
+  screenshots of the wall, `/cards`, two card pages, `/about` and `/ja/cards/katagami` at 1440, 730 and 390 match the
+  previous build pixel for pixel.
+
+Base (fc3f955) against this branch, throttled phone, local HTTP/2, interleaved, median of 3:
+
+| Page | FCP | LCP | Battle reveal | Scripts | Render-blocking CSS | CLS |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/` | 2.78 -> 2.24 s | 4.35 -> 4.75 s | | 190 -> 134 KB | 61 -> 31 KB | 0 -> 0 |
+| `/cards/claude-of-tanks` | 1.63 -> 1.14 s | 2.31 -> 2.21 s | | 4 -> 5 KB | 47 -> 24 KB | 0 -> 0 |
+| `/cards/turboslide` | 1.40 -> 1.02 s | 1.82 -> 1.82 s | | 4 -> 5 KB | 47 -> 24 KB | 0 -> 0 |
+| `/battle` (Mat) | 9.06 -> 8.33 s | 9.78 -> 8.91 s | 8.96 -> 8.23 s | 559 -> 448 KB | 69 -> 38 KB | 0 -> 0 |
+| `/battle/arena` | 10.18 -> 9.19 s | 10.18 -> 9.19 s | 10.02 -> 9.03 s | 631 -> 479 KB | 67 -> 37 KB | 0 -> 0 |
+
+At 1440 x 900 (unthrottled, same server) every page moves by less than 0.1 s either way, inside this Mac's noise, with
+the same byte savings. Over HTTP/1.1 the Mat's reveal moved 13.7 -> 10.4 s, because six connections queue the full
+subject cuts behind each other.
+
+Not fixed, and why: **the wall's LCP on the throttled phone reads 0.4 s later** while its first paint comes 0.55 s
+sooner. The LCP element is the first card's poster (65 KB, `fetchpriority="high"`), which finishes only once most of
+what is requested beside it does: DevTools throttling shares the line evenly across requests and ignores priority.
+The page's own CSS now arrives 0.5 s sooner, so its low-priority requests (the frost tile, cards 3 and 4, which
+Chrome's lazy-load distance starts during the hold, and `sound.js`) start sooner too, and the poster's share of the
+line shrinks earlier. The bytes requested before the poster finishes went down (1,175 -> 1,133 KB). Three
+site-side tries did not move it: no page prefetches, `display: none` and `content-visibility: hidden` on far cards
+during the hold (Chrome lazy-loads near pictures inside a skipped subtree anyway), and the ground engine started after
+load. Vercel serves HTTP/2 and can send a high-priority poster first; a preview under a real throttled network (or
+Speed Insights after shipping) is the test.
+
+Left for the rounds (`~/k7-rescue/speed-2026-11-26/UPSTREAM.md`, filed in r4/play and r4/ex REQUESTS.md): carry the
+board `sizes` in the kit; a reveal that awaits the board's pictures on purpose (the Arena reveals before Katagami's
+subject lands on a slow phone, and the Mat's wait on them is an accident of request order); the Arena's serial chain
+and its one map size; `kit.js` per card; content addresses for the battle's module graph; and splitting the
+grounds' first second into idle tasks.
