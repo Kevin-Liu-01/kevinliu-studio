@@ -68,6 +68,11 @@ After every production release, with Kevin's go: `node scripts/indexnow.mjs --si
 
 ## Rollback
 
+The speed pass (`perf/fast-site`, fast-forwarded onto `main` 2026-11-27) replaced production deployment
+`kevinliu-studio-me8zccov4-kl01s-projects.vercel.app` (dpl_HmHsh3eHfpaNdT54zBA66bNscSny, main a91bcdf). To undo it,
+promote that deployment again (Instant Rollback, or `vercel promote <url> --scope kl01s-projects`), then reset `main`
+to a91bcdf with a revert of the merge range a91bcdf..perf/fast-site.
+
 The Claude of Tanks commander mark on /about (`feat/about-logos`, pushed to `main` 2026-11-18 as deployment
 `kevinliu-studio-d91k0tbsq`, main 2502d1b) replaced production deployment
 `kevinliu-studio-ksfvk7o7x-kl01s-projects.vercel.app` (main c6e5b71). To undo it, promote that deployment again
