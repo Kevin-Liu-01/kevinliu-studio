@@ -4,6 +4,9 @@
 /* the room names its face with no fallback (ui.css --sans); every page adds the Arial cut to the face's width and line
    (Base.astro), so text never lands on a default serif */
 :root { --sans: 'Katagami Sans', 'Katagami Sans Fallback', ui-sans-serif, system-ui, sans-serif; --site: var(--sans); --measure: 64ch; }
+/* a touch screen prints the frosted slips' 1x tile (Kevin, 2026-11-28): ui.css's 2x raster is 89 KB fetched at high
+   priority beside the first screen's pictures, the 1x 23 KB, and the grain is noise at 180 px either way */
+@media (pointer: coarse) { :root { --frost: url("/ex/icons/frost.webp"); } }
 
 /* the home page waits for its first screen's pictures (index.astro; only a page with scripts sets data-hold). Nothing
    contentful paints meanwhile, so a visitor arriving from another page keeps seeing it until the whole wall is ready */
