@@ -13,7 +13,7 @@ import { LOCALES } from '../src/i18n/locales.mjs';
 const base = (process.argv[2] ?? '').replace(/\/$/, '');
 const external = process.argv.includes('--external');
 if (!base) { console.error('usage: node scripts/check-seo.mjs <base-url> [--external]'); process.exit(2); }
-const SITE = 'https://www.kevinliu.studio';
+import { SITE } from '../src/lib/site.ts';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';
 // sites that refuse every scripted request, whatever it asks for: reported, never failed
 const WALLED = /^https:\/\/(www\.)?(linkedin\.com|princeton\.edu|x\.com|devpost\.com)\//;

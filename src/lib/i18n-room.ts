@@ -4,7 +4,6 @@
 // labels and status lines gallery.js and rituals.js write as the visitor plays. Those scripts are the rounds' and
 // write English, so a translated home page loads one small file (galleryShim) that gives them the sheet in its
 // language and rewrites their English labels as they are written, by the same rules the build applies to the HTML.
-import crypto from 'node:crypto';
 import { M, sheet, factLines, type Fighter } from './cards';
 import { L } from '../i18n';
 import { ruleIn, whatIn } from './twins';
@@ -140,4 +139,4 @@ function go(){new MutationObserver(function(ms){ms.forEach(function(m){if(m.type
 if(document.body)go();else document.addEventListener("DOMContentLoaded",go)})();
 `;
 }
-export const shimHash = (s: string) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 10);
+export { contentHash as shimHash } from './assets';

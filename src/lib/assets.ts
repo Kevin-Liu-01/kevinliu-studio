@@ -5,11 +5,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+// the content address every ?v= on the site uses: the first 10 hex of the bytes' sha-256
+export const contentHash = (bytes: string | Buffer) => crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 10);
+
 const seen = new Map<string, string>();
 export function versioned(file: string) {
   let u = seen.get(file);
   if (!u) {
-    const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(process.cwd(), 'public', file))).digest('hex').slice(0, 10);
+    const hash = contentHash(fs.readFileSync(path.join(process.cwd(), 'public', file)));
     seen.set(file, (u = `${file}?v=${hash}`));
   }
   return u;

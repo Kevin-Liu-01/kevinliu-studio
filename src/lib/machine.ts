@@ -2,13 +2,12 @@
 // (twins.ts) so a region's machine form and the .md endpoint never disagree. Each form nests in the real element it
 // describes; machine.css swaps them in place, so they share its box at every width.
 import { fighters, rules, repoOf, type Fighter } from './cards';
-import { cardPath, cardMd } from './twins';
+import { cardPath, cardMd, host } from './twins';
 import { workType } from './schema';
 import { PREVIOUS } from './site';
 import { L, DEFAULT } from '../i18n';
 
 export const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const host = (u?: string) => (u ? u.replace(/^https?:\/\//, '').replace(/\/$/, '') : '');
 // a value breaks only after a path's slashes and hyphens, before its dots (so .md stays whole), or between a type's
 // words (Communication|Application)
 const breaks = (s: string) => esc(s).replace(/([/-])(?=.)/g, '$1<wbr>').replace(/(.)\./g, '$1<wbr>.').replace(/([a-z])([A-Z])/g, '$1<wbr>$2');

@@ -17,10 +17,10 @@ import { PHONE } from './phone-memory.mjs';
 import { check as budgets } from './budgets.mjs';
 import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
 import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
+import { SITE } from '../src/lib/site.ts';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const DIST = path.resolve(process.argv[2] ?? path.join(ROOT, 'dist'));
-const SITE = 'https://www.kevinliu.studio';
 const errors = [];
 const fail = (where, what) => errors.push(`${where}: ${what}`);
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));

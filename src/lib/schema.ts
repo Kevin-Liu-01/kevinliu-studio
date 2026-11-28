@@ -2,12 +2,11 @@
 // refer to each other by @id, so Kevin and the site are one entity on every page. Only true claims: no ratings,
 // reviews, offers or FAQ markup.
 import { fighters, repoOf, type Fighter } from './cards';
-import { SITE, NAME, DESCRIPTION, person } from './site';
+import { SITE, NAME, DESCRIPTION, person, abs } from './site';
 import { cardPath, whatIn, answerIn } from './twins';
 import { L, DEFAULT, lp } from '../i18n';
 
 const ID = { site: `${SITE}/#site`, kevin: person['@id'], cards: `${SITE}/cards#list` };
-const abs = (p: string) => (p === '/' ? `${SITE}/` : `${SITE}${p}`);
 
 export const website = { '@type': 'WebSite', '@id': ID.site, url: `${SITE}/`, name: NAME, description: DESCRIPTION, inLanguage: 'en', author: { '@id': ID.kevin }, publisher: { '@id': ID.kevin } };
 

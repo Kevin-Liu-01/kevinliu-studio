@@ -4,7 +4,7 @@
 // translated at run time and no key reaches the build or the browser.
 // A translated string is used only while it still translates the English the site prints now and keeps every
 // {placeholder} and link target of its source; otherwise that one string prints in English and the build says so.
-import { DEFAULT, LOCALES, localeOf, lp, split } from './locales.mjs';
+import { DEFAULT, LOCALES, CODES, localeOf, lp, split } from './locales.mjs';
 import { source, battleSource } from './source.mjs';
 import * as cardLib from '../lib/cards';
 import * as site from '../lib/site';
@@ -17,8 +17,7 @@ import enBattleRaw from './en/battle.json?raw';
 import gtLock from '../../gt-lock.json';
 import crypto from 'node:crypto';
 
-export { DEFAULT, LOCALES, localeOf, lp, split };
-export const CODES: string[] = LOCALES.map((l) => l.code);
+export { DEFAULT, LOCALES, CODES, localeOf, lp, split };
 
 type Tree = { [k: string]: unknown };
 const FILES = import.meta.glob('./*/*.json', { eager: true, import: 'default' }) as Record<string, Tree>;

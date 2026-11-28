@@ -3,9 +3,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
-import { DEFAULT, LOCALES, OTHER } from './src/i18n/locales.mjs';
-
-export const SITE = 'https://www.kevinliu.studio';
+import { DEFAULT, LOCALES, split } from './src/i18n/locales.mjs';
+import { SITE } from './src/lib/site.ts';
 
 // A page's lastmod is the date of the last commit that changed what it prints: the cards' data (synced from the
 // rounds), its own source, or, for a card, its art. In a shallow clone (Vercel's) a path untouched since the clone's
@@ -27,11 +26,9 @@ const SOURCES = [
   [/^\/battle(\/arena)?$/, () => ['vendor/battle', 'public/battle', 'src/components/BattlePage.astro']],
 ];
 // a translated page changes when its English page does, or when its language's translations do
-const LANG = new RegExp(`^/(${OTHER.join('|')})(?=/|$)`);
 const lastmod = (url) => {
-  const full = new URL(url).pathname, lang = LANG.exec(full)?.[1];
-  const p = lang ? full.slice(lang.length + 1) || '/' : full;
-  const gt = LOCALES.find((l) => l.code === lang)?.gt;
+  const { code, path: p } = split(new URL(url).pathname);
+  const gt = code === DEFAULT ? undefined : LOCALES.find((l) => l.code === code)?.gt;
   for (const [re, paths] of SOURCES) { const m = p.match(re); if (m) return gitDate(...paths(m[1]), ...(gt ? [`src/i18n/${gt}`] : [])); }
   return undefined;
 };

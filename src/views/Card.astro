@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { fighters, card, FRAMED, M, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../lib/cards';
-import { cardPath, answerIn, ruleIn } from '../lib/twins';
+import { cardPath, answerIn, ruleIn, host } from '../lib/twins';
 import { moveHtml, roomIn } from '../lib/i18n-room';
 import { L } from '../i18n';
 import { graph, page, work } from '../lib/schema';
@@ -60,7 +60,7 @@ const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sh
       <p class="cp-disc sw"><span class="hx">{f.disciplines.map((d) => <span><Fragment set:html={discIcon(d)} />{l.disc(d)}</span>)}</span><span class="mx" set:html={mdHtml(tw.line)} /></p>
       <p class="cp-go sw">
         <span class="hx">
-        {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>{l.t('card.open', { host: f.url.replace(/^https?:\/\//, '').replace(/\/$/, '') })}</span></a>}
+        {f.url && <a class="press" href={f.url} rel="noopener"><Fragment set:html={M.icon('visit')} /><span>{l.t('card.open', { host: host(f.url) })}</span></a>}
         {repo && <a class="press" href={repo} rel="noopener"><span>{l.t('card.source')}</span></a>}
         {team && <a class="press" href={`${l.p('/battle')}#team=${team.join(',')}`}><span>{l.t('card.battle')}</span></a>}
         </span>
