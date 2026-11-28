@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { logoOf, cardIds, byCard } from '../lib/cards';
 import Link from '../components/BrandLink.astro';
 import { inlineLogo, markPair } from '../lib/brands';
-import { cardPath, qaOf, aboutMd, aboutParas, aboutProjects, whatIn, bioIn } from '../lib/twins';
+import { cardPath, qaOf, aboutParts, aboutProjects, whatIn, bioIn } from '../lib/twins';
 import { L, localeOf } from '../i18n';
 import { mdHtml } from '../lib/machine';
 import { website, page } from '../lib/schema';
@@ -14,7 +14,7 @@ const l = L(code);
 const BIO = bioIn(code);
 const QA = qaOf(code);
 // a paragraph of Kevin's words as runs of text and links, from its Markdown in the language
-const runsOf = (i: number) => (aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
+const runsOf = (i: number) => (aboutParts(code).paras[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
 // "Find me on X, GitHub, and LinkedIn, or write to the email": the sentence in the language, its four links in place
 // a project's name and what it is: "Turboslide. A browser..."; Japanese and Chinese take a full-width colon, Korean a colon
 const sep = localeOf(code).gloss;
@@ -22,15 +22,13 @@ const findMe = l.t('about.elsewhere').split(/(\{x\}|\{github\}|\{linkedin\}|\{em
 const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
 // the Machine view's forms: the twin's blocks where the page shows them (its headings are the page's own, marked by
 // machine.css). The twin's line about the cards has no place of its own on the page; it is in the footer's whole twin
-const tw = aboutMd(code).trimEnd().split('\n\n').filter((b, i) => !(i === 1 && !l.en));
-const at = (h: string) => tw.indexOf(h);
-const paras = tw.slice(1, 1 + ABOUT.length);
+const tw = aboutParts(code);
+const paras = tw.paras;
 const H = { projects: `## ${l.t('about.projects')}`, questions: `## ${l.t('about.questions')}`, elsewhere: `## ${l.t('frame.elsewhere')}` };
-const projects = tw[at(H.projects) + 1].split('\n');
-const questions = tw.slice(at(H.questions) + 1, at(H.elsewhere));
-// the line that names X, GitHub, LinkedIn and the email holds the twin's lines for those four
-const mail = l.t('twin.linkEmail');
-const elsewhere = tw[at(H.elsewhere) + 1].split('\n').filter((x) => /^- (X|GitHub|LinkedIn):/.test(x) || x.startsWith(`- ${mail}:`)).join('\n');
+const projects = tw.projects;
+const questions = tw.questions;
+// the sentence that names X, GitHub and LinkedIn and the email holds the twin's lines for those four
+const elsewhere = [...SOCIAL.filter((s) => ['X', 'GitHub', 'LinkedIn'].includes(s.name)).map((s) => tw.social[s.name]), tw.email].join('\n');
 // each project's logo as its card prints it (the file and its tile, no ring), hung left of the underlined name;
 // a project without one keeps the empty column, so every name starts at the same x
 // the logo and the name's first word never part at a line end (BrandLink.astro does the same)
@@ -45,7 +43,7 @@ const jsonld = [website, person, ...page({ path: l.p('/about'), type: 'ProfilePa
 ---
 <Base seo={{ title: l.t('about.title'), fullTitle: heading, description: BIO, path: l.p('/about'), type: 'profile', share: 'about', imageAlt: l.t('about.imageAlt', { name: NAME }), jsonld }}>
   <main class="prose" id="main">
-    <div class="sw hw"><h1>{heading}</h1><p class="mx" aria-hidden="true" set:html={mdHtml(tw[0])} /></div>
+    <div class="sw hw"><h1>{heading}</h1><p class="mx" aria-hidden="true" set:html={mdHtml(`# ${tw.heading}`)} /></div>
     {ABOUT.map((_, i) => (
       <p class:list={[i === 0 && 'lede', 'sw']}><span class="hx">{runsOf(i).map((r) => (typeof r === 'string' ? r : <Link href={r[1]} text={r[0]} />))}</span><span class="mx" set:html={mdHtml(paras[i])} /></p>
     ))}

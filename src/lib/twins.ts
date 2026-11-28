@@ -103,37 +103,52 @@ ${links(code)}
 `;
 }
 
-export function cardMd(f: Fighter, code = DEFAULT) {
+// A card's twin as the blocks its page shows, by name: the card page's Machine view (machine.ts cardBlocks) reads these,
+// and cardMd joins them, so the page never has to find a block in the Markdown by its heading or its shape
+export function cardParts(f: Fighter, code = DEFAULT) {
   const l = L(code), t = l.t;
   const i = fighters.indexOf(f);
   const repo = repoOf(f);
   const team = teamFor(f.id);
-  const facts = factLines(f).map((x) => `- **${factIn(f, x.key, code)}**. ${t('twin.receipt')}: \`${x.receipt}\``);
-  const moves = f.moves.map((m, j) => `- ${moveLineIn(f, j, code)} ${t('twin.receipt')}: \`${m.receipt}\``);
-  const line = t('twin.cardLine', { i: i + 1, n: fighters.length, name: NAME, year: f.year, disciplines: l.and(discs(f, code)) });
-  const pinned = f.pinned;
-  return `# ${f.title}
+  return {
+    title: f.title,
+    edition: edition(code, `/cards/${f.id}.md`),
+    answer: answerIn(f, code),
+    line: t('twin.cardLine', { i: i + 1, n: fighters.length, name: NAME, year: f.year, disciplines: l.and(discs(f, code)) }),
+    // the page's link row (Live, Source, Battle); the inks and stats are on the stand's record
+    links: [f.url && `- ${t('twin.live')}: ${f.url}`, repo && `- ${t('twin.source')}: ${repo}`, team && `- ${t('twin.battle')}: ${at(code, '/battle')}#team=${team.join(',')}`].filter((x): x is string => !!x),
+    record: [`- ${t('twin.inks')}: ${f.cost}`, `- ${t('twin.stats', { hp: f.stats.hp, atk: f.stats.atk, def: f.stats.def, spd: f.stats.spd })}`],
+    facts: factLines(f).map((x) => `- **${factIn(f, x.key, code)}**. ${t('twin.receipt')}: \`${x.receipt}\``),
+    trait: f.trait ? `**${f.trait.name}**. ${ruleIn(f, code)} ${t('twin.receipt')}: \`${f.trait.receipt}\`` : null,
+    moves: f.moves.map((m, j) => `- ${moveLineIn(f, j, code)} ${t('twin.receipt')}: \`${m.receipt}\``),
+    related: relatedOf(f).map((g) => `- ${link(g, code)} (${discs(g, code).join(', ')})`),
+    pinned: f.pinned ? t('twin.pinned', { sha: f.pinned.sha, date: f.pinned.date }) : null,
+    every: `${t('twin.everyCard')}: ${at(code, '/cards')}`,
+  };
+}
+export function cardMd(f: Fighter, code = DEFAULT) {
+  const t = L(code).t, p = cardParts(f, code);
+  return `# ${p.title}
 
-${edition(code, `/cards/${f.id}.md`)}${answerIn(f, code)}
+${p.edition}${p.answer}
 
-${line}
+${p.line}
 
-${f.url ? `- ${t('twin.live')}: ${f.url}\n` : ''}${repo ? `- ${t('twin.source')}: ${repo}\n` : ''}${team ? `- ${t('twin.battle')}: ${at(code, '/battle')}#team=${team.join(',')}\n` : ''}- ${t('twin.inks')}: ${f.cost}
-- ${t('twin.stats', { hp: f.stats.hp, atk: f.stats.atk, def: f.stats.def, spd: f.stats.spd })}
+${[...p.links, ...p.record].join('\n')}
 
 ## ${t('card.numbers')}
 
-${facts.join('\n')}
+${p.facts.join('\n')}
 
-${f.trait ? `## ${t('card.trait')}\n\n**${f.trait.name}**. ${ruleIn(f, code)} ${t('twin.receipt')}: \`${f.trait.receipt}\`\n\n` : ''}## ${t('card.moves')}
+${p.trait ? `## ${t('card.trait')}\n\n${p.trait}\n\n` : ''}## ${t('card.moves')}
 
-${moves.join('\n')}
+${p.moves.join('\n')}
 
 ## ${t('card.related')}
 
-${relatedOf(f).map((g) => `- ${link(g, code)} (${discs(g, code).join(', ')})`).join('\n')}
+${p.related.join('\n')}
 
-${pinned ? `${t('twin.pinned', { sha: pinned.sha, date: pinned.date })}\n\n` : ''}${t('twin.everyCard')}: ${at(code, '/cards')}
+${p.pinned ? `${p.pinned}\n\n` : ''}${p.every}
 `;
 }
 
@@ -163,27 +178,40 @@ export const aboutProjects: Fighter[] = [
   ...fighters.filter((f) => !(ABOUT_FIRST as readonly string[]).includes(f.id)),
 ];
 
-export function aboutMd(code = DEFAULT) {
+// /about's twin as the blocks its page shows, by name (About.astro reads these; aboutMd joins them)
+export function aboutParts(code = DEFAULT) {
   const t = L(code).t;
-  return `# ${t('about.heading', { name: NAME })}
+  return {
+    heading: t('about.heading', { name: NAME }),
+    edition: edition(code, '/about.md'),
+    paras: aboutParas(code),
+    cards: t('twin.aboutCards', { n: fighters.length }),
+    projects: aboutProjects.map((f) => `- ${link(f, code)}: ${whatIn(f, code)}`),
+    questions: qaOf(code).map(([q, a]) => `**${q}** ${a}`),
+    social: Object.fromEntries(SOCIAL.map((s) => [s.name, `- ${s.name}: ${s.url}`])) as Record<(typeof SOCIAL)[number]['name'], string>,
+    email: `- ${t('twin.linkEmail')}: ${EMAIL}`,
+    previous: `- ${t('twin.previousSite')}: ${PREVIOUS}`,
+  };
+}
+export function aboutMd(code = DEFAULT) {
+  const t = L(code).t, p = aboutParts(code);
+  return `# ${p.heading}
 
-${edition(code, '/about.md')}${aboutParas(code).join('\n\n')}
+${p.edition}${p.paras.join('\n\n')}
 
-${t('twin.aboutCards', { n: fighters.length })}
+${p.cards}
 
 ## ${t('about.projects')}
 
-${aboutProjects.map((f) => `- ${link(f, code)}: ${whatIn(f, code)}`).join('\n')}
+${p.projects.join('\n')}
 
 ## ${t('about.questions')}
 
-${qaOf(code).map(([q, a]) => `**${q}** ${a}`).join('\n\n')}
+${p.questions.join('\n\n')}
 
 ## ${t('frame.elsewhere')}
 
-${SOCIAL.map((s) => `- ${s.name}: ${s.url}`).join('\n')}
-- ${t('twin.linkEmail')}: ${EMAIL}
-- ${t('twin.previousSite')}: ${PREVIOUS}
+${[...Object.values(p.social), p.email, p.previous].join('\n')}
 `;
 }
 

@@ -2,7 +2,7 @@
 // (twins.ts) so a region's machine form and the .md endpoint never disagree. Each form nests in the real element it
 // describes; machine.css swaps them in place, so they share its box at every width.
 import { fighters, rules, repoOf, type Fighter } from './cards';
-import { cardPath, cardMd, host } from './twins';
+import { cardPath, cardParts, host } from './twins';
 import { workType } from './schema';
 import { PREVIOUS } from './site';
 import { L, DEFAULT } from '../i18n';
@@ -72,25 +72,8 @@ export function mdHtml(s: string) {
     .replace(/\*\*|`/g, '<span class="mk">$&</span>');
 }
 
-/** A card's Markdown twin cut into the blocks its page shows, in its page's order. */
+/** A card's Markdown twin as the blocks its page shows (twins.ts cardParts). */
 export function cardBlocks(f: Fighter, code = DEFAULT) {
-  // found by what each block is, not where it stands, so a twin that adds a block (an answer, a related list) still maps
-  const t = L(code).t;
-  const b = cardMd(f, code).trimEnd().split('\n\n');
-  const at = (h: string) => b.indexOf(h);
-  const nums = at(`## ${t('card.numbers')}`), trait = at(`## ${t('card.trait')}`), moves = at(`## ${t('card.moves')}`), related = at(`## ${t('card.related')}`);
-  // the line after the answer (the twin opens with its heading, a translated edition's note, then the answer)
-  const line = b.findIndex((x, i) => i > 0 && !x.startsWith('- ') && b[i + 1]?.startsWith('- ')) ;
-  const labels = [t('twin.live'), t('twin.source'), t('twin.battle')].map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const pinned = t('twin.pinned', { sha: '\u0000', date: '\u0000' }).split('\u0000')[0];
-  return {
-    line: b[line],
-    // the twin's link lines (Live, Source, Battle) are the page's link row; its inks and stats are on the stand's record
-    links: (b.slice(line + 1).find((x) => x.startsWith('- ')) ?? '').split('\n').filter((x) => new RegExp(`^- (${labels.join('|')}):`).test(x)).join('\n'),
-    facts: b[nums + 1].split('\n'),
-    trait: trait >= 0 ? b[trait + 1] : null,
-    moves: b[moves + 1].split('\n'),
-    related: related >= 0 ? b[related + 1].split('\n') : [],
-    pinned: b.slice(moves + 2).find((x) => pinned && x.startsWith(pinned)) ?? null,
-  };
+  const p = cardParts(f, code);
+  return { line: p.line, links: p.links.join('\n'), facts: p.facts, trait: p.trait, moves: p.moves, related: p.related, pinned: p.pinned };
 }
