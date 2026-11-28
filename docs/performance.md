@@ -379,7 +379,9 @@ address made Vercel's firewall answer 403 and show its Security Checkpoint ("We'
 browser on that network, Kevin's included, for a few seconds. Measure local builds or previews, never production in
 bulk. Two harness traps found on the way: Playwright turns the HTTP cache off while any request is routed (block files
 with CDP `Network.setBlockedURLs` instead), and any DevTools session stops Chromium prerendering
-(`PrerenderingDisabledByDevTools`), so a prerender's gain is read in a real browser.
+(`PrerenderingDisabledByDevTools`), so a prerender's gain is read in a real browser. And `speed-2026-11-26/tools/serve2.mjs` keeps
+each file's compressed body in memory, so restart it after a rebuild or a browser gets the old pages (`curl`, which
+asks for no compression, gets the new ones).
 
 Ranked by what a visitor waits for, phone first:
 
