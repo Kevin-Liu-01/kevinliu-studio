@@ -989,3 +989,15 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: docs/entropy.md task pool and "Waiting on Kevin"; ADR 0002 (rounds as a package) after battle-026's sync;
   the prerender's gain needs a real browser on a preview. Never measure production in bulk: it trips Vercel's
   Security Checkpoint for the whole network.
+
+## 2026-11-28 (later): review fixes and rounds 3-4 (arch/entropy, Claude Code)
+
+- **Changed**: one twin endpoint over TWINS; one twin lookup; saved-choice keys and the sound rule in src/lib/state.mjs;
+  card id lists and the fighters.js record checked at build; pages read twins' named parts (fixes the ja and ko card
+  pages' missing pinned line in the Machine view); views patch round HTML only through src/lib/patch.ts swap. Review
+  fixes: prerender on press, not hover (a hover prerender opened pages with a stale view); a back-forward restore
+  re-reads the Human or Machine view.
+- **Checked**: dist byte-identical per refactor apart from the intended changes; sound key matches main in 8 cases;
+  bfcache restore takes the new view; architecture.test.mjs holds 8 rules.
+- **Open**: docs/entropy.md task pool (after-sync items, Kevin's calls). serve2.mjs caches compressed bodies: restart
+  it after every rebuild.

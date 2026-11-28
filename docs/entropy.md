@@ -60,14 +60,14 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | --- | --- | --- | --- | --- |
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
-| L1 | A page's sitemap lastmod follows its source files' commits, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; date a page by a hash of what it prints instead | 3 | 2 | now |
+| L1 | A page's sitemap lastmod follows its source files' commits, view files included, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; drop the views from the lastmod sources, or date by a hash of what a page prints | 3 | 2 | Kevin (SEO policy) |
 | V1 | Read the press prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
 | S1 | Ask r4/ex to save the view only on a press, not at gallery.js boot (the site half, re-reading the view on a back-forward restore, is done) | 2 | 1 | r4/ex request after sync |
 | X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
 | P7 | BattlePage.astro's rules panel splits battleMd; give it named parts like cardParts | 2 | 1 | after sync |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | battle.ts and BattlePage.astro move to `src/lib/patch.ts` swap and machine.ts esc | 2 | 1 | after sync |
-| P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
+| P5 | Card descriptions are cut in one place (Seo); changes translated card meta descriptions, so waiting on Kevin | 2 | 1 | Kevin |
 | M12 | Rounds as a checked package, synced by pin with no JS transforms (design below) | 5 | 5 | after sync |
 | B1-B3 | Upstream the 15 sound.js, ~40 wall and ~30 battle patches | 5 | 4 | after sync |
 | A1-A3 | Mount paths and site adaptations become config the round code reads | 4 | 3 | after sync |
