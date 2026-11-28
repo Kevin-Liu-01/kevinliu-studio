@@ -1,7 +1,7 @@
 // JSON-LD for every page, as one @graph: the site, Kevin, the page itself, its breadcrumbs and what it is about. Nodes
 // refer to each other by @id, so Kevin and the site are one entity on every page. Only true claims: no ratings,
 // reviews, offers or FAQ markup.
-import { fighters, repoOf, type Fighter } from './cards';
+import { fighters, repoOf, cardIds, byCard, type Fighter } from './cards';
 import { SITE, NAME, DESCRIPTION, person, abs } from './site';
 import { cardPath, whatIn, answerIn } from './twins';
 import { L, DEFAULT, lp } from '../i18n';
@@ -34,19 +34,20 @@ export const cardListIn = (code = DEFAULT) => ({ '@type': 'ItemList', '@id': cod
 export const cardList = cardListIn();
 
 // schema.org type and category: named where a card's discipline tags would mistype it, guessed from the tags otherwise
-const TYPE: Record<string, string> = { katagami: 'CreativeWork', atlas: 'CreativeWork', ommc: 'WebSite', powerlifting: 'WebSite', 'claude-of-tanks': 'VideoGame', 'princeton-td': 'VideoGame' };
-const CATEGORY: Record<string, string> = {
+const TYPE: Record<string, string> = byCard({ katagami: 'CreativeWork', atlas: 'CreativeWork', ommc: 'WebSite', powerlifting: 'WebSite', 'claude-of-tanks': 'VideoGame', 'princeton-td': 'VideoGame' }, 'schema.ts TYPE');
+const CATEGORY: Record<string, string> = byCard({
   turboslide: 'BusinessApplication', jarhead: 'UtilitiesApplication', mailroom: 'CommunicationApplication', elo: 'BusinessApplication',
   podium: 'BusinessApplication', sevenfold: 'ReferenceApplication', 'kevin-wiki': 'ReferenceApplication', ariadne: 'EntertainmentApplication',
   cotfly: 'EntertainmentApplication', 'bday-land': 'EntertainmentApplication',
-};
+}, 'schema.ts CATEGORY');
 // a card's @type, and its applicationCategory where that type is software; the Machine view's records print the same
 export function workType(f: Fighter): { type: string; category?: string } {
   const type = TYPE[f.id] ?? 'SoftwareApplication';
   if (type !== 'SoftwareApplication' && type !== 'VideoGame') return { type };
   return { type, category: CATEGORY[f.id] ?? (f.disciplines.includes('Game') ? 'GameApplication' : f.disciplines.includes('Agent') || f.disciplines.includes('Infra') ? 'DeveloperApplication' : 'DesignApplication') };
 }
-const OS: Record<string, string> = { jarhead: 'macOS', 'local-search': 'macOS, Linux, Windows' };
+const OS: Record<string, string> = byCard({ jarhead: 'macOS', 'local-search': 'macOS, Linux, Windows' }, 'schema.ts OS');
+const MULTIPLAYER = cardIds(['claude-of-tanks'], 'schema.ts MULTIPLAYER');
 
 // the project a card stands for, and its source code when the repository is public and named for it
 export function work(f: Fighter, code = DEFAULT) {
@@ -63,7 +64,7 @@ export function work(f: Fighter, code = DEFAULT) {
   };
   const { category } = workType(f);
   if (category) Object.assign(node, { applicationCategory: category, operatingSystem: OS[f.id] ?? 'Web browser' });
-  if (type === 'VideoGame') Object.assign(node, { gamePlatform: 'Web browser', playMode: f.id === 'claude-of-tanks' ? 'MultiPlayer' : 'SinglePlayer' });
+  if (type === 'VideoGame') Object.assign(node, { gamePlatform: 'Web browser', playMode: MULTIPLAYER.includes(f.id) ? 'MultiPlayer' : 'SinglePlayer' });
   const out: object[] = [node];
   if (ownsRepo) {
     node.sameAs = [repo];

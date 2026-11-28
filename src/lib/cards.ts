@@ -80,6 +80,14 @@ const NO_LADDER = { ...env, posters: { half: {} } };
 export const fighters = FIGHTERS;
 export const rules = RULES;
 export const byId = Object.fromEntries(FIGHTERS.map((f) => [f.id, f]));
+// a list of card ids the site keeps by hand (a schema type, /about's order, a share image's fan): the build stops when
+// one names no card, so a card the rounds rename or drop never quietly loses its entry
+export function cardIds<T extends readonly string[]>(ids: T, where: string): T {
+  const gone = ids.filter((id) => !byId[id]);
+  if (gone.length) throw new Error(`${where}: no card ${gone.map((id) => `"${id}"`).join(', ')}`);
+  return ids;
+}
+export const byCard = <V>(o: Record<string, V>, where: string) => (cardIds(Object.keys(o), where), o);
 export const GALLERY_SIZES = WALL.sizes();
 export const wallCss: string = WALL.css();
 export const masks = ART.masks();
@@ -220,7 +228,7 @@ export function teamFor(lead: string): string[] | null {
 }
 
 // the repositories a visitor cannot open, shared with the card faces' sync patch
-const CLOSED = new Set(CLOSED_IDS);
+const CLOSED = new Set(cardIds(CLOSED_IDS, 'closed-repos.mjs CLOSED'));
 export const repoOf = (f: Fighter): string | undefined => (f.repo && !CLOSED.has(f.id) && !/\(private\)/.test(f.repo) ? f.repo.replace(/ .*$/, '') : undefined);
 
 // The one sentence that answers "what is <card>": the card's own line with its name as the subject. Only a leading

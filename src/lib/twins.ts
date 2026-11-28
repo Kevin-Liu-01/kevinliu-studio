@@ -2,7 +2,7 @@
 // view print from these functions, so what an agent reads is what a person sees, in the same order. Each twin opens
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
-import { fighters, byId, rules, battleRoster, repoOf, relatedOf, teamFor, factLines, type Fighter } from './cards';
+import { fighters, byId, cardIds, rules, battleRoster, repoOf, relatedOf, teamFor, factLines, type Fighter } from './cards';
 import { SITE, NAME, ALSO_KNOWN_AS, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, ABOUT_FIRST } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
 import { homeParts } from '../i18n/source.mjs';
@@ -159,7 +159,7 @@ export const aboutParas = (code = DEFAULT) => L(code).c.about;
 
 // /about's projects: ABOUT_FIRST, then every other card in roster order. The page and its twin both read this list
 export const aboutProjects: Fighter[] = [
-  ...ABOUT_FIRST.map((id) => byId[id] ?? (() => { throw new Error(`site.ts ABOUT_FIRST: no card "${id}"`); })()),
+  ...cardIds(ABOUT_FIRST, 'site.ts ABOUT_FIRST').map((id) => byId[id]),
   ...fighters.filter((f) => !(ABOUT_FIRST as readonly string[]).includes(f.id)),
 ];
 
