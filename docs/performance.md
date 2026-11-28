@@ -366,3 +366,44 @@ board `sizes` in the kit; a reveal that awaits the board's pictures on purpose (
 subject lands on a slow phone, and the Mat's wait on them is an accident of request order); the Arena's serial chain
 and its one map size; `kit.js` per card; content addresses for the battle's module graph; and splitting the
 grounds' first second into idle tasks.
+
+## 2026-11-28 round: what a visitor feels
+
+Kevin, 2026-11-28: "the website interactions and loading and other stuff is still very bad". Every route and every
+interaction measured on production's code (main ba959ef) served locally over HTTP/2, the throttled phone of 11-13 on
+the one shaped link (`shape-proxy.mjs`) and 1440 x 900, three runs, the median. Tool: `~/k7-rescue/arch-2026-11-28/
+tools/felt.mjs` (raw runs beside it). This Mac's load average sat at 30 to 77 from other work.
+
+Production itself was measured once at 1440 and then left alone: about 2,000 requests in a few minutes from one
+address made Vercel's firewall answer 403 and show its Security Checkpoint ("We're verifying your browser") to every
+browser on that network, Kevin's included, for a few seconds. Measure local builds or previews, never production in
+bulk. Two harness traps found on the way: Playwright turns the HTTP cache off while any request is routed (block files
+with CDP `Network.setBlockedURLs` instead), and any DevTools session stops Chromium prerendering
+(`PrerenderingDisabledByDevTools`), so a prerender's gain is read in a real browser.
+
+Ranked by what a visitor waits for, phone first:
+
+| # | What | Phone | 1440 | Owner |
+| --- | --- | --- | --- | --- |
+| 1 | Battle load (reveal) | Mat 11.3 s, Arena 9.7 s; one 3.1 to 7.0 s main-thread frame in `kit.js` | 0.58 s, Arena LCP 1.5 s | battle-026 (r4/play) |
+| 2 | The wall, cold | FCP = LCP 2.7 s (held until the first screen decodes); the second card's art arrives 1.5 to 2 s later and pops in | FCP 0.89 s, LCP 1.67 s, TBT 138 ms | site and r4/ex |
+| 3 | Back to the wall / the brand to the wall | 1.1 s / 1.7 s with the old page frozen meanwhile | 0.48 s / 0.51 s FCP, 1.0 to 1.1 s LCP | site |
+| 4 | Battle Auto, Log, Mat and Arena | Auto INP 216 ms, frames up to 167 ms; Log 120 ms; a switch runs 250 to 380 ms of script | under 60 ms | battle-026 |
+| 5 | Open Pack | INP 192 ms (`rituals.js`) | 56 ms | r4/ex |
+| 6 | A card's lens / Escape | shown 252 ms / 386 ms | 88 ms / 382 ms | r4/ex (`gallery.js` timing) |
+| 7 | Human view after Machine | | INP 192 ms, all presentation | site and r4/ex |
+| 8 | Card page to card page, About, /cards | 0.37 to 0.83 s | under 0.11 s | fine |
+
+Scroll, the sound and pause keys, and every page's CLS were fine (CLS 0 everywhere; no frame over 50 ms scrolling the
+wall on the phone).
+
+What the phone's wall waits on (cold, shaped link, priorities from CDP): the font and four sheets by 1.6 s, then the
+first card (poster 65 KB, subject 67 KB) shares the line with the second card (poster 120 KB, full subject 136 KB,
+since the phone draws it wider than the half cut), the frost tile at 2x (`icons/frost@2x.webp`, 89 KB, High, from
+`ui.css`'s `image-set`), `sound.js` (15 KB, High) and the deferred round scripts (about 80 KB). The hold lifts at its
+1 s cap before the second card has decoded.
+
+Fixed here: the header's links and the card pager prerender after a 200 ms hover on a desktop (a88f95f), and analytics
+waits for a prerendered page to be opened. Not fixable here without a visual or timing call (pending in
+docs/entropy.md): the frost tile at 1x on phones (89 to 23 KB), and loading the sound kit after the first screen.
+Sent to battle-026 with these numbers: items 1 and 4.
