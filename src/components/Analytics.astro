@@ -1,12 +1,17 @@
 ---
 // Vercel Web Analytics and Speed Insights: no cookies, so no banner. Neither loads when the visitor sends Do Not
 // Track or Global Privacy Control, and neither loads off the production host (previews and local builds stay quiet).
+// A prerendered page (src/lib/device.ts, and the wall's battle) counts only once the visitor opens it.
 ---
 <script>
   const nav = navigator as Navigator & { globalPrivacyControl?: boolean; msDoNotTrack?: string };
   const dnt = nav.doNotTrack === '1' || (window as any).doNotTrack === '1' || nav.msDoNotTrack === '1' || nav.globalPrivacyControl === true;
-  if (!dnt && /(^|\.)kevinliu\.studio$/.test(location.hostname)) {
+  const go = () => {
     import('@vercel/analytics').then(({ inject }) => inject({ mode: 'production', framework: 'astro' }));
     import('@vercel/speed-insights').then(({ injectSpeedInsights }) => injectSpeedInsights({ framework: 'astro' }));
+  };
+  if (!dnt && /(^|\.)kevinliu\.studio$/.test(location.hostname)) {
+    if ((document as Document & { prerendering?: boolean }).prerendering) document.addEventListener('prerenderingchange', go, { once: true });
+    else go();
   }
 </script>

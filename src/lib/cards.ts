@@ -1,6 +1,7 @@
 // The card system at build time. The rounds' own modules print every card (markup.js), so the static HTML is the
 // settled first paint and the gallery script only wakes it. This mirrors r4/ex build.mjs's env; the files come from
 // `pnpm sync` (public/ex is served, vendor/ex is build-only).
+import { LEAN } from './device.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -147,7 +148,7 @@ export const card = (f: Fighter, opts: Record<string, unknown> = {}) => {
   if (undelta(plain, d) !== framed) throw new Error(`card ${f.id}: the framed print's delta does not rebuild it`);
   return `${plain}<template class="framed">${d}</template>`;
 };
-export const FRAMED = `(function(){var d=!(matchMedia("(pointer: coarse)").matches||navigator.deviceMemory<=4);document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;var ms=t.content.querySelectorAll("b[data-same]"),ns=d?[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n&&n.children[i]},c)}):[];if(d&&ns.every(Boolean)){ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";if(i.dataset.plainfxset){i.srcset=i.dataset.plainfxset;i.removeAttribute("data-plainfxset")}i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
+export const FRAMED = `(function(){var d=!(${LEAN});document.querySelectorAll("template.framed").forEach(function(t){var c=t.previousElementSibling;var ms=t.content.querySelectorAll("b[data-same]"),ns=d?[].map.call(ms,function(m){return m.dataset.same.split(".").reduce(function(n,i){return n&&n.children[i]},c)}):[];if(d&&ns.every(Boolean)){ms.forEach(function(m,k){m.replaceWith(ns[k])});c.replaceWith(t.content)}else c.querySelectorAll("img[data-plainfx]").forEach(function(i){var p=c.querySelector("img.poster");if(p&&p.loading==="lazy")i.loading="lazy";if(i.dataset.plainfxset){i.srcset=i.dataset.plainfxset;i.removeAttribute("data-plainfxset")}i.src=i.dataset.plainfx;i.removeAttribute("data-plainfx")});t.remove()})})()`;
 export const sheet = (f: Fighter) => M.sheet(f, MEDIA) as string;
 
 // The text a card says about itself, for page copy, meta descriptions and twins: the face's own "what" line.
