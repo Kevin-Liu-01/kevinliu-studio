@@ -66,7 +66,7 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
 | P7 | BattlePage.astro's rules panel splits battleMd; give it named parts like cardParts | 2 | 1 | after sync |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
-| P4 | Views' string patches go through one exact-count helper (`swap`) | 3 | 2 | now |
+| P4 | battle.ts and BattlePage.astro move to `src/lib/patch.ts` swap and machine.ts esc | 2 | 1 | after sync |
 | P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
 | M12 | Rounds as a checked package, synced by pin with no JS transforms (design below) | 5 | 5 | after sync |
 | B1-B3 | Upstream the 15 sound.js, ~40 wall and ~30 battle patches | 5 | 4 | after sync |

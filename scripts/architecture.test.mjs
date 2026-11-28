@@ -65,3 +65,9 @@ test("pages read a twin's named parts and never re-parse its Markdown", () => {
   // BattlePage.astro still splits battleMd; it moves to named parts after the battle-026 sync (docs/entropy.md P7)
   assert.deepEqual(holders(/\w+Md\([^)]*\)[\s\S]{0,12}\.split\(/).filter((f) => f !== 'src/components/BattlePage.astro'), []);
 });
+
+test('views patch round HTML only through src/lib/patch.ts swap, which fails on a missing anchor', () => {
+  const views = SOURCES.filter((s) => s.rel.startsWith('src/views/'));
+  for (const v of views) assert.ok(!/\.replace(All)?\(\s*(\/<|'<|"<)/.test(v.text), `${v.rel} patches HTML with a silent replace; use swap() from src/lib/patch.ts`);
+  assert.ok(views.length >= 5);
+});

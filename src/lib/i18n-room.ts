@@ -4,17 +4,13 @@
 // labels and status lines gallery.js and rituals.js write as the visitor plays. Those scripts are the rounds' and
 // write English, so a translated home page loads one small file (galleryShim) that gives them the sheet in its
 // language and rewrites their English labels as they are written, by the same rules the build applies to the HTML.
+import { swap } from './patch';
+import { esc } from './machine';
 import { M, sheet, factLines, type Fighter } from './cards';
 import { L } from '../i18n';
 import { ruleIn, whatIn } from './twins';
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // one exact piece of a round's markup swapped for its translation: it must be there, so a changed round fails the build
-function swap(html: string, from: string, to: string, where: string, all = false) {
-  const n = html.split(from).length - 1;
-  if (!n || (!all && n > 1)) throw new Error(`i18n room: ${where}: expected ${all ? 'some' : 'one'} ${from.slice(0, 80)}, found ${n}`);
-  return html.split(from).join(to);
-}
 
 /** A move's line as the card page and the sheet print it: its name, untranslated, in bold */
 export function moveHtml(f: Fighter, i: number, code: string) {
@@ -29,14 +25,14 @@ export function sheetIn(f: Fighter, code: string) {
   let h = sheet(f);
   if (L(code).en) return h;
   const l = L(code), where = `sheet ${f.id}`;
-  for (const d of f.disciplines) h = swap(h, `</svg>${M.t(d)}</span>`, `</svg>${esc(l.disc(d))}</span>`, where, true);
-  if (f.what) h = swap(h, `<p class="swhat">${M.t(f.what)}</p>`, `<p class="swhat">${esc(whatIn(f, code))}</p>`, where);
+  for (const d of f.disciplines) h = swap(h, `</svg>${M.t(d)}</span>`, `</svg>${esc(l.disc(d))}</span>`, `i18n room: ${where}`, 'some');
+  if (f.what) h = swap(h, `<p class="swhat">${M.t(f.what)}</p>`, `<p class="swhat">${esc(whatIn(f, code))}</p>`, `i18n room: ${where}`);
   for (const x of factLines(f)) {
     const fact = f.facts[x.key];
-    h = swap(h, `<p><b>${M.t(M.num(fact.value))}</b> ${M.t(M.unitOf(fact.value, fact.unit))}</p>`, `<p><b>${esc(l.num(fact.value))}</b> ${esc(l.unit(fact.value, fact.unit ?? ''))}</p>`, where, true);
+    h = swap(h, `<p><b>${M.t(M.num(fact.value))}</b> ${M.t(M.unitOf(fact.value, fact.unit))}</p>`, `<p><b>${esc(l.num(fact.value))}</b> ${esc(l.unit(fact.value, fact.unit ?? ''))}</p>`, `i18n room: ${where}`, 'some');
   }
-  if (f.trait) h = swap(h, `<b>${M.t(f.trait.name)}</b> ${M.t(f.trait.rule)}</p>`, `<b>${M.t(f.trait.name)}</b> ${esc(ruleIn(f, code))}</p>`, where);
-  f.moves.forEach((mv, i) => { h = swap(h, `<p>${M.moveText(mv)}</p>`, `<p>${moveHtml(f, i, code)}</p>`, where); });
+  if (f.trait) h = swap(h, `<b>${M.t(f.trait.name)}</b> ${M.t(f.trait.rule)}</p>`, `<b>${M.t(f.trait.name)}</b> ${esc(ruleIn(f, code))}</p>`, `i18n room: ${where}`);
+  f.moves.forEach((mv, i) => { h = swap(h, `<p>${M.moveText(mv)}</p>`, `<p>${moveHtml(f, i, code)}</p>`, `i18n room: ${where}`); });
   return h;
 }
 

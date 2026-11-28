@@ -1,4 +1,5 @@
 ---
+import { swap } from '../lib/patch';
 import { SOUND_WANTED } from '../lib/state.mjs';
 import Base from '../layouts/Base.astro';
 import { fighters, rules, card, M, env, battleRoster, hueOf, roundScripts, FRAMED } from '../lib/cards';
@@ -28,24 +29,24 @@ const ART_RATIO = 88 / 63;
 const FIRST_SCREEN = 14;
 const TOUCH_FIRST = 2;
 const EAGER = `if(!matchMedia("(pointer: coarse)").matches)document.querySelectorAll('.wall > .pocket:nth-child(-n+${FIRST_SCREEN}) img[loading="lazy"]').forEach(function(i){i.loading="eager"})`;
-const lazy = (html: string) => html.replace(/<img (?!loading=)/g, '<img loading="lazy" ');
+const lazy = (html: string) => swap(html, /<img (?!loading=)/, '<img loading="lazy" ', 'Home lazy pictures', 'some');
 // the Machine view's art: each card's subject as text, 40 characters wide (lib/ascii.ts)
 const arts = await Promise.all(fighters.map((f) => asciiArt(f.id, 40)));
 const wall = fighters.map((f, i) => {
   const c = card(f);
-  const html = i === 0 ? c.replaceAll('<img class="poster" ', '<img class="poster" fetchpriority="high" ') : i < TOUCH_FIRST ? c : lazy(c);
+  const html = i === 0 ? swap(c, '<img class="poster" ', '<img class="poster" fetchpriority="high" ', 'Home first poster') : i < TOUCH_FIRST ? c : lazy(c);
   // the card is the lens's button once gallery.js has booted; until then (no scripts, or a round script that failed to
   // load) its page is a plain link beside it, which the script under the wall takes out of the tab order afterwards
   return `<li class="pocket" data-far data-skip style="--n:${i}">${roomIn(html, code)}<a class="sr golink" href="${cardPath(f, code)}">${f.title}</a>${recordHtml(f.title, cardRecord(f, { code }), { label: cardLabel(f), art: arts[i], color: hueOf(f).energy })}</li>`;
 }).join('\n');
 // The Machine view's forms of the deck, the pack and the dock, nested in the real controls: where the deck goes, what
 // the pack fills, and the team, rival and seed the dock holds (filled from gallery.js's __table by the script below)
-const deck = roomIn(M.deck(), code).replace(/<\/a>\s*$/, `${recordHtml(l.t('home.previousSite'), deckRecord(), { links: false })}</a>`);
-const pack = roomIn(M.pack(fighters, ART_RATIO, env), code).replace(/<\/button>\s*$/, `${recordHtml(l.t('home.openPack'), packRecord(code), { links: false })}</button>`);
-const dock = roomIn(M.dock([], [], fighters, rules, env) as string, code)
-  .replace(/<span class="hold"><\/span>/g, `$&${BX}<span class="mx" data-live="slot"></span>`)
-  .replace(/(<nav class="dock"[^>]*>)/, `$1${BX}`)
-  .replace(/(<button type="button" class="play"[^>]*>)/, `$1<span class="mx" aria-hidden="true"><span>[ ${l.p('/battle')} ]</span><span data-live="seed"></span></span>`);
+const deck = swap(roomIn(M.deck(), code), /<\/a>\s*$/, `${recordHtml(l.t('home.previousSite'), deckRecord(), { links: false })}</a>`, 'Home deck record');
+const pack = swap(roomIn(M.pack(fighters, ART_RATIO, env), code), /<\/button>\s*$/, `${recordHtml(l.t('home.openPack'), packRecord(code), { links: false })}</button>`, 'Home pack record');
+let dock = roomIn(M.dock([], [], fighters, rules, env) as string, code);
+dock = swap(dock, /<span class="hold"><\/span>/, `$&${BX}<span class="mx" data-live="slot"></span>`, 'Home dock wells', rules.team.size * 2);
+dock = swap(dock, /(<nav class="dock"[^>]*>)/, `$1${BX}`, 'Home dock frame');
+dock = swap(dock, /(<button type="button" class="play"[^>]*>)/, `$1<span class="mx" aria-hidden="true"><span>[ ${l.p('/battle')} ]</span><span data-live="seed"></span></span>`, 'Home Play record');
 const roster = battleRoster ? `${Object.entries(battleRoster.cost).map(([id, c]) => `${id}:${c}`).join(' ')} budget:${battleRoster.budget}` : null;
 const jsonld = graph(page({ path: l.p('/'), type: 'CollectionPage', name: NAME, description: DESCRIPTION, image: `${SITE}/og/home.jpg`, mainEntity: { '@id': cardList['@id'] }, code }), cardList);
 // a translated wall's lens and labels (src/lib/i18n-room.ts), one cached file between markup.js and gallery.js

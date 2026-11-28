@@ -1,4 +1,5 @@
 ---
+import { swap } from '../lib/patch';
 import { KEY, SOUND_WANTED } from '../lib/state.mjs';
 import Base from '../layouts/Base.astro';
 import { fighters, card, FRAMED, M, factLines, hueOf, repoOf, relatedOf, teamFor, type Fighter } from '../lib/cards';
@@ -53,7 +54,7 @@ const CARD_SOUND = String.raw`/* the card's own sound, on the visitor's press (d
   html={{ 'data-card': f.id }}
 >
   <main class="cardpage" id="main" style={`--hue-e:${hue.energy ?? '#c9c2b8'};--hue-d:${hue.deep ?? '#3a332c'}`}>
-    <div class="stand"><Fragment set:html={roomIn(card(f, { id: `c-${f.id}`, focusable: false, ladder: false }).replace('<img class="poster" ', '<img class="poster" fetchpriority="high" '), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
+    <div class="stand"><Fragment set:html={roomIn(swap(card(f, { id: `c-${f.id}`, focusable: false, ladder: false }), '<img class="poster" ', '<img class="poster" fetchpriority="high" ', `Card ${f.id} poster`), code)} /><Fragment set:html={recordHtml(f.title, cardRecord(f, { full: true, code }), { label: cardLabel(f), art, cols: 48, color: hue.energy })} /></div>
     <script is:inline set:html={FRAMED} />
     <script is:inline data-player={versioned('/sound/sound.js')} set:html={CARD_SOUND} />
     <article class="info">
