@@ -13,8 +13,8 @@ const { code } = Astro.props;
 const l = L(code);
 const BIO = bioIn(code);
 const QA = qaOf(code);
-// a paragraph of Kevin's words: runs of text and links (site.ts ABOUT) in English, its Markdown links elsewhere
-const runsOf = (i: number) => (l.en ? ABOUT[i] : aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
+// a paragraph of Kevin's words as runs of text and links, from its Markdown in the language
+const runsOf = (i: number) => (aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
 // "Find me on X, GitHub, and LinkedIn, or write to the email": the sentence in the language, its four links in place
 // a project's name and what it is: "Turboslide. A browser..."; Japanese and Chinese take a full-width colon, Korean a colon
 const sep = /^(ja|zh)$/.test(code) ? '：' : code === 'ko' ? ': ' : '. ';

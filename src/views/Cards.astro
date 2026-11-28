@@ -15,7 +15,7 @@ const cardList = cardListIn(code);
 const title = l.t('cards.title');
 // the Machine view's forms: each card's row of the twin's table in its own row (the lead is the twin's own line)
 const rows = cardsMd(code).split('\n').filter((l) => /^\| \d/.test(l));
-const jsonld = graph(page({ path: l.p('/cards'), type: 'CollectionPage', name: l.en ? `${NAME}'s cards` : l.t('cards.pageName', { name: NAME }), description: CARDS_LEAD, image: `${SITE}/share/cards.jpg`, crumbs: [[title, l.p('/cards')]], mainEntity: { '@id': cardList['@id'] }, code }), cardList);
+const jsonld = graph(page({ path: l.p('/cards'), type: 'CollectionPage', name: l.t('cards.pageName', { name: NAME }), description: CARDS_LEAD, image: `${SITE}/share/cards.jpg`, crumbs: [[title, l.p('/cards')]], mainEntity: { '@id': cardList['@id'] }, code }), cardList);
 ---
 <Base seo={{ title, description: CARDS_LEAD, path: l.p('/cards'), share: 'cards', imageAlt: l.t('cards.imageAlt', { n: fighters.length, name: NAME }), jsonld }}>
   <main class="prose" id="main">

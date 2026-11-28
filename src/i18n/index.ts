@@ -110,7 +110,7 @@ export function make(code: string) {
       return en ? english : (ui.units as Record<string, string>)[english] ?? english;
     },
     /** a card's move line with its name, untranslated, where {move} stands */
-    move: (id: string, i: number, name: string) => c.cards[id as keyof Content['cards']].moves[i].replace('{move}', name),
+    move: (id: string, i: number, name: string) => c.cards[id as keyof Content['cards']].moves[i].replace('{move}', () => name),
   };
 }
 export type L = ReturnType<typeof make>;

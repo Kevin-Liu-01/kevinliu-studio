@@ -31,7 +31,7 @@ export function page(o: { path: string; type?: string; name: string; description
 }
 
 // every card in the wall's order, in a language (the English list keeps its address, /cards#list)
-export const cardListIn = (code = DEFAULT) => ({ '@type': 'ItemList', '@id': code === DEFAULT ? ID.cards : `${abs(lp(code, '/cards'))}#list`, name: code === DEFAULT ? `${NAME}'s projects` : L(code).t('cards.listName', { name: NAME }), numberOfItems: fighters.length, itemListOrder: 'https://schema.org/ItemListOrderAscending', itemListElement: fighters.map((f, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(cardPath(f, code)), name: f.title, description: whatIn(f, code) })) });
+export const cardListIn = (code = DEFAULT) => ({ '@type': 'ItemList', '@id': code === DEFAULT ? ID.cards : `${abs(lp(code, '/cards'))}#list`, name: L(code).t('cards.listName', { name: NAME }), numberOfItems: fighters.length, itemListOrder: 'https://schema.org/ItemListOrderAscending', itemListElement: fighters.map((f, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(cardPath(f, code)), name: f.title, description: whatIn(f, code) })) });
 export const cardList = cardListIn();
 
 // schema.org type and category: named where a card's discipline tags would mistype it, guessed from the tags otherwise

@@ -2,8 +2,8 @@
 // view print from these functions, so what an agent reads is what a person sees, in the same order. Each twin opens
 // with the one sentence that answers what its page is about. English twins live at the root; another language's at
 // its own prefix (/es/cards/turboslide.md), with its words from src/i18n.
-import { fighters, byId, rules, battleRoster, whatOf, answerOf, repoOf, relatedOf, teamFor, moveLine, factLines, type Fighter } from './cards';
-import { SITE, NAME, BIO, ABOUT, FACTS, QA, ALSO_KNOWN_AS, DESCRIPTION, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, ABOUT_FIRST, type Run } from './site';
+import { fighters, byId, rules, battleRoster, repoOf, relatedOf, teamFor, factLines, type Fighter } from './cards';
+import { SITE, NAME, ALSO_KNOWN_AS, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION, SOCIAL, EMAIL, PREVIOUS, ABOUT_FIRST } from './site';
 import { L, CODES, DEFAULT, lp } from '../i18n';
 import { homeParts } from '../i18n/source.mjs';
 
@@ -12,38 +12,39 @@ export const cardPath = (f: Fighter, code = DEFAULT) => lp(code, `/cards/${f.id}
 const link = (f: Fighter, code = DEFAULT) => `[${f.title}](${SITE}${cardPath(f, code)})`;
 export const host = (u?: string) => (u ? u.replace(/^https?:\/\//, '').replace(/\/$/, '') : '');
 const roster = battleRoster ? Object.keys(battleRoster.cost) : [];
-const and = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs.join(''));
 // a page's address in a language, absolute
 const at = (code: string, p: string) => `${SITE}${lp(code, p)}`;
 
 const years = fighters.map((f) => f.year);
 const leadVars = { name: NAME, n: fighters.length, from: Math.min(...years), to: Math.max(...years) };
-export const CARDS_LEAD = `${NAME} made these ${fighters.length} projects between ${Math.min(...years)} and ${Math.max(...years)}.`;
-export const cardsLead = (code = DEFAULT) => (code === DEFAULT ? CARDS_LEAD : L(code).t('cards.lead', leadVars));
+export const cardsLead = (code = DEFAULT) => L(code).t('cards.lead', leadVars);
 
-// /about's questions in a language: English from site.ts QA (each answer is the facts filed under it), the rest translated
-export const qaOf = (code = DEFAULT): [string, string][] => (code === DEFAULT ? QA : L(code).c.qa.map((x) => [x.q, x.a]));
+// /about's questions in a language (English: site.ts QA, each answer the facts filed under it)
+export const qaOf = (code = DEFAULT): [string, string][] => L(code).c.qa.map((x) => [x.q, x.a]);
 
-// a card's words in a language
-export const whatIn = (f: Fighter, code = DEFAULT) => (code === DEFAULT ? whatOf(f) : L(code).c.cards[f.id as keyof ReturnType<typeof L>['c']['cards']].what);
-export const answerIn = (f: Fighter, code = DEFAULT) => (code === DEFAULT ? answerOf(f) : L(code).c.cards[f.id as keyof ReturnType<typeof L>['c']['cards']].answer);
-export const ruleIn = (f: Fighter, code = DEFAULT) => (code === DEFAULT || !f.trait ? f.trait?.rule ?? '' : L(code).c.cards[f.id as keyof ReturnType<typeof L>['c']['cards']].rule ?? f.trait.rule);
-export const moveLineIn = (f: Fighter, i: number, code = DEFAULT) => (code === DEFAULT ? moveLine(f.moves[i]) : L(code).move(f.id, i, f.moves[i].name));
+// a card's words in a language. English is L('en').c, which src/i18n/source.mjs builds from the cards and site.ts, so
+// every language reads one tree and English has no branch of its own
+const wordsOf = (f: Fighter, code: string) => L(code).c.cards[f.id as keyof ReturnType<typeof L>['c']['cards']];
+// a card's fact, its number and unit in the language (1 commit, 2 commits; 1.234 in German)
+export const factIn = (f: Fighter, key: string, code = DEFAULT) => { const l = L(code), x = f.facts[key]; return `${l.num(x.value)} ${l.unit(x.value, x.unit ?? '')}`; };
+export const whatIn = (f: Fighter, code = DEFAULT) => wordsOf(f, code).what;
+export const answerIn = (f: Fighter, code = DEFAULT) => wordsOf(f, code).answer;
+export const ruleIn = (f: Fighter, code = DEFAULT) => (f.trait ? (wordsOf(f, code) as { rule?: string }).rule ?? f.trait.rule : '');
+export const moveLineIn = (f: Fighter, i: number, code = DEFAULT) => L(code).move(f.id, i, f.moves[i].name);
 const discs = (f: Fighter, code: string) => f.disciplines.map((d) => L(code).disc(d));
-export const bioIn = (code = DEFAULT) => (code === DEFAULT ? BIO : L(code).c.bio);
+export const bioIn = (code = DEFAULT) => L(code).c.bio;
 // The home's title, its lead (who Kevin is and where he works) and its description, Kevin's lines of 2026-11-13 in
 // src/lib/site.ts, translated as templates ({name}, {projects}: source.mjs homeParts). The lead is also the first line
 // of /index.md and llms.txt. A CJK lead ends on its own full stop, so the projects' sentence follows it with no space
 const HOME = homeParts({ NAME, HOME_TITLE, HOME_LEAD, HOME_DESCRIPTION });
-export const homeTitleIn = (code = DEFAULT) => (code === DEFAULT ? HOME_TITLE : L(code).fill(L(code).c.home.title, { name: NAME }));
-export const homeLeadIn = (code = DEFAULT) => (code === DEFAULT ? HOME_LEAD : L(code).fill(L(code).c.home.lead, { name: NAME }));
+export const homeTitleIn = (code = DEFAULT) => L(code).fill(L(code).c.home.title, { name: NAME });
+export const homeLeadIn = (code = DEFAULT) => L(code).fill(L(code).c.home.lead, { name: NAME });
 export const homeDescriptionIn = (code = DEFAULT) => {
-  if (code === DEFAULT) return HOME_DESCRIPTION;
   const lead = homeLeadIn(code);
   return `${lead}${/[。！？]$/.test(lead) ? '' : ' '}${L(code).fill(L(code).c.home.openSource, { projects: HOME.projects })}`;
 };
 const openingIn = homeLeadIn;
-export const descriptionIn = (code = DEFAULT) => (code === DEFAULT ? DESCRIPTION : L(code).c.description);
+export const descriptionIn = (code = DEFAULT) => L(code).c.description;
 
 const table = (code: string) => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${whatIn(f, code)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[${L(code).t('twin.sourceLink')}](${repoOf(f)})` : ''} |`);
 const links = (code: string) => {
@@ -107,11 +108,9 @@ export function cardMd(f: Fighter, code = DEFAULT) {
   const i = fighters.indexOf(f);
   const repo = repoOf(f);
   const team = teamFor(f.id);
-  const facts = factLines(f).map((x) => `- **${code === DEFAULT ? x.value : l.num(f.facts[x.key].value)} ${code === DEFAULT ? x.unit : l.unit(f.facts[x.key].value, f.facts[x.key].unit ?? '')}**. ${t('twin.receipt')}: \`${x.receipt}\``);
+  const facts = factLines(f).map((x) => `- **${factIn(f, x.key, code)}**. ${t('twin.receipt')}: \`${x.receipt}\``);
   const moves = f.moves.map((m, j) => `- ${moveLineIn(f, j, code)} ${t('twin.receipt')}: \`${m.receipt}\``);
-  const line = code === DEFAULT
-    ? `Card ${i + 1} of ${fighters.length} in ${NAME}'s collection. ${f.year}. ${f.disciplines.join(' and ')}.`
-    : t('twin.cardLine', { i: i + 1, n: fighters.length, name: NAME, year: f.year, disciplines: l.and(discs(f, code)) });
+  const line = t('twin.cardLine', { i: i + 1, n: fighters.length, name: NAME, year: f.year, disciplines: l.and(discs(f, code)) });
   const pinned = (f as any).pinned;
   return `# ${f.title}
 
@@ -140,7 +139,7 @@ ${pinned ? `${t('twin.pinned', { sha: pinned.sha, date: pinned.date })}\n\n` : '
 
 export function battleMd(code = DEFAULT) {
   const l = L(code), t = l.t;
-  const ringRule = code === DEFAULT ? rules.ringRule : l.c.ringRule;
+  const ringRule = l.c.ringRule;
   return `# ${t('battle.title')}
 
 ${edition(code, '/battle.md')}${t('twin.battleLead', { name: NAME })}
@@ -156,8 +155,7 @@ ${t('twin.everyCard')}: ${at(code, '/cards')}
 `;
 }
 
-const runMd = (r: Run) => (typeof r === 'string' ? r : `[${r[0]}](${r[1]})`);
-export const aboutParas = (code = DEFAULT) => (code === DEFAULT ? ABOUT.map((runs) => runs.map(runMd).join('')) : L(code).c.about);
+export const aboutParas = (code = DEFAULT) => L(code).c.about;
 
 // /about's projects: ABOUT_FIRST, then every other card in roster order. The page and its twin both read this list
 export const aboutProjects: Fighter[] = [
@@ -193,7 +191,7 @@ ${SOCIAL.map((s) => `- ${s.name}: ${s.url}`).join('\n')}
 // every ## section is a list of links, as the llms.txt convention asks (the guard checks it)
 const intro = (code: string) => {
   const l = L(code), t = l.t;
-  const facts = code === DEFAULT ? FACTS : l.c.facts;
+  const facts = l.c.facts;
   return `# ${NAME}
 
 > ${openingIn(code)} ${descriptionIn(code)}
@@ -201,7 +199,7 @@ const intro = (code: string) => {
 ${edition(code, '/llms.txt')}${t('twin.everyPageTwin', { home: twinPath(lp(code, '/')), accept: '`Accept: text/markdown`' })}
 
 ${facts.map((f) => `- ${f}`).join('\n')}
-- ${t('twin.aka', { names: code === DEFAULT ? and(ALSO_KNOWN_AS) : l.and(ALSO_KNOWN_AS) })}
+- ${t('twin.aka', { names: l.and(ALSO_KNOWN_AS) })}
 
 ## ${t('twin.contact')}
 
