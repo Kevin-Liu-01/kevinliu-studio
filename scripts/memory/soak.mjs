@@ -7,6 +7,7 @@
 // Process numbers are phys_footprint (what iOS counts), from macOS `footprint`.
 // pages: a fresh context per page, load, wait, scroll to the bottom and back, open what the page opens; peak per page.
 // soak: one context per profile scrolls and navigates every page for --secs (180) seconds, sampling every 2 s.
+import { KEY } from '../../src/lib/state.mjs';
 import fs from 'node:fs';
 import { execSync } from 'node:child_process';
 if (!process.env.PLAYWRIGHT_CORE) { console.error('set PLAYWRIGHT_CORE to a playwright-core folder'); process.exit(2); }
@@ -75,7 +76,7 @@ async function launch(name) {
   const ctx = await browser.newContext({ ...pw.devices[device], serviceWorkers: 'block' });
   await ctx.addInitScript(probe);
   // ILL_MODE=machine opens every page in the Machine view (the mode Base.astro reads before paint)
-  if (process.env.ILL_MODE) await ctx.addInitScript((m) => { try { localStorage.setItem('ill-mode', m); } catch {} }, process.env.ILL_MODE);
+  if (process.env.ILL_MODE) await ctx.addInitScript(({ m, k }) => { try { localStorage.setItem(k, m); } catch {} }, { m: process.env.ILL_MODE, k: KEY.mode });
   return { browser, ctx, mem: () => procMem(engine, root, before), engine };
 }
 

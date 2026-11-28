@@ -1,6 +1,7 @@
 ---
 // The site's one header, on the wall's rails (ui.css header.top). Home names the page with the h1; elsewhere the
 // name is the way home and each page's own h1 sits in its content.
+import { SOUND_WANTED } from '../lib/state.mjs';
 import { KL_PATH, M } from '../lib/cards';
 import { of, split } from '../i18n';
 import Lang from './Lang.astro';
@@ -16,6 +17,7 @@ const NAV = [
   { href: l.p('/battle'), label: l.t('frame.battle') },
   { href: l.p('/about'), label: l.t('frame.about') },
 ];
+const KEYS_AT_PARSE = String.raw`/* the view switch, sound and pause keys start in the state the page's scripts give them after load (Base.astro's mode script, sound.js preference, gallery.js setPaused), so no key flips on screen */(function(d){var m=d.dataset.mode==='machine';document.querySelectorAll('header.top [data-mode-set]').forEach(function(b){b.setAttribute('aria-pressed',String((b.dataset.modeSet==='machine')===m))});document.querySelector('header.top .seg').style.setProperty('--i',m?1:0);var s=document.getElementById('sound'),p=document.getElementById('pause');if(s){s.setAttribute('aria-pressed',String(${SOUND_WANTED}))}if(p)p.setAttribute('aria-pressed',String('paused' in d.dataset))})(document.documentElement)`;
 ---
 <header class="top site">
   <a class="brand" href={l.p('/')} aria-label={l.t('frame.brand')} data-prefetch-later={home ? undefined : ''}>
@@ -51,5 +53,5 @@ const NAV = [
   </script>
   <script is:inline set:html={PRERENDER_NEXT} />
   <script is:inline>/* a language key (header and footer) closes on a press outside it (pointerdown: iOS sends no click for a tap on text) or on Escape, and gives focus back to its face */(function(d){d.addEventListener('pointerdown',function(e){d.querySelectorAll('details.lang[open]').forEach(function(x){if(!x.contains(e.target))x.open=false})});d.addEventListener('keydown',function(e){var x=e.key==='Escape'&&e.target.closest&&e.target.closest('details.lang[open]');if(x){x.open=false;x.querySelector('summary').focus()}})})(document)</script>
-  <script is:inline>/* the view switch, sound and pause keys start in the state the page's scripts give them after load (Base.astro's mode script, sound.js preference, gallery.js setPaused), so no key flips on screen */(function(d){var m=d.dataset.mode==='machine';document.querySelectorAll('header.top [data-mode-set]').forEach(function(b){b.setAttribute('aria-pressed',String((b.dataset.modeSet==='machine')===m))});document.querySelector('header.top .seg').style.setProperty('--i',m?1:0);var s=document.getElementById('sound'),p=document.getElementById('pause');if(s){var on=false;try{var k=localStorage.getItem('kevin-liu-studio:sound');on=k==='on'||k===null&&!matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}s.setAttribute('aria-pressed',String(on));d.dataset.sound=on?'on':'off'}if(p)p.setAttribute('aria-pressed',String('paused' in d.dataset))})(document.documentElement)</script>
+  <script is:inline set:html={KEYS_AT_PARSE} />
 </header>

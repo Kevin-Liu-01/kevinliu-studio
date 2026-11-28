@@ -7,6 +7,7 @@
 // 3. The switch: keyboard operable, aria-pressed, persisted, layout shifts during it, focus, no horizontal scroll.
 // 4. Screenshots of both modes; the accessibility tree in Machine mode.
 import fs from 'node:fs';
+import { KEY } from '../src/lib/state.mjs';
 const pw = await import(process.env.PLAYWRIGHT_CORE + '/index.mjs');
 const [MAIN, BR, OUT] = process.argv.slice(2);
 fs.mkdirSync(OUT, { recursive: true });
@@ -22,13 +23,13 @@ const report = { human: [], boxes: [], toggle: [], overflow: [], a11y: {} };
 
 async function open(base, path, [w, h, dpr], mode, extra = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr, reducedMotion: 'reduce', isMobile: w < 640, hasTouch: w < 640, ...extra });
-  await ctx.addInitScript((m) => {
+  await ctx.addInitScript(({ m, K }) => {
     // the mode is set once per context, so a reload reads what the page stored, not this script's value
-    try { if (!sessionStorage.getItem('mc-set')) { localStorage.setItem('ill-mode', m); localStorage.setItem('ill-pause', '1'); sessionStorage.setItem('mc-set', '1'); } } catch {}
+    try { if (!sessionStorage.getItem('mc-set')) { localStorage.setItem(K.mode, m); localStorage.setItem(K.pause, '1'); sessionStorage.setItem('mc-set', '1'); } } catch {}
     window.__shifts = [];
     window.__shiftsMeasured = PerformanceObserver.supportedEntryTypes.includes('layout-shift');
     if (window.__shiftsMeasured) new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__shifts.push({ v: e.value, input: e.hadRecentInput, t: Math.round(e.startTime) }); }).observe({ type: 'layout-shift', buffered: true });
-  }, mode);
+  }, { m: mode, K: KEY });
   const page = await ctx.newPage();
   page.setDefaultTimeout(180000);
   await page.goto(base + path, { waitUntil: 'load', timeout: 300000 });
@@ -83,14 +84,14 @@ for (const path of PAGES) {
     await page.focus(sel); await page.keyboard.press('Enter'); await sleep(800);
     const after = await rects(page);
     const moved = Object.keys(before).filter((k) => JSON.stringify(before[k]) !== JSON.stringify(after[k])).map((k) => `${k} ${before[k]} -> ${after[k]}`);
-    const st = await page.evaluate(() => ({
-      mode: document.documentElement.dataset.mode, stored: localStorage.getItem('ill-mode'),
+    const st = await page.evaluate((K) => ({
+      mode: document.documentElement.dataset.mode, stored: localStorage.getItem(K.mode),
       pressed: [...document.querySelectorAll('[data-mode-set]')].map((x) => `${x.dataset.modeSet}:${x.getAttribute('aria-pressed')}`).join(' '),
       focus: document.activeElement && (document.activeElement.dataset.modeSet ?? document.activeElement.tagName),
       shiftsAll: window.__shiftsMeasured ? window.__shifts.reduce((a, s) => a + s.v, 0) : 'not measured', shiftsNoInput: window.__shiftsMeasured ? window.__shifts.filter((s) => !s.input).reduce((a, s) => a + s.v, 0) : 'not measured',
       hscroll: document.scrollingElement.scrollWidth - innerWidth,
       overflowing: [...document.querySelectorAll('.rec, .mx')].filter((e) => e.checkVisibility() && (e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1) && getComputedStyle(e).overflow !== 'visible').map((e) => (e.closest('.pocket')?.querySelector('[data-id]')?.dataset.id ?? e.closest('[id]')?.id ?? e.className) + ' ' + e.scrollHeight + '/' + e.clientHeight),
-    }));
+    }), KEY);
     fs.writeFileSync(`${OUT}/${t}-machine.png`, await page.screenshot());
     if (W[0] === 1440 || W[0] === 390) fs.writeFileSync(`${OUT}/${t}-machine-full.png`, await page.screenshot({ fullPage: true }));
     // back to Human by keyboard, and a reload keeps the stored mode

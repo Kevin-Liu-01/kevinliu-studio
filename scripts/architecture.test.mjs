@@ -46,3 +46,15 @@ test('src/lib and src/i18n import each other without a cycle', () => {
   for (const n of graph.keys()) visit(n, []);
   assert.ok(graph.size >= 15, `read ${graph.size} modules`);
 });
+
+test("a visitor's saved choices have their keys in src/lib/state.mjs, and the rounds' scripts use the same keys", async () => {
+  const { KEY } = await import('../src/lib/state.mjs');
+  // the sync's patches quote the round code they patch, keys included (docs/adr/0002 deletes them)
+  const QUOTES = ['scripts/sync.mjs', 'scripts/phone-memory.mjs'];
+  for (const k of Object.values(KEY)) assert.deepEqual([...holders(`'${k}'`), ...holders(`"${k}"`)].filter((f) => !QUOTES.includes(f)), ['src/lib/state.mjs'], k);
+  // the contract with the round code this site syncs (gallery.js setMode and setPaused, sound.js KEY)
+  const round = (f) => fs.readFileSync(path.join(ROOT, 'public', f), 'utf8');
+  assert.ok(round('ex/gallery.js').includes(`'${KEY.mode}'`), `gallery.js no longer saves the view as ${KEY.mode}`);
+  assert.ok(round('ex/gallery.js').includes(`'${KEY.pause}'`), `gallery.js no longer saves Pause as ${KEY.pause}`);
+  assert.ok(round('sound/sound.js').includes(KEY.sound), `sound.js no longer saves sound as ${KEY.sound}`);
+});

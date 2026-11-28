@@ -30,7 +30,7 @@ No import cycles among `src/lib` and `src/i18n` (checked import by import).
 | --- | --- | --- |
 | `html[data-mode]`, `localStorage ill-mode` | `Base.astro` boot and click handler; `gallery.js` `setMode` on the wall | two writers for one switch on `/` |
 | `html[data-paused]`, `ill-pause` | `Base.astro` boot only; `gallery.js` `setPaused` writes `ill-pause` but not the flag | the favicon loop ignores Pause on the wall (bug, round side) |
-| `kevin-liu-studio:sound`, `html[data-sound]` | `sound.js`; `Header.astro`, `Card.astro`, `Home.astro` each restate the preference rule | `data-sound` is written three times and read nowhere |
+| `kevin-liu-studio:sound`, `ill-mode`, `ill-pause` | keys in `src/lib/state.mjs` (with the one sound-wanted rule); `sound.js` and `gallery.js` use the same keys, checked by `architecture.test.mjs` | `html[data-sound]` is now written only by `sound.js`, and read nowhere |
 | `html[data-hold]` | `Home.astro` | the wall's first-paint hold |
 | `self.__table` | `gallery.js` | read by `Home.astro` (Machine dock) and `Release.astro` (bfcache address) |
 | wall address `#you=&rival=&seed=` | `gallery.js`; `Release.astro` re-serializes it | two writers of one format |
@@ -63,7 +63,6 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
 | L1 | A page's sitemap lastmod follows its source files' commits, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; date a page by a hash of what it prints instead | 3 | 2 | now |
 | V1 | Read the hover prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
-| P1 | One sound-preference expression; delete the unread `html[data-sound]` writes | 3 | 2 | now |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | Views' string patches go through one exact-count helper (`swap`) | 3 | 2 | now |
 | P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
