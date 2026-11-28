@@ -7,10 +7,11 @@
 //   ... --base https://www.kevinliu.studio              the deployment whose sitemap and key file are read (default)
 //
 // It reads the live sitemap, so run it after the deploy it announces. Without --send it only prints.
+import { SITE } from '../src/lib/site.ts';
 const KEY = 'cb6a3653b4728bdc971aba0603513583';
 const ENDPOINT = 'https://api.indexnow.org/indexnow';
 const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : undefined; };
-const base = (arg('--base') ?? 'https://www.kevinliu.studio').replace(/\/$/, '');
+const base = (arg('--base') ?? SITE).replace(/\/$/, '');
 const since = arg('--since'), all = process.argv.includes('--all'), send = process.argv.includes('--send');
 if (!all && !since) { console.error('indexnow: give --since <date> or --all'); process.exit(2); }
 if (since && Number.isNaN(Date.parse(since))) { console.error(`indexnow: --since ${since} is not a date`); process.exit(2); }

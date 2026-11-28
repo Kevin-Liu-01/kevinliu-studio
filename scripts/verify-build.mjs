@@ -16,7 +16,7 @@ import { scanBuffer } from './rules.mjs';
 import { PHONE } from './phone-memory.mjs';
 import { check as budgets } from './budgets.mjs';
 import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
-import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
+import { LOCALES, OTHER, localeOf } from '../src/i18n/locales.mjs';
 import { SITE } from '../src/lib/site.ts';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -110,7 +110,7 @@ for (const f of htmls) {
   if (!/<title>[^<]{3,}<\/title>/.test(html)) fail(page, 'no title');
   const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
   // a CJK sentence says in about half the characters what a Latin one does
-  const cjk = /^(ja|ko|zh)$/.test(langOf(page));
+  const cjk = localeOf(langOf(page)).cjk;
   if (desc.length < (cjk ? 25 : 50) || desc.length > 170) fail(page, `description is ${desc.length} characters`);
   const code = langOf(page), want = LOCALES.find((l) => l.code === code).lang;
   if (html.match(/<html lang="([^"]+)"/)?.[1] !== want) fail(page, `html lang is not ${want}`);

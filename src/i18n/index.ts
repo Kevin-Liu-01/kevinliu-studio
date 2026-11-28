@@ -72,7 +72,7 @@ export function make(code: string) {
   // from the translated card text, ending as the battle's English lines do; the battle's own card text (its trait rules,
   // its other moves, its forms') is in battle.json (source.mjs battleSource)
   if (!en) {
-    const stop = (t: string) => (/[.!?…。！？]$/.test(t) ? t : `${t}${/^(ja|zh)$/.test(code) ? '。' : '.'}`);
+    const stop = (t: string) => (/[.!?…。！？]$/.test(t) ? t : `${t}${loc.stop}`);
     for (const f of cardLib.fighters) {
       const tc = c.cards[f.id as keyof Content['cards']] as { features?: string[]; rule?: string } | undefined;
       f.moves.forEach((mv, i) => { const tr = tc?.features?.[i]; if (tr && tr !== mv.feature) battle[`card.${f.id}.move.${mv.name}.feature`] = stop(tr); });

@@ -4,7 +4,7 @@ import { logoOf } from '../lib/cards';
 import Link from '../components/BrandLink.astro';
 import { inlineLogo, markPair } from '../lib/brands';
 import { cardPath, qaOf, aboutMd, aboutParas, aboutProjects, whatIn, bioIn } from '../lib/twins';
-import { L } from '../i18n';
+import { L, localeOf } from '../i18n';
 import { mdHtml } from '../lib/machine';
 import { website, page } from '../lib/schema';
 import { SITE, NAME, ABOUT, ABOUT_NO_LOGO, ABOUT_INK_FIGURE, ABOUT_LOGO_PAIR, SOCIAL, EMAIL, person } from '../lib/site';
@@ -17,7 +17,7 @@ const QA = qaOf(code);
 const runsOf = (i: number) => (aboutParas(code)[i].split(/(\[[^\]]+\]\([^)]+\))/).filter(Boolean).map((x) => { const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(x); return m ? ([m[1], m[2]] as const) : x; }));
 // "Find me on X, GitHub, and LinkedIn, or write to the email": the sentence in the language, its four links in place
 // a project's name and what it is: "Turboslide. A browser..."; Japanese and Chinese take a full-width colon, Korean a colon
-const sep = /^(ja|zh)$/.test(code) ? '：' : code === 'ko' ? ': ' : '. ';
+const sep = localeOf(code).gloss;
 const findMe = l.t('about.elsewhere').split(/(\{x\}|\{github\}|\{linkedin\}|\{email\})/);
 const social = (n: string) => SOCIAL.find((s) => s.name === n)!;
 // the Machine view's forms: the twin's blocks where the page shows them (its headings are the page's own, marked by
