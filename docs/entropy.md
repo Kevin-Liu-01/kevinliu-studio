@@ -64,8 +64,7 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | L1 | A page's sitemap lastmod follows its source files' commits, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; date a page by a hash of what it prints instead | 3 | 2 | now |
 | V1 | Read the hover prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
 | P1 | One sound-preference expression; delete the unread `html[data-sound]` writes | 3 | 2 | now |
-| P2 | Delete the Base IIFE that repeats Header's key sync | 2 | 1 | now |
-| P3 | One twin-path lookup (Seo, Base, Footer) | 2 | 1 | now |
+| P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | Views' string patches go through one exact-count helper (`swap`) | 3 | 2 | now |
 | P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
 | M12 | Rounds as a checked package, synced by pin with no JS transforms (design below) | 5 | 5 | after sync |

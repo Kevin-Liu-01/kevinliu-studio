@@ -245,3 +245,5 @@ const twinsOf = (code: string): Record<string, () => string> => ({
 export const TWINS: Record<string, () => string> = Object.assign({}, ...CODES.map((code) => Object.fromEntries(Object.entries(twinsOf(code)).map(([p, fn]) => [lp(code, p), fn]))));
 /** a page's twin address: /index.md for home, /es/index.md for a language's home, the path plus .md otherwise */
 export const twinPath = (path: string) => (path === '/' ? '/index.md' : CODES.includes(path.slice(1)) ? `${path}/index.md` : `${path}.md`);
+/** the twin a page has, or null: a page has one exactly when TWINS names it (the 404 page has none) */
+export const twinOf = (path: string) => (TWINS[path] ? twinPath(path) : null);

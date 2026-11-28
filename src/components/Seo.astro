@@ -3,7 +3,7 @@
 // one), the Markdown twin and JSON-LD. One component, so no page can ship without a canonical or a share image.
 import { NAME, HANDLE, SITE, abs } from '../lib/site';
 import { LOCALES, localeOf, lp, split } from '../i18n/locales.mjs';
-import { twinPath } from '../lib/twins';
+import { twinOf } from '../lib/twins';
 
 interface Props {
   title: string;
@@ -18,7 +18,7 @@ interface Props {
   twin?: string | null; // the Markdown twin's path
   noindex?: boolean; // the 404 page: no canonical, kept out of the index
 }
-const { title, description, path, share, og = share ? undefined : 'home', imageAlt, type = 'website', jsonld = [], noindex = false, twin = twinPath(path) } = Astro.props;
+const { title, description, path, share, og = share ? undefined : 'home', imageAlt, type = 'website', jsonld = [], noindex = false, twin = twinOf(path) } = Astro.props;
 // the page's language from its path, and the same page in every language (hreflang, og:locale:alternate)
 const { code, path: base } = split(path);
 const here = localeOf(code);

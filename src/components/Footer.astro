@@ -2,13 +2,13 @@
 // The footer: where else Kevin is. In the Machine view the same box holds those links as addresses, the files an agent
 // starts from, and behind one line (its status, type and size) the commands that fetch this page and its whole twin.
 import { SOCIAL, EMAIL, SITE } from '../lib/site';
-import { TWINS, twinPath } from '../lib/twins';
+import { TWINS, twinOf } from '../lib/twins';
 import { of } from '../i18n';
 import Lang from './Lang.astro';
-interface Props { path: string; twin?: string | null }
-const { path, twin: twinLink } = Astro.props;
+interface Props { path: string }
+const { path } = Astro.props;
 const l = of(path);
-const twin = TWINS[path] ? twinPath(path) : null;
+const twin = twinOf(path);
 const md = twin ? TWINS[path]() : '';
 const cmds = [
   `curl -s ${SITE}${l.p('/llms.txt')}`,
@@ -22,7 +22,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
     {SOCIAL.map((s) => <a href={s.url} rel="me">{s.name}</a>)}
     <a href={`mailto:${EMAIL}`}>{l.t('frame.email')}</a>
     <a href={l.p('/cards')}>{l.t('frame.cards')}</a>
-    {twinLink && <a href={twinLink} type="text/markdown">{l.t('frame.markdown')}</a>}
+    {twin && <a href={twin} type="text/markdown">{l.t('frame.markdown')}</a>}
     <a href={l.p('/llms.txt')}>llms.txt</a>
     <button type="button" class="tomachine" data-mode-go="machine">{l.t('frame.machine')}</button>
     <Lang path={path} where="foot" />
@@ -32,7 +32,7 @@ const bare = (u: string) => u.replace(/^https?:\/\//, '');
       {SOCIAL.map((s) => <a href={s.url} rel="me">{bare(s.url)}</a>)}
       <a href={`mailto:${EMAIL}`}>mailto:{EMAIL}</a>
       <a href={l.p('/cards')}>{l.p('/cards')}</a>
-      {twinLink && <a href={twinLink} type="text/markdown">{twinLink}</a>}
+      {twin && <a href={twin} type="text/markdown">{twin}</a>}
       <a href={l.p('/llms.txt')}>{l.p('/llms.txt')}</a>
       <a href={l.p('/llms-full.txt')}>{l.p('/llms-full.txt')}</a>
       <a href="/sitemap-index.xml">/sitemap-index.xml</a>
