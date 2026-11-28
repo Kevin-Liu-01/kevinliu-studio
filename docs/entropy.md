@@ -49,6 +49,7 @@ list; `node:test`; `oxlint`; esbuild for minifying round code; satori and sharp 
 | 0 | Measure every route and interaction on the throttled phone and desktop (docs/performance.md, 2026-11-28); prerender the next page on hover on desktops; analytics waits for a prerender to open | done: a88f95f |
 | 1 | One build gate: lint, tests and every offline check inside `pnpm build`; the vercel.json route contract; dead scripts out (ADR 0001) | done: 0142f25 |
 | 2 | English reads the same word tree as every language (F1); one content hash, host, abs, CODES, SITE, language split; locale typography in LOCALES; `scripts/architecture.test.mjs` enforces each single source and no import cycles | done: edfc3c2, b468ec3, c7a1409 |
+| 3 | One twin endpoint over TWINS (F9); one twin lookup and one mode-key sync (P2, P3); a visitor's saved-choice keys and sound rule in `state.mjs` (P1); every hand-kept card id list guarded (F7); the rounds' card record checked as it loads, one vm loader (F3) | done: 7c838ed, d8d8e5d, be5b02f, 42c9d66, and the next commit |
 
 ## Task pool
 
@@ -57,8 +58,6 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | Id | Task | Value | Effort | When |
 | --- | --- | --- | --- | --- |
 | F6 | Pages stop re-parsing the twins' Markdown by heading text and blank lines: `twins.ts` exposes named blocks | 4 | 4 | now |
-| F3 | A runtime assert on the rounds' card record in the one loader; one vm loader | 4 | 3 | now |
-| F7 | Assert every per-card override list (schema, site, share, closed repos) names real cards | 3 | 2 | now |
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
 | L1 | A page's sitemap lastmod follows its source files' commits, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; date a page by a hash of what it prints instead | 3 | 2 | now |
