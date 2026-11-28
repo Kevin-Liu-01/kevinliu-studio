@@ -24,9 +24,6 @@ const repo = repoOf(f);
 const related = relatedOf(f);
 const team = teamFor(f.id);
 const pinned = f.pinned;
-// a description is one sentence of at most 160 characters, cut at a word (a language without spaces, at a character)
-const cut = (s: string) => (/\s/.test(s.slice(0, 159)) ? s.slice(0, 159).replace(/[\s,:;]+\S*$/, '') : s.slice(0, 158));
-const description = answer.length <= 160 ? answer : `${cut(answer)}${/[\u3000-\u9fff\uac00-\ud7af]$/.test(answer.slice(0, 158)) ? '。' : '.'}`;
 const jsonld = graph(
   page({ path: cardPath(f, code), type: 'ItemPage', name: f.title, description: answer, image: `${SITE}/og/${f.id}.jpg`, crumbs: [[l.t('cards.title'), l.p('/cards')], [f.title, cardPath(f, code)]], mainEntity: { '@id': `${SITE}${cardPath(f, code)}#work` }, code }),
   work(f, code),
@@ -48,7 +45,7 @@ const pinLine = pinned ? l.t(pinned.date ? 'card.pinnedOn' : 'card.pinned', { sh
 const CARD_SOUND = String.raw`/* the card's own sound, on the visitor's press (docs/sound.md): the player, its manifest and this card's cues are fetched at the first press of the card while sound is wanted, or when the header's key turns sound on, never before; in the Machine view the card is not shown, so only the key works */(function(){var d=document.documentElement,id=d.dataset.card,key=document.getElementById('sound'),card=document.querySelector('.cardpage .stand .card'),src=document.currentScript.dataset.player,K=${JSON.stringify(KEY.sound)},S=null,loading=null;if(!key||!card||!id)return;function pref(){return ${SOUND_WANTED}}function show(on){key.setAttribute('aria-pressed',String(on))}function boot(ev){if(!loading)loading=import(src).then(function(m){return m.default.init({manifest:new URL('/sound/manifest.gallery.json',location.origin).href,page:'gallery',groups:['sig:'+id]})}).then(function(p){S=self.Sound=p;show(S.enabled);S.on('change',show);S.unlock(ev);return S}).catch(function(){loading=null;return null});return loading}function lift(){S.play('card.lift',{waitMs:900});S.play('lift',{card:id,waitMs:900})}card.addEventListener('pointerdown',function(e){if(e.button)return;if(S)lift();else if(pref())boot(e).then(function(s){if(s)lift()})});key.addEventListener('click',function(e){var on=!(S?S.enabled:pref());if(S)S.setEnabled(on);else{show(on);try{localStorage.setItem(K,on?'on':'off')}catch(x){}}if(on)boot(e).then(function(s){if(s)s.play('ui.sound.on',{force:true,waitMs:900})})});function fresh(){if(!S)show(pref())}addEventListener('storage',function(e){if(e.key===K)fresh()});addEventListener('pageshow',function(e){if(e.persisted)fresh()})})()`;
 ---
 <Base
-  seo={{ title: f.title, description, path: cardPath(f, code), og: f.id, imageAlt: l.t('card.imageAlt', { title: f.title, answer }), jsonld }}
+  seo={{ title: f.title, description: answer, path: cardPath(f, code), og: f.id, imageAlt: l.t('card.imageAlt', { title: f.title, answer }), jsonld }}
   room
   cardStyle={cardStyle}
   html={{ 'data-card': f.id }}

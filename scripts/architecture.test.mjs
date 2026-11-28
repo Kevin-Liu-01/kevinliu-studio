@@ -21,6 +21,10 @@ test('the ?v= content address is computed once, in src/lib/assets.ts contentHash
   assert.deepEqual(holders(/digest\('hex'\)\.slice\(0, ?10\)/), ['src/lib/assets.ts']);
 });
 
+test('a meta description is cut in one place, Seo.astro fit()', () => {
+  assert.deepEqual(holders(/\.slice\(0, ?1[56]\d\)/), ['src/components/Seo.astro']);
+});
+
 test('the language list is written once, in src/i18n/locales.mjs (vercel.json is checked by negotiation.test.mjs)', () => {
   assert.deepEqual(holders(/\b(?:es\|fr|fr\|de|ja\|ko)\b/), []);
 });

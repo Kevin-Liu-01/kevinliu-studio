@@ -23,8 +23,9 @@ const { title, description, path, share, og = share ? undefined : 'home', imageA
 const { code, path: base } = split(path);
 const here = localeOf(code);
 const fullTitle = Astro.props.fullTitle ?? (base === '/' ? title : `${title} | ${NAME}`);
-// a translated description keeps to the 160 characters a result shows: its first sentences that fit, else cut at a word
-// (at a character in a language without spaces) with an ellipsis. English descriptions are written to fit.
+// the one place a description is cut (scripts/architecture.test.mjs): a translated one keeps to the 160 characters a
+// result shows, its first sentences that fit, else cut at a word (at a character in a language without spaces) with an
+// ellipsis. English descriptions are written to fit and print whole (the home page's runs to 169)
 const fit = (s: string) => {
   if (code === 'en' || s.length <= 160) return s;
   const sentences = s.match(/[^.!?。！？]+[.!?。！？]+/g) ?? [];
