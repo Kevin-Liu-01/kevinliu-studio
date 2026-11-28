@@ -403,7 +403,9 @@ since the phone draws it wider than the half cut), the frost tile at 2x (`icons/
 `ui.css`'s `image-set`), `sound.js` (15 KB, High) and the deferred round scripts (about 80 KB). The hold lifts at its
 1 s cap before the second card has decoded.
 
-Fixed here: the header's links and the card pager prerender after a 200 ms hover on a desktop (a88f95f), and analytics
-waits for a prerendered page to be opened. Not fixable here without a visual or timing call (pending in
+Fixed here: the header's links and the card pager prerender from the press on a desktop (a88f95f, then on press
+rather than hover after the branch's review: a hover prerender read the visitor's Human or Machine, Pause and sound
+choices once, so a choice made between the hover and the click landed on a stale page, and the wall's gallery.js could
+save the stale mode back), and analytics waits for a prerendered page to be opened. Not fixable here without a visual or timing call (pending in
 docs/entropy.md): the frost tile at 1x on phones (89 to 23 KB), and loading the sound kit after the first screen.
 Sent to battle-026 with these numbers: items 1 and 4.

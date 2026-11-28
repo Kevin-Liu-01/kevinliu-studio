@@ -61,7 +61,9 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
 | L1 | A page's sitemap lastmod follows its source files' commits, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; date a page by a hash of what it prints instead | 3 | 2 | now |
-| V1 | Read the hover prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
+| V1 | Read the press prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
+| S1 | A page restored from the back-forward cache keeps the Human or Machine view and Pause it was left with; only sound re-reads its saved choice (pageshow). Re-read mode and Pause on pageshow too, and ask r4/ex to save the mode only on a press, not at gallery.js boot | 2 | 2 | now (site half); r4/ex request after sync |
+| X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | Views' string patches go through one exact-count helper (`swap`) | 3 | 2 | now |
 | P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
