@@ -57,7 +57,6 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | Id | Task | Value | Effort | When |
 | --- | --- | --- | --- | --- |
 | F6 | Pages stop re-parsing the twins' Markdown by heading text and blank lines: `twins.ts` exposes named blocks | 4 | 4 | now |
-| F9 | Sixteen two-line `.md.ts` endpoints become one catch-all driven by TWINS (diff the dist file list) | 3 | 3 | now |
 | F3 | A runtime assert on the rounds' card record in the one loader; one vm loader | 4 | 3 | now |
 | F7 | Assert every per-card override list (schema, site, share, closed repos) names real cards | 3 | 2 | now |
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |

@@ -28,7 +28,7 @@ The data every page and agent file reads, computed once at build.
 
 ## Common tasks → first action
 <!-- agent-docs:fill:tasks -->
-- New page: add its twin to `TWINS` and a `.md.ts` endpoint, then a line in `llmsTxt`.
+- New page: add its twin to `TWINS` (`src/pages/[...twin].md.ts` serves it in every language), then a line in `llmsTxt`.
 - New card field on pages: read it from `fighters` here, never from HTML.
 
 ## Gotchas

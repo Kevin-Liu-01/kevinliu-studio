@@ -18,7 +18,8 @@ in `src/`, not `pages/`, because Astro publishes any `.md` file under `pages/` a
   sound boot (and, translated, `/<code>/gallery.js` before gallery.js).
 - `pages/cards/[id].astro`: the card at full size on its own colour, numbers, trait, moves and receipts, prev and next.
 - `pages/battle.astro`, `battle/arena.astro`: `components/BattlePage.astro` with the mode.
-- `pages/*.md.ts`, `llms*.txt.ts`, `robots.txt.ts`: text endpoints from `lib/twins.ts`.
+- `pages/[...twin].md.ts`: every page's Markdown twin in every language, one endpoint over `TWINS` (`lib/twins.ts`).
+- `llms*.txt.ts`, `robots.txt.ts`: the other text endpoints.
 
 ## Patterns to follow / invariants
 <!-- agent-docs:fill:patterns -->
