@@ -10,9 +10,10 @@
     "sync": "node scripts/sync.mjs",
     "sync:check": "node scripts/sync.mjs --check",
     "dev": "astro dev",
-    "build": "node scripts/lock-check.mjs && astro build && node scripts/minify-dist.mjs && node scripts/verify-build.mjs",
+    "build": "pnpm lint && pnpm test && node scripts/lock-check.mjs && node scripts/i18n-extract.mjs --check && astro build && node scripts/minify-dist.mjs && node scripts/verify-build.mjs && node scripts/check-release.mjs dist/index.html",
     "preview": "astro preview",
     "check": "astro check",
+    "lint": "oxlint --deny-warnings src scripts astro.config.mjs",
     "i18n:extract": "node scripts/i18n-extract.mjs",
     "i18n:translate": "node scripts/i18n-extract.mjs && node --env-file=.env.local node_modules/gt/bin/main.js translate && node scripts/i18n-polish.mjs && node --env-file=.env.local node_modules/gt/bin/main.js save-local",
     "test": "node --test \"scripts/**/*.test.mjs\""
@@ -27,6 +28,7 @@
     "@astrojs/check": "0.9.12",
     "esbuild": "0.28.2",
     "gt": "2.27.3",
+    "oxlint": "1.95.0",
     "satori": "0.63.2",
     "sharp": "0.35.5",
     "typescript": "5.9.3"

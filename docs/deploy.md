@@ -20,7 +20,10 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   would misroute; on location metadata in any image, video or audio file; and on banned names or routes.
 - `pnpm check` runs `astro check` (TypeScript 5.9, `tsconfig.json` on Astro's base preset, `src/` only). It is not part
   of `pnpm build`; CI runs it.
-- `.github/workflows/check.yml` runs on every pull request and every push to `main`: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm check`, `node scripts/check-negotiation.mjs`, `node scripts/lock-check.mjs`, `node scripts/phone-memory.mjs --check`, `node scripts/i18n-extract.mjs --check`, `pnpm build` (with the release guard) and `node scripts/check-release.mjs dist/index.html`. It needs no secret and deploys nothing; Vercel deploys as before.
+- `.github/workflows/check.yml` runs `pnpm check` and `pnpm build` on every pull request and every push to `main`. The
+  build is the one gate, so Vercel and CI enforce the same contract: `package.json` `build` lists its steps (the lint
+  (`oxlint`, correctness rules, `.oxlintrc.json`), the tests, the lock, the translation source, Astro, the minifier, the release guard and the Release script). It needs no secret
+  and deploys nothing.
 - `node scripts/smoke.mjs <base-url>` checks a deployed copy: every route answers 200 with a canonical, Markdown
   negotiation works, the text files, share files and redirects answer, and a miss is a 404. Set
   `VERCEL_AUTOMATION_BYPASS_SECRET` to test a protected preview.
@@ -29,7 +32,8 @@ Kevin approved the first deploy and the swap on 2026-11-05, and both ran that da
   site's `/en`, and its resume and `projects.md` to portfoliomon.kevinliu.studio), headers (no other site may frame a page; the negotiated pages send `Vary: Accept`; each `.md` twin carries
   `Link: <its page>; rel="canonical"`), the Markdown negotiation (`/`, `/cards`, `/about`, the battle and each card: the
   twin is served when `text/markdown` comes before any `text/html` in `Accept` and is not `q=0`;
-  `node scripts/check-negotiation.mjs` checks the rule without a deployment),
+  `scripts/negotiation.test.mjs` checks the rule without a deployment, and that every language and page list in
+  `vercel.json` matches `src/i18n/locales.mjs` and `src/pages`),
   the filesystem, clean URLs (`/x` serves `x.html`), then the 404 page.
 - Caching: `_astro/` is immutable, and so is a `fonts/` file asked for with `?v=`; any `/ex/`, `/sound/` or `/battle/` stylesheet or script asked for
   with `?v=` (the content address `src/lib/assets.ts` writes) is immutable too; the `/ex/borders/` and `/ex/fx/` drawings asked for with `?v=` are immutable as well (`scripts/cache-rules.test.mjs`); media under those folders keeps a day

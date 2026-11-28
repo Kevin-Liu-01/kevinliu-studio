@@ -1,6 +1,6 @@
-# Runs on every pull request, every push to main and by hand (Actions > check > Run workflow): the tests, the type check, the checks that read only the
-# repository, and a full build with the release guard. It needs no secret and no rounds folder. Vercel builds and
-# deploys on its own; this only reports.
+# Runs on every pull request, every push to main and by hand (Actions > check > Run workflow): the type check and
+# `pnpm build`, which runs every offline check itself, so Vercel's build enforces the same contract. It needs no
+# secret and no rounds folder. Vercel builds and deploys on its own; this only reports.
 name: check
 
 on:
@@ -29,19 +29,9 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Tests
-        run: pnpm test
       - name: Types
         run: pnpm check
-      - name: Markdown negotiation routes
-        run: node scripts/check-negotiation.mjs
-      - name: Synced folders match the lock
-        run: node scripts/lock-check.mjs
-      - name: Phone patches are in the synced files
-        run: node scripts/phone-memory.mjs --check
-      - name: The translation source matches the cards and site.ts
-        run: node scripts/i18n-extract.mjs --check
-      - name: Build and release guard
+      # the build is the one gate Vercel runs too: the lint, the tests, the lock, the translation source, the release guard and the
+      # Release script (package.json "build"), so CI adds only the type check
+      - name: Build and every offline check
         run: pnpm build
-      - name: Release script in the built page
-        run: node scripts/check-release.mjs dist/index.html

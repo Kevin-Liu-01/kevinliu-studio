@@ -83,12 +83,6 @@ async function sample(page) {
   try { return await page.evaluate(() => window.__mm && window.__mm()); } catch { return null; }
 }
 
-async function scrollThrough(page, { steps = 12, pause = 250 } = {}) {
-  const h = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight).catch(() => 0);
-  for (let i = 1; i <= steps; i++) { await page.evaluate((d) => scrollBy(0, d), h / steps).catch(() => {}); await sleep(pause); }
-  for (let i = 1; i <= steps / 2; i++) { await page.evaluate((d) => scrollBy(0, d), -h / (steps / 2)).catch(() => {}); await sleep(pause / 2); }
-}
-
 // what a visitor does on each page beyond scrolling
 async function act(page, path) {
   if (path === '/') {

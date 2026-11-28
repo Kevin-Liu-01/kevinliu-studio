@@ -18,7 +18,8 @@ import { check as budgets } from './budgets.mjs';
 import { jpegSize, shareTagProblems, PAGES_MIN } from './lib/checks.mjs';
 import { LOCALES, OTHER } from '../src/i18n/locales.mjs';
 
-const DIST = path.resolve(process.argv[2] ?? 'dist');
+const ROOT = path.resolve(import.meta.dirname, '..');
+const DIST = path.resolve(process.argv[2] ?? path.join(ROOT, 'dist'));
 const SITE = 'https://www.kevinliu.studio';
 const errors = [];
 const fail = (where, what) => errors.push(`${where}: ${what}`);
@@ -40,8 +41,8 @@ for (const dest of Object.keys(PHONE)) {
   if (!fs.existsSync(f) || !fs.readFileSync(f, 'utf8').includes('kevinliu.studio phone memory')) fail('/' + dest.replace(/^public\//, ''), 'lacks the phone memory patches (scripts/phone-memory.mjs)');
 }
 
-// Astro publishes any .md under src/pages; agent-docs scaffold writes a SKILL.md there (AGENTS.md)
-if (fs.existsSync(path.join(DIST, '..', 'src/pages/SKILL.md'))) fail('src/pages/SKILL.md', 'Astro publishes this as a page; the routes skill is src/SKILL.md');
+// Astro publishes any .md under src/pages as a page (agent-docs scaffold writes a SKILL.md there; AGENTS.md)
+for (const f of walk(path.join(ROOT, 'src/pages')).filter((f) => f.endsWith('.md'))) fail(path.relative(ROOT, f), 'Astro publishes a .md under src/pages as a page; the routes skill is src/SKILL.md');
 
 for (const need of ['/index.html', '/cards.html', '/cards.md', '/share/about.jpg', '/share/cards.jpg', '/share/battle.jpg', '/share/arena.jpg', '/share/404.jpg', '/about.html', '/battle.html', '/battle/arena.html', '/404.html', '/robots.txt', '/llms.txt', '/llms-full.txt', '/index.md', '/sitemap-index.xml', '/favicon.ico', '/site.webmanifest']) {
   if (!exists(need)) fail(need, 'missing');
@@ -70,7 +71,7 @@ const is404 = (page) => page === '/404.html' || new RegExp(`^/(${OTHER.join('|')
 // a language's pages, by their prefix
 const langOf = (page) => OTHER.find((c) => page === `/${c}.html` || page.startsWith(`/${c}/`)) ?? 'en';
 // the characters each face holds (scripts/i18n-fonts.py): a translated page prints only what its faces hold
-const FACES = JSON.parse(fs.readFileSync(path.join(path.dirname(DIST), 'src/i18n/fonts.json'), 'utf8'));
+const FACES = JSON.parse(fs.readFileSync(path.join(ROOT, 'src/i18n/fonts.json'), 'utf8'));
 const held = (code, base) => new Set(Object.values(FACES).filter((f) => f.base === base || (f.locales.length && (f.locales.length > 1 || f.locales.includes(code)))).flatMap((f) => [...f.chars]));
 
 

@@ -142,6 +142,6 @@
   // after load and at idle, never before first paint
   if (!still.matches) {
     const go = () => ('requestIdleCallback' in window ? requestIdleCallback(() => animateIcon().catch(() => {})) : setTimeout(() => animateIcon().catch(() => {}), 200));
-    document.readyState === 'complete' ? go() : addEventListener('load', go, { once: true });
+    if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
   }
 </script>

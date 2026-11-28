@@ -44,7 +44,6 @@ const rel = (from, f) => path.relative(from, f).split(path.sep).join('/');
 // A rule is { from, to, files } where files(listing) picks paths relative to `from`; `to` is relative to the repo.
 const IMG = /\.(webp|avif|png|jpg|jpeg|svg|mp4|webm)$/i;
 const SKIP = /(^|\/)(src|\.work|tools|shots|study|before|harness)\//;
-const pick = (re) => (list) => list.filter((f) => re.test(f) && !SKIP.test(f));
 // a named file the round no longer has stops the sync instead of quietly leaving the site
 const only = (...names) => (list) => {
   const missing = names.filter((n) => !list.includes(n));
