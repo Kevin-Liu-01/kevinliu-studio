@@ -1001,3 +1001,17 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
   bfcache restore takes the new view; architecture.test.mjs holds 8 rules.
 - **Open**: docs/entropy.md task pool (after-sync items, Kevin's calls). serve2.mjs caches compressed bodies: restart
   it after every rebuild.
+
+## 2026-11-28 round 5: Kevin's calls (arch/entropy)
+
+- **Type**: perf + refactor + SEO. Kevin approved all seven pending calls (relayed by Portfolio redesign).
+- **Changed**: `src/styles/site.css` (1x frost on `pointer: coarse`), `src/views/Home.astro` (sound boot at idle after
+  load or the first press; the key saves the choice before the player), `src/views/Card.astro` + `Seo.astro` (one
+  description cutter; architecture rule 9), `scripts/lastmod.mjs` + `lastmod.json` (ADR 0003; git dating removed from
+  `astro.config.mjs`), `docs/sound.md`, `docs/seo.md`, `docs/entropy.md`.
+- **Numbers** (throttled phone, median of 3): frost 89.2 to 22.7 KB, FCP unchanged; sound files moved from 0.7-4.7 s to
+  7.5-8.7 s, FCP unchanged; P5 and L1 leave every page byte-identical; lastmod re-dates 52 pages against production
+  instead of 232.
+- **Rule**: commit `lastmod.json` with any change that moves a page's output (the build prints the count).
+- **Open**: C1 (one card cost) after the battle sync; N1 (stat names) needs a translation run; merge/deploy needs
+  Kevin's yes in this session; H1 English home description is 169 characters.

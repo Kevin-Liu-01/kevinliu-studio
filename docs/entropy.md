@@ -51,6 +51,7 @@ list; `node:test`; `oxlint`; esbuild for minifying round code; satori and sharp 
 | 2 | English reads the same word tree as every language (F1); one content hash, host, abs, CODES, SITE, language split; locale typography in LOCALES; `scripts/architecture.test.mjs` enforces each single source and no import cycles | done: edfc3c2, b468ec3, c7a1409 |
 | 3 | One twin endpoint over TWINS (F9); one twin lookup and one mode-key sync (P2, P3); a visitor's saved-choice keys and sound rule in `state.mjs` (P1); every hand-kept card id list guarded (F7); the rounds' card record checked as it loads, one vm loader (F3) | done: 7c838ed, d8d8e5d, be5b02f, 42c9d66, ab61769 |
 | 4 | Independent review (3 lenses, each verified): the hover prerender could open a page with a stale view, so prerender starts at the press; a back-forward restore re-reads the view; pages read the twins' named blocks (F6), which fixed the ja and ko card pages' missing pinned line | done: 4919e8c, 3b99726, and the next commits |
+| 5 | Kevin's calls (2026-11-28, all approved): phones print the 1x frost tile (89.2 to 22.7 KB); the wall's sound player loads after the first screen and the key saves the choice before it; one description cutter, in Seo (P5); lastmod from what a page prints, `lastmod.json` (L1, ADR 0003) | done: 3a39452, 7309406, ccd3977, 55ac22c |
 
 ## Task pool
 
@@ -60,14 +61,15 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | --- | --- | --- | --- | --- |
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
-| L1 | A page's sitemap lastmod follows its source files' commits, view files included, so a pure refactor re-dates pages (232 after F1) and IndexNow would resend them; drop the views from the lastmod sources, or date by a hash of what a page prints | 3 | 2 | Kevin (SEO policy) |
 | V1 | Read the press prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
 | S1 | Ask r4/ex to save the view only on a press, not at gallery.js boot (the site half, re-reading the view on a back-forward restore, is done) | 2 | 1 | r4/ex request after sync |
 | X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
 | P7 | BattlePage.astro's rules panel splits battleMd; give it named parts like cardParts | 2 | 1 | after sync |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | battle.ts and BattlePage.astro move to `src/lib/patch.ts` swap and machine.ts esc | 2 | 1 | after sync |
-| P5 | Card descriptions are cut in one place (Seo); changes translated card meta descriptions, so waiting on Kevin | 2 | 1 | Kevin |
+| C1 | One card cost: the battle's number, printed by the wall too, with an architecture rule (Kevin, 2026-11-28; 7 cards' faces change) | 3 | 2 | after sync, through r4/ex |
+| N1 | The twins' stats take the card's names (Reach, Proof, Pace), with a translation run for that change only (Kevin, 2026-11-28) | 2 | 2 | needs Kevin's yes in this session for the run |
+| H1 | The English home description is 169 characters, over the 160 a result shows; English is printed uncut | 1 | 1 | Kevin (copy) |
 | M12 | Rounds as a checked package, synced by pin with no JS transforms (design below) | 5 | 5 | after sync |
 | B1-B3 | Upstream the 15 sound.js, ~40 wall and ~30 battle patches | 5 | 4 | after sync |
 | A1-A3 | Mount paths and site adaptations become config the round code reads | 4 | 3 | after sync |
@@ -77,10 +79,10 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 
 ## Waiting on Kevin
 
+Kevin approved all seven calls on 2026-11-28 (relayed by the Portfolio redesign session): items 3 to 6 are round 5;
+the ink cost (C1) and the stat names (N1) are in the task pool; merging and deploying `arch/entropy` waits for his yes
+in this session, as the brief asks.
+
 | Item | Why it needs Kevin |
 | --- | --- |
-| A card's ink cost differs between the wall and the battle for 7 cards (Glyphfield 4/3, Katagami 2/1, Loop 3/2, bday.land 2/1, CoTFly 2/1, Princeton TD 2/1, Kevin Wiki 3/2) | which number is the card's cost is a product call; the twins print the wall's and ask the reader to fit the battle's budget |
-| The twin calls the stats attack/defence/speed, the card Reach/Proof/Pace | changing the twin's words needs a translation run |
-| The frost tile at 1x on phones (`icons/frost@2x.webp` 89 KB to 23 KB on the first screen) | a visual call: the frosted slips' grain is softer at 1x on a 1.75x to 3x screen |
-| Load the wall's sound kit (`boot.gallery.js`, `sound.js`, 15 KB at High priority) after the first screen | a timing call: a press before it loads would be silent (docs/sound.md) |
 | The site's Vercel firewall challenges a client after about 2,000 requests in a few minutes | a measurement run tripped it and the challenge then showed in Kevin's own browser on the same network; whether real visitors can hit it is a Vercel setting |
