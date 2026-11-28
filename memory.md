@@ -968,3 +968,24 @@ Append-only log of agent sessions in this repo. Newest last. Never rewrite earli
 - **Open**: on the throttled phone the wall's LCP reads 4.35 -> 4.75 s while its FCP improves 2.78 -> 2.24 s. DevTools throttling splits bandwidth evenly across requests, and the page's low-priority requests now start sooner beside the high-priority first poster; a Vercel preview is the test. Not pushed or deployed.
 - **Preview** (2026-11-26, Kevin: "Yes, push and preview"): pushed perf/fast-site b4b86da; preview `kevinliu-studio-ghzgiomin`. Smoke and check-seo pass. Against production on the throttled phone through one shaped 1.6 Mbps link (`shape-proxy.mjs`): wall LCP 2.98 -> 2.89 s, card page 3.17 -> 1.56 s, Mat reveal 15.78 -> 11.59 s, Arena 11.64 -> 10.62 s. The wall's DevTools LCP regression (4.34 -> 4.90 s there too) is DevTools' even share per request, not the page. Main moved to a91bcdf (CI and memory only), so the branch needs a merge, not a fast-forward. Not deployed to production.
 - **Shipped** (2026-11-27, Kevin: "Yes, ship it"): main fast-forwarded a91bcdf -> 72fb0f7; production `kevinliu-studio-5gjhed2mw` (dpl_2qPJrMXSvEd8tCNh1k8esbgKekLc) serves www. Smoke and `check-seo.mjs --external` (249 pages, 569 links) pass on www; the home page and both battle modes load on the throttled phone with no page error and CLS 0. Rollback target in docs/deploy.md. Still open: the IndexNow send (`--since 2026-11-18`), the GT translation run for f5268b6, b18883c and plan 029, and Speed Insights Plus (paid). Drop the site's `kit.js` sync patch in the sync that takes battle-026's kit (01caf5ea carries the board sizes).
+
+## 2026-11-28: felt problems measured, one build gate, single sources (arch/entropy, Claude Code)
+
+- **Type**: perf, refactor, tooling
+- **Asked**: Kevin: "the website interactions and loading and other stuff is still very bad", then the architecture
+  /goal (reduce entropy round by round). battle-026 owns the battle and card files until its sync.
+- **Measured**: every route and interaction, throttled phone and 1440, local HTTP/2 of production's code
+  (docs/performance.md, 2026-11-28). The battle's reveal (9.7 to 11.3 s on the phone, a 3 to 7 s kit.js frame) is the
+  worst by far and went to battle-026; then the wall's cold load (2.7 s, the second card pops 1.5 to 2 s later) and
+  the return to the wall.
+- **Changed**: 0142f25 the build runs lint (oxlint), tests, lock, translation source, Astro, minify, guard and the
+  Release check, so Vercel and CI enforce one contract; vercel.json's languages and pages are tested against
+  locales.mjs and src/pages. edfc3c2 English reads L('en') like every language. b468ec3 one content hash, host, abs,
+  CODES, SITE and language split. c7a1409 locale typography in LOCALES; scripts/architecture.test.mjs. a88f95f
+  hover prerender of the next pages on desktops; analytics waits for a prerender to open. 4ce47b3 docs.
+- **Checked**: every refactor commit's dist is byte-identical to main's (3,737 files) apart from sitemap lastmod;
+  `pnpm build` passes; mutation tests show the route contract, the src/pages .md guard and the architecture test fail
+  on a planted regression.
+- **Open**: docs/entropy.md task pool and "Waiting on Kevin"; ADR 0002 (rounds as a package) after battle-026's sync;
+  the prerender's gain needs a real browser on a preview. Never measure production in bulk: it trips Vercel's
+  Security Checkpoint for the whole network.
