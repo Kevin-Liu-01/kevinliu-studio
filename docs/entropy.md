@@ -61,7 +61,7 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | --- | --- | --- | --- | --- |
 | F8 | The card count comes from `fighters.length` in the description template | 2 | 2 | with the next translation run |
 | F12 | Delete the missing-file fallbacks that silently drop the battle roster | 3 | 1 | after sync (battle-026 may move those files) |
-| V1 | Read the press prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
+| V1 | Read the press prerender's gain in a real browser on a preview. Claude in Chrome blocks prerendering too (2026-11-28: even an `immediate` rule never activated on the preview), as Playwright does; it needs a hand click with no extension or DevTools attached, or field data. Unprerendered, /about to / took 559 ms press to first paint in Kevin's Chrome | 3 | 1 | Kevin's hand, or field data |
 | S1 | Ask r4/ex to save the view only on a press, not at gallery.js boot (the site half, re-reading the view on a back-forward restore, is done) | 2 | 1 | r4/ex request after sync |
 | X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
 | P7 | BattlePage.astro's rules panel splits battleMd; give it named parts like cardParts | 2 | 1 | after sync |
