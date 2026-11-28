@@ -46,7 +46,8 @@ export const homeDescriptionIn = (code = DEFAULT) => {
 const openingIn = homeLeadIn;
 export const descriptionIn = (code = DEFAULT) => L(code).c.description;
 
-const table = (code: string) => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${whatIn(f, code)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[${L(code).t('twin.sourceLink')}](${repoOf(f)})` : ''} |`);
+// /cards' twin table, one row per card (Cards.astro prints each row in its card's row)
+export const cardsRows = (code = DEFAULT) => fighters.map((f, i) => `| ${String(i + 1).padStart(2, '0')} | ${link(f, code)} | ${f.year} | ${whatIn(f, code)} | ${f.url ? `[${host(f.url)}](${f.url})` : ''} | ${repoOf(f) ? `[${L(code).t('twin.sourceLink')}](${repoOf(f)})` : ''} |`);
 const links = (code: string) => {
   const t = L(code).t;
   return `- ${t('twin.linkCards')}: ${at(code, '/cards')}
@@ -95,7 +96,7 @@ ${edition(code, '/cards.md')}${cardsLead(code)}
 
 | ${t('twin.colNo')} | ${t('twin.colCard')} | ${t('twin.colYear')} | ${t('twin.colWhat')} | ${t('twin.colLive')} | ${t('twin.colSource')} |
 | --- | --- | --- | --- | --- | --- |
-${table(code).join('\n')}
+${cardsRows(code).join('\n')}
 
 ## ${t('twin.links')}
 

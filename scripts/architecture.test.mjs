@@ -58,3 +58,10 @@ test("a visitor's saved choices have their keys in src/lib/state.mjs, and the ro
   assert.ok(round('ex/gallery.js').includes(`'${KEY.pause}'`), `gallery.js no longer saves Pause as ${KEY.pause}`);
   assert.ok(round('sound/sound.js').includes(KEY.sound), `sound.js no longer saves sound as ${KEY.sound}`);
 });
+
+test("pages read a twin's named parts and never re-parse its Markdown", () => {
+  // cardParts, aboutParts and cardsRows in twins.ts are the blocks a page shows; splitting a rendered twin finds blocks by
+  // their translated text or shape, which broke the ja and ko card pages' pinned line until 2026-11-28
+  // BattlePage.astro still splits battleMd; it moves to named parts after the battle-026 sync (docs/entropy.md P7)
+  assert.deepEqual(holders(/\w+Md\([^)]*\)[\s\S]{0,12}\.split\(/).filter((f) => f !== 'src/components/BattlePage.astro'), []);
+});

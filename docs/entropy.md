@@ -64,6 +64,7 @@ Value and effort are 1 to 5. "After sync" means the fix edits files the battle-0
 | V1 | Read the press prerender's gain in a real browser on a preview (automation blocks prerendering) | 3 | 1 | next preview |
 | S1 | Ask r4/ex to save the view only on a press, not at gallery.js boot (the site half, re-reading the view on a back-forward restore, is done) | 2 | 1 | r4/ex request after sync |
 | X1 | The battle-026 sync is run by the release session (Portfolio redesign), not battle-026; sequence ADR 0002 step 1 (sync.mjs) with that release | - | - | coordination |
+| P7 | BattlePage.astro's rules panel splits battleMd; give it named parts like cardParts | 2 | 1 | after sync |
 | P3b | Drop Seo's `twin` prop once BattlePage stops passing it (twinOf gives the same value) | 1 | 1 | after sync |
 | P4 | Views' string patches go through one exact-count helper (`swap`) | 3 | 2 | now |
 | P5 | Card descriptions are cut in one place (Seo) | 2 | 1 | now (diff translated card descriptions) |
