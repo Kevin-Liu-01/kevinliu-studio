@@ -27,7 +27,7 @@ function require(file: string): any {
 }
 
 export type Fact = { value: number | string; unit?: string; receipt: string };
-export type Move = { name: string; power?: number; text?: string; receipt: string; [k: string]: unknown };
+export type Move = { name: string; power?: number; text?: string; feature?: string; receipt: string; [k: string]: unknown };
 export type Fighter = {
   id: string;
   title: string;
@@ -43,20 +43,40 @@ export type Fighter = {
   repo?: string;
   what?: string;
   credit?: string;
+  pinned?: { sha: string; date?: string };
+  special?: unknown;
 };
 
-const sandbox = (file: string, key: string) => {
-  const ctx: any = { globalThis: {}, module: {} };
-  vm.runInNewContext(fs.readFileSync(file, 'utf8'), ctx);
-  return ctx.globalThis[key] ?? ctx.module.exports?.[key] ?? ctx.module.exports;
-};
+// The record this site reads from the rounds' fighters.js, checked as it loads: a field the rounds rename or drop stops
+// the build here and names the card, instead of printing an empty fact, an undefined year or a missing receipt.
+function checkRecords(fs: Fighter[]) {
+  const bad: string[] = [];
+  const need = (f: Fighter, ok: unknown, what: string) => { if (!ok) bad.push(`${f?.id ?? '?'}: ${what}`); };
+  const str = (x: unknown) => typeof x === 'string' && x.length > 0;
+  const num = (x: unknown) => typeof x === 'number' && Number.isFinite(x);
+  for (const f of fs) {
+    need(f, str(f.id) && /^[a-z0-9-]+$/.test(f.id), 'id');
+    need(f, str(f.title), 'title');
+    need(f, num(f.year), 'year');
+    need(f, num(f.cost) && num(f.total), 'cost and total');
+    need(f, Array.isArray(f.disciplines) && f.disciplines.length > 0 && f.disciplines.every(str), 'disciplines');
+    need(f, f.stats && ['hp', 'atk', 'def', 'spd'].every((k) => num((f.stats as Record<string, unknown>)[k])), 'stats hp, atk, def, spd');
+    need(f, Array.isArray(f.moves) && f.moves.length > 0 && f.moves.every((m) => str(m.name) && str(m.receipt)), 'moves with a name and a receipt');
+    need(f, f.facts && Object.values(f.facts).every((x) => (str(x.value) || num(x.value)) && str(x.receipt)), 'facts with a value and a receipt');
+    need(f, !f.trait || (str(f.trait.name) && str(f.trait.rule)), 'trait name and rule');
+    need(f, !f.pinned || str(f.pinned.sha), 'pinned sha');
+    need(f, f.what === undefined || typeof f.what === 'string', 'what');
+  }
+  if (bad.length) throw new Error(`fighters.js no longer matches the card record this site reads (src/lib/cards.ts):\n  ${bad.join('\n  ')}`);
+  return fs;
+}
 
 const { RULES, FIGHTERS } = require(path.join(EX, 'fighters.js')) as { RULES: any; FIGHTERS: Fighter[] };
 const { RECIPES } = require(path.join(EX, 'grounds/recipes.js'));
 const ART = require(path.join(EX, 'art.js'));
 export const M = require(path.join(EX, 'markup.js'));
-const FACE = sandbox(path.join(VX, 'face.gen.js'), 'FACE');
-const MEDIA = (sandbox(path.join(EX, 'media.gen.js'), 'MEDIA') || {}).media || {};
+const FACE = require(path.join(VX, 'face.gen.js')).FACE;
+const MEDIA = (require(path.join(EX, 'media.gen.js')).MEDIA || {}).media || {};
 const BANDS = JSON.parse(fs.readFileSync(path.join(VX, 'bands.json'), 'utf8')).cards ?? {};
 const WALL = await import(/* @vite-ignore */ path.join(VX, 'tools/wall-rule.mjs'));
 
@@ -77,7 +97,7 @@ export const env = { recipes: RECIPES, bands: BANDS, media: MEDIA, art: ART, siz
 // A card page draws its card up to 440 px wide and has no gallery.js to keep `sizes` at the drawn width, so a
 // caller may ask for the whole posters only (opts.ladder === false).
 const NO_LADDER = { ...env, posters: { half: {} } };
-export const fighters = FIGHTERS;
+export const fighters = checkRecords(FIGHTERS);
 export const rules = RULES;
 export const byId = Object.fromEntries(FIGHTERS.map((f) => [f.id, f]));
 // a list of card ids the site keeps by hand (a schema type, /about's order, a share image's fan): the build stops when

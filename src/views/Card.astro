@@ -22,7 +22,7 @@ const hue = hueOf(f);
 const repo = repoOf(f);
 const related = relatedOf(f);
 const team = teamFor(f.id);
-const pinned = (f as any).pinned as { sha: string; date?: string } | undefined;
+const pinned = f.pinned;
 // a description is one sentence of at most 160 characters, cut at a word (a language without spaces, at a character)
 const cut = (s: string) => (/\s/.test(s.slice(0, 159)) ? s.slice(0, 159).replace(/[\s,:;]+\S*$/, '') : s.slice(0, 158));
 const description = answer.length <= 160 ? answer : `${cut(answer)}${/[\u3000-\u9fff\uac00-\ud7af]$/.test(answer.slice(0, 158)) ? '。' : '.'}`;

@@ -111,7 +111,7 @@ export function cardMd(f: Fighter, code = DEFAULT) {
   const facts = factLines(f).map((x) => `- **${factIn(f, x.key, code)}**. ${t('twin.receipt')}: \`${x.receipt}\``);
   const moves = f.moves.map((m, j) => `- ${moveLineIn(f, j, code)} ${t('twin.receipt')}: \`${m.receipt}\``);
   const line = t('twin.cardLine', { i: i + 1, n: fighters.length, name: NAME, year: f.year, disciplines: l.and(discs(f, code)) });
-  const pinned = (f as any).pinned;
+  const pinned = f.pinned;
   return `# ${f.title}
 
 ${edition(code, `/cards/${f.id}.md`)}${answerIn(f, code)}
