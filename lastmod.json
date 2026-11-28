@@ -1,0 +1,994 @@
+{
+ "/": {
+  "hash": "57fde714d00ec30e",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/about": {
+  "hash": "60d336604467b107",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/battle": {
+  "hash": "6d4b2b31fdf5c0ac",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/battle/arena": {
+  "hash": "34cc6ed1ab628dea",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/cards": {
+  "hash": "db46cd62588fd720",
+  "date": "2026-11-13T19:54:06.000Z"
+ },
+ "/cards/agent-machines": {
+  "hash": "85dc59f50ecad275",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/agent-pets": {
+  "hash": "87479389576cd682",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/ariadne": {
+  "hash": "b290218c65a4630c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/atlas": {
+  "hash": "1a1429038d8ec997",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/bday-land": {
+  "hash": "89229f8dd9145d5d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/claude-of-tanks": {
+  "hash": "280817c9e60761ca",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/cotfly": {
+  "hash": "f4cb63702ecc3deb",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/dedalus-terminal": {
+  "hash": "76e83f22e0700df3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/elo": {
+  "hash": "3c245038395b69be",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/glyphfield": {
+  "hash": "18418b525caf6528",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/jarhead": {
+  "hash": "7b006467e0112f70",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/katagami": {
+  "hash": "0551a700b1db7114",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/kevin-wiki": {
+  "hash": "0e2c42eb0bc0cab3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/local-search": {
+  "hash": "efc558c1a61fcc61",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/loop": {
+  "hash": "d8d27090f0d6cc71",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/mailroom": {
+  "hash": "e13a89d1e3f20a18",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/ommc": {
+  "hash": "4fa87569f95b00e8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/podium": {
+  "hash": "789d6e7e209c34da",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/powerlifting": {
+  "hash": "0f918e31ad9c6423",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/princeton-td": {
+  "hash": "e292bf6ca065c8a4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/prototemplate": {
+  "hash": "4f8a7dff6222cd5d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/relay": {
+  "hash": "7d55b7a326e28a28",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/sandbox-arena": {
+  "hash": "3440130b442787fb",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/sevenfold": {
+  "hash": "5b7e30847e8ac2ba",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/sigil-ui": {
+  "hash": "cab52cad84d6ba70",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/cards/turboslide": {
+  "hash": "1cf8752908675a88",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de": {
+  "hash": "4d1174ba667e0106",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/de/about": {
+  "hash": "6f300c7663def71e",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/de/battle": {
+  "hash": "07c32116dffaca13",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/de/battle/arena": {
+  "hash": "ef33c37f5e95b5dc",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/de/cards": {
+  "hash": "9fff0bd28dccc3df",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/de/cards/agent-machines": {
+  "hash": "3ba642a06dcebb11",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/agent-pets": {
+  "hash": "d03610280a784bec",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/ariadne": {
+  "hash": "10514453232066e2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/atlas": {
+  "hash": "d6f50ba66821b2ce",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/bday-land": {
+  "hash": "fd95bf9f3cd82756",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/claude-of-tanks": {
+  "hash": "bd594a55f82f7466",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/cotfly": {
+  "hash": "f3e9bafb606c22d7",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/dedalus-terminal": {
+  "hash": "f805e5f02ec9b901",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/elo": {
+  "hash": "879dd16cf7b7011d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/glyphfield": {
+  "hash": "a902ea62c9ece34a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/jarhead": {
+  "hash": "12827426ce6e0754",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/katagami": {
+  "hash": "c2fbbff1d37122a2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/kevin-wiki": {
+  "hash": "38663b59f22f918c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/local-search": {
+  "hash": "c617d5cdfc591fec",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/loop": {
+  "hash": "702ac8a78ad593ea",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/mailroom": {
+  "hash": "0d95c6d675a98e03",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/ommc": {
+  "hash": "8c1a0c7fac801667",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/podium": {
+  "hash": "f846db20c7220b49",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/powerlifting": {
+  "hash": "e10a71fd4e85c21f",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/princeton-td": {
+  "hash": "f34e3a4a8c659d05",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/prototemplate": {
+  "hash": "05acc8b955384fb9",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/relay": {
+  "hash": "d60a4ba6f3cf3e9c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/sandbox-arena": {
+  "hash": "9fccaf774b5188f0",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/sevenfold": {
+  "hash": "40d6feefae59ce20",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/sigil-ui": {
+  "hash": "f6897ab57c388807",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/de/cards/turboslide": {
+  "hash": "a2f29c4cf5662920",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es": {
+  "hash": "4bc804206deca4aa",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/es/about": {
+  "hash": "07c4820a85a11b8a",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/es/battle": {
+  "hash": "fdbbfe3f12b4af7a",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/es/battle/arena": {
+  "hash": "50b42445eb5e2f51",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/es/cards": {
+  "hash": "69880bfb01734800",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/es/cards/agent-machines": {
+  "hash": "ef6c2ae7f4363a0e",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/agent-pets": {
+  "hash": "e4092750d94e3c86",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/ariadne": {
+  "hash": "112881ed5775d4f3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/atlas": {
+  "hash": "089a4efae3032568",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/bday-land": {
+  "hash": "3cbaae7156574636",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/claude-of-tanks": {
+  "hash": "26df7993b518dd71",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/cotfly": {
+  "hash": "c633b78a5b6c1dc9",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/dedalus-terminal": {
+  "hash": "7ef1d184915449f6",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/elo": {
+  "hash": "0a902a463a1b58e2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/glyphfield": {
+  "hash": "e51e4d4e78140e32",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/jarhead": {
+  "hash": "08546d78365f8280",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/katagami": {
+  "hash": "24f0b75695640b37",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/kevin-wiki": {
+  "hash": "e52087344d448ed0",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/local-search": {
+  "hash": "882baa83459cf261",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/loop": {
+  "hash": "3cd48ace33635b89",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/mailroom": {
+  "hash": "e42b7b4c52e592c8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/ommc": {
+  "hash": "fec41043f26899c8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/podium": {
+  "hash": "fd56d7f44aba8737",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/powerlifting": {
+  "hash": "d6b2b15973a8290b",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/princeton-td": {
+  "hash": "cd4dac631b330414",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/prototemplate": {
+  "hash": "a7a0ad0cf6e497b2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/relay": {
+  "hash": "78f321a8eeec4a8d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/sandbox-arena": {
+  "hash": "34d36d2db755d328",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/sevenfold": {
+  "hash": "c243408d944a8de8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/sigil-ui": {
+  "hash": "e5b0698c56088fb1",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/es/cards/turboslide": {
+  "hash": "594e25cc7cb0788c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr": {
+  "hash": "ecbe389fafe832ed",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/fr/about": {
+  "hash": "0affc0421a18e5d8",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/fr/battle": {
+  "hash": "e68ead1fa9f2d72b",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/fr/battle/arena": {
+  "hash": "4b6120c34e88295d",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/fr/cards": {
+  "hash": "cb7ddfb3413ef3b4",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/fr/cards/agent-machines": {
+  "hash": "1e265195188f8f3b",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/agent-pets": {
+  "hash": "09a6a19344a7d4b4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/ariadne": {
+  "hash": "63b89634e08b06a7",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/atlas": {
+  "hash": "941c55da292a243f",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/bday-land": {
+  "hash": "b77a0075727977a2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/claude-of-tanks": {
+  "hash": "6561a9584d058a9a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/cotfly": {
+  "hash": "20235114168718fc",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/dedalus-terminal": {
+  "hash": "5316a6bf9aaa5f18",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/elo": {
+  "hash": "bca8e47dc97fade3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/glyphfield": {
+  "hash": "b0f3b563a389d0da",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/jarhead": {
+  "hash": "a80640a9375bdf92",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/katagami": {
+  "hash": "ec0b460343979fd4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/kevin-wiki": {
+  "hash": "c787c658bfe95a1e",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/local-search": {
+  "hash": "a9d69f0ecf50408b",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/loop": {
+  "hash": "014124435b65f3d6",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/mailroom": {
+  "hash": "aeb58f31446868d6",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/ommc": {
+  "hash": "0dfc2351135236cf",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/podium": {
+  "hash": "3df0607dd56210f7",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/powerlifting": {
+  "hash": "07583a9e00950bf1",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/princeton-td": {
+  "hash": "fcaae689831c3fdd",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/prototemplate": {
+  "hash": "a0568b5e2e747341",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/relay": {
+  "hash": "1886c5c70b2c9dd8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/sandbox-arena": {
+  "hash": "4acbaf5c4d350e79",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/sevenfold": {
+  "hash": "258a1203b245764d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/sigil-ui": {
+  "hash": "d1ee738d9eb56e26",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/fr/cards/turboslide": {
+  "hash": "c41d4d7855c2f6ca",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/ja": {
+  "hash": "0e32c00aee30bb6a",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/ja/about": {
+  "hash": "a06a5c0dabb51797",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/ja/battle": {
+  "hash": "768578aa9b9df0a7",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/ja/battle/arena": {
+  "hash": "c4394a591c7a8404",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/ja/cards": {
+  "hash": "fc8548eb464c6e61",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/ja/cards/agent-machines": {
+  "hash": "16cbdad7850fbe09",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/agent-pets": {
+  "hash": "a75d704e1d282bde",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/ariadne": {
+  "hash": "a4698fb1c538047d",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/atlas": {
+  "hash": "8df5e69af4ff1c7b",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/bday-land": {
+  "hash": "92f9f335631d13c5",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/claude-of-tanks": {
+  "hash": "e21aa17abdd56823",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/cotfly": {
+  "hash": "6b3796c6d0ee88ff",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/dedalus-terminal": {
+  "hash": "3f7d216c127af8dc",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/elo": {
+  "hash": "17a086deaacb9b92",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/glyphfield": {
+  "hash": "3721eb76bdc1d48b",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/jarhead": {
+  "hash": "1b47bc0752cb80dd",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/katagami": {
+  "hash": "24080e21f6925d7f",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/kevin-wiki": {
+  "hash": "70c42fa58ccc5b50",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/local-search": {
+  "hash": "3ea2f783e7ab50e3",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/loop": {
+  "hash": "7dee4a291873bf8d",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/mailroom": {
+  "hash": "0c493f3297ba470e",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/ommc": {
+  "hash": "d62a7077d8a46fb7",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/podium": {
+  "hash": "3b851decab50602b",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/powerlifting": {
+  "hash": "4e8d2ac52a5f88f3",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/princeton-td": {
+  "hash": "fff08b992223654b",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/prototemplate": {
+  "hash": "f8a494d0132341b7",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/relay": {
+  "hash": "a01fc4519bf7ca31",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/sandbox-arena": {
+  "hash": "5eebf415eab374fb",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/sevenfold": {
+  "hash": "15f49e099f7d36e2",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/sigil-ui": {
+  "hash": "84320ddef5052bbe",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ja/cards/turboslide": {
+  "hash": "5fd6da1d3ceeaa6d",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko": {
+  "hash": "5673ca7e48d26367",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/ko/about": {
+  "hash": "fea393d646221f7c",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/ko/battle": {
+  "hash": "d7f558e55a7d5bc8",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/ko/battle/arena": {
+  "hash": "bc3f3056a8b574a7",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/ko/cards": {
+  "hash": "00abd49408b4874c",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/ko/cards/agent-machines": {
+  "hash": "2d54dce19312da0f",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/agent-pets": {
+  "hash": "e7e4a10bd24adcc3",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/ariadne": {
+  "hash": "1f6d0f801a5d8153",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/atlas": {
+  "hash": "2162dfb3d3fa4197",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/bday-land": {
+  "hash": "594ccaa890a950a1",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/claude-of-tanks": {
+  "hash": "5a3b3abea9846b41",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/cotfly": {
+  "hash": "0f1d10ff52461309",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/dedalus-terminal": {
+  "hash": "227fb380bb6f9dfc",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/elo": {
+  "hash": "30e17c46be90bcdd",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/glyphfield": {
+  "hash": "09447c049dcaa685",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/jarhead": {
+  "hash": "dbad7cf9782b79d3",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/katagami": {
+  "hash": "9cc73160197f8a03",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/kevin-wiki": {
+  "hash": "ec399d4550636a37",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/local-search": {
+  "hash": "f4606ff52e750b70",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/loop": {
+  "hash": "30a649ec3fb18875",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/mailroom": {
+  "hash": "68c8aa522bcbdb32",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/ommc": {
+  "hash": "bb8458e193d2bf50",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/podium": {
+  "hash": "e7d15ead051acd20",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/powerlifting": {
+  "hash": "3e83a8323a1baeb1",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/princeton-td": {
+  "hash": "acf6652a1b0264ac",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/prototemplate": {
+  "hash": "6de23af0b8d51202",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/relay": {
+  "hash": "90667231da06a9d0",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/sandbox-arena": {
+  "hash": "eb45cee848a9ff29",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/sevenfold": {
+  "hash": "ea75b3bb0791c710",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/sigil-ui": {
+  "hash": "f6495a2bc62a130c",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/ko/cards/turboslide": {
+  "hash": "d2eb54f5dbaecf04",
+  "date": "2026-11-28T14:37:31.551Z"
+ },
+ "/pt": {
+  "hash": "bb33514dc80c4f47",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/pt/about": {
+  "hash": "42956391c5026d83",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/pt/battle": {
+  "hash": "da9e15e18175552a",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/pt/battle/arena": {
+  "hash": "6cfd091fd3002f20",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/pt/cards": {
+  "hash": "3a134e9cfbb96c38",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/pt/cards/agent-machines": {
+  "hash": "594725d0398b7b8a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/agent-pets": {
+  "hash": "e83eb347447c958a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/ariadne": {
+  "hash": "60e4806f3ec6eb8c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/atlas": {
+  "hash": "459c9d6bf989efc3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/bday-land": {
+  "hash": "12a88c91dac63fc6",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/claude-of-tanks": {
+  "hash": "b03460c9b3a7611b",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/cotfly": {
+  "hash": "4cc4031c959962ed",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/dedalus-terminal": {
+  "hash": "256392d69b52ef12",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/elo": {
+  "hash": "735c53ae6ce8d298",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/glyphfield": {
+  "hash": "0e7242e6679b5fbd",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/jarhead": {
+  "hash": "80d53181ea86adbd",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/katagami": {
+  "hash": "5df0f5930c3eb2a9",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/kevin-wiki": {
+  "hash": "31f0cbb79fbbeee2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/local-search": {
+  "hash": "1806b9536caa91c8",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/loop": {
+  "hash": "a1d37011b8219c1d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/mailroom": {
+  "hash": "994107d911ba0c59",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/ommc": {
+  "hash": "53c50190cedc2464",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/podium": {
+  "hash": "412e8ee96b9e52e6",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/powerlifting": {
+  "hash": "f4d72fa03a6c181e",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/princeton-td": {
+  "hash": "35cac375d5426201",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/prototemplate": {
+  "hash": "7be5ab9c8bd007b4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/relay": {
+  "hash": "1001016f3586066d",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/sandbox-arena": {
+  "hash": "cbb64a6abdce7cca",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/sevenfold": {
+  "hash": "e6d929201e3a14f0",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/sigil-ui": {
+  "hash": "feebc10c6e4ccdfd",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/pt/cards/turboslide": {
+  "hash": "0c08871362917651",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh": {
+  "hash": "891e20f41c2bfc7b",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/zh/about": {
+  "hash": "1904e3bc6c1fc28a",
+  "date": "2026-11-18T19:37:01.000Z"
+ },
+ "/zh/battle": {
+  "hash": "8d52618c8dca4036",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/zh/battle/arena": {
+  "hash": "ce3973becde7fe7e",
+  "date": "2026-11-26T06:36:03.000Z"
+ },
+ "/zh/cards": {
+  "hash": "c9dda9efa68a39da",
+  "date": "2026-11-13T22:52:36.000Z"
+ },
+ "/zh/cards/agent-machines": {
+  "hash": "48b2de1585f7531a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/agent-pets": {
+  "hash": "e3fb62dcb1537705",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/ariadne": {
+  "hash": "0527280ee628453c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/atlas": {
+  "hash": "f9836128ed37a917",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/bday-land": {
+  "hash": "8a1573cbdbea1ad7",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/claude-of-tanks": {
+  "hash": "b49e4402032d35f4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/cotfly": {
+  "hash": "6d3f5bda4b82b244",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/dedalus-terminal": {
+  "hash": "4addec7be74220e0",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/elo": {
+  "hash": "dace5259d78e4547",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/glyphfield": {
+  "hash": "767b38acacfa010c",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/jarhead": {
+  "hash": "6339e94de7b4eeea",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/katagami": {
+  "hash": "00d45b6818d1d800",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/kevin-wiki": {
+  "hash": "cd07c2f74adb40b2",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/local-search": {
+  "hash": "26a4053be05d00a4",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/loop": {
+  "hash": "876e037a6ae4f921",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/mailroom": {
+  "hash": "b97d189bc896270a",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/ommc": {
+  "hash": "ab4bbeaca57ab2ac",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/podium": {
+  "hash": "7bfb5556196dbff7",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/powerlifting": {
+  "hash": "6b0e8ba06b40fefd",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/princeton-td": {
+  "hash": "f51eedf748b924e3",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/prototemplate": {
+  "hash": "f9595e1a2af3454e",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/relay": {
+  "hash": "97c38271f50cd140",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/sandbox-arena": {
+  "hash": "0317071474284daf",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/sevenfold": {
+  "hash": "13f318833ec00985",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/sigil-ui": {
+  "hash": "1fc575593a1c216f",
+  "date": "2026-11-26T07:27:04.000Z"
+ },
+ "/zh/cards/turboslide": {
+  "hash": "21f41109ba4c0578",
+  "date": "2026-11-26T07:27:04.000Z"
+ }
+}

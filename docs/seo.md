@@ -12,7 +12,7 @@ og:images in all my links. and make more links!"
 | JSON-LD | `src/lib/schema.ts` | One `@graph` per page: `WebSite`, `Person` (Kevin, `@id` `/#kevin`, the same node everywhere, with `worksFor` General Translation since 2026-11-13), the page (`CollectionPage`, `ItemPage`, `ProfilePage`, `WebPage`), its `BreadcrumbList`, and what it is about: the `ItemList` of cards, a card's project (`SoftwareApplication`, `VideoGame`, `WebSite` or `CreativeWork`) with a `SoftwareSourceCode` node when its repository is public, or the battle's `VideoGame`. No ratings, reviews, offers or FAQ markup: the guard fails on them. |
 | Answer first | `answerOf()` in `src/lib/cards.ts`, `src/lib/twins.ts` | A card page and its twin open with "<Card> is <its line>". `/about` and its twin open with the bio; `/about` ends with a few questions that have real answers. |
 | Markdown twin | `src/lib/twins.ts`, `vercel.json` | Every twin answers `text/markdown` with `Link: <page>; rel="canonical"`, so search engines fold it into its page. Markdown carries no meta tags, so a twin cannot have a share image of its own. |
-| Sitemap | `astro.config.mjs` | Every indexable page with `lastmod`: the date of the last commit that changed what the page prints. |
+| Sitemap | `astro.config.mjs`, `scripts/lastmod.mjs` | Every indexable page with `lastmod`: the day what the page prints (its text, JSON-LD and pictures) last changed, from `lastmod.json` (ADR 0003). |
 
 ## Links
 

@@ -10,7 +10,7 @@
     "sync": "node scripts/sync.mjs",
     "sync:check": "node scripts/sync.mjs --check",
     "dev": "astro dev",
-    "build": "pnpm lint && pnpm test && node scripts/lock-check.mjs && node scripts/i18n-extract.mjs --check && astro build && node scripts/minify-dist.mjs && node scripts/verify-build.mjs && node scripts/check-release.mjs dist/index.html",
+    "build": "pnpm lint && pnpm test && node scripts/lock-check.mjs && node scripts/i18n-extract.mjs --check && astro build && node scripts/minify-dist.mjs && node scripts/lastmod.mjs && node scripts/verify-build.mjs && node scripts/check-release.mjs dist/index.html",
     "preview": "astro preview",
     "check": "astro check",
     "lint": "oxlint --deny-warnings src scripts astro.config.mjs",
