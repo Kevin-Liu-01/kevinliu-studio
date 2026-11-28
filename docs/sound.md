@@ -20,7 +20,10 @@ ledger and the generation receipts stay in the rounds and never come here; the s
 
 ## Where it is wired
 
-- Home: `/sound/boot.gallery.js` (module, before `gallery.js`) sets `globalThis.Sound` and binds `#sound`.
+- Home: `/sound/boot.gallery.js` sets `globalThis.Sound` and binds `#sound`. It loads after the first screen (Kevin,
+  2026-11-28): `Home.astro` adds it at idle once the page has loaded, or at the visitor's first press or key if that
+  comes sooner. A press before it runs makes no sound; the key still flips and saves the choice, which the player reads
+  when it starts.
   `gallery.js` and `rituals.js` carry the hooks from r4/sound `INTEGRATION.md` section 2, applied by the sync as
   anchored patches. Each call goes through `globalThis.Sound?.`, so a page whose sound fails behaves as before.
 - A card page (`/cards/<id>`, in every language): the header's speaker key is there too, and a press on the card
